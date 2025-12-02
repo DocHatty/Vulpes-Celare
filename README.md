@@ -35,17 +35,17 @@
 
 ## Motivation
 
-Clinical text—reports, consult notes, care coordination messages—is invaluable for education, research, and tool development. Yet safely sharing it remains a persistent challenge. Existing de-identification solutions tend to be:
+Clinical text - reports, consult notes, care coordination messages - is invaluable for education, research, and tool development. Yet safely sharing it remains a persistent challenge. Existing de-identification solutions tend to be:
 
-- **Opaque** — Black-box SaaS offerings where you cannot inspect what is happening to your data
-- **Generic** — Not tuned to the specific vocabulary and patterns of medical documentation
-- **Difficult to integrate** — Heavyweight systems that do not fit modern development workflows
+- **Opaque** - Black-box SaaS offerings where you cannot inspect what is happening to your data
+- **Generic** - Not tuned to the specific vocabulary and patterns of medical documentation
+- **Difficult to integrate** - Heavyweight systems that do not fit modern development workflows
 
 Vulpes Celare is an attempt to build something different: an open, inspectable redaction engine that is:
 
-- **Tailored to US healthcare formats** — SSNs, MRNs, provider credentials, and the "LASTNAME, FIRSTNAME" conventions
-- **Written in TypeScript** — Easy to embed in Node.js pipelines, APIs, or browser-based tools
-- **Explicit about its limitations** — Experimental status, synthetic-only testing, and the need for community validation
+- **Tailored to US healthcare formats** - SSNs, MRNs, provider credentials, and the "LASTNAME, FIRSTNAME" conventions
+- **Written in TypeScript** - Easy to embed in Node.js pipelines, APIs, or browser-based tools
+- **Explicit about its limitations** - Experimental status, synthetic-only testing, and the need for community validation
 
 This project exists because the problem is worth solving correctly, and the best way to get there is through transparency and collaboration.
 
@@ -127,11 +127,11 @@ Vulpes Celare uses a parallel filter architecture with span-based detection:
 
 **Key design decisions:**
 
-1. **26 specialized filters** — Each PHI type (names, SSNs, dates, phones, etc.) has dedicated detection logic rather than a single monolithic model.
-2. **Context awareness** — Distinguishes "Dr. Wilson" (a person) from "Wilson's disease" (a medical term) using a vocabulary of over 10,000 medical terms.
-3. **OCR tolerance** — Handles common scan errors such as `O`↔`0`, `l`↔`1`, `S`↔`5`, and `B`↔`8`.
-4. **Span-based resolution** — When multiple filters detect overlapping regions, priority rules determine the winner.
-5. **Rules over ML** — A deliberate choice for transparency, speed, and predictability. No GPU required, no cloud dependency.
+1. **26 specialized filters** - Each PHI type (names, SSNs, dates, phones, etc.) has dedicated detection logic rather than a single monolithic model.
+2. **Context awareness** - Distinguishes "Dr. Wilson" (a person) from "Wilson's disease" (a medical term) using a vocabulary of over 10,000 medical terms.
+3. **OCR tolerance** - Handles common scan errors such as `O`↔`0`, `l`↔`1`, `S`↔`5`, and `B`↔`8`.
+4. **Span-based resolution** - When multiple filters detect overlapping regions, priority rules determine the winner.
+5. **Rules over ML** - A deliberate choice for transparency, speed, and predictability. No GPU required, no cloud dependency.
 
 ---
 
@@ -147,7 +147,7 @@ Real documents have errors. We test against them.
 | **High** | 95.8% | Heavy OCR corruption |
 | **Extreme** | 94.5% | Worst-case scan quality |
 
-**Clean data detection: 99.7%** — The engine performs well on properly formatted text. Performance degrades gracefully as corruption increases.
+**Clean data detection: 99.7%** - The engine performs well on properly formatted text. Performance degrades gracefully as corruption increases.
 
 ---
 
@@ -307,7 +307,7 @@ npm test  # Runs comprehensive synthetic test suite
 
 ## License
 
-Source Available License — See [LICENSE](LICENSE) for details.
+Source Available License - See [LICENSE](LICENSE) for details.
 
 - **Personal and Educational Use:** Permitted
 - **Research and Academic Use:** Permitted  
