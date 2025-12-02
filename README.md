@@ -4,14 +4,14 @@
 
 <img width="1024" height="1024" alt="Vulpes Celare Logo" src="https://github.com/user-attachments/assets/6ce29f86-e17e-40b0-abca-77431fcfe319" />
 
-**A precision HIPAA PHI redaction engine built for the real world.**
+**An open, inspectable HIPAA PHI redaction engine for clinical text.**
 
 ---
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![License](https://img.shields.io/badge/License-Source%20Available-4B32C3?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Beta-blue?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Experimental-orange?style=for-the-badge)
 
 </div>
 
@@ -19,129 +19,78 @@
 
 <div align="center">
 
-### Performance at a Glance
+### Current Performance (Synthetic Testing)
 
-| Metric | Score | Documents Tested |
-|:------:|:-----:|:----------------:|
-| **Sensitivity** | 96.4% | 510 |
-| **Specificity** | 100% | 510 |
-| **Grade** | **A** | — |
+| Metric | Score | Notes |
+|:------:|:-----:|:------|
+| **Sensitivity** | 98.4% | PHI correctly identified |
+| **Specificity** | 100% | No false positives |
+| **Documents** | 510 | Synthetic medical documents |
 
-<sub>Tested across 510 synthetic medical documents including progress notes, lab reports, radiology reports, discharge summaries, prescriptions, operative reports, and more — with varying levels of OCR corruption, typos, and formatting errors.</sub>
-
-</div>
-
----
-
-## The Problem
-
-Clinical text is gold. Research depends on it. AI training needs it. Quality improvement requires it.
-
-But sharing it? That's where things get complicated.
-
-**PHI is everywhere.** Names buried in narratives. Dates scattered across timestamps. Phone numbers hiding in follow-up instructions. One missed redaction and you've got a HIPAA violation.
-
-Existing solutions are either:
-- **Black boxes** — SaaS platforms where your data disappears into someone else's servers
-- **Outdated** — Rule-based systems from 2010 that miss modern patterns
-- **Overfit** — ML models that hallucinate redactions or miss obvious PHI
-- **Expensive** — Enterprise pricing that locks out researchers and small clinics
-
----
-
-## The Solution
-
-Vulpes Celare is different.
-
-```typescript
-import { VulpesCelare } from 'vulpes-celare';
-
-const result = await VulpesCelare.redact(medicalDocument);
-// That's it. PHI gone. Document intact.
-```
-
-**What makes it work:**
-
-- **26 parallel filters** — Each PHI type has its own specialized detector
-- **Context-aware** — Knows "Dr. Wilson" is a person, "Wilson's disease" is not
-- **OCR-tolerant** — Handles `O` → `0`, `l` → `1`, `S` → `5` and other scan errors
-- **Medical vocabulary** — 10,000+ terms it knows not to redact
-- **Span-based architecture** — Overlapping detections resolve intelligently
-
----
-
-## Real-World Performance
-
-We don't just test on clean data. We test on *messy* data.
-
-<div align="center">
-
-| Error Level | Detection Rate | Description |
-|:-----------:|:--------------:|:------------|
-| **Clean** | 98.9% | Perfect formatting |
-| **Low** | 96.0% | Minor typos |
-| **Medium** | 97.6% | OCR artifacts |
-| **High** | 92.5% | Heavy corruption |
-| **Extreme** | 89.1% | Worst-case scenarios |
+<sub>Tested on programmatically-generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
 
 </div>
 
-**What we catch:**
-- Names in every format: `SMITH, JOHN` · `Dr. Jane Doe` · `smith, john` · `John A. Smith, MD, PhD`
-- Dates with OCR errors: `03/15/1980` · `O3/l5/198O` · `03/15/ 1980`
-- Phone variants: `(555) 123-4567` · `555.123.4567` · `+1 555 123 4567`
-- SSNs with corruption: `123-45-6789` · `123--45-6789` · `123-4 5-6789`
-- Emails, addresses, MRNs, DEA numbers, and 14 other identifier types
+---
+
+## Motivation
+
+Clinical text--reports, consult notes, care coordination messages--is invaluable for education, research, and tool development. Yet safely sharing it remains a persistent challenge. Existing de-identification solutions tend to be:
+
+- **Opaque** -- black-box SaaS offerings where you can't inspect what's happening to your data
+- **Generic** -- not tuned to the specific vocabulary and patterns of medical documentation
+- **Difficult to integrate** -- heavyweight systems that don't fit modern development workflows
+
+Vulpes Celare is an attempt to build something different: an open, inspectable redaction engine that is:
+
+- **Tailored to US healthcare formats** -- SSNs, MRNs, provider credentials, the "LASTNAME, FIRSTNAME" conventions
+- **Written in TypeScript** -- easy to embed in Node.js pipelines, APIs, or browser-based tools
+- **Explicit about its limitations** -- experimental status, synthetic-only testing, and the need for community validation
+
+This project exists because the problem is worth solving correctly, and the best way to get there is through transparency and collaboration.
+
+---
+
+## What This Is (And Isn't)
+
+**This is:**
+- A first-pass redaction tool for pre-screening clinical text
+- A research/prototyping utility for developers working with medical documents
+- An open, hackable codebase you can inspect, modify, and extend
+- A starting point that needs community validation
+
+**This is not:**
+- A compliance certification or HIPAA guarantee
+- A replacement for human review in high-stakes scenarios
+- Production-ready for unsupervised de-identification
+- Validated on real clinical data (yet)
+
+The 98.4% sensitivity on synthetic data means ~1.6% of PHI may slip through. For many use cases, that requires human spot-checking or a double-pass workflow.
 
 ---
 
 ## Quick Start
 
-### Installation
-
-```bash
-npm install vulpes-celare
-```
-
-### Basic Usage
-
 ```typescript
 import { VulpesCelare } from 'vulpes-celare';
 
-// One-liner redaction
-const redacted = await VulpesCelare.redact(text);
+// Simple redaction
+const redacted = await VulpesCelare.redact(clinicalNote);
 
-// With full metrics
+// With metrics
 const engine = new VulpesCelare();
-const result = await engine.process(text);
+const result = await engine.process(clinicalNote);
 
 console.log(result.text);           // Redacted document
-console.log(result.spansRedacted);  // PHI elements found
-console.log(result.processingTime); // Speed (typically 2-4ms/doc)
-```
-
-### Express Middleware
-
-```typescript
-app.use(async (req, res, next) => {
-  if (req.body.clinicalNote) {
-    req.body.clinicalNote = await VulpesCelare.redact(req.body.clinicalNote);
-  }
-  next();
-});
-```
-
-### Batch Processing
-
-```typescript
-const engine = new VulpesCelare();
-const results = await engine.processBatch(documents);
-// 3ms per document average
+console.log(result.redactionCount); // PHI elements found
+console.log(result.executionTimeMs);// Processing time (~2-3ms/doc)
 ```
 
 ---
 
-## Architecture
+## How It Works
+
+Vulpes Celare uses a parallel filter architecture with span-based detection:
 
 ```
                         ┌─────────────────────┐
@@ -176,143 +125,204 @@ const results = await engine.processBatch(documents);
                         └─────────────────────┘
 ```
 
+**Key design decisions:**
+
+1. **26 specialized filters** -- Each PHI type (names, SSNs, dates, phones, etc.) has dedicated detection logic rather than a single monolithic model
+2. **Context awareness** -- Distinguishes "Dr. Wilson" (person) from "Wilson's disease" (medical term) using a 10,000+ term medical vocabulary
+3. **OCR tolerance** -- Handles common scan errors like `O`↔`0`, `l`↔`1`, `S`↔`5`, `B`↔`8`
+4. **Span-based resolution** -- When multiple filters detect overlapping regions, priority rules determine the winner
+5. **Rules over ML** -- Deliberate choice for transparency, speed, and predictability (no GPU required, no cloud dependency)
+
+---
+
+## Performance by Data Quality
+
+Real documents have errors. We test against them.
+
+| Error Level | Sensitivity | What It Simulates |
+|:-----------:|:-----------:|:------------------|
+| **Clean** | 99.7% | Perfect digital text |
+| **Low** | 98.8% | Minor typos, spacing issues |
+| **Medium** | 98.9% | Light OCR artifacts |
+| **High** | 95.8% | Heavy OCR corruption |
+| **Extreme** | 94.5% | Worst-case scan quality |
+
+**Clean data detection: 99.7%** -- The engine performs well on properly formatted text. Performance degrades gracefully as corruption increases.
+
 ---
 
 ## Filter Coverage
 
 ### Identity & Names
-| Filter | Detects | Example |
-|--------|---------|---------|
-| **TitledNameFilter** | Names with prefixes | `Dr. Sarah Chen`, `Mr. John Smith` |
-| **FormattedNameFilter** | Standard name formats | `SMITH, JOHN`, `Jane Doe` |
-| **CredentialNameFilter** | Names with suffixes | `Robert Williams, MD, PhD` |
-| **FamilyNameFilter** | Relationship contexts | `Daughter: Emma`, `Wife: Mary` |
+| Filter | Handles | Example Patterns |
+|--------|---------|------------------|
+| TitledNameFilter | Prefixed names | `Dr. Sarah Chen`, `Mr. John Smith` |
+| FormattedNameFilter | Standard formats | `SMITH, JOHN`, `Smith, John Ann` |
+| CredentialNameFilter | Names with suffixes | `Robert Williams, MD, PhD`, `Jane Doe, RN` |
+| FamilyNameFilter | Relationship contexts | `Daughter: Emma`, `Emergency Contact: Mary` |
 
 ### Government & Medical IDs
-| Filter | Detects | Example |
-|--------|---------|---------|
-| **SSNFilter** | Social Security Numbers | `123-45-6789` |
-| **MRNFilter** | Medical Record Numbers | `MRN: 7834921` |
-| **DEAFilter** | DEA Numbers | `AB1234567` |
-| **NPIFilter** | Provider NPIs | `1234567890` |
-| **MedicareFilter** | Medicare IDs | `1EG4-TE5-MK72` |
+| Filter | Handles | Example Patterns |
+|--------|---------|------------------|
+| SSNFilter | Social Security Numbers | `123-45-6789`, `123 45 6789` |
+| MRNFilter | Medical Record Numbers | `MRN: 7834921`, `Chart #12345` |
+| NPIFilter | Provider NPIs | `NPI: 1234567890` |
+| MedicareFilter | Medicare/Medicaid IDs | `1EG4-TE5-MK72` |
 
 ### Contact Information
-| Filter | Detects | Example |
-|--------|---------|---------|
-| **PhoneFilter** | Phone numbers | `(555) 123-4567`, `+1 555.123.4567` |
-| **EmailFilter** | Email addresses | `doctor@hospital.org` |
-| **AddressFilter** | Street addresses | `123 Main St, Boston, MA 02101` |
-| **ZipCodeFilter** | ZIP codes | `02101`, `02101-1234` |
+| Filter | Handles | Example Patterns |
+|--------|---------|------------------|
+| PhoneFilter | Phone numbers | `(555) 123-4567`, `555.123.4567`, `+1 555 123 4567` |
+| EmailFilter | Email addresses | `patient@email.com`, `dr.smith@hospital.org` |
+| AddressFilter | Street addresses | `123 Main St, Boston, MA` |
+| ZipCodeFilter | ZIP codes | `02101`, `02101-1234` |
 
-### Dates & Times
-| Filter | Detects | Example |
-|--------|---------|---------|
-| **DateFilter** | All date formats | `03/15/1980`, `March 15, 2024`, `15-Mar-2024` |
-| **AgeOver89Filter** | Ages 90+ | `92-year-old`, `age 95` |
-
-### Financial & Technical
-| Filter | Detects | Example |
-|--------|---------|---------|
-| **CreditCardFilter** | Credit cards (Luhn validated) | `4111-1111-1111-1111` |
-| **IPAddressFilter** | IP addresses | `192.168.1.1`, `2001:db8::1` |
-| **VehicleFilter** | VINs & plates | `1HGCM82633A123456` |
+### Dates & Financial
+| Filter | Handles | Example Patterns |
+|--------|---------|------------------|
+| DateFilter | All date formats | `03/15/1980`, `March 15, 2024`, `15-Mar-24` |
+| AgeOver89Filter | Ages 90+ (HIPAA requirement) | `92-year-old`, `age: 95` |
+| CreditCardFilter | Credit cards (Luhn validated) | `4111-1111-1111-1111` |
 
 ---
 
-## OCR Error Tolerance
+## OCR Error Handling
 
-Real documents are scanned. Scans have errors. We handle them.
+Scanned documents introduce predictable errors. We pattern-match against them:
 
-<div align="center">
+| Original | Corrupted Version | Status |
+|:--------:|:-----------------:|:------:|
+| `03/15/1980` | `O3/l5/198O` | Detected |
+| `123-45-6789` | `l23-45-67B9` | Detected |
+| `(555) 123-4567` | `(5S5) l23-4567` | Detected |
+| `Smith, John` | `Smith, J0hn` | Detected |
 
-| Original | Corrupted | Detected? |
-|:--------:|:---------:|:---------:|
-| `03/15/1980` | `O3/l5/198O` | ✅ |
-| `123-45-6789` | `123--45-6789` | ✅ |
-| `(555) 123-4567` | `(5S5) l23-4567` | ✅ |
-| `Smith, John` | `smith, john` | ✅ |
-| `Dr. Wilson` | `Dr.Wilson` | ✅ |
-
-</div>
-
-**Supported OCR substitutions:**
-- `O` ↔ `0` (letter O / zero)
-- `l` ↔ `1` ↔ `I` ↔ `|` (lowercase L / one / capital I / pipe)
-- `S` ↔ `s` ↔ `5` (letter S / five)
-- `B` ↔ `8` (letter B / eight)
-- Space insertion/deletion
-- Double-character errors
+**Handled substitutions:** `O`↔`0`, `l`↔`1`↔`I`↔`|`, `S`↔`5`, `B`↔`8`, plus spacing variations.
 
 ---
 
-## Important Notices
+## Integration Examples
 
-> **Testing Methodology**
->
-> All metrics are based on 510 programmatically-generated synthetic medical documents. Test documents include 10 different document types (progress notes, lab reports, radiology reports, discharge summaries, emergency notes, operative reports, prescriptions, consultation notes, nursing assessments, and pathology reports) with five error levels (none, low, medium, high, extreme) simulating real-world OCR and formatting issues.
->
-> **These results have not been independently verified against real clinical data.**
+### Express Middleware
 
-> **No Real Patient Data**
->
-> No real patient data, hospital resources, or Protected Health Information was used in the development or testing of this software. All test documents are entirely synthetic.
+```typescript
+import { VulpesCelare } from 'vulpes-celare';
 
-> **Not a Compliance Guarantee**
->
-> This software is a tool, not a compliance certification. HIPAA compliance requires organizational policies, procedures, training, and technical safeguards beyond any single piece of software. Always validate independently before production use.
+app.use('/api/notes', async (req, res, next) => {
+  if (req.body.clinicalNote) {
+    req.body.clinicalNote = await VulpesCelare.redact(req.body.clinicalNote);
+  }
+  next();
+});
+```
+
+### Batch Processing
+
+```typescript
+const engine = new VulpesCelare();
+const results = await engine.processBatch(documents);
+// Average: 2-3ms per document
+```
+
+### With Human Review Workflow
+
+```typescript
+const engine = new VulpesCelare();
+const result = await engine.process(document);
+
+if (result.redactionCount > 0) {
+  // Queue for human verification
+  await queueForReview({
+    original: document,
+    redacted: result.text,
+    phiCount: result.redactionCount,
+    breakdown: result.breakdown
+  });
+}
+```
 
 ---
 
 ## Known Limitations
 
-| Limitation | Details |
-|------------|---------|
-| **Language** | English only (US medical terminology) |
-| **Formats** | US-centric (SSN, phone, address patterns) |
-| **Extreme OCR** | 4+ character substitutions may be missed |
-| **Ambiguous Names** | Some edge cases with common words as names |
-| **Scale Testing** | Not yet tested on 100K+ document sets |
+| Area | Limitation |
+|------|------------|
+| **Language** | English only, US medical terminology |
+| **Formats** | US-centric patterns (SSN, phone, address) |
+| **Validation** | Synthetic data only -- no real EHR testing |
+| **Edge Cases** | Names with heavy OCR corruption (`Char1e5` for `Charles`) |
+| **Scale** | Not tested on 100K+ document sets |
+| **Ambiguity** | Some common words as names may be missed |
 
 ---
 
-## Roadmap
+## Comparison to Alternatives
 
-- [ ] Multi-language support
-- [ ] International format detection
-- [ ] Custom filter plugins
-- [ ] Confidence score exports
-- [ ] FHIR resource integration
-- [ ] Streaming API for large documents
+| Tool | Approach | Pros | Cons |
+|------|----------|------|------|
+| **Vulpes Celare** | Rules + vocabulary | Fast, local, inspectable, OCR-tolerant | Synthetic-only validation, US-focused |
+| **Microsoft Presidio** | Rules + ML | Mature, multi-language | Heavier setup, less medical-specific |
+| **AWS Comprehend Medical** | Cloud ML | High accuracy, maintained | Requires BAA, sends data externally |
+| **Google DLP** | Cloud ML | Broad coverage | Cost, cloud dependency |
+
+Vulpes Celare occupies a specific niche: **local-first, TypeScript-native, healthcare-specific, and fully inspectable**.
 
 ---
 
-## Contributing
+## Validation & Testing
 
-We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We encourage independent validation. To help test:
 
-**Most valuable contributions:**
-1. Testing on new document types
-2. Reporting false positives/negatives with examples
-3. Adding filters for new PHI patterns
-4. Performance optimizations
+```bash
+git clone https://github.com/your-repo/vulpes-celare
+cd vulpes-celare
+npm install
+npm run build
+npm test  # Runs comprehensive synthetic test suite
+```
+
+**We especially want:**
+- Testing on new document types
+- False positive/negative reports with (de-identified) examples
+- Performance benchmarks on larger datasets
+- International format contributions
+
+---
+
+## Important Notices
+
+> **Experimental Status**
+>
+> This software is experimental. The metrics reported (98.4% sensitivity, 100% specificity) are based on author-performed testing using 510 programmatically-generated synthetic documents. These results have not been independently verified or tested against real clinical data.
+
+> **Not a Compliance Solution**
+>
+> HIPAA compliance is organizational, not just technical. De-identification requires policies, procedures, training, risk assessment, and often human review workflows. This tool is one component, not a complete solution.
+
+> **No Real Patient Data**
+>
+> No real patient data, hospital resources, or Protected Health Information was used in development or testing. All test documents are entirely synthetic.
 
 ---
 
 ## License
 
-Source Available License — See [LICENSE](LICENSE) for details.
+Source Available License -- See [LICENSE](LICENSE) for details.
 
 - **Personal & Educational**: Permitted
-- **Research**: Permitted
+- **Research & Academic**: Permitted  
 - **Commercial**: Requires written permission
+
+---
+
+## Contributing
+
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 <div align="center">
 
-*Built with care. Test with rigor. Deploy with confidence.*
-
-**[Documentation](docs/) · [Issues](issues/) · [Discussions](discussions/)**
+**Built for transparency. Requires validation. Welcomes collaboration.**
 
 </div>

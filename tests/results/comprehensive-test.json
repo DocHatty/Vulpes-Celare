@@ -1,125 +1,113 @@
 {
-  "timestamp": "2025-12-02T19:54:56.382Z",
+  "timestamp": "2025-12-02T20:05:28.592Z",
   "summary": {
     "documentsAssessed": 510,
     "totalPHI": 2784,
-    "detectedPHI": 2684,
-    "missedPHI": 100,
-    "sensitivity": "96.41",
+    "detectedPHI": 2739,
+    "missedPHI": 45,
+    "sensitivity": "98.38",
     "totalNonPHI": 952,
     "preservedNonPHI": 952,
     "specificity": "100.00",
-    "overallScore": 97,
-    "grade": "A",
-    "cleanRate": "98.93",
-    "erroredRate": "86.00",
-    "processingTimeMs": 1276
+    "overallScore": 99,
+    "grade": "A+",
+    "cleanRate": "99.69",
+    "erroredRate": "93.00",
+    "processingTimeMs": 1021
   },
   "byErrorLevel": {
     "medium": {
       "total": 660,
-      "detected": 644
+      "detected": 653
     },
     "none": {
       "total": 969,
-      "detected": 958
+      "detected": 966
     },
     "low": {
       "total": 495,
-      "detected": 475
+      "detected": 489
     },
     "high": {
       "total": 550,
-      "detected": 509
+      "detected": 527
     },
     "extreme": {
       "total": 110,
-      "detected": 98
+      "detected": 104
     }
   },
   "missedByType": {
-    "NAME": 44,
+    "NAME": 26,
     "SSN": 6,
-    "PHONE": 21,
-    "DATE": 27,
+    "PHONE": 7,
+    "DATE": 4,
     "EMAIL": 2
   },
   "missedByLevel": {
-    "high": 41,
-    "extreme": 12,
-    "none": 11,
-    "low": 20,
-    "medium": 16
+    "high": 23,
+    "extreme": 6,
+    "low": 6,
+    "medium": 7,
+    "none": 3
   },
   "topIssues": [
     {
-      "issue": "dateOCR",
-      "count": 27,
+      "issue": "nameTypo",
+      "count": 17,
       "examples": [
         {
-          "orig": "09/11/1986",
-          "val": "O9/l1/|9B6"
+          "orig": "Luis Rose Clark",
+          "val": "Luis R0se Clark"
         },
         {
-          "orig": "08/18/1983",
-          "val": "O8/18/|9b3"
+          "orig": "Cook, Charles",
+          "val": "Cook, Char1e5"
         },
         {
-          "orig": "07/18/1968",
-          "val": "o7/|B/|96B"
+          "orig": "Mr. James",
+          "val": "Mr. Jame5"
         },
         {
-          "orig": "03/28/1965",
-          "val": "03/2B/|965"
+          "orig": "Myers, Omar",
+          "val": "Myers, 0mar"
         },
         {
-          "orig": "11/28/1950",
-          "val": "|1/28/19S0"
+          "orig": "Sarah Rose Lewis",
+          "val": "Sarah R05e Lewis"
         }
       ]
     },
     {
       "issue": "nameFormat",
-      "count": 25,
+      "count": 7,
       "examples": [
-        {
-          "orig": "Johnson, Thomas Ann",
-          "val": "Johnson, Thomas Ann"
-        },
-        {
-          "orig": "Perry, Raj Marie",
-          "val": "Perry, Raj Marie"
-        },
         {
           "orig": "Thomas Ann Rivera",
           "val": "Thomas Ann Rivera"
         },
         {
-          "orig": "Peterson, Frank Marie",
-          "val": "Peterson, Frank Marie"
+          "orig": "Justin Marie Thompson",
+          "val": "Justin Marie Thompson"
         },
         {
-          "orig": "Clark, Patricia Ann",
-          "val": "Clark, Patricia Ann"
+          "orig": "Benjamin Marie Parker",
+          "val": "Benjamin Marie Parker"
+        },
+        {
+          "orig": "Ryan Marie Young",
+          "val": "Ryan Marie Young"
+        },
+        {
+          "orig": "Christine Marie Baker",
+          "val": "Christine Marie Baker"
         }
       ]
     },
     {
       "issue": "phoneOCR",
-      "count": 21,
+      "count": 7,
       "examples": [
-        {
-          "orig": "583 798 6177",
-          "val": "5B3 798 6I77"
-        },
-        {
-          "orig": "949 348 6752",
-          "val": "949 34B 67S2"
-        },
-        {
-          "orig": "931 917 7367",
-          "val": "931 9|7 7367"
-        },
         {
           "orig": "403.901.5109",
           "val": "403.9o1.5|o9"
@@ -127,6 +115,18 @@
         {
           "orig": "299.565.1787",
           "val": "299.S65.|7B7"
+        },
+        {
+          "orig": "593.124.1360",
+          "val": "593.124. 1360"
+        },
+        {
+          "orig": "846.403.1949",
+          "val": "846.403. 1949"
+        },
+        {
+          "orig": "789-811-3003",
+          "val": "789-811-300 3"
         }
       ]
     }
@@ -160,48 +160,12 @@
       "hasErrors": true
     },
     {
-      "docId": 37,
-      "docType": "Prescription",
-      "errorLevel": "none",
-      "phiType": "NAME",
-      "original": "Johnson, Thomas Ann",
-      "value": "Johnson, Thomas Ann",
-      "hasErrors": false
-    },
-    {
-      "docId": 469,
-      "docType": "Nursing Assessment",
-      "errorLevel": "high",
-      "phiType": "PHONE",
-      "original": "583 798 6177",
-      "value": "5B3 798 6I77",
-      "hasErrors": true
-    },
-    {
       "docId": 382,
       "docType": "Lab Report",
       "errorLevel": "low",
       "phiType": "SSN",
       "original": "365-89-3374",
       "value": "36s-89-3374",
-      "hasErrors": true
-    },
-    {
-      "docId": 483,
-      "docType": "Radiology Report",
-      "errorLevel": "extreme",
-      "phiType": "DATE",
-      "original": "09/11/1986",
-      "value": "O9/l1/|9B6",
-      "hasErrors": true
-    },
-    {
-      "docId": 437,
-      "docType": "Prescription",
-      "errorLevel": "medium",
-      "phiType": "PHONE",
-      "original": "949 348 6752",
-      "value": "949 34B 67S2",
       "hasErrors": true
     },
     {
@@ -212,51 +176,6 @@
       "original": "Cook, Charles",
       "value": "Cook, Char1e5",
       "hasErrors": true
-    },
-    {
-      "docId": 496,
-      "docType": "Operative Report",
-      "errorLevel": "extreme",
-      "phiType": "DATE",
-      "original": "08/18/1983",
-      "value": "O8/18/|9b3",
-      "hasErrors": true
-    },
-    {
-      "docId": 402,
-      "docType": "Lab Report",
-      "errorLevel": "medium",
-      "phiType": "DATE",
-      "original": "07/18/1968",
-      "value": "o7/|B/|96B",
-      "hasErrors": true
-    },
-    {
-      "docId": 491,
-      "docType": "Progress Note",
-      "errorLevel": "extreme",
-      "phiType": "DATE",
-      "original": "03/28/1965",
-      "value": "03/2B/|965",
-      "hasErrors": true
-    },
-    {
-      "docId": 491,
-      "docType": "Progress Note",
-      "errorLevel": "extreme",
-      "phiType": "DATE",
-      "original": "11/28/1950",
-      "value": "|1/28/19S0",
-      "hasErrors": true
-    },
-    {
-      "docId": 74,
-      "docType": "Discharge Summary",
-      "errorLevel": "none",
-      "phiType": "NAME",
-      "original": "Perry, Raj Marie",
-      "value": "Perry, Raj Marie",
-      "hasErrors": false
     },
     {
       "docId": 475,
@@ -277,30 +196,12 @@
       "hasErrors": true
     },
     {
-      "docId": 499,
-      "docType": "Nursing Assessment",
-      "errorLevel": "extreme",
-      "phiType": "PHONE",
-      "original": "931 917 7367",
-      "value": "931 9|7 7367",
-      "hasErrors": true
-    },
-    {
       "docId": 433,
       "docType": "Radiology Report",
       "errorLevel": "medium",
       "phiType": "NAME",
       "original": "Thomas Ann Rivera",
       "value": "Thomas Ann Rivera",
-      "hasErrors": false
-    },
-    {
-      "docId": 20,
-      "docType": "Pathology Report",
-      "errorLevel": "none",
-      "phiType": "NAME",
-      "original": "Peterson, Frank Marie",
-      "value": "Peterson, Frank Marie",
       "hasErrors": false
     },
     {
@@ -331,51 +232,6 @@
       "hasErrors": true
     },
     {
-      "docId": 350,
-      "docType": "Pathology Report",
-      "errorLevel": "high",
-      "phiType": "DATE",
-      "original": "03/25/1979",
-      "value": "o3/2s/|979",
-      "hasErrors": true
-    },
-    {
-      "docId": 430,
-      "docType": "Pathology Report",
-      "errorLevel": "medium",
-      "phiType": "NAME",
-      "original": "Clark, Patricia Ann",
-      "value": "Clark, Patricia Ann",
-      "hasErrors": false
-    },
-    {
-      "docId": 204,
-      "docType": "Discharge Summary",
-      "errorLevel": "low",
-      "phiType": "PHONE",
-      "original": "900.372.3020",
-      "value": "90O.372.3O20",
-      "hasErrors": true
-    },
-    {
-      "docId": 297,
-      "docType": "Prescription",
-      "errorLevel": "high",
-      "phiType": "DATE",
-      "original": "03/28/1986",
-      "value": "o3/2B/19B6",
-      "hasErrors": true
-    },
-    {
-      "docId": 344,
-      "docType": "Discharge Summary",
-      "errorLevel": "high",
-      "phiType": "DATE",
-      "original": "06/19/1968",
-      "value": "O6/19/196B",
-      "hasErrors": true
-    },
-    {
       "docId": 498,
       "docType": "Consultation Note",
       "errorLevel": "extreme",
@@ -385,39 +241,12 @@
       "hasErrors": true
     },
     {
-      "docId": 54,
-      "docType": "Discharge Summary",
-      "errorLevel": "none",
-      "phiType": "NAME",
-      "original": "Bailey, Adam Ann",
-      "value": "Bailey, Adam Ann",
-      "hasErrors": false
-    },
-    {
-      "docId": 207,
-      "docType": "Prescription",
-      "errorLevel": "low",
-      "phiType": "PHONE",
-      "original": "701-901-5582",
-      "value": "7oI-901-5582",
-      "hasErrors": true
-    },
-    {
       "docId": 322,
       "docType": "Lab Report",
       "errorLevel": "high",
       "phiType": "SSN",
       "original": "590-62-1700",
       "value": "59O-62-170o",
-      "hasErrors": true
-    },
-    {
-      "docId": 334,
-      "docType": "Discharge Summary",
-      "errorLevel": "high",
-      "phiType": "DATE",
-      "original": "11/23/1982",
-      "value": "11/23/19B2",
       "hasErrors": true
     },
     {
@@ -437,24 +266,6 @@
       "original": "06/16/1967",
       "value": "06/1 6/1967",
       "hasErrors": true
-    },
-    {
-      "docId": 305,
-      "docType": "Emergency Note",
-      "errorLevel": "high",
-      "phiType": "PHONE",
-      "original": "393-514-1837",
-      "value": "393-514-IB37",
-      "hasErrors": true
-    },
-    {
-      "docId": 320,
-      "docType": "Pathology Report",
-      "errorLevel": "high",
-      "phiType": "NAME",
-      "original": "Hill, Sharon Marie",
-      "value": "Hill, Sharon Marie",
-      "hasErrors": false
     },
     {
       "docId": 320,
@@ -484,24 +295,6 @@
       "hasErrors": true
     },
     {
-      "docId": 170,
-      "docType": "Pathology Report",
-      "errorLevel": "low",
-      "phiType": "NAME",
-      "original": "Sharma, Anthony Ann",
-      "value": "Sharma,Anthony Ann",
-      "hasErrors": true
-    },
-    {
-      "docId": 434,
-      "docType": "Discharge Summary",
-      "errorLevel": "medium",
-      "phiType": "PHONE",
-      "original": "760-518-2866",
-      "value": "76O-sIB-2866",
-      "hasErrors": true
-    },
-    {
       "docId": 58,
       "docType": "Consultation Note",
       "errorLevel": "none",
@@ -509,15 +302,6 @@
       "original": "Justin Marie Thompson",
       "value": "Justin Marie Thompson",
       "hasErrors": false
-    },
-    {
-      "docId": 388,
-      "docType": "Consultation Note",
-      "errorLevel": "low",
-      "phiType": "DATE",
-      "original": "07/18/2004",
-      "value": "07/1B/20O4",
-      "hasErrors": true
     },
     {
       "docId": 341,
@@ -535,24 +319,6 @@
       "phiType": "SSN",
       "original": "560-24-2607",
       "value": "560-24- 2607",
-      "hasErrors": true
-    },
-    {
-      "docId": 326,
-      "docType": "Operative Report",
-      "errorLevel": "high",
-      "phiType": "DATE",
-      "original": "05/18/2000",
-      "value": "05/1B/2Ooo",
-      "hasErrors": true
-    },
-    {
-      "docId": 287,
-      "docType": "Prescription",
-      "errorLevel": "medium",
-      "phiType": "DATE",
-      "original": "09/04/1982",
-      "value": "O9/04/19B2",
       "hasErrors": true
     },
     {
@@ -581,6 +347,195 @@
       "original": "846.403.1949",
       "value": "846.403. 1949",
       "hasErrors": true
+    },
+    {
+      "docId": 315,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Matthew Taylor",
+      "value": "Matthew Tayl0r",
+      "hasErrors": true
+    },
+    {
+      "docId": 315,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "original": "789-811-3003",
+      "value": "789-811-300 3",
+      "hasErrors": true
+    },
+    {
+      "docId": 83,
+      "docType": "Radiology Report",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Benjamin Marie Parker",
+      "value": "Benjamin Marie Parker",
+      "hasErrors": false
+    },
+    {
+      "docId": 468,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "EMAIL",
+      "original": "jack.young@yahoo.com",
+      "value": "jack.young@yah oo.com",
+      "hasErrors": true
+    },
+    {
+      "docId": 283,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Justin Thomas Wright",
+      "value": "Justin Th0mas Wright",
+      "hasErrors": true
+    },
+    {
+      "docId": 193,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Ryan Marie Young",
+      "value": "Ryan Marie Young",
+      "hasErrors": false
+    },
+    {
+      "docId": 294,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "SSN",
+      "original": "457-84-3224",
+      "value": "4s7-B4-3224",
+      "hasErrors": true
+    },
+    {
+      "docId": 168,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Christine Marie Baker",
+      "value": "Christine Marie Baker",
+      "hasErrors": false
+    },
+    {
+      "docId": 450,
+      "docType": "Pathology Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "original": "01/14/1973",
+      "value": "01/1 4/1973",
+      "hasErrors": true
+    },
+    {
+      "docId": 181,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "DATE",
+      "original": "10/07/1991",
+      "value": "|O/07/199|",
+      "hasErrors": true
+    },
+    {
+      "docId": 438,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "EMAIL",
+      "original": "kyle.perez@hospital.org",
+      "value": "kyle.perez@hospital.0rg",
+      "hasErrors": true
+    },
+    {
+      "docId": 485,
+      "docType": "Emergency Note",
+      "errorLevel": "extreme",
+      "phiType": "PHONE",
+      "original": "538-932-4092",
+      "value": "538 -932-4092",
+      "hasErrors": true
+    },
+    {
+      "docId": 153,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Emily Louise Martin",
+      "value": "Ernily Loui5e Martin",
+      "hasErrors": true
+    },
+    {
+      "docId": 348,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Jonathan Marie Powell",
+      "value": "Jonathan Marie Powell",
+      "hasErrors": false
+    },
+    {
+      "docId": 249,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Prof. Davis",
+      "value": "Pr0f. Davi5",
+      "hasErrors": true
+    },
+    {
+      "docId": 339,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Stewart, Kyle",
+      "value": "Stewart, Ky1e",
+      "hasErrors": true
+    },
+    {
+      "docId": 447,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Campbell, Tyler Rose",
+      "value": "Campbell, Ty1er Ro5e",
+      "hasErrors": true
+    },
+    {
+      "docId": 309,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Ms. Powell",
+      "value": "Ms. P0wel1",
+      "hasErrors": true
+    },
+    {
+      "docId": 424,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "PHONE",
+      "original": "659.628.6908",
+      "value": "659.628 .6908",
+      "hasErrors": true
+    },
+    {
+      "docId": 492,
+      "docType": "Lab Report",
+      "errorLevel": "extreme",
+      "phiType": "NAME",
+      "original": "Richardson, John",
+      "value": "Richardson, J0hn",
+      "hasErrors": true
+    },
+    {
+      "docId": 63,
+      "docType": "Radiology Report",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Thomas Ann Vasquez",
+      "value": "Thomas Ann Vasquez",
+      "hasErrors": false
     }
   ]
 }

@@ -9,10 +9,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { NameDictionary } from "../dictionaries/NameDictionary";
 import {
@@ -79,6 +76,8 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Pattern 0: Last, First format (both mixed case and ALL CAPS)
+   * STREET-SMART: "Last, First" and "Last, First Middle" formats are highly specific
+   * to person names in medical documents. Don't whitelist based on individual words.
    */
   private detectLastFirstNames(text: string, spans: Span[]): void {
     // Mixed case: Smith, John (with optional space after comma)
@@ -90,7 +89,13 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     while ((match = mixedCasePattern.exec(text)) !== null) {
       const fullName = match[1];
 
-      if (!this.isWhitelisted(fullName) && this.validateLastFirst(fullName)) {
+      // STREET-SMART: For "Last, First [Middle]" format, only check if the ENTIRE
+      // phrase is a medical term, not individual words. "Clark, Patricia Ann" should
+      // NOT be blocked just because "Ann" is in Ann Arbor staging.
+      if (
+        !this.isWhitelistedLastFirst(fullName) &&
+        this.validateLastFirst(fullName)
+      ) {
         const span = new Span({
           text: fullName,
           originalValue: fullName,
@@ -98,7 +103,9 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
           characterEnd: match.index + fullName.length,
           filterType: FilterType.NAME,
           confidence: 0.93,
-          priority: this.getPriority(),
+          // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
+          // "Last, First [Middle]" format is highly specific to person names
+          priority: 150,
           context: this.extractContext(
             text,
             match.index,
@@ -126,15 +133,19 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
       const fullName = match[0];
       const normalized = `${match[1]}, ${match[2]}`;
 
-      if (!this.isWhitelisted(normalized) && this.validateLastFirst(normalized)) {
+      if (
+        !this.isWhitelistedLastFirst(normalized) &&
+        this.validateLastFirst(normalized)
+      ) {
         const span = new Span({
           text: fullName,
           originalValue: fullName,
           characterStart: match.index,
           characterEnd: match.index + fullName.length,
           filterType: FilterType.NAME,
-          confidence: 0.90,
-          priority: this.getPriority(),
+          confidence: 0.9,
+          // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
+          priority: 150,
           context: this.extractContext(
             text,
             match.index,
@@ -644,10 +655,31 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
       const firstName = parts[1].trim();
       // Case-insensitive: accept "Smith, John", "smith, john", "SMITH, JOHN"
       return (
-        /^[A-Za-z][a-zA-Z]{2,}/.test(lastName) && /^[A-Za-z][a-zA-Z]{2,}/.test(firstName)
+        /^[A-Za-z][a-zA-Z]{2,}/.test(lastName) &&
+        /^[A-Za-z][a-zA-Z]{2,}/.test(firstName)
       );
     }
     return false;
+  }
+
+  /**
+   * STREET-SMART: Special whitelist check for "Last, First [Middle]" format.
+   * Only whitelist if the ENTIRE phrase is a known non-person term.
+   * Do NOT whitelist based on individual words like "Ann" (Ann Arbor staging).
+   */
+  private isWhitelistedLastFirst(text: string): boolean {
+    const normalized = text.trim().toLowerCase();
+
+    // Only whitelist complete phrases that are definitely not person names
+    const nonPersonPhrases = [
+      "emergency department",
+      "intensive care",
+      "medical record",
+      "health plan",
+      "ann arbor", // Ann Arbor staging - but only as complete phrase
+    ];
+
+    return nonPersonPhrases.some((phrase) => normalized.includes(phrase));
   }
 
   private isLikelyName(text: string): boolean {
