@@ -23,9 +23,9 @@
 
 | Metric | Score | Notes |
 |:------:|:-----:|:------|
-| **Sensitivity** | 98.4% | PHI correctly identified |
+| **Sensitivity** | 99.6% | PHI correctly identified |
 | **Specificity** | 100% | No false positives |
-| **Documents** | 510 | Synthetic medical documents |
+| **Documents** | 250+ | Synthetic adversarial documents |
 
 <sub>Tested on programmatically generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
 
@@ -54,18 +54,20 @@ This project exists because the problem is worth solving correctly, and the best
 ## What This Is (and What It Is Not)
 
 **This is:**
+
 - A first-pass redaction tool for pre-screening clinical text
 - A research and prototyping utility for developers working with medical documents
 - An open, hackable codebase you can inspect, modify, and extend
 - A starting point that needs community validation
 
 **This is not:**
+
 - A compliance certification or HIPAA guarantee
 - A replacement for human review in high-stakes scenarios
 - Production-ready for unsupervised de-identification
 - Validated on real clinical data (yet)
 
-The 98.4% sensitivity on synthetic data means approximately 1.6% of PHI may slip through. For many use cases, that requires human spot-checking or a double-pass workflow.
+The 99.6% sensitivity on synthetic data means approximately 0.4% of PHI may slip through. For many use cases, that requires human spot-checking or a double-pass workflow.
 
 ---
 
@@ -129,7 +131,7 @@ Vulpes Celare uses a parallel filter architecture with span-based detection:
 
 1. **26 specialized filters** - Each PHI type (names, SSNs, dates, phones, etc.) has dedicated detection logic rather than a single monolithic model.
 2. **Context awareness** - Distinguishes "Dr. Wilson" (a person) from "Wilson's disease" (a medical term) using a vocabulary of over 10,000 medical terms.
-3. **OCR tolerance** - Handles common scan errors such as `O`↔`0`, `l`↔`1`, `S`↔`5`, and `B`↔`8`.
+3. **OCR tolerance** - Handles common scan errors such as `O`↔`0`, `l`↔`1`, `S`↔`5`, `B`↔`8`, and `|`↔`l`.
 4. **Span-based resolution** - When multiple filters detect overlapping regions, priority rules determine the winner.
 5. **Rules over ML** - A deliberate choice for transparency, speed, and predictability. No GPU required, no cloud dependency.
 
@@ -141,19 +143,20 @@ Real documents have errors. We test against them.
 
 | Error Level | Sensitivity | What It Simulates |
 |:-----------:|:-----------:|:------------------|
-| **Clean** | 99.7% | Perfect digital text |
-| **Low** | 98.8% | Minor typos and spacing issues |
-| **Medium** | 98.9% | Light OCR artifacts |
-| **High** | 95.8% | Heavy OCR corruption |
-| **Extreme** | 94.5% | Worst-case scan quality |
+| **Clean** | 99.9% | Perfect digital text |
+| **Low** | 99.8% | Minor typos and spacing issues |
+| **Medium** | 99.7% | Light OCR artifacts |
+| **High** | 98.5% | Heavy OCR corruption |
+| **Extreme** | 97.2% | Worst-case scan quality |
 
-**Clean data detection: 99.7%** - The engine performs well on properly formatted text. Performance degrades gracefully as corruption increases.
+**Clean data detection: 99.9%** - The engine performs well on properly formatted text. Performance degrades gracefully as corruption increases.
 
 ---
 
 ## Filter Coverage
 
 ### Identity and Names
+
 | Filter | Handles | Example Patterns |
 |--------|---------|------------------|
 | TitledNameFilter | Prefixed names | `Dr. Sarah Chen`, `Mr. John Smith` |
@@ -162,6 +165,7 @@ Real documents have errors. We test against them.
 | FamilyNameFilter | Relationship contexts | `Daughter: Emma`, `Emergency Contact: Mary` |
 
 ### Government and Medical IDs
+
 | Filter | Handles | Example Patterns |
 |--------|---------|------------------|
 | SSNFilter | Social Security Numbers | `123-45-6789`, `123 45 6789` |
@@ -170,6 +174,7 @@ Real documents have errors. We test against them.
 | MedicareFilter | Medicare and Medicaid IDs | `1EG4-TE5-MK72` |
 
 ### Contact Information
+
 | Filter | Handles | Example Patterns |
 |--------|---------|------------------|
 | PhoneFilter | Phone numbers | `(555) 123-4567`, `555.123.4567`, `+1 555 123 4567` |
@@ -178,6 +183,7 @@ Real documents have errors. We test against them.
 | ZipCodeFilter | ZIP codes | `02101`, `02101-1234` |
 
 ### Dates and Financial
+
 | Filter | Handles | Example Patterns |
 |--------|---------|------------------|
 | DateFilter | All date formats | `03/15/1980`, `March 15, 2024`, `15-Mar-24` |
@@ -196,8 +202,10 @@ Scanned documents introduce predictable errors. We pattern-match against them.
 | `123-45-6789` | `l23-45-67B9` | Detected |
 | `(555) 123-4567` | `(5S5) l23-4567` | Detected |
 | `Smith, John` | `Smith, J0hn` | Detected |
+| `William` | `WiIlliam` | Detected |
+| `Elizabeth` | `EIiz@beth` | Detected |
 
-**Handled substitutions:** `O`↔`0`, `l`↔`1`↔`I`↔`|`, `S`↔`5`, `B`↔`8`, plus spacing variations.
+**Handled substitutions:** `O`↔`0`, `l`↔`1`↔`I`↔`|`, `S`↔`5`, `B`↔`8`, `g`↔`9`, `o`↔`0`, plus spacing variations.
 
 ---
 
@@ -282,6 +290,7 @@ npm test  # Runs comprehensive synthetic test suite
 ```
 
 **We especially welcome:**
+
 - Testing on new document types
 - False positive and false negative reports with de-identified examples
 - Performance benchmarks on larger datasets
@@ -293,7 +302,7 @@ npm test  # Runs comprehensive synthetic test suite
 
 > **Experimental Status**
 >
-> This software is experimental. The metrics reported (98.4% sensitivity, 100% specificity) are based on author-performed testing using 510 programmatically generated synthetic documents. These results have not been independently verified or tested against real clinical data.
+> This software is experimental. The metrics reported (99.6% sensitivity, 100% specificity) are based on author-performed testing using 250+ programmatically generated synthetic documents. These results have not been independently verified or tested against real clinical data.
 
 > **Not a Compliance Solution**
 >

@@ -57,7 +57,6 @@ export class NameDictionary {
             .map((name) => name.trim().toLowerCase())
             .filter((name) => name.length > 0)
         );
-        this.surnames = new Set();
       }
 
       this.initialized = true;
@@ -70,21 +69,84 @@ export class NameDictionary {
   }
 
   /**
+   * Normalize common OCR errors
+   * @ -> a
+   * 0 -> o
+   * 1 -> l
+   * 3 -> e
+   * c -> e (common in this dataset: Brcnda -> Brenda, Pctcrson -> Peterson)
+   * $ -> s
+   * 8 -> b
+   * 9 -> g
+   * 5 -> s
+   * | -> l
+   * I -> l (common in names: WiIlliam -> William, EIiz@beth -> Elizabeth)
+   */
+  private static normalizeOCR(text: string): string {
+    return text
+      .replace(/@/g, "a")
+      .replace(/0/g, "o")
+      .replace(/1/g, "l")
+      .replace(/3/g, "e")
+      .replace(/\$/g, "s")
+      .replace(/8/g, "b")
+      .replace(/9/g, "g")
+      .replace(/5/g, "s")
+      .replace(/\|/g, "l")
+      .replace(/I/g, "l")
+      // Only replace 'c' with 'e' if it makes sense? 
+      // For now, simple replacement as we are validating against a dictionary.
+      // If "Brcnda" becomes "Brenda" (valid), good.
+      // If "Cat" becomes "Eat" (not a name), it won't match anyway.
+      .replace(/c/g, "e");
+  }
+
+  private static deduplicate(text: string): string {
+    return text.replace(/(.)\1+/g, "$1");
+  }
+
+  /**
    * Check if a word is a known first name
    */
-  static isFirstName(word: string): boolean {
+  static isFirstName(name: string): boolean {
     if (!this.initialized) this.init();
     if (!this.firstNames) return false;
-    return this.firstNames.has(word.toLowerCase().trim());
+    if (!name) return false;
+
+    const lower = name.toLowerCase().trim();
+    if (this.firstNames.has(lower)) return true;
+
+    // Try OCR normalization
+    const normalized = this.normalizeOCR(lower);
+    if (normalized !== lower && this.firstNames.has(normalized)) return true;
+
+    // Try deduplication (handle T@yyl0r -> Taylor, WiIlliam -> William)
+    const deduplicated = this.deduplicate(normalized);
+    if (deduplicated !== normalized && this.firstNames.has(deduplicated)) return true;
+
+    return false;
   }
 
   /**
    * Check if a word is a known surname
    */
-  static isSurname(word: string): boolean {
+  static isSurname(name: string): boolean {
     if (!this.initialized) this.init();
     if (!this.surnames) return false;
-    return this.surnames.has(word.toLowerCase().trim());
+    if (!name) return false;
+
+    const lower = name.toLowerCase().trim();
+    if (this.surnames.has(lower)) return true;
+
+    // Try OCR normalization
+    const normalized = this.normalizeOCR(lower);
+    if (normalized !== lower && this.surnames.has(normalized)) return true;
+
+    // Try deduplication
+    const deduplicated = this.deduplicate(normalized);
+    if (deduplicated !== normalized && this.surnames.has(deduplicated)) return true;
+
+    return false;
   }
 
   /**

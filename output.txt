@@ -1,0 +1,10 @@
+================================================================================
+VULPES CELARE: VIGOROUS ASSESSMENT SUITE
+================================================================================
+Generating 250 adversarial documents...
+Generated 250 documents.
+Loading RedactionEngine...
+Error: Policy not found: C:\Users\docto\Documents\Programs\Vulpes-Celare\redaction\policies\maximum.json
+    at PolicyLoader.loadPolicy (C:\Users\docto\Documents\Programs\Vulpes-Celare\dist\policies\PolicyLoader.js:64:19)
+    at runVigorousAssessment (C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\vigorous-assessment.js:401:39)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

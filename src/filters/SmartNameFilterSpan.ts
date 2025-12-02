@@ -26,6 +26,7 @@ import {
   isExcludedAllCaps,
 } from "./constants/NameFilterConstants";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
+import { MedicalTermDictionary } from "../dictionaries/MedicalTermDictionary";
 
 export class SmartNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -497,8 +498,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    * Pattern 0: Last, First format
    */
   private detectLastFirstNames(text: string, spans: Span[]): void {
+    // OCR-tolerant pattern: Allow digits and symbols in names
+    // Start with [A-Z0-9@$|] to handle 5eb@stian, 8cndd@, $har0n, |sabella
+    // Allow [a-zA-Z0-9@$|] inside to handle M@rtinEz, HArris
     const pattern =
-      /\b([A-Z][a-z]{2,},[ \t]+[A-Z][a-z]{2,}(?:[ \t]+[A-Z][a-z]{2,})?)\b/g;
+      /\b([A-Z0-9@$|][a-zA-Z0-9@$|]{2,},[ \t]+[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/g;
     pattern.lastIndex = 0;
     let match;
 
@@ -533,8 +537,9 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    * Pattern 9: General full names (First Last format)
    */
   private detectGeneralFullNames(text: string, spans: Span[]): void {
+    // OCR-tolerant pattern: Allow digits and symbols in names
     const pattern =
-      /\b([A-Z][a-z]{2,}[ \t]+[A-Z][a-z]{2,}(?:[ \t]+(?:Jr\.?|Sr\.?|II|III|IV))?)\b/g;
+      /\b([A-Z0-9@$|][a-zA-Z0-9@$|]{2,}[ \t]+[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+(?:Jr\.?|Sr\.?|II|III|IV))?)\b/g;
     pattern.lastIndex = 0;
     let match;
 
@@ -577,8 +582,12 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     if (parts.length === 2) {
       const lastName = parts[0].trim();
       const firstName = parts[1].trim();
+      // Relaxed validation for OCR, but MUST contain at least one letter to avoid "123, 456"
+      const hasLetter = /[a-zA-Z]/.test(lastName) && /[a-zA-Z]/.test(firstName);
       return (
-        /^[A-Z][a-z]{2,}/.test(lastName) && /^[A-Z][a-z]{2,}/.test(firstName)
+        hasLetter &&
+        /^[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}/.test(lastName) &&
+        /^[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}/.test(firstName)
       );
     }
     return false;
@@ -629,9 +638,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     if (!words.every((w) => w.length >= 2)) return false;
 
     for (const word of words) {
+      // Relaxed check: Allow OCR characters in words
       if (
         !["Jr", "Jr.", "Sr", "Sr.", "II", "III", "IV"].includes(word) &&
-        !/^[A-Z][a-z]+$/.test(word)
+        !/^[A-Z0-9@$|][a-zA-Z0-9@$|]+$/.test(word)
       ) {
         return false;
       }
@@ -987,14 +997,14 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     }
 
     // Check if it's a medical term
-    if (DocumentVocabulary.isMedicalTerm(normalized)) {
+    if (MedicalTermDictionary.isMedicalTerm(normalized)) {
       return true;
     }
 
     // Check individual words - if ANY word is a medical term, skip entire match
     const words = normalized.split(/[\s,]+/).filter((w) => w.length > 2);
     for (const word of words) {
-      if (baseIsWhitelisted(word) || DocumentVocabulary.isMedicalTerm(word)) {
+      if (baseIsWhitelisted(word) || MedicalTermDictionary.isMedicalTerm(word)) {
         return true;
       }
     }

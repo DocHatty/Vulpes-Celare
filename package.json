@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/copy-assets.js",
     "build:watch": "tsc --watch",
     "test": "node tests/mega-assessment.js",
     "clean": "rm -rf dist",

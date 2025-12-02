@@ -37,12 +37,13 @@ export class SSNFilterSpan extends SpanBasedFilter {
     /\b\d{3}-\d\s+\d-\d{4}\b/g,
     // Space in last group: "197-69-3 156"
     /\b\d{3}-\d{2}-\d\s+\d{3}\b/g,
-    // Missing digit (8 digits with dashes): "197-6-3156"
-    /\b\d{3}-\d{1,2}-\d{3,4}\b/g,
+    // OCR Substitution Errors (B->8, S->5, O->0, Z->2, I->1, g->9, |->1, o->0)
+    // e.g. "5B2-13-2951", "g70-l7-8981", "717-44-2|006", "6I2-12-118", "2o7-16-7B3l"
+    /\b[0-9BOSZIlGg|o]{3}-[0-9BOSZIlGg|o]{2}-[0-9BOSZIlGg|o]{3,4}\b/g,
   ]);
 
   getType(): string {
-    return "SSN";
+    return FilterType.SSN;
   }
 
   getPriority(): number {
@@ -90,15 +91,26 @@ export class SSNFilterSpan extends SpanBasedFilter {
       return true; // Partially masked SSN (first 5 visible)
     }
 
+    // Normalize OCR characters to digits
+    const normalized = ssn
+      .replace(/[B]/g, "8")
+      .replace(/[O]/g, "0")
+      .replace(/[S]/g, "5")
+      .replace(/[Z]/g, "2")
+      .replace(/[Il|]/g, "1")
+      .replace(/[gG]/g, "9");
+
     // Extract just digits for standard SSN validation
-    const digits = ssn.replace(/\D/g, "");
+    const digits = normalized.replace(/\D/g, "");
 
     // Allow 8-9 digits for OCR error tolerance (missing digit scenarios)
-    if (digits.length < 8 || digits.length > 9) return false;
+    if (digits.length < 8 || digits.length > 9) {
+      return false;
+    }
 
-    // Only reject clearly invalid patterns
-    if (digits === "000000000" || digits === "00000000") return false;
-    if (/^(.)\1{7,8}$/.test(digits)) return false; // All same digit
+    // Check for obvious non-SSN patterns (e.g. all same digit)
+    // But allow 000-00-0000 for testing if needed, though usually we'd filter it.
+    // For now, we're permissive to catch PHI.
 
     // For HIPAA compliance, we MUST catch even fake/example SSNs
     // Real validation would reject these, but we need to redact them

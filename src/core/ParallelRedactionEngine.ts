@@ -17,6 +17,7 @@ import { VectorDisambiguationService } from "../services/VectorDisambiguationSer
 import { FieldLabelWhitelist } from "./FieldLabelWhitelist";
 import { FieldContextDetector, FieldContext } from "./FieldContextDetector";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
+import { MedicalTermDictionary } from "../dictionaries/MedicalTermDictionary";
 
 /**
  * Filter execution result with detailed diagnostics
@@ -429,13 +430,30 @@ export class ParallelRedactionEngine {
    */
   private static postFilterSpans(spans: Span[], text: string): Span[] {
     return spans.filter((span) => {
+      const name = span.text;
+      const nameLower = name.toLowerCase();
+
+      // Filter DEVICE/PHONE false positives
+      if (span.filterType === FilterType.DEVICE || span.filterType === FilterType.PHONE) {
+        // "Call Button: 555" - common false positive
+        if (nameLower.includes("call button") || nameLower.includes("room:") || nameLower.includes("bed:")) {
+          RadiologyLogger.info(
+            "REDACTION",
+            `Post-filter removed non-PHI DEVICE/PHONE: "${name}"`,
+          );
+          return false;
+        }
+        // "Serial: 8849-221-00" - if user considers this false positive (generic device)
+        // We can't easily distinguish generic vs specific without more context, 
+        // but if it's "Device Report" and looks like a model number...
+        // For now, we'll keep it unless it's explicitly "Call Button" or similar.
+      }
+
       // Only post-filter NAME spans
       if (span.filterType !== "NAME") {
         return true;
       }
 
-      const name = span.text;
-      const nameLower = name.toLowerCase();
       const nameUpper = name.toUpperCase();
 
       // Filter 1: All caps section headings (NOT patient names)
@@ -1286,8 +1304,26 @@ export class ParallelRedactionEngine {
 
     return spans.filter((span) => {
       // Only filter NAME type - other types are more precise
+      // BUT we need to check what type "Invasive" and "HTN" are being detected as.
+
+
       if (span.filterType !== FilterType.NAME) {
         return true;
+      }
+
+      // STREET-SMART: Check if the span is composed ENTIRELY of medical terms.
+      // This must happen BEFORE the priority check because "HTN, HLD" or "Invasive Ductal Carcinoma"
+      // might be detected as high-priority names (Last, First format).
+      const phraseWords = span.text.split(/[\s,]+/).filter(w => w.length > 1);
+      if (phraseWords.length > 0) {
+        const allMedical = phraseWords.every(word =>
+          DocumentVocabulary.isMedicalTerm(word) || MedicalTermDictionary.isMedicalTerm(word)
+        );
+
+        if (allMedical) {
+
+          return false; // Filter it out (keep it visible)
+        }
       }
 
       // STREET-SMART: High priority spans (150+) are context-confirmed names
@@ -1343,24 +1379,37 @@ export class ParallelRedactionEngine {
       // This catches phrases like "Hypothyroidism, Migraines" or "Fundal Height"
       // where each word is a medical term but together they look like "Last, First"
       const words = text.split(/[\s,]+/).filter((w) => w.length > 2);
+
+      // Check full text first
+      if (MedicalTermDictionary.isMedicalTerm(text)) {
+
+        return false;
+      }
+
+
+
       for (const word of words) {
         // Check whitelist (case-insensitive medical terms, medications, etc.)
         if (isWhitelisted(word)) {
-          RadiologyLogger.debug(
-            "ParallelRedactionEngine",
-            `[Whitelist-Word] Filtering NAME containing whitelisted word "${word}": "${text}"`,
-          );
-          return false;
-        }
-        // Check DocumentVocabulary for medical terms
-        if (DocumentVocabulary.isMedicalTerm(word)) {
-          RadiologyLogger.debug(
-            "ParallelRedactionEngine",
-            `[MedicalTerm-Word] Filtering NAME containing medical term "${word}": "${text}"`,
-          );
+
           return false;
         }
       }
+      // STREET-SMART: Only filter out if ALL significant words are medical terms.
+      // This prevents leaks like "Carlos Walker" (where Walker is medical but Carlos is not).
+      // But allows "Right Breast" (both medical) or "HTN, HLD" (both medical).
+
+      const significantWords = words.filter(w => w.length > 2);
+      if (significantWords.length > 0) {
+        const allMedical = significantWords.every(word =>
+          DocumentVocabulary.isMedicalTerm(word) || MedicalTermDictionary.isMedicalTerm(word)
+        );
+
+        if (allMedical) {
+          console.log(`[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "${span.text}"`);
+          return false; // Filter it out (keep it visible)
+        }
+      } // Check if this is a known non-PHI term
 
       // Check if this is a known non-PHI term
       if (DocumentVocabulary.isNonPHI(text)) {

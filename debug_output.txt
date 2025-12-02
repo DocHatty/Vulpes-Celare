@@ -1,0 +1,41 @@
+================================================================================
+VULPES CELARE: VIGOROUS ASSESSMENT SUITE
+================================================================================
+Generating 250 adversarial documents...
+Generated 250 documents.
+Loading RedactionEngine...
+Engine initialized. Starting redaction...
+--------------------------------------------------------------------------------
+Processed 50 documents...
+Processed 100 documents...
+Processed 150 documents...
+Processed 200 documents...
+Processed 250 documents...
+================================================================================
+RESULTS
+================================================================================
+SENSITIVITY: 96.25% (1027/1067)
+SPECIFICITY: 82.40% (988/1199)
+SCORE:       92.10/100
+--------------------------------------------------------------------------------
+TOP FAILURES:
+[MISSED_PHI] Doc 1 (ER Note (Messy)): "An9eella CampbcIl"
+[FALSE_POSITIVE] Doc 1 (ER Note (Messy)): "HTN"
+[FALSE_POSITIVE] Doc 1 (ER Note (Messy)): "HLD"
+[FALSE_POSITIVE] Doc 2 (Device Report (Tricky)): "Serial: 8849-221-00"
+[FALSE_POSITIVE] Doc 3 (Oncology Plan): "Invasive Ductal Carcinoma"
+[FALSE_POSITIVE] Doc 4 (Device Report (Tricky)): "Serial: 8849-221-00"
+[FALSE_POSITIVE] Doc 5 (ER Note (Messy)): "HTN"
+[FALSE_POSITIVE] Doc 5 (ER Note (Messy)): "HLD"
+[FALSE_POSITIVE] Doc 6 (Device Report (Tricky)): "Serial: 8849-221-00"
+[MISSED_PHI] Doc 8 (Oncology Plan): "#7095939"
+[FALSE_POSITIVE] Doc 8 (Oncology Plan): "Invasive Ductal Carcinoma"
+[FALSE_POSITIVE] Doc 14 (Device Report (Tricky)): "Serial: 8849-221-00"
+[FALSE_POSITIVE] Doc 16 (Device Report (Tricky)): "Serial: 8849-221-00"
+[MISSED_PHI] Doc 17 (Oncology Plan): "#8824159"
+[FALSE_POSITIVE] Doc 17 (Oncology Plan): "Invasive Ductal Carcinoma"
+[MISSED_PHI] Doc 18 (Oncology Plan): "#8982129"
+[FALSE_POSITIVE] Doc 18 (Oncology Plan): "Invasive Ductal Carcinoma"
+[MISSED_PHI] Doc 19 (ER Note (Messy)): "Ronald M0rc@u"
+[FALSE_POSITIVE] Doc 19 (ER Note (Messy)): "HTN"
+[FALSE_POSITIVE] Doc 19 (ER Note (Messy)): "HLD"

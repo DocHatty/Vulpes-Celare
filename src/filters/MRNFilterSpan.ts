@@ -22,42 +22,42 @@ export class MRNFilterSpan extends SpanBasedFilter {
     {
       // Pattern 1: MRN/MR with various separators
       regex:
-        /\b(?:MRN?|Medical\s+Record(?:\s+Number)?)(?:\s*\([^)]+\))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
+        /\b(?:MRN?|Medical\s+Record(?:\s+Number)?)(?:\s*\([^)]+\))?\s*(?:[:#]\s*)?#?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
       description: "MRN or Medical Record Number",
     },
     {
       // Pattern 2: Chart Number
       regex:
-        /\b(?:Chart)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,11})\b/gi,
+        /\b(?:Chart)(?:\s+(?:Number|No|#))?\s*(?:[:#]\s*)?#?\s*([A-Z0-9][A-Z0-9-]{4,11})\b/gi,
       description: "Chart number",
     },
     {
       // Pattern 3: Record Number (generic)
       regex:
-        /\b(?:Record)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,11})\b/gi,
+        /\b(?:Record)(?:\s+(?:Number|No|#))?\s*(?:[:#]\s*)?#?\s*([A-Z0-9][A-Z0-9-]{4,11})\b/gi,
       description: "Generic record number",
     },
     {
       // Pattern 4: Patient ID / Patient Number
       regex:
-        /\b(?:Patient)(?:\s+(?:ID|Number|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
+        /\b(?:Patient)(?:\s+(?:ID|Number|#))?\s*(?:[:#]\s*)?#?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
       description: "Patient ID or number",
     },
     {
       // Pattern 5: FILE # (common in radiology/medical records)
-      regex: /\b(?:FILE|File)\s*[#:]\s*(\d{4,14})\b/gi,
+      regex: /\b(?:FILE|File)\s*(?:[:#]\s*)?#?\s*(\d{4,14})\b/gi,
       description: "File number",
     },
     {
       // Pattern 6: Case Number / Case #
       regex:
-        /\b(?:Case)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
+        /\b(?:Case)(?:\s+(?:Number|No|#))?\s*(?:[:#]\s*)?#?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
       description: "Case number",
     },
     {
       // Pattern 7: Accession Number (radiology/lab)
       regex:
-        /\b(?:Accession)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
+        /\b(?:Accession)(?:\s+(?:Number|No|#))?\s*(?:[:#]\s*)?#?\s*([A-Z0-9][A-Z0-9-]{4,14})\b/gi,
       description: "Accession number",
     },
     {
@@ -66,6 +66,14 @@ export class MRNFilterSpan extends SpanBasedFilter {
       regex:
         /\b((?:PAT|PT|MRN|PATIENT|MR|REC|CHART|CASE|ACC)_[A-Z0-9_]{4,20})\b/gi,
       description: "Underscore-formatted patient ID",
+    },
+    {
+      // Pattern 9: Standalone Hash ID (e.g. #1234567)
+      // Very common in medical notes for MRN or Account Number
+      // Must be 6-12 digits to avoid matching list items (#1, #2) or years (#2024)
+      // Use (?:^|[\s:;,\(\[]) instead of \b because # is not a word char
+      regex: /(?:^|[\s:;,\(\[])#(\d{6,12})\b/g,
+      description: "Standalone Hash ID",
     },
   ];
 

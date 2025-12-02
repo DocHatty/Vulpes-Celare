@@ -22,6 +22,7 @@ import {
   isExcludedAllCaps,
 } from "./constants/NameFilterConstants";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
+import { MedicalTermDictionary } from "../dictionaries/MedicalTermDictionary";
 
 export class FormattedNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -670,6 +671,17 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
   private isWhitelistedLastFirst(text: string): boolean {
     const normalized = text.trim().toLowerCase();
 
+    // STREET-SMART: Check if ALL words are medical terms.
+    // This prevents "Invasive Ductal Carcinoma" or "Hypertension, Hyperlipidemia"
+    // from being detected as "Last, First" names.
+    const words = text.split(/[\s,]+/).filter((w) => w.length > 1);
+    if (words.length > 0) {
+      const allMedical = words.every(word =>
+        MedicalTermDictionary.isMedicalTerm(word)
+      );
+      if (allMedical) return true;
+    }
+
     // Only whitelist complete phrases that are definitely not person names
     const nonPersonPhrases = [
       "emergency department",
@@ -786,6 +798,17 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     // STREET-SMART: For ALL CAPS "LAST, FIRST" format names, don't whitelist
     // based on individual word medical term matching. These are patient names.
     if (isAllCapsLastFirst) {
+      // STREET-SMART: For ALL CAPS "LAST, FIRST" format, we usually assume it's a patient name.
+      // HOWEVER, if ALL parts of the "name" are medical terms (e.g. "HTN, HLD" or "INVASIVE, DUCTAL"),
+      // then it is likely a list of conditions, not a person.
+
+      const words = normalized.split(/[\s,]+/).filter((w) => w.length > 1);
+      const allWordsAreMedical = words.every(word => MedicalTermDictionary.isMedicalTerm(word));
+
+      if (allWordsAreMedical && words.length > 0) {
+        return true; // Whitelist it (it's a list of medical terms)
+      }
+
       // Only whitelist if the ENTIRE name is a known non-person structure term
       const structureTerms = [
         "emergency department",
@@ -798,14 +821,14 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     }
 
     // Check if it's a medical term
-    if (DocumentVocabulary.isMedicalTerm(normalized)) {
+    if (MedicalTermDictionary.isMedicalTerm(normalized)) {
       return true;
     }
 
     // Check individual words - if ANY word is a medical term, skip entire match
     const words = normalized.split(/[\s,]+/).filter((w) => w.length > 2);
     for (const word of words) {
-      if (baseIsWhitelisted(word) || DocumentVocabulary.isMedicalTerm(word)) {
+      if (baseIsWhitelisted(word) || MedicalTermDictionary.isMedicalTerm(word)) {
         return true;
       }
     }
