@@ -27,7 +27,7 @@
 | **Specificity** | 100% | No false positives |
 | **Documents** | 510 | Synthetic medical documents |
 
-<sub>Tested on programmatically-generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
+<sub>Tested on programmatically generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
 
 </div>
 
@@ -35,27 +35,27 @@
 
 ## Motivation
 
-Clinical text--reports, consult notes, care coordination messages--is invaluable for education, research, and tool development. Yet safely sharing it remains a persistent challenge. Existing de-identification solutions tend to be:
+Clinical text—reports, consult notes, care coordination messages—is invaluable for education, research, and tool development. Yet safely sharing it remains a persistent challenge. Existing de-identification solutions tend to be:
 
-- **Opaque** -- black-box SaaS offerings where you can't inspect what's happening to your data
-- **Generic** -- not tuned to the specific vocabulary and patterns of medical documentation
-- **Difficult to integrate** -- heavyweight systems that don't fit modern development workflows
+- **Opaque** — Black-box SaaS offerings where you cannot inspect what is happening to your data
+- **Generic** — Not tuned to the specific vocabulary and patterns of medical documentation
+- **Difficult to integrate** — Heavyweight systems that do not fit modern development workflows
 
 Vulpes Celare is an attempt to build something different: an open, inspectable redaction engine that is:
 
-- **Tailored to US healthcare formats** -- SSNs, MRNs, provider credentials, the "LASTNAME, FIRSTNAME" conventions
-- **Written in TypeScript** -- easy to embed in Node.js pipelines, APIs, or browser-based tools
-- **Explicit about its limitations** -- experimental status, synthetic-only testing, and the need for community validation
+- **Tailored to US healthcare formats** — SSNs, MRNs, provider credentials, and the "LASTNAME, FIRSTNAME" conventions
+- **Written in TypeScript** — Easy to embed in Node.js pipelines, APIs, or browser-based tools
+- **Explicit about its limitations** — Experimental status, synthetic-only testing, and the need for community validation
 
 This project exists because the problem is worth solving correctly, and the best way to get there is through transparency and collaboration.
 
 ---
 
-## What This Is (And Isn't)
+## What This Is (and What It Is Not)
 
 **This is:**
 - A first-pass redaction tool for pre-screening clinical text
-- A research/prototyping utility for developers working with medical documents
+- A research and prototyping utility for developers working with medical documents
 - An open, hackable codebase you can inspect, modify, and extend
 - A starting point that needs community validation
 
@@ -65,7 +65,7 @@ This project exists because the problem is worth solving correctly, and the best
 - Production-ready for unsupervised de-identification
 - Validated on real clinical data (yet)
 
-The 98.4% sensitivity on synthetic data means ~1.6% of PHI may slip through. For many use cases, that requires human spot-checking or a double-pass workflow.
+The 98.4% sensitivity on synthetic data means approximately 1.6% of PHI may slip through. For many use cases, that requires human spot-checking or a double-pass workflow.
 
 ---
 
@@ -81,9 +81,9 @@ const redacted = await VulpesCelare.redact(clinicalNote);
 const engine = new VulpesCelare();
 const result = await engine.process(clinicalNote);
 
-console.log(result.text);           // Redacted document
-console.log(result.redactionCount); // PHI elements found
-console.log(result.executionTimeMs);// Processing time (~2-3ms/doc)
+console.log(result.text);            // Redacted document
+console.log(result.redactionCount);  // PHI elements found
+console.log(result.executionTimeMs); // Processing time (~2–3ms per document)
 ```
 
 ---
@@ -101,7 +101,7 @@ Vulpes Celare uses a parallel filter architecture with span-based detection:
                                    ▼
                      ┌─────────────────────────┐
                      │ ParallelRedactionEngine │
-                     │   (26 Concurrent Filters)│
+                     │  (26 Concurrent Filters)│
                      └─────────────┬───────────┘
                                    │
            ┌───────────┬───────────┼───────────┬───────────┐
@@ -127,11 +127,11 @@ Vulpes Celare uses a parallel filter architecture with span-based detection:
 
 **Key design decisions:**
 
-1. **26 specialized filters** -- Each PHI type (names, SSNs, dates, phones, etc.) has dedicated detection logic rather than a single monolithic model
-2. **Context awareness** -- Distinguishes "Dr. Wilson" (person) from "Wilson's disease" (medical term) using a 10,000+ term medical vocabulary
-3. **OCR tolerance** -- Handles common scan errors like `O`↔`0`, `l`↔`1`, `S`↔`5`, `B`↔`8`
-4. **Span-based resolution** -- When multiple filters detect overlapping regions, priority rules determine the winner
-5. **Rules over ML** -- Deliberate choice for transparency, speed, and predictability (no GPU required, no cloud dependency)
+1. **26 specialized filters** — Each PHI type (names, SSNs, dates, phones, etc.) has dedicated detection logic rather than a single monolithic model.
+2. **Context awareness** — Distinguishes "Dr. Wilson" (a person) from "Wilson's disease" (a medical term) using a vocabulary of over 10,000 medical terms.
+3. **OCR tolerance** — Handles common scan errors such as `O`↔`0`, `l`↔`1`, `S`↔`5`, and `B`↔`8`.
+4. **Span-based resolution** — When multiple filters detect overlapping regions, priority rules determine the winner.
+5. **Rules over ML** — A deliberate choice for transparency, speed, and predictability. No GPU required, no cloud dependency.
 
 ---
 
@@ -142,18 +142,18 @@ Real documents have errors. We test against them.
 | Error Level | Sensitivity | What It Simulates |
 |:-----------:|:-----------:|:------------------|
 | **Clean** | 99.7% | Perfect digital text |
-| **Low** | 98.8% | Minor typos, spacing issues |
+| **Low** | 98.8% | Minor typos and spacing issues |
 | **Medium** | 98.9% | Light OCR artifacts |
 | **High** | 95.8% | Heavy OCR corruption |
 | **Extreme** | 94.5% | Worst-case scan quality |
 
-**Clean data detection: 99.7%** -- The engine performs well on properly formatted text. Performance degrades gracefully as corruption increases.
+**Clean data detection: 99.7%** — The engine performs well on properly formatted text. Performance degrades gracefully as corruption increases.
 
 ---
 
 ## Filter Coverage
 
-### Identity & Names
+### Identity and Names
 | Filter | Handles | Example Patterns |
 |--------|---------|------------------|
 | TitledNameFilter | Prefixed names | `Dr. Sarah Chen`, `Mr. John Smith` |
@@ -161,13 +161,13 @@ Real documents have errors. We test against them.
 | CredentialNameFilter | Names with suffixes | `Robert Williams, MD, PhD`, `Jane Doe, RN` |
 | FamilyNameFilter | Relationship contexts | `Daughter: Emma`, `Emergency Contact: Mary` |
 
-### Government & Medical IDs
+### Government and Medical IDs
 | Filter | Handles | Example Patterns |
 |--------|---------|------------------|
 | SSNFilter | Social Security Numbers | `123-45-6789`, `123 45 6789` |
 | MRNFilter | Medical Record Numbers | `MRN: 7834921`, `Chart #12345` |
 | NPIFilter | Provider NPIs | `NPI: 1234567890` |
-| MedicareFilter | Medicare/Medicaid IDs | `1EG4-TE5-MK72` |
+| MedicareFilter | Medicare and Medicaid IDs | `1EG4-TE5-MK72` |
 
 ### Contact Information
 | Filter | Handles | Example Patterns |
@@ -177,18 +177,18 @@ Real documents have errors. We test against them.
 | AddressFilter | Street addresses | `123 Main St, Boston, MA` |
 | ZipCodeFilter | ZIP codes | `02101`, `02101-1234` |
 
-### Dates & Financial
+### Dates and Financial
 | Filter | Handles | Example Patterns |
 |--------|---------|------------------|
 | DateFilter | All date formats | `03/15/1980`, `March 15, 2024`, `15-Mar-24` |
-| AgeOver89Filter | Ages 90+ (HIPAA requirement) | `92-year-old`, `age: 95` |
+| AgeOver89Filter | Ages 90 and above (HIPAA requirement) | `92-year-old`, `age: 95` |
 | CreditCardFilter | Credit cards (Luhn validated) | `4111-1111-1111-1111` |
 
 ---
 
 ## OCR Error Handling
 
-Scanned documents introduce predictable errors. We pattern-match against them:
+Scanned documents introduce predictable errors. We pattern-match against them.
 
 | Original | Corrupted Version | Status |
 |:--------:|:-----------------:|:------:|
@@ -221,7 +221,7 @@ app.use('/api/notes', async (req, res, next) => {
 ```typescript
 const engine = new VulpesCelare();
 const results = await engine.processBatch(documents);
-// Average: 2-3ms per document
+// Average: 2–3ms per document
 ```
 
 ### With Human Review Workflow
@@ -247,12 +247,12 @@ if (result.redactionCount > 0) {
 
 | Area | Limitation |
 |------|------------|
-| **Language** | English only, US medical terminology |
+| **Language** | English only; US medical terminology |
 | **Formats** | US-centric patterns (SSN, phone, address) |
-| **Validation** | Synthetic data only -- no real EHR testing |
-| **Edge Cases** | Names with heavy OCR corruption (`Char1e5` for `Charles`) |
-| **Scale** | Not tested on 100K+ document sets |
-| **Ambiguity** | Some common words as names may be missed |
+| **Validation** | Synthetic data only; no real EHR testing |
+| **Edge Cases** | Names with heavy OCR corruption (e.g., `Char1e5` for `Charles`) |
+| **Scale** | Not tested on datasets exceeding 100,000 documents |
+| **Ambiguity** | Some common words used as names may be missed |
 
 ---
 
@@ -260,30 +260,30 @@ if (result.redactionCount > 0) {
 
 | Tool | Approach | Pros | Cons |
 |------|----------|------|------|
-| **Vulpes Celare** | Rules + vocabulary | Fast, local, inspectable, OCR-tolerant | Synthetic-only validation, US-focused |
-| **Microsoft Presidio** | Rules + ML | Mature, multi-language | Heavier setup, less medical-specific |
-| **AWS Comprehend Medical** | Cloud ML | High accuracy, maintained | Requires BAA, sends data externally |
-| **Google DLP** | Cloud ML | Broad coverage | Cost, cloud dependency |
+| **Vulpes Celare** | Rules + vocabulary | Fast, local, inspectable, OCR-tolerant | Synthetic-only validation; US-focused |
+| **Microsoft Presidio** | Rules + ML | Mature; multi-language support | Heavier setup; less medical-specific |
+| **AWS Comprehend Medical** | Cloud ML | High accuracy; actively maintained | Requires BAA; sends data externally |
+| **Google Cloud DLP** | Cloud ML | Broad coverage | Cost; cloud dependency |
 
 Vulpes Celare occupies a specific niche: **local-first, TypeScript-native, healthcare-specific, and fully inspectable**.
 
 ---
 
-## Validation & Testing
+## Validation and Testing
 
 We encourage independent validation. To help test:
 
 ```bash
-git clone https://github.com/your-repo/vulpes-celare
+git clone https://github.com/anthropics/vulpes-celare
 cd vulpes-celare
 npm install
 npm run build
 npm test  # Runs comprehensive synthetic test suite
 ```
 
-**We especially want:**
+**We especially welcome:**
 - Testing on new document types
-- False positive/negative reports with (de-identified) examples
+- False positive and false negative reports with de-identified examples
 - Performance benchmarks on larger datasets
 - International format contributions
 
@@ -293,7 +293,7 @@ npm test  # Runs comprehensive synthetic test suite
 
 > **Experimental Status**
 >
-> This software is experimental. The metrics reported (98.4% sensitivity, 100% specificity) are based on author-performed testing using 510 programmatically-generated synthetic documents. These results have not been independently verified or tested against real clinical data.
+> This software is experimental. The metrics reported (98.4% sensitivity, 100% specificity) are based on author-performed testing using 510 programmatically generated synthetic documents. These results have not been independently verified or tested against real clinical data.
 
 > **Not a Compliance Solution**
 >
@@ -307,17 +307,17 @@ npm test  # Runs comprehensive synthetic test suite
 
 ## License
 
-Source Available License -- See [LICENSE](LICENSE) for details.
+Source Available License — See [LICENSE](LICENSE) for details.
 
-- **Personal & Educational**: Permitted
-- **Research & Academic**: Permitted  
-- **Commercial**: Requires written permission
+- **Personal and Educational Use:** Permitted
+- **Research and Academic Use:** Permitted  
+- **Commercial Use:** Requires written permission
 
 ---
 
 ## Contributing
 
-Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
