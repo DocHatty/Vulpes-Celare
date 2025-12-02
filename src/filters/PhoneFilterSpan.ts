@@ -8,10 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 export class PhoneFilterSpan extends SpanBasedFilter {
@@ -82,6 +79,35 @@ export class PhoneFilterSpan extends SpanBasedFilter {
     // Dot-prefix format with dot separators: .509. 988.8586
     // This catches OCR-corrupted or unconventionally formatted phones
     /\.?\d{3}\.?\s*\d{3}\.\d{4}\b/g,
+
+    // ===== OCR LETTER SUBSTITUTION =====
+    // S/s→5, O→0, l→1 in phone numbers: "+1 S06 367 1377", "S98-921-8771"
+    // Pattern with S/s for 5: (S##) ###-####, S##-###-####, 8s0-2s2-9494
+    /\(?[Ss5]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
+    // Pattern with l or I for 1: "534 385 50l1"
+    /\d{3}[-.\s]?\d{3}[-.\s]?\d{2}[lI1]\d\b/gi,
+    // Missing area code digit: "(50) 480-1986" should still be caught
+    /\(\d{2}\)\s*\d{3}[-.\s]?\d{4}\b/g,
+    // Space in middle of exchange: "433-88 0-6865", "380.7 29.5107"
+    /\d{3}[-.\s]?\d{1,2}\s+\d{1,2}[-.\s]?\d{4}\b/g,
+    // S/s in middle position: "588 S76 3513", "949 34B 67S2"
+    /\d{3}[-.\s]?[Ss5]\d{2}[-.\s]?\d{4}\b/g,
+    // B→8 in middle position: "682-3B0-6989"
+    /\d{3}[-.\s]?\d?[B8]\d[-.\s]?\d{4}\b/gi,
+    // Space after dash: "926- 151-4377"
+    /\d{3}-\s+\d{3}[-.\s]?\d{4}\b/g,
+    // Double space in middle: "+1 644  510 6562"
+    /\d{3}\s{2,}\d{3}[-.\s]?\d{4}\b/g,
+    // Mixed lowercase s substitution throughout: "8s0-2s2-9494"
+    /[0-9s]{3}[-.\s]?[0-9s]{3}[-.\s]?[0-9s]{4}\b/g,
+
+    // ===== COMPREHENSIVE OCR CHARACTER SUBSTITUTION =====
+    // Common OCR mistakes: O→0, l→1, |→1, I→1, B→8, S→5, b→6, s→5, o→0
+    // Matches: "5B3 798 6I77" for "583 798 6177", "931 9|7 7367" for "931 917 7367"
+    // Phone with | for 1: "931 9|7 7367", "299.S65.|7B7"
+    /[0-9OoIlSsBb|]{3}[-.\s]?[0-9OoIlSsBb|]{3}[-.\s]?[0-9OoIlSsBb|]{4}\b/gi,
+    // With area code variations
+    /\(?[0-9OoSsBb]{3}\)?[-.\s]?[0-9OoIlSsBb|]{3}[-.\s]?[0-9OoIlSsBb|]{4}\b/gi,
   ];
 
   /**

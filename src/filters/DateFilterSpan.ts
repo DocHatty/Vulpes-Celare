@@ -9,10 +9,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 export class DateFilterSpan extends SpanBasedFilter {
@@ -62,11 +59,46 @@ export class DateFilterSpan extends SpanBasedFilter {
     /\b(0?[1-9]|1[0-2])[-/](0?[1-9]|[12]\d|3[01])[-/]\d{2}\b/g,
 
     // ===== OCR ERROR TOLERANT FORMATS =====
-    // OCR often substitutes: l for 1, O for 0, I for 1
-    // MM/DD/YYYY with OCR errors (l→1, O→0, I→1)
-    /\b([O0]?[1-9lI]|[1lI][O0-2])[-/]([O0]?[1-9lI]|[1-2lI][O0-9lI]|3[O01lI])[-/]([1lI]9|2[O0])[O0-9lI]{2}\b/g,
+    // OCR often substitutes: l for 1, O for 0, I for 1, | for 1, o for 0
+    // MM/DD/YYYY with OCR errors (l→1, O→0, I→1, |→1, o→0)
+    /\b([Oo0]?[1-9lI|]|[1lI|][Oo0-2])[-/]([Oo0]?[1-9lI|]|[1-2lI|][Oo0-9lI|]|3[Oo01lI|])[-/]([1lI|]9|2[Oo0])[Oo0-9lI|]{2}\b/g,
     // MM/DD/YY with OCR errors
-    /\b([O0]?[1-9lI]|[1lI][O0-2])[-/]([O0]?[1-9lI]|[1-2lI][O0-9lI]|3[O01lI])[-/][O0-9lI]{2}\b/g,
+    /\b([Oo0]?[1-9lI|]|[1lI|][Oo0-2])[-/]([Oo0]?[1-9lI|]|[1-2lI|][Oo0-9lI|]|3[Oo01lI|])[-/][Oo0-9lI|]{2}\b/g,
+
+    // ===== SPACE-TOLERANT OCR FORMATS =====
+    // Handles accidental spaces from OCR: "10/24 /1961", "03/2 5/1985", "07 /21/1956"
+    /\b\d{1,2}\s*[-/]\s*\d{1,2}\s*[-/]\s*(?:19|20)\d{2}\b/g,
+    // Extra digit from OCR scan errors: "055/13/1996", "011/20/1963", "033/25/1985"
+    /\b0\d{2}[-/]\d{1,2}[-/](?:19|20)\d{2}\b/g,
+    /\b\d{1,2}[-/]0\d{2}[-/](?:19|20)\d{2}\b/g,
+    // Swapped digits at start: "60/25/1959" (should be 06/25), "70/14/1968" (should be 07/14)
+    /\b[1-9]0[-/]\d{1,2}[-/](?:19|20)\d{2}\b/g,
+    // Missing separator (digits run together): "05/122019", "07/162007"
+    /\b\d{1,2}[-/]\d{2,3}[-/]?\d{4}\b/g,
+    // Misplaced separator: "04/191/985"
+    /\b\d{1,2}[-/]\d{2,3}[-/]\d{3}\b/g,
+    // B→8, L→1 OCR errors: "0B/17/2013", "08/25/L970"
+    /\b[0Oo][B8][-/]\d{1,2}[-/](?:19|20|[Ll]9|[Ll]0)\d{2}\b/gi,
+    /\b\d{1,2}[-/]\d{1,2}[-/](?:[Ll]9|[Ll]0)\d{2}\b/g,
+    // Double separator: "01/24//1988"
+    /\b\d{1,2}[-/]{1,2}\d{1,2}[-/]{1,2}(?:19|20)\d{2}\b/g,
+    // Extra digit in middle: "111/3/1960", "08/O33/1968"
+    /\b\d{2,3}[-/]\d{1,3}[-/](?:19|20)\d{2}\b/g,
+    // Combined OCR: space + letter sub like "O8/O6/196 4"
+    /\b[Oo0][0-9B8][-/][Oo0][0-9][-/]\d{2,3}\s*\d{1,2}\b/g,
+    // Space in year: "10/02/1 997", "03/03/1 961"
+    /\b\d{1,2}[-/]\d{1,2}[-/]\d{1,2}\s+\d{2,3}\b/g,
+    // BB for 88 in year: "01/06/19BB"
+    /\b\d{1,2}[-/]\d{1,2}[-/]19[B8]{2}\b/gi,
+
+    // ===== COMPREHENSIVE OCR CHARACTER SUBSTITUTION =====
+    // Common OCR mistakes: O→0, l→1, |→1, I→1, B→8, S→5, b→6, s→5, o→0
+    // Pattern: Any date-like structure with these substitutions
+    // Matches: "O9/l1/|9B6" for "09/11/1986", "o7/|B/|96B" for "07/18/1968"
+    /\b[O0o][0-9lI|SsBb][-/][O0olI|][0-9lI|SsBb][-/][|lI1][9][O0oSsBb][0-9lI|SsBb]\b/gi,
+    /\b[O0o]?[0-9lI|][-/][O0o]?[0-9lI|][-/][|lI1][9][0-9SsBbO0o]{2}\b/gi,
+    // More permissive: any mix of digits and OCR-confusable chars in date positions
+    /\b[0-9OoIlSsBb|]{1,2}[-/][0-9OoIlSsBb|]{1,2}[-/][0-9OoIlSsBb|]{4}\b/gi,
 
     // ===== ISO FORMAT =====
     // YYYY/MM/DD or YYYY-MM-DD

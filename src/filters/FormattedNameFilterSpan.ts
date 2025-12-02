@@ -81,9 +81,9 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
    * Pattern 0: Last, First format (both mixed case and ALL CAPS)
    */
   private detectLastFirstNames(text: string, spans: Span[]): void {
-    // Mixed case: Smith, John
+    // Mixed case: Smith, John (with optional space after comma)
     const mixedCasePattern =
-      /\b([A-Z][a-z]{2,},[ \t]+[A-Z][a-z]{2,}(?:[ \t]+[A-Z][a-z]{2,})?)\b/g;
+      /\b([A-Z][a-z]{2,},[ \t]*[A-Z][a-z]{2,}(?:[ \t]+[A-Z][a-z]{2,})?)\b/g;
     mixedCasePattern.lastIndex = 0;
     let match;
 
@@ -108,6 +108,42 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
           replacement: null,
           salt: null,
           pattern: "Last, First format",
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+        spans.push(span);
+      }
+    }
+
+    // OCR variant: comma with space before it "Garcia ,Charles"
+    const spaceBeforeCommaPattern =
+      /\b([A-Z][a-z]{2,})\s*,\s*([A-Z][a-z]{2,}(?:[ \t]+[A-Z][a-z]{2,})?)\b/g;
+    spaceBeforeCommaPattern.lastIndex = 0;
+
+    while ((match = spaceBeforeCommaPattern.exec(text)) !== null) {
+      const fullName = match[0];
+      const normalized = `${match[1]}, ${match[2]}`;
+
+      if (!this.isWhitelisted(normalized) && this.validateLastFirst(normalized)) {
+        const span = new Span({
+          text: fullName,
+          originalValue: fullName,
+          characterStart: match.index,
+          characterEnd: match.index + fullName.length,
+          filterType: FilterType.NAME,
+          confidence: 0.90,
+          priority: this.getPriority(),
+          context: this.extractContext(
+            text,
+            match.index,
+            match.index + fullName.length,
+          ),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: "Last, First format (spacing variant)",
           applied: false,
           ignored: false,
           ambiguousWith: [],
@@ -606,8 +642,9 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     if (parts.length === 2) {
       const lastName = parts[0].trim();
       const firstName = parts[1].trim();
+      // Case-insensitive: accept "Smith, John", "smith, john", "SMITH, JOHN"
       return (
-        /^[A-Z][a-z]{2,}/.test(lastName) && /^[A-Z][a-z]{2,}/.test(firstName)
+        /^[A-Za-z][a-zA-Z]{2,}/.test(lastName) && /^[A-Za-z][a-zA-Z]{2,}/.test(firstName)
       );
     }
     return false;

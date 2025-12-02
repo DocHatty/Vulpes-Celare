@@ -28,6 +28,17 @@ export class SSNFilterSpan extends SpanBasedFilter {
     /[\*Xx]{3}[\*Xx]{2}(\d{4})\b/g, // *****6789 or XXXXX6789
     // Partially masked (first 5 visible)
     /\b(\d{3})-(\d{2})-[\*Xx]{4}/g, // 123-45-XXXX or 123-45-****
+
+    // ===== OCR/SPACING ERROR TOLERANT =====
+    // Extra dash: "324--37-4725"
+    /\b\d{3}--\d{2}-\d{4}\b/g,
+    /\b\d{3}-\d{2}--\d{4}\b/g,
+    // Space in middle of group: "855-9 4-6516", "674-6 7-7821"
+    /\b\d{3}-\d\s+\d-\d{4}\b/g,
+    // Space in last group: "197-69-3 156"
+    /\b\d{3}-\d{2}-\d\s+\d{3}\b/g,
+    // Missing digit (8 digits with dashes): "197-6-3156"
+    /\b\d{3}-\d{1,2}-\d{3,4}\b/g,
   ]);
 
   getType(): string {
@@ -82,11 +93,12 @@ export class SSNFilterSpan extends SpanBasedFilter {
     // Extract just digits for standard SSN validation
     const digits = ssn.replace(/\D/g, "");
 
-    if (digits.length !== 9) return false;
+    // Allow 8-9 digits for OCR error tolerance (missing digit scenarios)
+    if (digits.length < 8 || digits.length > 9) return false;
 
     // Only reject clearly invalid patterns
-    if (digits === "000000000") return false;
-    if (/^(.)\1{8}$/.test(digits)) return false; // All same digit
+    if (digits === "000000000" || digits === "00000000") return false;
+    if (/^(.)\1{7,8}$/.test(digits)) return false; // All same digit
 
     // For HIPAA compliance, we MUST catch even fake/example SSNs
     // Real validation would reject these, but we need to redact them

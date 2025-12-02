@@ -22,7 +22,13 @@
 // MAIN ORCHESTRATOR - Start Here!
 // ============================================================================
 
-export { VulpesCelare, VulpesCelareConfig, RedactionResult, PHIType, ReplacementStyle } from "./VulpesCelare";
+export {
+  VulpesCelare,
+  VulpesCelareConfig,
+  RedactionResult,
+  PHIType,
+  ReplacementStyle,
+} from "./VulpesCelare";
 export { default } from "./VulpesCelare";
 
 // ============================================================================
@@ -30,10 +36,17 @@ export { default } from "./VulpesCelare";
 // For advanced users who need low-level access
 // ============================================================================
 
-export { ParallelRedactionEngine, RedactionExecutionReport, FilterExecutionResult } from "./core/ParallelRedactionEngine";
+export {
+  ParallelRedactionEngine,
+  RedactionExecutionReport,
+  FilterExecutionResult,
+} from "./core/ParallelRedactionEngine";
 export { SpanBasedFilter } from "./core/SpanBasedFilter";
 export { FilterAdapter } from "./core/FilterAdapter";
-export { FieldContextDetector, FieldContext } from "./core/FieldContextDetector";
+export {
+  FieldContextDetector,
+  FieldContext,
+} from "./core/FieldContextDetector";
 export { FieldLabelWhitelist } from "./core/FieldLabelWhitelist";
 
 // ============================================================================
@@ -113,8 +126,6 @@ export { FilterRegistry } from "./filters/FilterRegistry";
 export { WindowService } from "./services/WindowService";
 export { ConfidenceModifierService } from "./services/ConfidenceModifierService";
 export { ReplacementContextService } from "./services/ReplacementContextService";
-export { ContextWindowService } from "./services/ContextWindowService";
-export { PostFilterPipeline } from "./services/PostFilterPipeline";
 
 // ============================================================================
 // DIAGNOSTICS & UTILITIES
