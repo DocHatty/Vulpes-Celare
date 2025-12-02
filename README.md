@@ -2,7 +2,7 @@
 
 # VULPES CELARE
 
-<img width="1024" height="1024" alt="Vulpes Celare Logo" src="https://github.com/user-attachments/assets/6ce29f86-e17e-40b0-abca-77431fcfe319" />
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb" />
 
 **An open, inspectable HIPAA PHI redaction engine for clinical text.**
 
