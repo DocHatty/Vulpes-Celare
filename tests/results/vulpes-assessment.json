@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-12-02T18:40:05.425Z",
+  "engine": "Vulpes Celare",
+  "version": "1.0.0",
+  "documentsAssessed": 220,
+  "sensitivity": "99.7",
+  "specificity": "100.0",
+  "score": 100,
+  "grade": "A+",
+  "totalExpectedPHI": 2264,
+  "totalRedactedPHI": 2258,
+  "totalExpectedNonPHI": 348,
+  "totalPreservedNonPHI": 348,
+  "failures": [
+    {
+      "docId": 20,
+      "type": "Lab Report",
+      "missed": [
+        "NAME: \"Sanders, Robert Marie\""
+      ]
+    },
+    {
+      "docId": 84,
+      "type": "Lab Report",
+      "missed": [
+        "NAME: \"Philip Price, MD, PhD\""
+      ]
+    },
+    {
+      "docId": 99,
+      "type": "Prescription",
+      "missed": [
+        "NAME: \"Morales, Amanda Ann\""
+      ]
+    },
+    {
+      "docId": 161,
+      "type": "Prescription",
+      "missed": [
+        "NAME: \"Scott, Kim Marie\""
+      ]
+    },
+    {
+      "docId": 206,
+      "type": "Team Note",
+      "missed": [
+        "NAME: \"Philip Smith\""
+      ]
+    },
+    {
+      "docId": 212,
+      "type": "Lab Report",
+      "missed": [
+        "NAME: \"Ramos, William Marie\""
+      ]
+    }
+  ],
+  "falsePositives": []
+}

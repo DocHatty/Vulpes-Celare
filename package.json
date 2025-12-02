@@ -1,0 +1,44 @@
+{
+  "name": "vulpes-celare",
+  "version": "1.0.0",
+  "description": "Vulpes Celare - A high-performance HIPAA PHI redaction engine. 99.4% sensitivity, 100% specificity. The fox conceals.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "node tests/mega-assessment.js",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "hipaa",
+    "phi",
+    "redaction",
+    "healthcare",
+    "privacy",
+    "pii",
+    "medical",
+    "compliance",
+    "data-protection",
+    "anonymization",
+    "de-identification",
+    "nlp",
+    "text-processing"
+  ],
+  "author": "Hatkoff",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hatkoff/vulpes-celare.git"
+  },
+  "homepage": "https://github.com/hatkoff/vulpes-celare#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/string-similarity": "^4.0.2",
+    "typescript": "^5.0.0"
+  }
+}
