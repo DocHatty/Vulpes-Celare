@@ -1,6 +1,7 @@
 <div align="center">
 
 # VULPES CELARE
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/6ce29f86-e17e-40b0-abca-77431fcfe319" />
 
 **A HIPAA PHI redaction engine built for precision, speed, and simplicity.**
 
