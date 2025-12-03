@@ -92,13 +92,18 @@ export class DateFilterSpan extends SpanBasedFilter {
     /\b\d{1,2}[-/]\d{1,2}[-/]19[B8]{2}\b/gi,
 
     // ===== COMPREHENSIVE OCR CHARACTER SUBSTITUTION =====
-    // Common OCR mistakes: O→0, l→1, |→1, I→1, B→8, S→5, b→6, s→5, o→0
+    // Common OCR mistakes: O→0, l→1, |→1, I→1, B→8, S→5, b→6, s→5, o→0, G→6, g→9
     // Pattern: Any date-like structure with these substitutions
     // Matches: "O9/l1/|9B6" for "09/11/1986", "o7/|B/|96B" for "07/18/1968"
-    /\b[O0o][0-9lI|SsBb][-/][O0olI|][0-9lI|SsBb][-/][|lI1][9][O0oSsBb][0-9lI|SsBb]\b/gi,
-    /\b[O0o]?[0-9lI|][-/][O0o]?[0-9lI|][-/][|lI1][9][0-9SsBbO0o]{2}\b/gi,
+    /\b[O0o][0-9lI|SsBbGg][-/][O0olI|][0-9lI|SsBbGg][-/][|lI1][9][O0oSsBbGg][0-9lI|SsBbGg]\b/gi,
+    /\b[O0o]?[0-9lI|Gg][-/][O0o]?[0-9lI|Gg][-/][|lI1][9][0-9SsBbO0oGg]{2}\b/gi,
     // More permissive: any mix of digits and OCR-confusable chars in date positions
-    /\b[0-9OoIlSsBb|]{1,2}[-/][0-9OoIlSsBb|]{1,2}[-/][0-9OoIlSsBb|]{4}\b/gi,
+    // Added G→6 and g→9 substitutions
+    /\b[0-9OoIlSsBbGg|]{1,2}[-/][0-9OoIlSsBbGg|]{1,2}[-/][0-9OoIlSsBbGg|]{4}\b/gi,
+    // Specific G substitution patterns: 1G for 16, 2G for 26, etc.
+    /\b\d{1,2}[-/]\d{1,2}[-/](?:19|20)\d[Gg]\b/gi,
+    /\b\d{1,2}[-/][Gg]\d[-/](?:19|20)\d{2}\b/gi,
+    /\b[Gg]\d[-/]\d{1,2}[-/](?:19|20)\d{2}\b/gi,
 
     // ===== ISO FORMAT =====
     // YYYY/MM/DD or YYYY-MM-DD

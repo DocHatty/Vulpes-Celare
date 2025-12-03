@@ -1095,6 +1095,131 @@ export const EXCLUDED_PHRASES = new Set([
 ]);
 
 /**
+ * Context-aware compound phrases that should NOT be redacted.
+ * These are multi-word terms where individual words might look like names,
+ * but when appearing together, they form a known non-PHI phrase.
+ * 
+ * Format: Map of "trigger word" -> ["words that follow it to form a safe phrase"]
+ * If "Johns" is followed by "Hopkins", don't redact "Johns".
+ */
+export const COMPOUND_PHRASE_WHITELIST: Map<string, string[]> = new Map([
+  // Hospital names - first word looks like a name but isn't PHI when followed by second word
+  ["Johns", ["Hopkins"]],
+  ["Mount", ["Sinai"]],
+  ["Mayo", ["Clinic"]],
+  ["Cleveland", ["Clinic"]],
+  ["Kaiser", ["Permanente"]],
+  ["Cedars", ["Sinai"]],
+  ["Cedar", ["Sinai"]],
+  
+  // Medical conditions where first word looks like a name/title
+  ["Major", ["Depression", "Depressive", "Disorder"]],
+  ["General", ["Anxiety", "Anesthesia", "Surgery", "Hospital", "Medicine"]],
+  ["Acute", ["Coronary", "Myocardial", "Kidney", "Respiratory", "Care"]],
+  ["Chronic", ["Kidney", "Obstructive", "Pain", "Fatigue", "Disease"]],
+  ["Regional", ["Medical", "Center", "Hospital", "Anesthesia"]],
+  ["Community", ["General", "Hospital", "Health", "Center"]],
+  ["Sacred", ["Heart"]],
+  ["Holy", ["Cross", "Family", "Spirit"]],
+  ["Good", ["Samaritan", "Shepherd"]],
+  ["Saint", ["Mary", "Joseph", "Luke", "John", "Francis", "Vincent"]],
+  ["St", ["Mary", "Joseph", "Luke", "John", "Francis", "Vincent"]],
+  
+  // Common medical phrase starters
+  ["Physical", ["Therapy", "Examination", "Exam", "Medicine"]],
+  ["Mental", ["Health", "Status", "Illness"]],
+  ["Social", ["Security", "History", "Work", "Worker"]],
+  ["Family", ["History", "Medicine", "Practice", "Member"]],
+  ["Emergency", ["Department", "Room", "Contact", "Medicine"]],
+  ["Primary", ["Care", "Physician", "Doctor"]],
+  ["Intensive", ["Care"]],
+  
+  // Insurance companies
+  ["Blue", ["Cross", "Shield"]],
+  ["United", ["Healthcare", "Health"]],
+]);
+
+/**
+ * Check if a word is part of a compound phrase that should not be redacted.
+ * Returns true if the word appears to be the START of a whitelisted compound phrase.
+ * 
+ * @param word - The potentially triggering word (e.g., "Johns")
+ * @param followingText - The text that follows this word
+ * @returns true if this appears to be a compound phrase that should be preserved
+ */
+export function isCompoundPhraseStart(word: string, followingText: string): boolean {
+  const normalizedWord = word.trim();
+  
+  // Check if this word is a trigger for any compound phrase
+  const possibleFollowers = COMPOUND_PHRASE_WHITELIST.get(normalizedWord);
+  if (!possibleFollowers) {
+    // Also check case-insensitive
+    for (const [trigger, followers] of COMPOUND_PHRASE_WHITELIST.entries()) {
+      if (trigger.toLowerCase() === normalizedWord.toLowerCase()) {
+        // Check if any of the expected followers appear at the start of followingText
+        const followingNormalized = followingText.trim();
+        for (const follower of followers) {
+          // Check if followingText starts with this follower (case-insensitive)
+          const regex = new RegExp(`^\\s*${follower}\\b`, 'i');
+          if (regex.test(followingNormalized)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+  
+  // Check if any of the expected followers appear at the start of followingText
+  const followingNormalized = followingText.trim();
+  for (const follower of possibleFollowers) {
+    const regex = new RegExp(`^\\s*${follower}\\b`, 'i');
+    if (regex.test(followingNormalized)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * Check if text is part of a known compound phrase that should not be redacted.
+ * Checks both as a phrase start and within the phrase.
+ */
+export function isPartOfCompoundPhrase(text: string, fullContext: string): boolean {
+  // Get position of text in context
+  const textLower = text.toLowerCase();
+  const contextLower = fullContext.toLowerCase();
+  const pos = contextLower.indexOf(textLower);
+  
+  if (pos === -1) return false;
+  
+  // Get what comes after this text
+  const followingText = fullContext.substring(pos + text.length);
+  
+  // Check if this is the start of a compound phrase
+  const words = text.trim().split(/\s+/);
+  if (words.length >= 1) {
+    const firstWord = words[0];
+    if (isCompoundPhraseStart(firstWord, words.slice(1).join(' ') + ' ' + followingText)) {
+      return true;
+    }
+  }
+  
+  // Also check if the text itself is a complete compound phrase
+  for (const [trigger, followers] of COMPOUND_PHRASE_WHITELIST.entries()) {
+    for (const follower of followers) {
+      const phrase = `${trigger} ${follower}`.toLowerCase();
+      if (textLower.includes(phrase) || phrase.includes(textLower)) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+/**
  * Structure words that indicate the text is a header/label, not a name
  */
 export const STRUCTURE_WORDS = new Set([

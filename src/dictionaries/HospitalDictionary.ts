@@ -164,4 +164,82 @@ export class HospitalDictionary {
     const lowerText = text.toLowerCase();
     return keywords.some((kw) => lowerText.includes(kw));
   }
+
+  /**
+   * WHITELIST CHECK: Check if a potential name match is actually part of a hospital name.
+   * This is used to PROTECT hospital name components from being redacted as patient names.
+   * 
+   * Hospital names are NOT patient PHI under HIPAA Safe Harbor.
+   * 
+   * @param potentialName - The potential name to check (e.g., "Johns", "Hopkins")
+   * @param context - The surrounding text to check for hospital patterns
+   * @returns true if this text is part of a hospital name and should NOT be redacted
+   */
+  static isPartOfHospitalName(potentialName: string, context: string): boolean {
+    if (!this.initialized) this.init();
+    
+    // Quick check: does context contain hospital keywords?
+    if (!this.hasHospitalKeywords(context)) {
+      return false;
+    }
+    
+    // Find all hospital names in the context
+    const hospitalMatches = this.findHospitalsInText(context);
+    if (hospitalMatches.length === 0) {
+      return false;
+    }
+    
+    // Check if the potential name appears within any hospital name
+    const potentialLower = potentialName.toLowerCase().trim();
+    for (const match of hospitalMatches) {
+      const hospitalLower = match.text.toLowerCase();
+      if (hospitalLower.includes(potentialLower)) {
+        return true; // This "name" is part of a hospital name - WHITELIST it
+      }
+    }
+    
+    return false;
+  }
+
+  /**
+   * Common hospital name patterns that should never be treated as patient names.
+   * These are hospital names where component words look like names.
+   */
+  private static readonly PROTECTED_HOSPITAL_PATTERNS = [
+    "johns hopkins",
+    "mount sinai",
+    "cedars sinai",
+    "cedar sinai",
+    "mayo clinic",
+    "cleveland clinic",
+    "kaiser permanente",
+    "st. mary",
+    "st mary",
+    "st. joseph",
+    "st joseph",
+    "sacred heart",
+    "good samaritan",
+    "holy cross",
+  ];
+
+  /**
+   * Quick check if a word is a common hospital name component.
+   * Used for fast whitelisting without full context search.
+   */
+  static isCommonHospitalWord(word: string, followingWords: string): boolean {
+    const wordLower = word.toLowerCase().trim();
+    const followingLower = followingWords.toLowerCase().trim();
+    
+    // Check known patterns
+    for (const pattern of this.PROTECTED_HOSPITAL_PATTERNS) {
+      if (pattern.startsWith(wordLower)) {
+        const remainder = pattern.substring(wordLower.length).trim();
+        if (followingLower.startsWith(remainder)) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  }
 }

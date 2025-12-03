@@ -1,0 +1,2376 @@
+{
+  "timestamp": "2025-12-03T15:18:57.248Z",
+  "engine": {
+    "name": "Vulpes Celare",
+    "version": "1.0.0"
+  },
+  "config": {
+    "documents": 200,
+    "errorDistribution": {
+      "low": 66,
+      "medium": 74,
+      "high": 60
+    }
+  },
+  "metrics": {
+    "sensitivity": 89.30434782608697,
+    "specificity": 91.66666666666666,
+    "precision": 99.75716367168529,
+    "f1": 94.24179857765543,
+    "score": 50,
+    "grade": "F"
+  },
+  "confusion": {
+    "tp": 2054,
+    "fn": 246,
+    "tn": 55,
+    "fp": 5
+  },
+  "byErrorLevel": {
+    "low": {
+      "tp": 662,
+      "fn": 71,
+      "total": 733
+    },
+    "medium": {
+      "tp": 799,
+      "fn": 89,
+      "total": 888
+    },
+    "high": {
+      "tp": 593,
+      "fn": 86,
+      "total": 679
+    }
+  },
+  "byPHIType": {
+    "NAME": {
+      "tp": 784,
+      "fn": 16,
+      "total": 800
+    },
+    "DATE": {
+      "tp": 414,
+      "fn": 6,
+      "total": 420
+    },
+    "MRN": {
+      "tp": 180,
+      "fn": 0,
+      "total": 180
+    },
+    "PHONE": {
+      "tp": 232,
+      "fn": 8,
+      "total": 240
+    },
+    "EMAIL": {
+      "tp": 60,
+      "fn": 0,
+      "total": 60
+    },
+    "AGE": {
+      "tp": 0,
+      "fn": 40,
+      "total": 40
+    },
+    "HOSPITAL": {
+      "tp": 33,
+      "fn": 147,
+      "total": 180
+    },
+    "ADDRESS": {
+      "tp": 80,
+      "fn": 0,
+      "total": 80
+    },
+    "ZIPCODE": {
+      "tp": 80,
+      "fn": 0,
+      "total": 80
+    },
+    "NPI": {
+      "tp": 40,
+      "fn": 0,
+      "total": 40
+    },
+    "SSN": {
+      "tp": 59,
+      "fn": 1,
+      "total": 60
+    },
+    "DEA": {
+      "tp": 9,
+      "fn": 11,
+      "total": 20
+    },
+    "IP": {
+      "tp": 20,
+      "fn": 0,
+      "total": 20
+    },
+    "URL": {
+      "tp": 20,
+      "fn": 0,
+      "total": 20
+    },
+    "CREDIT_CARD": {
+      "tp": 11,
+      "fn": 9,
+      "total": 20
+    },
+    "VIN": {
+      "tp": 20,
+      "fn": 0,
+      "total": 20
+    },
+    "LICENSE_PLATE": {
+      "tp": 12,
+      "fn": 8,
+      "total": 20
+    }
+  },
+  "failures": [
+    {
+      "docId": 178,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "80",
+      "actual": "80",
+      "hasErrors": false
+    },
+    {
+      "docId": 178,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Massachusetts General Hospital",
+      "actual": "Massachusetts General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 133,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "85",
+      "actual": "85",
+      "hasErrors": false
+    },
+    {
+      "docId": 133,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "St. Mary's Medical Center",
+      "actual": "St. Mary's Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 132,
+      "docType": "Lab Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Presbyterian Hospital",
+      "actual": "Presbyterian Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 152,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Vanderbilt University Medical Center",
+      "actual": "Vanderbilt University Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 89,
+      "docType": "Nursing Assessment",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Massachusetts General Hospital",
+      "actual": "Massachusetts General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 50,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Northwestern Memorial Hospital",
+      "actual": "Northwestern Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 109,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 73,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "53",
+      "actual": "53",
+      "hasErrors": false
+    },
+    {
+      "docId": 73,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Cedars-Sinai Medical Center",
+      "actual": "Cedars-Sinai Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 2,
+      "docType": "Lab Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "197-506-01",
+      "actual": "197-506-01",
+      "hasErrors": false
+    },
+    {
+      "docId": 2,
+      "docType": "Lab Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "University Hospital",
+      "actual": "University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 140,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "3795 4531 1510 2210",
+      "actual": "3795 4531 1510 2210",
+      "hasErrors": false
+    },
+    {
+      "docId": 60,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "LICENSE_PLATE",
+      "expected": "undefinedRM-9968",
+      "actual": "undefinedRM-9968",
+      "hasErrors": false
+    },
+    {
+      "docId": 170,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "LICENSE_PLATE",
+      "expected": "DEundefined-2217",
+      "actual": "DEundefined-2217",
+      "hasErrors": false
+    },
+    {
+      "docId": 1,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 101,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 46,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Presbyterian Hospital",
+      "actual": "Presbyterian Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 20,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 122,
+      "docType": "Lab Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Presbyterian Hospital",
+      "actual": "Presbyterian Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 121,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 146,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 24,
+      "docType": "Emergency Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 118,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "49",
+      "actual": "49",
+      "hasErrors": false
+    },
+    {
+      "docId": 118,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 102,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Cedars-Sinai Medical Center",
+      "actual": "Cedars-Sinai Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 125,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "PHONE",
+      "expected": "70-5562-8045",
+      "actual": "70-5562-8045",
+      "hasErrors": false
+    },
+    {
+      "docId": 125,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "UCSF Medical Center",
+      "actual": "UCSF Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 62,
+      "docType": "Lab Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 76,
+      "docType": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 200,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "CREDIT_CARD",
+      "expected": "5589-8534-2535-4467",
+      "actual": "5589-8534-2535-4467",
+      "hasErrors": false
+    },
+    {
+      "docId": 200,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "LICENSE_PLATE",
+      "expected": "FDundefined-9208",
+      "actual": "FDundefined-9208",
+      "hasErrors": false
+    },
+    {
+      "docId": 200,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 96,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 55,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Methodist Hospital",
+      "actual": "Methodist Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 158,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "73",
+      "actual": "73",
+      "hasErrors": false
+    },
+    {
+      "docId": 143,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Michael Ann Cooper",
+      "actual": "Michael Ann Cooper",
+      "hasErrors": false
+    },
+    {
+      "docId": 143,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Prof. Garcia",
+      "actual": "Peof. Garcia",
+      "hasErrors": true
+    },
+    {
+      "docId": 143,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "83",
+      "actual": "83",
+      "hasErrors": false
+    },
+    {
+      "docId": 143,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "NYU Langone Health",
+      "actual": "NYU Langone Health",
+      "hasErrors": false
+    },
+    {
+      "docId": 5,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "NYU Langone Health",
+      "actual": "NYU Langone Health",
+      "hasErrors": false
+    },
+    {
+      "docId": 128,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "expected": "Michael O'Connor",
+      "actual": "Michael O'Connor",
+      "hasErrors": false
+    },
+    {
+      "docId": 128,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "68",
+      "actual": "68",
+      "hasErrors": false
+    },
+    {
+      "docId": 128,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Northwestern Memorial Hospital",
+      "actual": "Northwestern Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 86,
+      "docType": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 142,
+      "docType": "Lab Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Cedars-Sinai Medical Center",
+      "actual": "Cedars-Sinai Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 52,
+      "docType": "Lab Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "University Hospital",
+      "actual": "University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 104,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "expected": "1-9G6-690-56s8",
+      "actual": "1-9G6-690-56s8",
+      "hasErrors": false
+    },
+    {
+      "docId": 104,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 174,
+      "docType": "Emergency Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 23,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "54",
+      "actual": "54",
+      "hasErrors": false
+    },
+    {
+      "docId": 23,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 26,
+      "docType": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "GRAY, CHRISTINA",
+      "actual": "GRAY ,CHRISTINA",
+      "hasErrors": true
+    },
+    {
+      "docId": 26,
+      "docType": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Presbyterian Hospital",
+      "actual": "Presbyterian Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 37,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "DEA",
+      "expected": "VS5078892",
+      "actual": "VS5078892",
+      "hasErrors": false
+    },
+    {
+      "docId": 137,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "DEA",
+      "expected": "EF1649826",
+      "actual": "EF1649826",
+      "hasErrors": false
+    },
+    {
+      "docId": 157,
+      "docType": "Prescription",
+      "errorLevel": "low",
+      "phiType": "DEA",
+      "expected": "HN9482096",
+      "actual": "HN9482096",
+      "hasErrors": false
+    },
+    {
+      "docId": 127,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "DEA",
+      "expected": "HH4001887",
+      "actual": "HH4001887",
+      "hasErrors": false
+    },
+    {
+      "docId": 51,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 22,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Methodist Hospital",
+      "actual": "Methodist Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 163,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "80",
+      "actual": "80",
+      "hasErrors": false
+    },
+    {
+      "docId": 163,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 33,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "56",
+      "actual": "56",
+      "hasErrors": false
+    },
+    {
+      "docId": 33,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 190,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "Aundefinedundefined-7047",
+      "actual": "Aundefinedundefined-7047",
+      "hasErrors": false
+    },
+    {
+      "docId": 195,
+      "docType": "Discharge Summary",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 166,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "expected": "Dr. Charlotte Hill",
+      "actual": "Dr. Charlotte Hill",
+      "hasErrors": false
+    },
+    {
+      "docId": 166,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Massachusetts General Hospital",
+      "actual": "Massachusetts General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 184,
+      "docType": "Emergency Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 82,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 135,
+      "docType": "Discharge Summary",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Presbyterian Hospital",
+      "actual": "Presbyterian Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 93,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "expected": "Dennis Marie Diaz",
+      "actual": "Dennis Marie Diaz",
+      "hasErrors": false
+    },
+    {
+      "docId": 93,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "67",
+      "actual": "67",
+      "hasErrors": false
+    },
+    {
+      "docId": 93,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 12,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "County General Hospital",
+      "actual": "County General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 63,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "expected": "Prof. Cox",
+      "actual": "Pro.f Cox",
+      "hasErrors": true
+    },
+    {
+      "docId": 63,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "42",
+      "actual": "42",
+      "hasErrors": false
+    },
+    {
+      "docId": 39,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Jack Patel, JD",
+      "actual": "jack patel, jd",
+      "hasErrors": true
+    },
+    {
+      "docId": 172,
+      "docType": "Lab Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Community General Hospital",
+      "actual": "Community General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 199,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 175,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 179,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Noah Watson",
+      "actual": "noah watson",
+      "hasErrors": true
+    },
+    {
+      "docId": 179,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 185,
+      "docType": "Discharge Summary",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 181,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Methodist Hospital",
+      "actual": "Methodist Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 31,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Vanderbilt University Medical Center",
+      "actual": "Vanderbilt University Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 8,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "63//1965",
+      "actual": "63//1965",
+      "hasErrors": false
+    },
+    {
+      "docId": 8,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "64",
+      "actual": "64",
+      "hasErrors": false
+    },
+    {
+      "docId": 8,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 66,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Massachusetts General Hospital",
+      "actual": "Massachusetts General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 95,
+      "docType": "Discharge Summary",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "UCSF Medical Center",
+      "actual": "UCSF Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 43,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Ms. Anderson",
+      "actual": "Ms .Anderson",
+      "hasErrors": true
+    },
+    {
+      "docId": 43,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "2023-0-41G",
+      "actual": "2023-0-41G",
+      "hasErrors": false
+    },
+    {
+      "docId": 43,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "25",
+      "actual": "25",
+      "hasErrors": false
+    },
+    {
+      "docId": 43,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "County General Hospital",
+      "actual": "County General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 15,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 100,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "CREDIT_CARD",
+      "expected": "3761 9474 7134 0158",
+      "actual": "3761 9474 7134 0158",
+      "hasErrors": false
+    },
+    {
+      "docId": 100,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 130,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Community General Hospital",
+      "actual": "Community General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 4,
+      "docType": "Emergency Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Methodist Hospital",
+      "actual": "Methodist Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 126,
+      "docType": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Memorial Hospital",
+      "actual": "Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 115,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 85,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "expected": "Mrs. Lewis",
+      "actual": "Mra. Lewis",
+      "hasErrors": true
+    },
+    {
+      "docId": 85,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Community General Hospital",
+      "actual": "Community General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 21,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Massachusetts General Hospital",
+      "actual": "Massachusetts General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 13,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "80",
+      "actual": "80",
+      "hasErrors": false
+    },
+    {
+      "docId": 13,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 192,
+      "docType": "Lab Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Northwestern Memorial Hospital",
+      "actual": "Northwestern Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 80,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "SSN",
+      "expected": "1i7-65-2512",
+      "actual": "1i7-65-2512",
+      "hasErrors": false
+    },
+    {
+      "docId": 80,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 59,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 156,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 45,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Memorial Hospital",
+      "actual": "Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 150,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "CREDIT_CARD",
+      "expected": "5170 5887 6148 1740",
+      "actual": "5170 5887 6148 1740",
+      "hasErrors": false
+    },
+    {
+      "docId": 150,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "St. Mary's Medical Center",
+      "actual": "St. Mary's Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 47,
+      "docType": "Prescription",
+      "errorLevel": "low",
+      "phiType": "DEA",
+      "expected": "YM5927018",
+      "actual": "YM5927018",
+      "hasErrors": false
+    },
+    {
+      "docId": 145,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "expected": "(804) 54G-2347",
+      "actual": "(804) 54G-2347",
+      "hasErrors": false
+    },
+    {
+      "docId": 145,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 124,
+      "docType": "Emergency Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "UCSF Medical Center",
+      "actual": "UCSF Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 88,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "47",
+      "actual": "47",
+      "hasErrors": false
+    },
+    {
+      "docId": 88,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 14,
+      "docType": "Emergency Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Mayo Clinic",
+      "actual": "Mayo Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 194,
+      "docType": "Emergency Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 173,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "43",
+      "actual": "43",
+      "hasErrors": false
+    },
+    {
+      "docId": 173,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 107,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "DEA",
+      "expected": "VF3040610",
+      "actual": "VF3040610",
+      "hasErrors": false
+    },
+    {
+      "docId": 57,
+      "docType": "Prescription",
+      "errorLevel": "medium",
+      "phiType": "DEA",
+      "expected": "HU2677893",
+      "actual": "HU2677893",
+      "hasErrors": false
+    },
+    {
+      "docId": 40,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "NYU Langone Health",
+      "actual": "NYU Langone Health",
+      "hasErrors": false
+    },
+    {
+      "docId": 138,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "THOMAS, BARBARA ROSE",
+      "actual": "th0mas, barbara ro5e",
+      "hasErrors": true
+    },
+    {
+      "docId": 138,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "63",
+      "actual": "63",
+      "hasErrors": false
+    },
+    {
+      "docId": 138,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Community General Hospital",
+      "actual": "Community General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 108,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "33",
+      "actual": "33",
+      "hasErrors": false
+    },
+    {
+      "docId": 108,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Mayo Clinic",
+      "actual": "Mayo Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 120,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "LICENSE_PLATE",
+      "expected": "CAundefined-2866",
+      "actual": "CAundefined-2866",
+      "hasErrors": false
+    },
+    {
+      "docId": 120,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "St. Mary's Medical Center",
+      "actual": "St. Mary's Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 9,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "PHONE",
+      "expected": "(76G) 431-5821",
+      "actual": "(76G) 431-5821",
+      "hasErrors": false
+    },
+    {
+      "docId": 9,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 56,
+      "docType": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "HERNANDEZ, FERNANDO",
+      "actual": "hernandez, fernand0",
+      "hasErrors": true
+    },
+    {
+      "docId": 97,
+      "docType": "Prescription",
+      "errorLevel": "low",
+      "phiType": "DEA",
+      "expected": "DH2446228",
+      "actual": "DH2446228",
+      "hasErrors": false
+    },
+    {
+      "docId": 169,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Presbyterian Hospital",
+      "actual": "Presbyterian Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 171,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Community General Hospital",
+      "actual": "Community General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 38,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "34",
+      "actual": "34",
+      "hasErrors": false
+    },
+    {
+      "docId": 38,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 65,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "PHONE",
+      "expected": "558-G5S-1488",
+      "actual": "558-G5S-1488",
+      "hasErrors": false
+    },
+    {
+      "docId": 65,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "PHONE",
+      "expected": "(351) 847-G731",
+      "actual": "(351) 847-G731",
+      "hasErrors": false
+    },
+    {
+      "docId": 65,
+      "docType": "Discharge Summary",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 83,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "expected": "Christine Marie Anderson",
+      "actual": "Christine Marie Anderson",
+      "hasErrors": false
+    },
+    {
+      "docId": 83,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "72",
+      "actual": "72",
+      "hasErrors": false
+    },
+    {
+      "docId": 83,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "UCSF Medical Center",
+      "actual": "UCSF Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 54,
+      "docType": "Emergency Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "UCSF Medical Center",
+      "actual": "UCSF Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 164,
+      "docType": "Emergency Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "UCSF Medical Center",
+      "actual": "UCSF Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 110,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "CREDIT_CARD",
+      "expected": "3778-1739-8603-8323",
+      "actual": "3778-1739-8603-8323",
+      "hasErrors": false
+    },
+    {
+      "docId": 110,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Vanderbilt University Medical Center",
+      "actual": "Vanderbilt University Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 177,
+      "docType": "Prescription",
+      "errorLevel": "low",
+      "phiType": "DEA",
+      "expected": "LY7091351",
+      "actual": "LY7091351",
+      "hasErrors": false
+    },
+    {
+      "docId": 44,
+      "docType": "Emergency Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Methodist Hospital",
+      "actual": "Methodist Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 36,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Vanderbilt University Medical Center",
+      "actual": "Vanderbilt University Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 180,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "4670 5655 3222 9227",
+      "actual": "4670 5655 3222 9227",
+      "hasErrors": false
+    },
+    {
+      "docId": 180,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "FundefinedU-6964",
+      "actual": "FundefinedU-6964",
+      "hasErrors": false
+    },
+    {
+      "docId": 180,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 74,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 91,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Methodist Hospital",
+      "actual": "Methodist Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 3,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "73",
+      "actual": "73",
+      "hasErrors": false
+    },
+    {
+      "docId": 3,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "NYU Langone Health",
+      "actual": "NYU Langone Health",
+      "hasErrors": false
+    },
+    {
+      "docId": 78,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "79",
+      "actual": "79",
+      "hasErrors": false
+    },
+    {
+      "docId": 78,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Vanderbilt University Medical Center",
+      "actual": "Vanderbilt University Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 148,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "60",
+      "actual": "60",
+      "hasErrors": false
+    },
+    {
+      "docId": 154,
+      "docType": "Emergency Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Vanderbilt University Medical Center",
+      "actual": "Vanderbilt University Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 141,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 103,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "32",
+      "actual": "32",
+      "hasErrors": false
+    },
+    {
+      "docId": 103,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 151,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 34,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 29,
+      "docType": "Nursing Assessment",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 75,
+      "docType": "Discharge Summary",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 160,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "3736-1467-9663-8798",
+      "actual": "3736-1467-9663-8798",
+      "hasErrors": false
+    },
+    {
+      "docId": 160,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "undefinedVK-8692",
+      "actual": "undefinedVK-8692",
+      "hasErrors": false
+    },
+    {
+      "docId": 149,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 191,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "County General Hospital",
+      "actual": "County General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 196,
+      "docType": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 99,
+      "docType": "Nursing Assessment",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "UCSF Medical Center",
+      "actual": "UCSF Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 16,
+      "docType": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "University Hospital",
+      "actual": "University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 198,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "44",
+      "actual": "44",
+      "hasErrors": false
+    },
+    {
+      "docId": 198,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Cedars-Sinai Medical Center",
+      "actual": "Cedars-Sinai Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 159,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Presbyterian Hospital",
+      "actual": "Presbyterian Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 114,
+      "docType": "Emergency Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Duke University Hospital",
+      "actual": "Duke University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 67,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "DEA",
+      "expected": "JB3041602",
+      "actual": "JB3041602",
+      "hasErrors": false
+    },
+    {
+      "docId": 139,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 129,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 48,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "63",
+      "actual": "63",
+      "hasErrors": false
+    },
+    {
+      "docId": 48,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 6,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Northwestern Memorial Hospital",
+      "actual": "Northwestern Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 189,
+      "docType": "Nursing Assessment",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 188,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "69",
+      "actual": "69",
+      "hasErrors": false
+    },
+    {
+      "docId": 188,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Community General Hospital",
+      "actual": "Community General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 94,
+      "docType": "Emergency Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 116,
+      "docType": "Operative Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Mayo Clinic",
+      "actual": "Mayo Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 98,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "63",
+      "actual": "63",
+      "hasErrors": false
+    },
+    {
+      "docId": 98,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "County General Hospital",
+      "actual": "County General Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 27,
+      "docType": "Prescription",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "expected": "Kumar, Hannah Marie",
+      "actual": "kumar, Hannah Marie",
+      "hasErrors": true
+    },
+    {
+      "docId": 27,
+      "docType": "Prescription",
+      "errorLevel": "medium",
+      "phiType": "DEA",
+      "expected": "LG8347049",
+      "actual": "LG8347049",
+      "hasErrors": false
+    },
+    {
+      "docId": 90,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "CREDIT_CARD",
+      "expected": "5648 1255 2938 9932",
+      "actual": "5648 1255 2938 9932",
+      "hasErrors": false
+    },
+    {
+      "docId": 90,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "St. Mary's Medical Center",
+      "actual": "St. Mary's Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 111,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 182,
+      "docType": "Lab Report",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Memorial Hospital",
+      "actual": "Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 153,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "67",
+      "actual": "67",
+      "hasErrors": false
+    },
+    {
+      "docId": 153,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 30,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "5049-3291-6125-8874",
+      "actual": "5049-3291-6125-8874",
+      "hasErrors": false
+    },
+    {
+      "docId": 30,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "undefinedRJ-7753",
+      "actual": "undefinedRJ-7753",
+      "hasErrors": false
+    },
+    {
+      "docId": 68,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "2000-0-209",
+      "actual": "2000-0-209",
+      "hasErrors": false
+    },
+    {
+      "docId": 68,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "expected": "1-463-G27-3852",
+      "actual": "1-463-G27-3852",
+      "hasErrors": false
+    },
+    {
+      "docId": 68,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "34",
+      "actual": "34",
+      "hasErrors": false
+    },
+    {
+      "docId": 68,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Sacred Heart Hospital",
+      "actual": "Sacred Heart Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 113,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "28",
+      "actual": "28",
+      "hasErrors": false
+    },
+    {
+      "docId": 58,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "70",
+      "actual": "70",
+      "hasErrors": false
+    },
+    {
+      "docId": 58,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Children's Hospital",
+      "actual": "Children's Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 123,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "44",
+      "actual": "44",
+      "hasErrors": false
+    },
+    {
+      "docId": 123,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 134,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "2024-0S-2I",
+      "actual": "2024-0S-2I",
+      "hasErrors": false
+    },
+    {
+      "docId": 186,
+      "docType": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Cedars-Sinai Medical Center",
+      "actual": "Cedars-Sinai Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 131,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Northwestern Memorial Hospital",
+      "actual": "Northwestern Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 81,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "St. Mary's Medical Center",
+      "actual": "St. Mary's Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 18,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "70",
+      "actual": "70",
+      "hasErrors": false
+    },
+    {
+      "docId": 18,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 183,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "79",
+      "actual": "79",
+      "hasErrors": false
+    },
+    {
+      "docId": 183,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Methodist Hospital",
+      "actual": "Methodist Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 35,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 53,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "AGE",
+      "expected": "62",
+      "actual": "62",
+      "hasErrors": false
+    },
+    {
+      "docId": 53,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 119,
+      "docType": "Nursing Assessment",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Memorial Hospital",
+      "actual": "Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 32,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "PHONE",
+      "expected": "(2GS) 237-5266",
+      "actual": "(2GS) 237-5266",
+      "hasErrors": false
+    },
+    {
+      "docId": 32,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 168,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "AGE",
+      "expected": "31",
+      "actual": "31",
+      "hasErrors": false
+    },
+    {
+      "docId": 168,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "HOSPITAL",
+      "expected": "Cleveland Clinic",
+      "actual": "Cleveland Clinic",
+      "hasErrors": false
+    },
+    {
+      "docId": 176,
+      "docType": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "University Hospital",
+      "actual": "University Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 61,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "2O23-O7-11",
+      "actual": "2O23-O7-11",
+      "hasErrors": false
+    },
+    {
+      "docId": 41,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Baptist Medical Center",
+      "actual": "Baptist Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 193,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Prof. Perez",
+      "actual": "Peof. Perez",
+      "hasErrors": true
+    },
+    {
+      "docId": 193,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "41",
+      "actual": "41",
+      "hasErrors": false
+    },
+    {
+      "docId": 193,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 28,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "AGE",
+      "expected": "75",
+      "actual": "75",
+      "hasErrors": false
+    },
+    {
+      "docId": 28,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "HOSPITAL",
+      "expected": "Memorial Hospital",
+      "actual": "Memorial Hospital",
+      "hasErrors": false
+    },
+    {
+      "docId": 10,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Vanderbilt University Medical Center",
+      "actual": "Vanderbilt University Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 144,
+      "docType": "Emergency Note",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 112,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Regional Medical Center",
+      "actual": "Regional Medical Center",
+      "hasErrors": false
+    },
+    {
+      "docId": 49,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "HOSPITAL",
+      "expected": "Veterans Affairs Medical Center",
+      "actual": "Veterans Affairs Medical Center",
+      "hasErrors": false
+    }
+  ],
+  "falsePositives": [
+    {
+      "docId": 96,
+      "type": "PROCEDURE",
+      "value": "Rotator Cuff Repair"
+    },
+    {
+      "docId": 166,
+      "type": "PROCEDURE",
+      "value": "Carpal Tunnel Release"
+    },
+    {
+      "docId": 56,
+      "type": "PROCEDURE",
+      "value": "Carpal Tunnel Release"
+    },
+    {
+      "docId": 116,
+      "type": "PROCEDURE",
+      "value": "Coronary Angiography"
+    },
+    {
+      "docId": 176,
+      "type": "PROCEDURE",
+      "value": "Lumbar Puncture"
+    }
+  ]
+}

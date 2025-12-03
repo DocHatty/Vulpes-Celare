@@ -24,9 +24,11 @@ import {
   GEOGRAPHIC_TERMS,
   isWhitelisted as baseIsWhitelisted,
   isExcludedAllCaps,
+  isPartOfCompoundPhrase,
 } from "./constants/NameFilterConstants";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
 import { MedicalTermDictionary } from "../dictionaries/MedicalTermDictionary";
+import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
 
 export class SmartNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -102,7 +104,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const matchedText = match[0];
 
-      if (!this.isWhitelisted(matchedText) && !this.isHeading(matchedText)) {
+      if (!this.isWhitelisted(matchedText, text) && !this.isHeading(matchedText)) {
         const span = new Span({
           text: matchedText,
           originalValue: matchedText,
@@ -501,15 +503,25 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     // OCR-tolerant pattern: Allow digits and symbols in names
     // Start with [A-Z0-9@$|] to handle 5eb@stian, 8cndd@, $har0n, |sabella
     // Allow [a-zA-Z0-9@$|] inside to handle M@rtinEz, HArris
-    const pattern =
-      /\b([A-Z0-9@$|][a-zA-Z0-9@$|]{2,},[ \t]+[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/g;
+    // ALSO handle spacing errors: "LAST ,FIRST" (space before comma from OCR)
+    // Case-insensitive to handle "morgan ,lauren", "COOK ,JAMAL", etc.
+    const patterns = [
+      // Standard: "Last, First" or "Last, First Middle" (case-insensitive)
+      /\b([A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,},[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/gi,
+      // OCR spacing error: "Last ,First" (space before comma) - case-insensitive
+      /\b([A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}[ \t]+,[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/gi,
+      // OCR spacing error: "Last , First" (space on both sides of comma) - case-insensitive
+      /\b([A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}[ \t]+,[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/gi,
+    ];
+    
+    for (const pattern of patterns) {
     pattern.lastIndex = 0;
     let match;
 
     while ((match = pattern.exec(text)) !== null) {
       const fullName = match[1];
 
-      if (!this.isWhitelisted(fullName) && this.validateLastFirst(fullName)) {
+      if (!this.isWhitelisted(fullName, text) && this.validateLastFirst(fullName)) {
         const span = new Span({
           text: fullName,
           originalValue: fullName,
@@ -531,6 +543,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         spans.push(span);
       }
     }
+    } // end for loop over patterns
   }
 
   /**
@@ -547,9 +560,9 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const name = match[1];
 
       if (
-        !this.isWhitelisted(name) &&
+        !this.isWhitelisted(name, text) &&
         !this.isHeading(name) &&
-        this.isLikelyPersonName(name)
+        this.isLikelyPersonName(name, text)
       ) {
         const span = new Span({
           text: name,
@@ -578,23 +591,27 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    * Helper methods
    */
   private validateLastFirst(name: string): boolean {
-    const parts = name.split(",");
+    // Normalize spacing around comma for validation
+    // Handle "Last, First", "Last ,First", "Last , First"
+    const normalized = name.replace(/\s*,\s*/g, ",");
+    const parts = normalized.split(",");
     if (parts.length === 2) {
       const lastName = parts[0].trim();
       const firstName = parts[1].trim();
       // Relaxed validation for OCR, but MUST contain at least one letter to avoid "123, 456"
+      // Case-insensitive to handle "morgan ,lauren", "COOK ,JAMAL", etc.
       const hasLetter = /[a-zA-Z]/.test(lastName) && /[a-zA-Z]/.test(firstName);
       return (
         hasLetter &&
-        /^[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}/.test(lastName) &&
-        /^[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}/.test(firstName)
+        /^[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}/i.test(lastName) &&
+        /^[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}/i.test(firstName)
       );
     }
     return false;
   }
 
-  private isLikelyPersonName(text: string): boolean {
-    if (this.isWhitelisted(text)) return false;
+  private isLikelyPersonName(text: string, fullContext?: string): boolean {
+    if (this.isWhitelisted(text, fullContext)) return false;
 
     const trimmed = text.trim();
     const isAllCaps =
@@ -708,7 +725,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
 
-      if (!this.isWhitelisted(name)) {
+      if (!this.isWhitelisted(name, text)) {
         const span = new Span({
           text: name,
           originalValue: name,
@@ -750,7 +767,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       while ((match = pattern.exec(text)) !== null) {
         const name = match[1];
 
-        if (!this.isWhitelisted(name)) {
+        if (!this.isWhitelisted(name, text)) {
           const span = new Span({
             text: name,
             originalValue: name,
@@ -797,7 +814,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         if (
           words.length >= 1 &&
           words.length <= 3 &&
-          !this.isWhitelisted(name)
+          !this.isWhitelisted(name, text)
         ) {
           const span = new Span({
             text: name,
@@ -840,7 +857,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
 
-      if (!this.isWhitelisted(name)) {
+      if (!this.isWhitelisted(name, text)) {
         const span = new Span({
           text: name,
           originalValue: name,
@@ -876,7 +893,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const fullMatch = match[0];
       const nameStart = match.index + fullMatch.indexOf(name);
 
-      if (!this.isWhitelisted(name)) {
+      if (!this.isWhitelisted(name, text)) {
         const span = new Span({
           text: name,
           originalValue: name,
@@ -986,9 +1003,15 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   }
 
   /**
-   * Enhanced whitelist check that includes medical terms and word-by-word checking
+   * Enhanced whitelist check that includes medical terms, hospital names, and word-by-word checking.
+   * 
+   * WHITELIST PRIORITY (things that should NOT be redacted):
+   * 1. Base whitelist (document terms, field labels, etc.)
+   * 2. Medical terms (diagnoses, procedures, medications)
+   * 3. Hospital names (NOT patient PHI under HIPAA Safe Harbor)
+   * 4. Compound phrases ("Johns Hopkins", "Major Depression")
    */
-  private isWhitelisted(text: string): boolean {
+  private isWhitelisted(text: string, context?: string): boolean {
     const normalized = text.trim();
 
     // Check base whitelist
@@ -1007,6 +1030,18 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       if (baseIsWhitelisted(word) || MedicalTermDictionary.isMedicalTerm(word)) {
         return true;
       }
+    }
+    
+    // HOSPITAL WHITELIST: Check if this is part of a hospital name
+    // Hospital names are NOT patient PHI under HIPAA Safe Harbor
+    if (context && HospitalDictionary.isPartOfHospitalName(normalized, context)) {
+      return true;
+    }
+    
+    // Check if this is part of a compound phrase (like "Johns Hopkins", "Major Depression")
+    // This prevents redacting words that look like names but are part of known phrases
+    if (context && isPartOfCompoundPhrase(normalized, context)) {
+      return true;
     }
 
     return false;

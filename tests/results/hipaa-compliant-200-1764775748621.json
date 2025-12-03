@@ -1,0 +1,628 @@
+{
+  "timestamp": "2025-12-03T15:29:08.621Z",
+  "engine": {
+    "name": "Vulpes Celare",
+    "version": "1.0.0"
+  },
+  "hipaaCompliant": true,
+  "config": {
+    "documents": 200,
+    "errorDistribution": {
+      "low": 54,
+      "medium": 67,
+      "high": 79
+    }
+  },
+  "metrics": {
+    "sensitivity": 97.27802981205443,
+    "specificity": 94.39775910364145,
+    "precision": 98.68507560815253,
+    "f1": 97.97650130548303,
+    "score": 96,
+    "grade": "A"
+  },
+  "counts": {
+    "tp": 1501,
+    "fn": 42,
+    "correctlyPreserved": 337,
+    "incorrectlyRedacted": 20,
+    "totalPHI": 1543,
+    "totalNonPHI": 357
+  },
+  "byErrorLevel": {
+    "low": {
+      "tp": 398,
+      "fn": 4,
+      "total": 402
+    },
+    "medium": {
+      "tp": 491,
+      "fn": 9,
+      "total": 500
+    },
+    "high": {
+      "tp": 612,
+      "fn": 29,
+      "total": 641
+    }
+  },
+  "byPHIType": {
+    "NAME": {
+      "tp": 293,
+      "fn": 7,
+      "total": 300
+    },
+    "DATE": {
+      "tp": 412,
+      "fn": 8,
+      "total": 420
+    },
+    "MRN": {
+      "tp": 180,
+      "fn": 0,
+      "total": 180
+    },
+    "NPI": {
+      "tp": 40,
+      "fn": 0,
+      "total": 40
+    },
+    "PHONE": {
+      "tp": 215,
+      "fn": 5,
+      "total": 220
+    },
+    "SSN": {
+      "tp": 57,
+      "fn": 3,
+      "total": 60
+    },
+    "EMAIL": {
+      "tp": 60,
+      "fn": 0,
+      "total": 60
+    },
+    "ADDRESS": {
+      "tp": 80,
+      "fn": 0,
+      "total": 80
+    },
+    "ZIPCODE": {
+      "tp": 80,
+      "fn": 0,
+      "total": 80
+    },
+    "IP": {
+      "tp": 20,
+      "fn": 0,
+      "total": 20
+    },
+    "URL": {
+      "tp": 20,
+      "fn": 0,
+      "total": 20
+    },
+    "CREDIT_CARD": {
+      "tp": 12,
+      "fn": 8,
+      "total": 20
+    },
+    "VIN": {
+      "tp": 17,
+      "fn": 3,
+      "total": 20
+    },
+    "LICENSE_PLATE": {
+      "tp": 12,
+      "fn": 8,
+      "total": 20
+    },
+    "AGE_90_PLUS": {
+      "tp": 3,
+      "fn": 0,
+      "total": 3
+    }
+  },
+  "failures": [
+    {
+      "docId": 129,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "2023-0-208",
+      "actual": "2023-0-208",
+      "hasErrors": false
+    },
+    {
+      "docId": 9,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "PHONE",
+      "expected": "9797-61-2690",
+      "actual": "9797-61-2690",
+      "hasErrors": false
+    },
+    {
+      "docId": 180,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "SSN",
+      "expected": "8418-3-7462",
+      "actual": "8418-3-7462",
+      "hasErrors": false
+    },
+    {
+      "docId": 18,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "1983-1-209",
+      "actual": "1983-1-209",
+      "hasErrors": false
+    },
+    {
+      "docId": 8,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "expected": "(927)2 38-5244",
+      "actual": "(927)2 38-5244",
+      "hasErrors": false
+    },
+    {
+      "docId": 3,
+      "docType": "Progress Note",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "expected": "Denise Ann Long",
+      "actual": "Denise Ann Long",
+      "hasErrors": false
+    },
+    {
+      "docId": 190,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "5600-4814-2570-2170",
+      "actual": "5600-4814-2570-2170",
+      "hasErrors": false
+    },
+    {
+      "docId": 190,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "VIN",
+      "expected": "UNDYFVJWFHGWJLNFG",
+      "actual": "UNDYFVJWFHGWJLNFG",
+      "hasErrors": false
+    },
+    {
+      "docId": 87,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "expected": "656.724.37G4",
+      "actual": "656.724.37G4",
+      "hasErrors": false
+    },
+    {
+      "docId": 70,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "CREDIT_CARD",
+      "expected": "3484 5833 2702 7076",
+      "actual": "3484 5833 2702 7076",
+      "hasErrors": false
+    },
+    {
+      "docId": 50,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "5312 8728 9332 2398",
+      "actual": "5312 8728 9332 2398",
+      "hasErrors": false
+    },
+    {
+      "docId": 50,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "VIN",
+      "expected": "U3BGYBTCMCJTJF6CH",
+      "actual": "U3BGYBTCMCJTJF6CH",
+      "hasErrors": false
+    },
+    {
+      "docId": 50,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "undefinedEE-9351",
+      "actual": "undefinedEE-9351",
+      "hasErrors": false
+    },
+    {
+      "docId": 60,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "CREDIT_CARD",
+      "expected": "3715-3755-8899-7465",
+      "actual": "3715-3755-8899-7465",
+      "hasErrors": false
+    },
+    {
+      "docId": 60,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "LICENSE_PLATE",
+      "expected": "HWundefined-8271",
+      "actual": "HWundefined-8271",
+      "hasErrors": false
+    },
+    {
+      "docId": 150,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "LICENSE_PLATE",
+      "expected": "RundefinedV-8066",
+      "actual": "RundefinedV-8066",
+      "hasErrors": false
+    },
+    {
+      "docId": 140,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "5770 9001 6903 0018",
+      "actual": "5770 9001 6903 0018",
+      "hasErrors": false
+    },
+    {
+      "docId": 20,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "Pundefinedundefined-4332",
+      "actual": "Pundefinedundefined-4332",
+      "hasErrors": false
+    },
+    {
+      "docId": 30,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "SSN",
+      "expected": "624-553-745",
+      "actual": "624-553-745",
+      "hasErrors": false
+    },
+    {
+      "docId": 183,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "expected": "Lisa Ann Morgan",
+      "actual": "Lisa Ann Morgan",
+      "hasErrors": false
+    },
+    {
+      "docId": 95,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "08-1g-2024",
+      "actual": "08-1g-2024",
+      "hasErrors": false
+    },
+    {
+      "docId": 96,
+      "docType": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "MITCHELL, MEGAN",
+      "actual": "MITCHELL ,MEGAN",
+      "hasErrors": true
+    },
+    {
+      "docId": 32,
+      "docType": "Lab Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "2O24-01-12",
+      "actual": "2O24-01-12",
+      "hasErrors": false
+    },
+    {
+      "docId": 10,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "CREDIT_CARD",
+      "expected": "3492 7707 6124 0202",
+      "actual": "3492 7707 6124 0202",
+      "hasErrors": false
+    },
+    {
+      "docId": 102,
+      "docType": "Lab Report",
+      "errorLevel": "medium",
+      "phiType": "SSN",
+      "expected": "5262-6-2493",
+      "actual": "5262-6-2493",
+      "hasErrors": false
+    },
+    {
+      "docId": 38,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "1963-06-70",
+      "actual": "1963-06-70",
+      "hasErrors": false
+    },
+    {
+      "docId": 110,
+      "docType": "Special Document",
+      "errorLevel": "low",
+      "phiType": "LICENSE_PLATE",
+      "expected": "EundefinedX-6143",
+      "actual": "EundefinedX-6143",
+      "hasErrors": false
+    },
+    {
+      "docId": 123,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Chen Marie Hall",
+      "actual": "Chen Marie Hall",
+      "hasErrors": false
+    },
+    {
+      "docId": 130,
+      "docType": "Special Document",
+      "errorLevel": "medium",
+      "phiType": "LICENSE_PLATE",
+      "expected": "TundefinedM-7771",
+      "actual": "TundefinedM-7771",
+      "hasErrors": false
+    },
+    {
+      "docId": 191,
+      "docType": "Radiology Report",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "expected": "(5I7) 379-5161",
+      "actual": "(5I7) 379-5161",
+      "hasErrors": false
+    },
+    {
+      "docId": 159,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "MORGAN, LAUREN",
+      "actual": "morgan ,lauren",
+      "hasErrors": true
+    },
+    {
+      "docId": 80,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "5441-1909-2909-0556",
+      "actual": "5441-1909-2909-0556",
+      "hasErrors": false
+    },
+    {
+      "docId": 80,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "undefinedVU-4654",
+      "actual": "undefinedVU-4654",
+      "hasErrors": false
+    },
+    {
+      "docId": 121,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "expected": "2024-20-14",
+      "actual": "2024-20-14",
+      "hasErrors": false
+    },
+    {
+      "docId": 40,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "CREDIT_CARD",
+      "expected": "3444-7696-8147-4317",
+      "actual": "3444-7696-8147-4317",
+      "hasErrors": false
+    },
+    {
+      "docId": 40,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "VIN",
+      "expected": "B0SKL9CVCEFNSNNLV",
+      "actual": "B0SKL9CVCEFNSNNLV",
+      "hasErrors": false
+    },
+    {
+      "docId": 114,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "expected": "536.530.G225",
+      "actual": "536.530.G225",
+      "hasErrors": false
+    },
+    {
+      "docId": 78,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "expected": "2O24-03-28",
+      "actual": "2O24-03-28",
+      "hasErrors": false
+    },
+    {
+      "docId": 139,
+      "docType": "Nursing Assessment",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "Adam Ward",
+      "actual": "adAM WARd",
+      "hasErrors": true
+    },
+    {
+      "docId": 200,
+      "docType": "Special Document",
+      "errorLevel": "high",
+      "phiType": "LICENSE_PLATE",
+      "expected": "undefinedZS-7028",
+      "actual": "undefinedZS-7028",
+      "hasErrors": false
+    },
+    {
+      "docId": 167,
+      "docType": "Prescription",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "expected": "1943-12-1G",
+      "actual": "1943-12-1G",
+      "hasErrors": false
+    },
+    {
+      "docId": 54,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "expected": "COOK, JAMAL",
+      "actual": "COOK ,JAMAL",
+      "hasErrors": true
+    }
+  ],
+  "overRedactions": [
+    {
+      "docId": 50,
+      "docType": "Special Document",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 93,
+      "docType": "Progress Note",
+      "type": "DIAGNOSIS",
+      "value": "Major Depression"
+    },
+    {
+      "docId": 136,
+      "docType": "Operative Report",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 30,
+      "docType": "Special Document",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 85,
+      "docType": "Discharge Summary",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 168,
+      "docType": "Consultation Note",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 168,
+      "docType": "Consultation Note",
+      "type": "DIAGNOSIS",
+      "value": "Major Depression"
+    },
+    {
+      "docId": 109,
+      "docType": "Nursing Assessment",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 72,
+      "docType": "Lab Report",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 71,
+      "docType": "Radiology Report",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 23,
+      "docType": "Progress Note",
+      "type": "DIAGNOSIS",
+      "value": "Major Depression"
+    },
+    {
+      "docId": 80,
+      "docType": "Special Document",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 156,
+      "docType": "Operative Report",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 22,
+      "docType": "Lab Report",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 92,
+      "docType": "Lab Report",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 188,
+      "docType": "Consultation Note",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 62,
+      "docType": "Lab Report",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital"
+    },
+    {
+      "docId": 148,
+      "docType": "Consultation Note",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 65,
+      "docType": "Discharge Summary",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    },
+    {
+      "docId": 166,
+      "docType": "Operative Report",
+      "type": "HOSPITAL",
+      "value": "Mount Sinai Hospital"
+    }
+  ]
+}

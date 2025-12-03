@@ -29,6 +29,12 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
     /\b(?:card|cc|credit\s*card)\s*[:#]?\s*([\d\s-]{13,23})\b/gi,
     // Standalone card numbers (13-19 digits with optional separators)
     /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{1,7}\b/g,
+    // AMEX format: 15 digits starting with 34 or 37 (with separators)
+    /\b3[47]\d{2}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{3}\b/g,
+    // AMEX without separators: 34XXXXXXXXXXXXX or 37XXXXXXXXXXXXX
+    /\b3[47]\d{13}\b/g,
+    // AMEX with various separator patterns
+    /\b3[47]\d{2}[\s-]\d{6}[\s-]\d{5}\b/g,
   ];
 
   /**
@@ -121,6 +127,12 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
     // For HIPAA: Accept cards that LOOK like credit cards
     // even if they fail Luhn (e.g., example numbers in documentation)
     // This prevents data leakage of fake/test card numbers
+    
+    // AMEX cards start with 34 or 37 and are 15 digits
+    const isAMEX = /^3[47]/.test(digits) && digits.length === 15;
+    if (isAMEX) {
+      return true; // Accept all AMEX-formatted numbers for HIPAA safety
+    }
 
     let sum = 0;
     let isEven = false;

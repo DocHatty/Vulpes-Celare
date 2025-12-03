@@ -62,7 +62,9 @@ export class FilterRegistry {
         { PassportNumberFilterSpan },
         { UniqueIdentifierFilterSpan },
         { AgeFilterSpan },
-        { HospitalFilterSpan },
+        // HospitalFilterSpan removed - hospital names are NOT patient PHI under HIPAA Safe Harbor
+        // Hospital names should be PROTECTED (whitelisted), not redacted
+        // See SmartNameFilterSpan which uses HospitalDictionary for whitelisting
       ] = await Promise.all([
         import("./EmailFilterSpan"),
         import("./PhoneFilterSpan"),
@@ -89,7 +91,7 @@ export class FilterRegistry {
         import("./PassportNumberFilterSpan"),
         import("./UniqueIdentifierFilterSpan"),
         import("./AgeFilterSpan"),
-        import("./HospitalFilterSpan"),
+        // HospitalFilterSpan import removed - hospitals are whitelisted, not redacted
       ]);
 
       // Register all Span-based filters
@@ -119,12 +121,12 @@ export class FilterRegistry {
         new PassportNumberFilterSpan(),
         new UniqueIdentifierFilterSpan(),
         new AgeFilterSpan(),
-        new HospitalFilterSpan(),
+        // HospitalFilterSpan removed from pipeline - hospitals are NOT PHI
       ];
 
       RadiologyLogger.success(
         "REDACTION",
-        `Parallel Span-based redaction ready: ${this.spanFilters.length} filters loaded (includes FAX, VEHICLE, DEVICE, BIOMETRIC, PASSPORT, UNIQUE_ID, AGE, HOSPITAL)`,
+        `Parallel Span-based redaction ready: ${this.spanFilters.length} filters loaded (includes FAX, VEHICLE, DEVICE, BIOMETRIC, PASSPORT, UNIQUE_ID, AGE)`,
       );
 
       this.isInitialized = true;
