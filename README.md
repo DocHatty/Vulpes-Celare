@@ -24,7 +24,7 @@
 | Metric | Score | Notes |
 |:------:|:-----:|:------|
 | **Sensitivity** | 99.6% | PHI correctly identified |
-| **Specificity** | Previously 100%. Note, current push is experimenting with new design concepts and levels may fluctuate during this period of refinement drastically until stabilized. Will re-post when stable.
+| **Specificity** | 96-100% |
 | **Documents** | 250+ | Synthetic adversarial documents |
 
 <sub>Tested on programmatically generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
