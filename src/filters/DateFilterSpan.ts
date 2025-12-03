@@ -11,16 +11,15 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { PatternStrings } from "../patterns/SharedPatterns";
 
 export class DateFilterSpan extends SpanBasedFilter {
   /**
-   * Month names for pattern building
+   * Month names for pattern building - using centralized SharedPatterns
    */
-  private static readonly MONTHS_FULL =
-    "January|February|March|April|May|June|July|August|September|October|November|December";
-  private static readonly MONTHS_ABBR =
-    "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec";
-  private static readonly MONTHS_ALL = `${DateFilterSpan.MONTHS_FULL}|${DateFilterSpan.MONTHS_ABBR}`;
+  private static readonly MONTHS_FULL = PatternStrings.monthsFull;
+  private static readonly MONTHS_ABBR = PatternStrings.monthsAbbr;
+  private static readonly MONTHS_ALL = PatternStrings.monthsAll;
 
   /**
    * Date regex pattern sources
@@ -146,6 +145,32 @@ export class DateFilterSpan extends SpanBasedFilter {
     // ===== YEAR ONLY (when contextually relevant) =====
     // Born in 1985, admitted 2024, etc. - captured by context
     /\b(?:born|admitted|discharged|diagnosed|since|in|year)\s+(19|20)\d{2}\b/gi,
+
+    // ===== EXTREME OCR ERROR PATTERNS =====
+    // Missing first digit: "/93/2021", "/15/1985"
+    /\/\d{1,2}\/(?:19|20)\d{2}\b/g,
+    // Z for 2 in year: "10/26/Z020", "o9/07/20Z3", "8/9/20Z4"
+    /\b\d{1,2}[-/]\d{1,2}[-/](?:[Z2][O0]\d{2}|20[Z2]\d|20\d[Z2])\b/gi,
+    // Truncated year: "08/21/6", "3/2/05" (single or double digit year)
+    /\b\d{1,2}[-/]\d{1,2}[-/]\d{1,2}\b/g,
+    // Extra digits in date components: "1217/1933", "12/208/7", "1/224/41"
+    /\b\d{3,4}[-/]\d{1,4}[-/]?\d{0,4}\b/g,
+    // Space before separator: "07/27 /2204", "1971- 04-19", "2024- 02-O1"
+    /\b\d{1,2}[-/]?\d{1,2}\s+[-/]\s*\d{2,4}\b/g,
+    /\b\d{4}-\s*\d{2}-\d{2}\b/g,
+    // Year with OCR letter in any position: "l988-05-25", "1g68-04-17", "12/14/1q93"
+    /\b[1lI|][9gq][0-9OoIlBbSsGg]{2}[-/]\d{1,2}[-/]\d{1,2}\b/gi,
+    /\b\d{1,2}[-/]\d{1,2}[-/][1lI|][9gq][0-9OoIlBbSsGg]{2}\b/gi,
+    // Double separator or extra char: "2o21--o2-20", "03-15 -202", "01/15//55"
+    /\b\d{1,4}[-/]{1,2}\s*\d{1,2}[-/]{1,2}\s*\d{1,4}\b/g,
+    // Missing separator: "0608/23", "07/0320"
+    /\b\d{4}[-/]\d{2}\b/g,
+    /\b\d{2}[-/]\d{4}\b/g,
+    // OCR o/O for 0 throughout: "o9/07/20Z3", "1973-OO8-08"
+    /\b[oO0]\d[-/][oO0]\d[-/]\d{2,4}\b/gi,
+    /\b\d{4}-[oO0]{1,2}\d[-/]\d{1,2}\b/gi,
+    // Very corrupted but date-like: any 3 groups of digits with separators
+    /\b\d{1,4}[-/]\d{1,4}[-/]\d{1,4}\b/g,
   ];
 
   /**

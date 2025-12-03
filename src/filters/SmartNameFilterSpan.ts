@@ -9,10 +9,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { NameDictionary } from "../dictionaries/NameDictionary";
 import {
@@ -27,8 +24,13 @@ import {
   isPartOfCompoundPhrase,
 } from "./constants/NameFilterConstants";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
-import { MedicalTermDictionary } from "../dictionaries/MedicalTermDictionary";
 import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
+import { FieldLabelWhitelist } from "../core/FieldLabelWhitelist";
+import {
+  NameDetectionUtils,
+  PROVIDER_TITLE_PREFIXES,
+  PROVIDER_CREDENTIALS,
+} from "../utils/NameDetectionUtils";
 
 export class SmartNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -90,81 +92,167 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     return spans;
   }
 
+  // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
+
   /**
-   * Pattern 1: Title + Name (handles both "Dr. Smith" and "Dr. John Smith")
+   * Check if a titled name is a PROVIDER name (should NOT be redacted)
+   * Provider names with professional titles or credentials are NOT patient PHI
    */
-  private detectTitledNames(text: string, spans: Span[]): void {
-    const pattern = new RegExp(
-      `\\b(?:${NAME_PREFIXES.join("|")})\\.?[ \\t]+[A-Z][a-z]+(?:[ \\t]+[A-Z][a-z]+)*\\b`,
-      "g",
-    );
-    pattern.lastIndex = 0;
-    let match;
+  private isProviderName(matchedText: string, fullContext: string): boolean {
+    const trimmed = matchedText.trim();
 
-    while ((match = pattern.exec(text)) !== null) {
-      const matchedText = match[0];
+    // Extract the title (first word)
+    const titleMatch = trimmed.match(/^([A-Za-z]+)\.?\s+/);
+    if (!titleMatch) return false;
 
-      if (!this.isWhitelisted(matchedText, text) && !this.isHeading(matchedText)) {
-        const span = new Span({
-          text: matchedText,
-          originalValue: matchedText,
-          characterStart: match.index,
-          characterEnd: match.index + matchedText.length,
-          filterType: FilterType.NAME,
-          confidence: 0.92,
-          priority: this.getPriority(),
-          context: this.getContext(text, match.index, matchedText.length),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Titled name",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+    const title = titleMatch[1];
+
+    // Check if this is a provider title
+    if (PROVIDER_TITLE_PREFIXES.has(title)) {
+      return true;
+    }
+
+    // Also check if the name has professional credentials (e.g., "John Smith, MD")
+    // Check the context after the name for credentials
+    const nameEnd = fullContext.indexOf(trimmed) + trimmed.length;
+    if (nameEnd < fullContext.length) {
+      const afterName = fullContext.substring(nameEnd, nameEnd + 30); // Look ahead 30 chars
+      // Check for credentials pattern: ", MD" or ", DDS" or ", PhD" etc.
+      const credentialPattern =
+        /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC)\b/i;
+      if (credentialPattern.test(afterName)) {
+        return true;
       }
     }
+
+    return false;
+  }
+
+  /**
+   * Check if a name (without title) appears in a provider context
+   * This catches cases where "Sergei Hernandez" is detected but it's actually
+   * part of "Prof. Sergei Hernandez" which is a provider name
+   *
+   * Also catches partial matches like "O'Neill" which is part of "Dame Ananya O'Neill"
+   *
+   * @param name - The matched name text (e.g., "Sergei Hernandez" or "O'Neill")
+   * @param matchIndex - The position in the full text where this name was found
+   * @param fullContext - The full document text
+   * @returns true if this name appears to be part of a provider name
+   */
+  private isInProviderContext(
+    name: string,
+    matchIndex: number,
+    fullContext: string,
+  ): boolean {
+    // Look backwards from the match to see if there's a title prefix
+    // Use a larger lookback distance to catch "Dame Ananya O'Neill" where O'Neill
+    // is separated from Dame by the first name
+    const lookBackDistance = 40; // Enough for "Title FirstName MiddleName "
+    const startLook = Math.max(0, matchIndex - lookBackDistance);
+    const beforeText = fullContext.substring(startLook, matchIndex);
+
+    // Check if text before the name ends with a title prefix (immediate)
+    // Pattern: title possibly followed by period and space(s)
+    const titlePattern = new RegExp(
+      `(?:${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`,
+      "i",
+    );
+    if (titlePattern.test(beforeText)) {
+      return true;
+    }
+
+    // ALSO check if there's a title anywhere in the lookback followed by name-like words
+    // This catches "Dame Ananya O'Neill" where O'Neill is matched separately
+    // Pattern: Title + period? + space + CapitalizedWord(s) + space at end
+    const titledNamePattern = new RegExp(
+      `(?:${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Z][a-zA-Z'-]+(?:\\s+[A-Z][a-zA-Z'-]+)*\\s*$`,
+      "i",
+    );
+    if (titledNamePattern.test(beforeText)) {
+      return true;
+    }
+
+    // Also check if this name is followed by professional credentials
+    const nameEnd = matchIndex + name.length;
+    if (nameEnd < fullContext.length) {
+      const afterName = fullContext.substring(nameEnd, nameEnd + 30);
+      const credentialPattern =
+        /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|FCCP|FAHA|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC|AGNP-C|OTR\/L)\b/i;
+      if (credentialPattern.test(afterName)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Pattern 1: Title + Name (handles both "Dr. Smith" and "Dr. John Smith")
+   *
+   * IMPORTANT: Names with professional titles (Dr., Prof., Hon., Dame, Sir, etc.)
+   * are PROVIDER names under HIPAA Safe Harbor and should NOT be redacted.
+   * Only patient names should be redacted.
+   */
+  private detectTitledNames(text: string, spans: Span[]): void {
+    // DISABLED: TitledNameFilterSpan now handles all titled names with PROVIDER_NAME type
+    // This prevents duplicate detection and ensures consistent labeling
+    return;
   }
 
   /**
    * Pattern 2: Patient + Name patterns
+   *
+   * CRITICAL: The name capture MUST require proper capitalization (First Last)
+   * to avoid matching things like "patient was seen by" as a name.
+   * We use case-insensitive for the prefix (Patient/Pt/etc.) but the name
+   * itself must be properly capitalized.
    */
   private detectPatientNames(text: string, spans: Span[]): void {
-    const pattern =
-      /\b(?:Patient|Pt|Subject|Individual|Client)[ \t:]+([A-Z][a-z]+(?:[ \t]+[A-Z]\.?[ \t]*)?(?:[ \t]+[A-Z][a-z]+){1,2})\b/gi;
-    pattern.lastIndex = 0;
-    let match;
+    // First find potential matches with case-insensitive prefix
+    const prefixPattern = /\b(?:Patient|Pt|Subject|Individual|Client)[ \t:]+/gi;
+    let prefixMatch;
 
-    while ((match = pattern.exec(text)) !== null) {
-      const name = match[1];
-      const fullMatch = match[0];
-      const matchPos = match.index!;
+    while ((prefixMatch = prefixPattern.exec(text)) !== null) {
+      const afterPrefix = text.substring(
+        prefixMatch.index + prefixMatch[0].length,
+      );
 
-      if (!this.isHeading(fullMatch)) {
-        const nameStart = matchPos + fullMatch.indexOf(name);
-        const nameEnd = nameStart + name.length;
+      // Now match the name with STRICT capitalization (case-sensitive)
+      // Name must be: Capital + lowercase, optionally with middle initial and last name
+      const namePattern =
+        /^([A-Z][a-z]{2,}(?:[ \t]+[A-Z]\.?)?(?:[ \t]+[A-Z][a-z]{2,}){1,2})\b/;
+      const nameMatch = afterPrefix.match(namePattern);
 
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: nameStart,
-          characterEnd: nameEnd,
-          filterType: FilterType.NAME,
-          confidence: 0.92,
-          priority: this.getPriority(),
-          context: this.getContext(text, matchPos, fullMatch.length),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Patient name",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+      if (nameMatch) {
+        const name = nameMatch[1];
+        const fullMatch = prefixMatch[0] + name;
+        const matchPos = prefixMatch.index;
+
+        if (!this.isHeading(fullMatch)) {
+          const nameStart = matchPos + prefixMatch[0].length;
+          const nameEnd = nameStart + name.length;
+
+          const span = new Span({
+            text: name,
+            originalValue: name,
+            characterStart: nameStart,
+            characterEnd: nameEnd,
+            filterType: FilterType.NAME,
+            confidence: 0.92,
+            priority: this.getPriority(),
+            context: this.getContext(text, matchPos, fullMatch.length),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: "Patient name",
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          });
+          spans.push(span);
+        }
       }
     }
   }
@@ -346,24 +434,46 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     }
   }
 
+  // PROVIDER_CREDENTIALS imported from NameDetectionUtils
+
   /**
    * Pattern 6: Name with suffix (Jr., Sr., III, etc.)
    *
-   * IMPORTANT: Names with suffixes like "Jr.", "Sr.", "III" are ALWAYS person names.
-   * We should NOT whitelist based on medical term matching because:
-   * - "Thomas Parkinson Jr." is a person, not Parkinson's disease
-   * - "James Wilson III" is a person, not Wilson's disease
+   * IMPORTANT: Names with PROFESSIONAL CREDENTIALS (MD, DDS, RN, etc.) are PROVIDERS
+   * and should NOT be redacted. Names with GENERATIONAL suffixes (Jr., Sr., III)
+   * ARE patient names and SHOULD be redacted.
+   *
+   * CRITICAL: Must use case-SENSITIVE matching for the name part to avoid
+   * matching lowercase words like "seen by" as names.
    */
   private detectNamesWithSuffix(text: string, spans: Span[]): void {
-    const pattern = new RegExp(
-      `\\b([A-Z][a-z]+(?:[ \\t]+[A-Z]\\.?[ \\t]*)?[ \\t]+[A-Z][a-z]+)[ \\t]*,?[ \\t]*(?:${NAME_SUFFIXES.join("|")})\\.?\\b`,
+    // STRICT pattern: Name must have proper capitalization (case-sensitive)
+    // Only the suffix matching is case-insensitive
+    const suffixPattern = new RegExp(
+      `(?:${NAME_SUFFIXES.join("|")})\\.?\\b`,
       "gi",
     );
-    pattern.lastIndex = 0;
-    let match;
 
-    while ((match = pattern.exec(text)) !== null) {
-      const name = match[1];
+    // Find all suffix occurrences
+    let suffixMatch;
+    while ((suffixMatch = suffixPattern.exec(text)) !== null) {
+      // Look backwards from the suffix to find the name
+      const beforeSuffix = text.substring(0, suffixMatch.index);
+
+      // Match name with STRICT capitalization (case-sensitive)
+      // Pattern: "First Last ,?" at the end of beforeSuffix
+      const namePattern =
+        /([A-Z][a-z]+(?:[ \t]+[A-Z]\.?)?[ \t]+[A-Z][a-z]+)[ \t]*,?[ \t]*$/;
+      const nameMatch = beforeSuffix.match(namePattern);
+
+      if (!nameMatch || nameMatch.index === undefined) continue;
+
+      const name = nameMatch[1];
+      const nameMatchIndex = nameMatch.index;
+      const fullMatch =
+        name +
+        beforeSuffix.substring(nameMatchIndex + name.length) +
+        suffixMatch[0];
 
       // Only skip for non-person structure terms, NOT medical terms
       // Names with suffix are explicitly person names
@@ -377,10 +487,26 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         continue;
       }
 
-      const fullMatch = match[0];
-      const matchPos = match.index!;
-      const nameStart = matchPos + fullMatch.indexOf(name);
-      const nameEnd = nameStart + name.length;
+      // Calculate the actual position of the name in the text
+      const nameStartPos = nameMatchIndex;
+      const nameEndPos = nameStartPos + name.length;
+
+      // CRITICAL: Skip if this name appears in a provider context
+      // (preceded by a title like Dr., Prof., Mr., etc.)
+      if (this.isInProviderContext(name, nameStartPos, text)) {
+        continue;
+      }
+
+      // CRITICAL: Check if this is a PROVIDER with professional credentials
+      // Extract the suffix from the full match
+      const extractedSuffix = suffixMatch[0].replace(/\.$/, "").toUpperCase();
+      // If suffix is a provider credential, skip - this is a provider name
+      if (PROVIDER_CREDENTIALS.has(extractedSuffix)) {
+        continue;
+      }
+
+      const nameStart = nameStartPos;
+      const nameEnd = nameEndPos;
 
       const span = new Span({
         text: name,
@@ -390,7 +516,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         filterType: FilterType.NAME,
         confidence: 0.92, // Higher confidence for suffix-qualified names
         priority: this.getPriority(),
-        context: this.getContext(text, matchPos, fullMatch.length),
+        context: this.getContext(text, nameStart, fullMatch.length),
         window: [],
         replacement: null,
         salt: null,
@@ -406,21 +532,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Check if text is a non-person structure term (document sections, etc.)
-   * This is a minimal whitelist that should NOT include medical terms
+   * Delegates to shared NameDetectionUtils
    */
   private isNonPersonStructureTerm(text: string): boolean {
-    const structureTerms = [
-      "protected health",
-      "social security",
-      "medical record",
-      "health plan",
-      "emergency department",
-      "intensive care",
-      "emergency contact",
-      "next of kin",
-    ];
-    const lower = text.toLowerCase();
-    return structureTerms.some((term) => lower.includes(term));
+    return NameDetectionUtils.isNonPersonStructureTerm(text);
   }
 
   /**
@@ -498,30 +613,46 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Pattern 0: Last, First format
+   *
+   * CRITICAL: This pattern must be STRICT to avoid false positives.
+   * The pattern requires proper capitalization: Capital letter followed by lowercase.
    */
   private detectLastFirstNames(text: string, spans: Span[]): void {
-    // OCR-tolerant pattern: Allow digits and symbols in names
-    // Start with [A-Z0-9@$|] to handle 5eb@stian, 8cndd@, $har0n, |sabella
-    // Allow [a-zA-Z0-9@$|] inside to handle M@rtinEz, HArris
-    // ALSO handle spacing errors: "LAST ,FIRST" (space before comma from OCR)
-    // Case-insensitive to handle "morgan ,lauren", "COOK ,JAMAL", etc.
-    const patterns = [
-      // Standard: "Last, First" or "Last, First Middle" (case-insensitive)
-      /\b([A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,},[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/gi,
-      // OCR spacing error: "Last ,First" (space before comma) - case-insensitive
-      /\b([A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}[ \t]+,[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/gi,
-      // OCR spacing error: "Last , First" (space on both sides of comma) - case-insensitive
-      /\b([A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}[ \t]+,[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,})?)\b/gi,
-    ];
-    
-    for (const pattern of patterns) {
+    // STRICT pattern: "Last, First" format with proper capitalization
+    // Each word must start with capital letter followed by at least 2 lowercase letters
+    const pattern =
+      /\b([A-Z][a-z]{2,},[ \t]+[A-Z][a-z]{2,}(?:[ \t]+[A-Z][a-z]{2,})?)\b/g;
     pattern.lastIndex = 0;
     let match;
 
     while ((match = pattern.exec(text)) !== null) {
       const fullName = match[1];
 
-      if (!this.isWhitelisted(fullName, text) && this.validateLastFirst(fullName)) {
+      // CRITICAL: Check if preceded by a provider title (with name in between)
+      // "Hon. Javier Rosen, AGNP" -> "Rosen, AGNP" should NOT be detected
+      const lookbackStart = Math.max(0, match.index - 30);
+      const textBefore = text.substring(lookbackStart, match.index);
+      const titleNamePattern = new RegExp(
+        `\\b(${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`,
+        "i",
+      );
+      if (titleNamePattern.test(textBefore)) {
+        continue;
+      }
+
+      // CRITICAL: Skip if second part is a credential (AGNP, RN, MD, etc.)
+      const parts = fullName.split(/\s*,\s*/);
+      if (parts.length === 2) {
+        const secondPart = parts[1].split(/\s+/)[0]; // Get first word after comma
+        if (PROVIDER_CREDENTIALS.has(secondPart.toUpperCase())) {
+          continue;
+        }
+      }
+
+      if (
+        !this.isWhitelisted(fullName, text) &&
+        this.validateLastFirst(fullName)
+      ) {
         const span = new Span({
           text: fullName,
           originalValue: fullName,
@@ -543,21 +674,40 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         spans.push(span);
       }
     }
-    } // end for loop over patterns
   }
 
   /**
    * Pattern 9: General full names (First Last format)
+   *
+   * CRITICAL: This pattern must be STRICT to avoid false positives.
+   * The pattern requires proper capitalization: Capital letter followed by lowercase.
+   * This prevents matching things like "Apixaban 5mg" or "takes Apixaban" as names.
    */
   private detectGeneralFullNames(text: string, spans: Span[]): void {
-    // OCR-tolerant pattern: Allow digits and symbols in names
+    // STRICT pattern: First Last format with proper capitalization
+    // Each word must start with capital letter followed by at least 2 lowercase letters
+    // This matches: "John Smith", "Mary Johnson Jr."
+    // This does NOT match: "Apixaban 5mg", "takes Apixaban", "CT Scan"
     const pattern =
-      /\b([A-Z0-9@$|][a-zA-Z0-9@$|]{2,}[ \t]+[A-Z0-9@$|][a-zA-Z0-9@$|]{2,}(?:[ \t]+(?:Jr\.?|Sr\.?|II|III|IV))?)\b/g;
+      /\b([A-Z][a-z]{2,}[ \t]+[A-Z][a-z]{2,}(?:[ \t]+(?:Jr\.?|Sr\.?|II|III|IV))?)\b/g;
     pattern.lastIndex = 0;
     let match;
 
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
+
+      // CRITICAL: Skip if the FIRST word of the match is a provider title
+      // "Dame Joshua" should NOT be detected because "Dame" is a title
+      const firstWord = name.split(/\s+/)[0].replace(/[.,!?;:'"]+$/, "");
+      if (PROVIDER_TITLE_PREFIXES.has(firstWord)) {
+        continue;
+      }
+
+      // CRITICAL: Skip if this name appears in a provider context
+      // (preceded by a title like Dr., Prof., Mr., etc. OR followed by credentials)
+      if (this.isInProviderContext(name, match.index, text)) {
+        continue;
+      }
 
       if (
         !this.isWhitelisted(name, text) &&
@@ -588,89 +738,19 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   }
 
   /**
-   * Helper methods
+   * Helper methods - Delegates to shared NameDetectionUtils
    */
   private validateLastFirst(name: string): boolean {
-    // Normalize spacing around comma for validation
-    // Handle "Last, First", "Last ,First", "Last , First"
-    const normalized = name.replace(/\s*,\s*/g, ",");
-    const parts = normalized.split(",");
-    if (parts.length === 2) {
-      const lastName = parts[0].trim();
-      const firstName = parts[1].trim();
-      // Relaxed validation for OCR, but MUST contain at least one letter to avoid "123, 456"
-      // Case-insensitive to handle "morgan ,lauren", "COOK ,JAMAL", etc.
-      const hasLetter = /[a-zA-Z]/.test(lastName) && /[a-zA-Z]/.test(firstName);
-      return (
-        hasLetter &&
-        /^[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}/i.test(lastName) &&
-        /^[A-Za-z0-9@$|][a-zA-Z0-9@$|]{2,}/i.test(firstName)
-      );
-    }
-    return false;
+    return NameDetectionUtils.validateLastFirstStrict(name);
   }
 
   private isLikelyPersonName(text: string, fullContext?: string): boolean {
     if (this.isWhitelisted(text, fullContext)) return false;
-
-    const trimmed = text.trim();
-    const isAllCaps =
-      /^[A-Z0-9\s]+$/.test(trimmed) &&
-      /[A-Z]/.test(trimmed) &&
-      trimmed.length > 6;
-    if (isAllCaps && trimmed.split(/\s+/).length >= 2) return false;
-    if (trimmed.endsWith(":")) return false;
-
-    const words = trimmed.split(/\s+/);
-    if (words.length < 2 || words.length > 3) return false;
-
-    const firstWord = words[0];
-    const lastWord = words[words.length - 1];
-
-    // PRIMARY CHECK: Use dictionary validation
-    // If the first word is NOT a known first name, this is likely not a person name
-    // This eliminates false positives like "Timeline Narrative", "Physical Therapy"
-    const nameConfidence = NameDictionary.getNameConfidence(trimmed);
-    if (nameConfidence < 0.5) {
-      // Not a recognized name pattern - reject it
-      return false;
-    }
-
-    // Use shared constants for validation
-    if (DOCUMENT_TERMS.has(firstWord)) return false;
-    if (NON_NAME_ENDINGS.has(lastWord)) return false;
-
-    // Check if ANY word in the phrase is in the non-name set (catches middle words)
-    for (const word of words) {
-      if (DOCUMENT_TERMS.has(word) || NON_NAME_ENDINGS.has(word)) {
-        return false;
-      }
-    }
-
-    // Check geographic terms
-    for (const word of words) {
-      if (GEOGRAPHIC_TERMS.has(word)) return false;
-    }
-
-    if (!words.every((w) => w.length >= 2)) return false;
-
-    for (const word of words) {
-      // Relaxed check: Allow OCR characters in words
-      if (
-        !["Jr", "Jr.", "Sr", "Sr.", "II", "III", "IV"].includes(word) &&
-        !/^[A-Z0-9@$|][a-zA-Z0-9@$|]+$/.test(word)
-      ) {
-        return false;
-      }
-    }
-
-    return true;
+    return NameDetectionUtils.isLikelyPersonName(text, fullContext);
   }
 
   private getContext(text: string, offset: number, length: number): string {
-    const start = Math.max(0, offset - 150);
-    const end = Math.min(text.length, offset + length + 150);
-    return text.substring(start, end);
+    return NameDetectionUtils.extractContext(text, offset, length, 150);
   }
 
   private isHeading(text: string): boolean {
@@ -725,6 +805,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
 
+      // Skip provider names (preceded by title or followed by credentials)
+      if (this.isInProviderContext(name, match.index, text)) {
+        continue;
+      }
+
       if (!this.isWhitelisted(name, text)) {
         const span = new Span({
           text: name,
@@ -767,6 +852,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       while ((match = pattern.exec(text)) !== null) {
         const name = match[1];
 
+        // Skip provider names (preceded by title or followed by credentials)
+        if (this.isInProviderContext(name, match.index, text)) {
+          continue;
+        }
+
         if (!this.isWhitelisted(name, text)) {
           const span = new Span({
             text: name,
@@ -805,6 +895,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
     while ((match = accentedPattern.exec(text)) !== null) {
       const name = match[1];
+
+      // Skip provider names (preceded by title or followed by credentials)
+      if (this.isInProviderContext(name, match.index, text)) {
+        continue;
+      }
 
       // Only process if it actually contains accented characters
       if (/[áéíóúàèìòùäëïöüñçøåÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÑÇØÅ]/.test(name)) {
@@ -857,6 +952,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
 
+      // Skip provider names (preceded by title or followed by credentials)
+      if (this.isInProviderContext(name, match.index, text)) {
+        continue;
+      }
+
       if (!this.isWhitelisted(name, text)) {
         const span = new Span({
           text: name,
@@ -880,41 +980,8 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       }
     }
 
-    // Also detect standalone particle surnames (more common in references)
-    // e.g., "Dr. van Gogh", "Prof. de Silva"
-    const standalonePattern = new RegExp(
-      `\\b(?:Dr\\.?|Prof\\.?|Mr\\.?|Mrs\\.?|Ms\\.?)\\s+((?:${particles})\\s+[A-Z][a-z]+)\\b`,
-      "gi",
-    );
-    standalonePattern.lastIndex = 0;
-
-    while ((match = standalonePattern.exec(text)) !== null) {
-      const name = match[1];
-      const fullMatch = match[0];
-      const nameStart = match.index + fullMatch.indexOf(name);
-
-      if (!this.isWhitelisted(name, text)) {
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: nameStart,
-          characterEnd: nameStart + name.length,
-          filterType: FilterType.NAME,
-          confidence: 0.91,
-          priority: this.getPriority(),
-          context: this.getContext(text, match.index, fullMatch.length),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Titled particle surname",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
-      }
-    }
+    // NOTE: We intentionally DO NOT detect "Dr. van Gogh", "Prof. de Silva" etc.
+    // These are explicitly titled names = provider names = NOT PHI
   }
 
   /**
@@ -1004,7 +1071,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Enhanced whitelist check that includes medical terms, hospital names, and word-by-word checking.
-   * 
+   *
    * WHITELIST PRIORITY (things that should NOT be redacted):
    * 1. Base whitelist (document terms, field labels, etc.)
    * 2. Medical terms (diagnoses, procedures, medications)
@@ -1014,30 +1081,42 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   private isWhitelisted(text: string, context?: string): boolean {
     const normalized = text.trim();
 
-    // Check base whitelist
+    // CRITICAL: Check FieldLabelWhitelist FIRST - this is the centralized whitelist
+    // This was missing and caused 98% -> 26% specificity drop!
+    if (FieldLabelWhitelist.shouldExclude(normalized)) {
+      return true;
+    }
+
+    // Check base whitelist from NameFilterConstants
     if (baseIsWhitelisted(normalized)) {
       return true;
     }
 
     // Check if it's a medical term
-    if (MedicalTermDictionary.isMedicalTerm(normalized)) {
+    if (DocumentVocabulary.isMedicalTerm(normalized)) {
       return true;
     }
 
     // Check individual words - if ANY word is a medical term, skip entire match
     const words = normalized.split(/[\s,]+/).filter((w) => w.length > 2);
     for (const word of words) {
-      if (baseIsWhitelisted(word) || MedicalTermDictionary.isMedicalTerm(word)) {
+      if (FieldLabelWhitelist.shouldExclude(word)) {
+        return true;
+      }
+      if (baseIsWhitelisted(word) || DocumentVocabulary.isMedicalTerm(word)) {
         return true;
       }
     }
-    
+
     // HOSPITAL WHITELIST: Check if this is part of a hospital name
     // Hospital names are NOT patient PHI under HIPAA Safe Harbor
-    if (context && HospitalDictionary.isPartOfHospitalName(normalized, context)) {
+    if (
+      context &&
+      HospitalDictionary.isPartOfHospitalName(normalized, context)
+    ) {
       return true;
     }
-    
+
     // Check if this is part of a compound phrase (like "Johns Hopkins", "Major Depression")
     // This prevents redacting words that look like names but are part of known phrases
     if (context && isPartOfCompoundPhrase(normalized, context)) {

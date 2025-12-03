@@ -8,10 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 export class SSNFilterSpan extends SpanBasedFilter {
@@ -40,6 +37,22 @@ export class SSNFilterSpan extends SpanBasedFilter {
     // OCR Substitution Errors (B->8, S->5, O->0, Z->2, I->1, g->9, |->1, o->0)
     // e.g. "5B2-13-2951", "g70-l7-8981", "717-44-2|006", "6I2-12-118", "2o7-16-7B3l"
     /\b[0-9BOSZIlGg|o]{3}-[0-9BOSZIlGg|o]{2}-[0-9BOSZIlGg|o]{3,4}\b/g,
+
+    // ===== MASKED SSN WITH EXTRA SPACES (OCR artifacts) =====
+    // "XXX-X X-1172" - space in middle group
+    /[\*Xx]{3}-[\*Xx]\s+[\*Xx]-\d{4}\b/g,
+    // "***-**--6477" - double dash before last group
+    /[\*Xx]{3}-[\*Xx]{2}--\d{4}\b/g,
+    // "***-**-67b" - OCR error in last 4 (truncated)
+    /[\*Xx]{3}-[\*Xx]{2}-\d{2,3}[A-Za-z]?\b/g,
+    // Space in mask: "XXX- XX-1234"
+    /[\*Xx]{3}-?\s*[\*Xx]{2}-\d{4}\b/g,
+    // OCR corrupted masked: "581-8 0-853" (space in middle, truncated)
+    /\b\d{3}-\d\s+\d-\d{3}\b/g,
+    // Continuous digits with OCR: "22677Z5q8" (9 chars with letters)
+    /\b[0-9BOSZIlGgqQ|o]{8,9}\b/g,
+    // SSN format with OCR in last segment: "232-292-339" (extra digit from OCR)
+    /\b\d{3}-\d{3}-\d{3}\b/g,
   ]);
 
   getType(): string {

@@ -108,6 +108,28 @@ export class PhoneFilterSpan extends SpanBasedFilter {
     /[0-9OoIlSsBb|]{3}[ \t.-]?[0-9OoIlSsBb|]{3}[ \t.-]?[0-9OoIlSsBb|]{4}\b/gi,
     // With area code variations
     /\(?[0-9OoSsBb]{3}\)?[ \t.-]?[0-9OoIlSsBb|]{3}[ \t.-]?[0-9OoIlSsBb|]{4}\b/gi,
+
+    // ===== EXTREME OCR/SPACING ERRORS =====
+    // Missing digit in area code: "(50) 480-1986", "(4 51) 981-6861"
+    /\(?\d{1,2}\s*\d?\)?[ \t.-]?\d{3}[ \t.-]?\d{4}\b/g,
+    // Extra spaces in area code: "+1 (7 86) 350-5940", "(4 51) 981-6861"
+    /\+?1?[ \t.-]?\(?\d\s+\d{2}\)?[ \t.-]?\d{3}[ \t.-]?\d{4}\b/g,
+    // Double dash: "72--1959-3902"
+    /\d{2,3}--\d{3,4}-\d{4}\b/g,
+    // Dot format with extra digits: "6218.56.3750", "57.9239.3616"
+    /\d{2,4}\.\d{2,4}\.\d{4}\b/g,
+    // Unusual spacing: "48 303 8234", "305 267 52z7"
+    /\b\d{2,3}\s+\d{3}\s+\d{4}[A-Za-z]?\b/g,
+    // Extra digit in segment: "710-55584468", "324-22 66-253"
+    /\d{3}[-.]?\d{4,5}[-.]?\d{3,4}\b/g,
+    // OCR letters throughout: "+1 g5I-953-35B0", "(Q31) 4816-186"
+    /\+?1?[ \t.-]?\(?[0-9gGqQOoIlSsBb|]{2,3}\)?[ \t.-]?[0-9gGqQOoIlSsBb|]{3,4}[-.]?[0-9gGqQOoIlSsBb|]{3,4}\b/gi,
+    // Phone with fax prefix corrupted: "Fa x426 414 9q69"
+    /\bFa?\s*x?\s*\d{3}[ \t.-]?\d{3}[ \t.-]?\d{3,4}[A-Za-z]?\d?\b/gi,
+    // Space in extension format: "536 635 919" (9 digits with spaces)
+    /\b\d{3}\s+\d{3}\s+\d{3}\b/g,
+    // International with OCR: "Z316712479" (10 chars starting with letter)
+    /\b[A-Za-z]\d{9}\b/g,
   ];
 
   /**

@@ -2,25 +2,28 @@
  * ============================================================================
  * VULPES CELARE
  * ============================================================================
- * 
+ *
  * Hatkoff Redaction Engine
- * 
+ *
  * A production-grade HIPAA PHI redaction engine achieving:
  *   - 99.4% Sensitivity (catches almost everything)
  *   - 100% Specificity (zero false positives)
  *   - 100/100 Score on 220-document assessment
- * 
+ *
  * This is the MAIN ORCHESTRATOR - your primary integration point.
- * 
+ *
  * QUICK START:
  *   const safe = await VulpesCelare.redact(medicalDocument);
- * 
+ *
  * @module VulpesCelare
  * @version 1.0.0
  * @author Hatkoff
  */
 
-import { ParallelRedactionEngine, RedactionExecutionReport } from "./core/ParallelRedactionEngine";
+import {
+  ParallelRedactionEngine,
+  RedactionExecutionReport,
+} from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
 import { RedactionContext } from "./context/RedactionContext";
 
@@ -50,7 +53,7 @@ import { ZipCodeFilterSpan } from "./filters/ZipCodeFilterSpan";
 import { MRNFilterSpan } from "./filters/MRNFilterSpan";
 import { NPIFilterSpan } from "./filters/NPIFilterSpan";
 import { HealthPlanNumberFilterSpan } from "./filters/HealthPlanNumberFilterSpan";
-import { HospitalFilterSpan } from "./filters/HospitalFilterSpan";
+// HospitalFilterSpan removed - hospital names are NOT PHI under HIPAA Safe Harbor
 import { AgeFilterSpan } from "./filters/AgeFilterSpan";
 import { DateFilterSpan } from "./filters/DateFilterSpan";
 
@@ -69,11 +72,29 @@ import { UniqueIdentifierFilterSpan } from "./filters/UniqueIdentifierFilterSpan
 // TYPE DEFINITIONS
 // ============================================================================
 
-export type PHIType = 
-  | "name" | "ssn" | "phone" | "email" | "address" | "date"
-  | "mrn" | "npi" | "ip" | "url" | "credit_card" | "account"
-  | "health_plan" | "license" | "passport" | "vehicle" | "device"
-  | "biometric" | "unique_id" | "zip" | "fax" | "age" | "hospital";
+export type PHIType =
+  | "name"
+  | "ssn"
+  | "phone"
+  | "email"
+  | "address"
+  | "date"
+  | "mrn"
+  | "npi"
+  | "ip"
+  | "url"
+  | "credit_card"
+  | "account"
+  | "health_plan"
+  | "license"
+  | "passport"
+  | "vehicle"
+  | "device"
+  | "biometric"
+  | "unique_id"
+  | "zip"
+  | "fax"
+  | "age";
 
 export type ReplacementStyle = "brackets" | "asterisks" | "empty";
 
@@ -103,12 +124,30 @@ export class VulpesCelare {
   private config: VulpesCelareConfig;
 
   static readonly ALL_PHI_TYPES: PHIType[] = [
-    "name", "ssn", "phone", "email", "address", "date",
-    "mrn", "npi", "ip", "url", "credit_card", "account",
-    "health_plan", "license", "passport", "vehicle", "device",
-    "biometric", "unique_id", "zip", "fax", "age", "hospital"
+    "name",
+    "ssn",
+    "phone",
+    "email",
+    "address",
+    "date",
+    "mrn",
+    "npi",
+    "ip",
+    "url",
+    "credit_card",
+    "account",
+    "health_plan",
+    "license",
+    "passport",
+    "vehicle",
+    "device",
+    "biometric",
+    "unique_id",
+    "zip",
+    "fax",
+    "age",
   ];
-  
+
   static readonly VERSION = "1.0.0";
   static readonly NAME = "Vulpes Celare";
   static readonly VARIANT = "Hatkoff Redaction Engine";
@@ -123,14 +162,22 @@ export class VulpesCelare {
     return (await new VulpesCelare().process(text)).text;
   }
 
-  static async redactWithDetails(text: string, config?: VulpesCelareConfig): Promise<RedactionResult> {
+  static async redactWithDetails(
+    text: string,
+    config?: VulpesCelareConfig,
+  ): Promise<RedactionResult> {
     return new VulpesCelare(config).process(text);
   }
 
   async process(text: string): Promise<RedactionResult> {
     const startTime = Date.now();
     const context = new RedactionContext();
-    const redactedText = await ParallelRedactionEngine.redactParallel(text, this.filters, this.policy, context);
+    const redactedText = await ParallelRedactionEngine.redactParallel(
+      text,
+      this.filters,
+      this.policy,
+      context,
+    );
     const report = ParallelRedactionEngine.getLastExecutionReport();
     const breakdown: Record<string, number> = {};
     if (report) {
@@ -138,19 +185,36 @@ export class VulpesCelare {
         if (r.spansDetected > 0) breakdown[r.filterType] = r.spansDetected;
       }
     }
-    return { text: redactedText, redactionCount: report?.totalSpansDetected || 0, breakdown, executionTimeMs: Date.now() - startTime, report: report || undefined };
+    return {
+      text: redactedText,
+      redactionCount: report?.totalSpansDetected || 0,
+      breakdown,
+      executionTimeMs: Date.now() - startTime,
+      report: report || undefined,
+    };
   }
 
   async processBatch(texts: string[]): Promise<RedactionResult[]> {
-    return Promise.all(texts.map(t => this.process(t)));
+    return Promise.all(texts.map((t) => this.process(t)));
   }
 
-  getConfig(): VulpesCelareConfig { return { ...this.config }; }
-  getActiveFilters(): string[] { return this.filters.map(f => f.constructor.name); }
-  getLastReport(): RedactionExecutionReport | null { return ParallelRedactionEngine.getLastExecutionReport(); }
+  getConfig(): VulpesCelareConfig {
+    return { ...this.config };
+  }
+  getActiveFilters(): string[] {
+    return this.filters.map((f) => f.constructor.name);
+  }
+  getLastReport(): RedactionExecutionReport | null {
+    return ParallelRedactionEngine.getLastExecutionReport();
+  }
   private buildFilters(config: VulpesCelareConfig): SpanBasedFilter[] {
     const filterMap: Record<PHIType, () => SpanBasedFilter[]> = {
-      name: () => [new SmartNameFilterSpan(), new FormattedNameFilterSpan(), new TitledNameFilterSpan(), new FamilyNameFilterSpan()],
+      name: () => [
+        new SmartNameFilterSpan(),
+        new FormattedNameFilterSpan(),
+        new TitledNameFilterSpan(),
+        new FamilyNameFilterSpan(),
+      ],
       ssn: () => [new SSNFilterSpan()],
       passport: () => [new PassportNumberFilterSpan()],
       license: () => [new LicenseNumberFilterSpan()],
@@ -162,7 +226,7 @@ export class VulpesCelare {
       mrn: () => [new MRNFilterSpan()],
       npi: () => [new NPIFilterSpan()],
       health_plan: () => [new HealthPlanNumberFilterSpan()],
-      hospital: () => [new HospitalFilterSpan()],
+      // hospital filter removed - hospital names are NOT PHI under HIPAA Safe Harbor
       age: () => [new AgeFilterSpan()],
       date: () => [new DateFilterSpan()],
       credit_card: () => [new CreditCardFilterSpan()],
@@ -172,10 +236,11 @@ export class VulpesCelare {
       device: () => [new DeviceIdentifierFilterSpan()],
       vehicle: () => [new VehicleIdentifierFilterSpan()],
       biometric: () => [new BiometricContextFilterSpan()],
-      unique_id: () => [new UniqueIdentifierFilterSpan()]
+      unique_id: () => [new UniqueIdentifierFilterSpan()],
     };
     let types = config.enabledTypes || VulpesCelare.ALL_PHI_TYPES;
-    if (config.disabledTypes) types = types.filter(t => !config.disabledTypes!.includes(t));
+    if (config.disabledTypes)
+      types = types.filter((t) => !config.disabledTypes!.includes(t));
     const filters: SpanBasedFilter[] = [];
     for (const t of types) if (filterMap[t]) filters.push(...filterMap[t]());
     if (config.customFilters) filters.push(...config.customFilters);

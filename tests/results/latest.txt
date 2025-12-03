@@ -1,0 +1,83 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║   ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+║   ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+║   ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+║   ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+║    ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+║     ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+║                                                                              ║
+║              C E L A R E   -   R I G O R O U S   T E S T                    ║
+║                                                                              ║
+║   Comprehensive PHI Redaction Assessment Suite                               ║
+║   Unbiased • Strict Grading • Multi-Pass Analysis                            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PHASE 1: Running complete test suite...
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  VULPES CELARE - RIGOROUS ASSESSMENT (200 Documents)             ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+Engine: Vulpes Celare v1.0.0
+Processing 200 documents...
+
+  Progress: 1/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+  Progress: 25/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "Square, Fl"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "Square, Fl"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+  Progress: 50/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+  Progress: 75/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "Place, St"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "Place, St"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "Road, Fl"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "Road, Fl"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+  Progress: 100/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "benign ly"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+  Progress: 125/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+  Progress: 150/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+  Progress: 175/200 documents[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "BENIGN LY"
+[MedicalTerm-Phrase] Filtering NAME composed entirely of medical terms: "PAYMENT METHOD ON"

@@ -8,12 +8,13 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { isWhitelisted, DOCUMENT_TERMS } from "./constants/NameFilterConstants";
+import {
+  NameDetectionUtils,
+  PROVIDER_TITLE_PREFIXES,
+} from "../utils/NameDetectionUtils";
 
 export class FamilyNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -260,56 +261,15 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Fallback: Detect titled names (Dr. Smith, Mr. John Doe, etc.)
+   *
+   * IMPORTANT: Titled names are PROVIDER names under HIPAA Safe Harbor
+   * and should NOT be redacted. Patients don't have formal titles.
+   * This pattern is DISABLED to prevent provider name over-redaction.
    */
   private detectTitledNames(text: string, spans: Span[]): void {
-    const prefixes = [
-      "Mr",
-      "Mrs",
-      "Ms",
-      "Miss",
-      "Dr",
-      "Prof",
-      "Rev",
-      "Hon",
-      "Capt",
-      "Lt",
-      "Sgt",
-      "Col",
-      "Gen",
-    ];
-    const titlePattern = new RegExp(
-      `\\b(?:${prefixes.join("|")})\\.?[ \\t]+[A-Z][a-z]+(?:[ \\t]+[A-Z][a-z]+)*\\b`,
-      "g",
-    );
-
-    let match;
-    while ((match = titlePattern.exec(text)) !== null) {
-      const matchedText = match[0];
-
-      const span = new Span({
-        text: matchedText,
-        originalValue: matchedText,
-        characterStart: match.index,
-        characterEnd: match.index + matchedText.length,
-        filterType: FilterType.NAME,
-        confidence: 0.85,
-        priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          match.index,
-          match.index + matchedText.length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
-        pattern: "Titled name (fallback)",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
-      });
-      spans.push(span);
-    }
+    // CRITICAL: ALL titled names are provider names - skip detection entirely
+    // Titled names (Dr., Prof., Mr., Mrs., etc.) are NOT patient PHI
+    return;
   }
 
   /**
@@ -351,8 +311,19 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Fallback: Detect general full names (John Smith, Jane Mary Doe)
+   *
+   * CRITICAL: This pattern is DISABLED because it's too aggressive and matches
+   * medical diagnoses like "Trigeminal Neuralgia", "Bell Palsy", etc.
+   * SmartNameFilterSpan handles general name detection with proper dictionary validation.
    */
   private detectGeneralFullNames(text: string, spans: Span[]): void {
+    // DISABLED: This pattern matches too many false positives (medical diagnoses,
+    // procedures, etc.) because it just looks for 2-4 capitalized words.
+    // SmartNameFilterSpan handles general name detection with proper validation.
+    return;
+
+    // Original code preserved for reference but not executed:
+    /*
     const fullNamePattern =
       /\b([A-Z][a-z]{1,20}(?:\s+[A-Z][a-z]{1,20}){1,3})\b/g;
 
@@ -363,6 +334,32 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
       // Skip if whitelisted (medications, medical terms, etc.)
       if (isWhitelisted(fullMatch)) {
         continue;
+      }
+
+      // CRITICAL: Check if name starts with a provider title prefix
+      // Names like "Dame Joshua Jung", "Sir John Smith" are provider names
+      const firstWord = fullMatch.split(/\s+/)[0];
+      if (PROVIDER_TITLE_PREFIXES.has(firstWord)) {
+        continue;
+      }
+
+      // CRITICAL: Check if name is PRECEDED by a provider title
+      // "Dr. Hassan Lindberg" -> "Hassan Lindberg" should NOT be redacted
+      const lookbackStart = Math.max(0, match.index - 10);
+      const textBefore = text.substring(lookbackStart, match.index);
+      const titleBeforeMatch = textBefore.match(/\b([A-Za-z]+)\.?\s*$/);
+      if (titleBeforeMatch) {
+        const possibleTitle = titleBeforeMatch[1];
+        let isPrecededByTitle = false;
+        for (const prefix of PROVIDER_TITLE_PREFIXES) {
+          if (possibleTitle.toLowerCase() === prefix.toLowerCase()) {
+            isPrecededByTitle = true;
+            break;
+          }
+        }
+        if (isPrecededByTitle) {
+          continue;
+        }
       }
 
       // Basic validation to avoid false positives
@@ -392,10 +389,12 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
         spans.push(span);
       }
     }
+    */
   }
 
   /**
    * Check if text looks like a person name (not organization/place)
+   * Delegates to shared NameDetectionUtils
    */
   private looksLikePersonName(name: string): boolean {
     // Check whitelist first
@@ -403,28 +402,9 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
       return false;
     }
 
-    const nonPersonTerms = [
-      "Department",
-      "Hospital",
-      "Center",
-      "Clinic",
-      "Institute",
-      "University",
-      "College",
-      "Medical",
-      "Health",
-      "Emergency",
-      "Intensive",
-      "Care",
-      "Protected",
-      "Social",
-      "Security",
-    ];
-
-    for (const term of nonPersonTerms) {
-      if (name.includes(term)) {
-        return false;
-      }
+    // Use shared utility for non-person structure term check
+    if (NameDetectionUtils.isNonPersonStructureTerm(name)) {
+      return false;
     }
 
     // Check if first word is a document/action term (not a name)

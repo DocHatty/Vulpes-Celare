@@ -22,8 +22,12 @@ import {
   isExcludedAllCaps,
 } from "./constants/NameFilterConstants";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
-import { MedicalTermDictionary } from "../dictionaries/MedicalTermDictionary";
 import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
+import {
+  NameDetectionUtils,
+  PROVIDER_TITLE_PREFIXES,
+  PROVIDER_CREDENTIALS,
+} from "../utils/NameDetectionUtils";
 
 export class FormattedNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -90,6 +94,25 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
 
     while ((match = mixedCasePattern.exec(text)) !== null) {
       const fullName = match[1];
+
+      // CRITICAL: Check if name is PRECEDED by a provider title
+      // "Hon. Rosen, Javier" -> should NOT be redacted
+      const lookbackStart = Math.max(0, match.index - 10);
+      const textBefore = text.substring(lookbackStart, match.index);
+      const titleBeforeMatch = textBefore.match(/\b([A-Za-z]+)\.?\s*$/);
+      if (titleBeforeMatch) {
+        const possibleTitle = titleBeforeMatch[1];
+        let isPrecededByTitle = false;
+        for (const prefix of PROVIDER_TITLE_PREFIXES) {
+          if (possibleTitle.toLowerCase() === prefix.toLowerCase()) {
+            isPrecededByTitle = true;
+            break;
+          }
+        }
+        if (isPrecededByTitle) {
+          continue;
+        }
+      }
 
       // STREET-SMART: For "Last, First [Middle]" format, only check if the ENTIRE
       // phrase is a medical term, not individual words. "Clark, Patricia Ann" should
@@ -236,11 +259,59 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
         continue;
       }
 
+      // CRITICAL: Check if preceded by a provider title (with name in between)
+      // "Hon. Javier Rosen, AGNP" -> "Rosen, AGNP" should NOT be detected
+      const lookbackStart = Math.max(0, match.index - 30);
+      const textBefore = text.substring(lookbackStart, match.index);
+      // Check for title followed by name(s) at end of lookback
+      const titleNamePattern = new RegExp(
+        `\\b(${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`,
+        "i",
+      );
+      if (titleNamePattern.test(textBefore)) {
+        continue;
+      }
+
       const parts = fullName.split(",");
       if (parts.length !== 2) continue;
 
       const lastName = parts[0].trim();
       const firstName = parts[1].trim();
+
+      // CRITICAL: Skip if "firstName" is actually a credential (AGNP, RN, MD, etc.)
+      const credentials = new Set([
+        "MD",
+        "DO",
+        "PhD",
+        "DDS",
+        "DMD",
+        "RN",
+        "NP",
+        "PA",
+        "LPN",
+        "APRN",
+        "CRNA",
+        "CNS",
+        "CNM",
+        "BSN",
+        "MSN",
+        "DNP",
+        "PT",
+        "OT",
+        "SLP",
+        "RT",
+        "LCSW",
+        "LMFT",
+        "LPC",
+        "AGNP",
+        "FNP",
+        "ANP",
+        "PNP",
+        "PMHNP",
+      ]);
+      if (credentials.has(firstName.toUpperCase())) {
+        continue;
+      }
 
       // Validate: each part 2+ chars, looks like a name
       if (
@@ -277,10 +348,28 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     }
   }
 
+  // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
+
+  /**
+   * Check if a titled name is a PROVIDER name (should NOT be redacted)
+   * Delegates to shared NameDetectionUtils
+   */
+  private isProviderTitledName(matchedText: string): boolean {
+    return NameDetectionUtils.startsWithTitle(matchedText);
+  }
+
   /**
    * Pattern 0.5: Titled names (Dr. Smith, Mr. Jones)
+   *
+   * IMPORTANT: Titled names are PROVIDER names under HIPAA Safe Harbor
+   * and should NOT be redacted. Patients don't have formal titles.
    */
   private detectTitledNames(text: string, spans: Span[]): void {
+    // CRITICAL: ALL titled names are provider names - skip this pattern entirely
+    // This method is kept for backwards compatibility but should not add any spans
+    return;
+
+    // Dead code below - kept for reference but never executes
     const pattern = new RegExp(
       `\\b(?:${NAME_PREFIXES.join("|")})\\.?[ \\t]+[A-Z][a-z]+(?:[ \\t]+[A-Z][a-z]+)*\\b`,
       "g",
@@ -635,7 +724,36 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
 
-      if (!this.isWhitelisted(name, false, text) && this.isLikelyPersonName(name)) {
+      // CRITICAL: Check if FIRST word of name is a provider title
+      // "Dame Joshua" should NOT be detected because "Dame" is a title
+      const firstWord = name.split(/\s+/)[0];
+      if (PROVIDER_TITLE_PREFIXES.has(firstWord)) {
+        continue;
+      }
+
+      // CRITICAL: Check if name is PRECEDED by a provider title
+      // "Dr. Hassan Lindberg" -> "Hassan Lindberg" should NOT be redacted
+      const lookbackStart = Math.max(0, match.index - 10);
+      const textBefore = text.substring(lookbackStart, match.index);
+      const titleBeforeMatch = textBefore.match(/\b([A-Za-z]+)\.?\s*$/);
+      if (titleBeforeMatch) {
+        const possibleTitle = titleBeforeMatch[1];
+        let isPrecededByTitle = false;
+        for (const prefix of PROVIDER_TITLE_PREFIXES) {
+          if (possibleTitle.toLowerCase() === prefix.toLowerCase()) {
+            isPrecededByTitle = true;
+            break;
+          }
+        }
+        if (isPrecededByTitle) {
+          continue;
+        }
+      }
+
+      if (
+        !this.isWhitelisted(name, false, text) &&
+        this.isLikelyPersonName(name)
+      ) {
         const span = this.createSpanFromMatch(
           text,
           match,
@@ -648,20 +766,10 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
   }
 
   /**
-   * Validation helpers
+   * Validation helpers - Delegates to shared NameDetectionUtils
    */
   private validateLastFirst(name: string): boolean {
-    const parts = name.split(",");
-    if (parts.length === 2) {
-      const lastName = parts[0].trim();
-      const firstName = parts[1].trim();
-      // Case-insensitive: accept "Smith, John", "smith, john", "SMITH, JOHN"
-      return (
-        /^[A-Za-z][a-zA-Z]{2,}/.test(lastName) &&
-        /^[A-Za-z][a-zA-Z]{2,}/.test(firstName)
-      );
-    }
-    return false;
+    return NameDetectionUtils.validateLastFirst(name);
   }
 
   /**
@@ -677,8 +785,8 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     // from being detected as "Last, First" names.
     const words = text.split(/[\s,]+/).filter((w) => w.length > 1);
     if (words.length > 0) {
-      const allMedical = words.every(word =>
-        MedicalTermDictionary.isMedicalTerm(word)
+      const allMedical = words.every((word) =>
+        DocumentVocabulary.isMedicalTerm(word),
       );
       if (allMedical) return true;
     }
@@ -754,30 +862,11 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
   }
 
   /**
-   * STREET-SMART: Check if text is a non-person structure term.
-   * This is a MINIMAL whitelist - only obvious document structure terms.
-   * Does NOT include medical eponyms (Bell, Wilson, Stokes, etc.)
-   * because in context (credential suffix, title, etc.) these are person names.
+   * Check if text is a non-person structure term.
+   * Delegates to shared NameDetectionUtils
    */
   private isNonPersonStructureTerm(text: string): boolean {
-    const structureTerms = [
-      "protected health",
-      "social security",
-      "medical record",
-      "health plan",
-      "emergency department",
-      "intensive care",
-      "emergency contact",
-      "next of kin",
-      "not applicable",
-      "n/a",
-      "unknown",
-      "none",
-    ];
-    const lower = text.toLowerCase().trim();
-    return structureTerms.some(
-      (term) => lower === term || lower.includes(term),
-    );
+    return NameDetectionUtils.isNonPersonStructureTerm(text);
   }
 
   /**
@@ -799,7 +888,10 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
 
     // HOSPITAL WHITELIST: Check if this is part of a hospital name
     // Hospital names are NOT patient PHI under HIPAA Safe Harbor
-    if (context && HospitalDictionary.isPartOfHospitalName(normalized, context)) {
+    if (
+      context &&
+      HospitalDictionary.isPartOfHospitalName(normalized, context)
+    ) {
       return true;
     }
 
@@ -811,7 +903,9 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
       // then it is likely a list of conditions, not a person.
 
       const words = normalized.split(/[\s,]+/).filter((w) => w.length > 1);
-      const allWordsAreMedical = words.every(word => MedicalTermDictionary.isMedicalTerm(word));
+      const allWordsAreMedical = words.every((word) =>
+        DocumentVocabulary.isMedicalTerm(word),
+      );
 
       if (allWordsAreMedical && words.length > 0) {
         return true; // Whitelist it (it's a list of medical terms)
@@ -829,14 +923,14 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     }
 
     // Check if it's a medical term
-    if (MedicalTermDictionary.isMedicalTerm(normalized)) {
+    if (DocumentVocabulary.isMedicalTerm(normalized)) {
       return true;
     }
 
     // Check individual words - if ANY word is a medical term, skip entire match
     const words = normalized.split(/[\s,]+/).filter((w) => w.length > 2);
     for (const word of words) {
-      if (baseIsWhitelisted(word) || MedicalTermDictionary.isMedicalTerm(word)) {
+      if (baseIsWhitelisted(word) || DocumentVocabulary.isMedicalTerm(word)) {
         return true;
       }
     }
@@ -848,11 +942,16 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
    * Pattern 9: Names with credential suffixes (RN, NP, MD, etc.)
    * Matches: "Kenneth Stokes, RN", "Tyler Weber NP", "Pedro Turner, MD"
    *
-   * STREET-SMART: Credential suffix is STRONG evidence this is a person name.
-   * Do NOT whitelist based on medical eponyms (Stokes, Bell, etc.) because
-   * "Sarah Stokes, RN" is clearly a nurse named Stokes, not Cheyne-Stokes respiration.
+   * IMPORTANT: Names with professional credentials are ALWAYS PROVIDERS
+   * under HIPAA Safe Harbor and should NOT be redacted.
+   * "Sarah Stokes, RN" is a provider (nurse), not a patient.
    */
   private detectNamesWithCredentials(text: string, spans: Span[]): void {
+    // CRITICAL: Names with professional credentials are PROVIDER names
+    // They should NOT be redacted - skip this detection entirely
+    return;
+
+    // Dead code below - kept for reference but never executes
     const credentials = [
       "RN",
       "NP",

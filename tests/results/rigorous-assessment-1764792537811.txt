@@ -1,0 +1,252 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    VULPES CELARE - ASSESSMENT REPORT                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+ENGINE INFORMATION
+────────────────────────────────────────────────────────────────────────────────
+  Name:            Vulpes Celare
+  Version:         1.0.0
+  Variant:         Hatkoff Redaction Engine
+  Active Filters:  26
+
+TEST CONFIGURATION
+────────────────────────────────────────────────────────────────────────────────
+  Documents:       50
+  Processing Time: 47.38s
+  Avg per Doc:     947.5ms
+
+══════════════════════════════════════════════════════════════════════════════
+                              FINAL GRADE
+══════════════════════════════════════════════════════════════════════════════
+
+                         ╔═══════════════╗
+                         ║      F        ║
+                         ║   0/100     ║
+                         ╚═══════════════╝
+
+  CRITICAL FAILURE - Do not use
+
+══════════════════════════════════════════════════════════════════════════════
+
+CONFUSION MATRIX
+────────────────────────────────────────────────────────────────────────────────
+                          │ Actual PHI │ Actual Non-PHI │
+  ────────────────────────┼────────────┼────────────────┤
+  Predicted PHI (Redacted)│     1601   │        499     │
+  Predicted Non-PHI       │       47   │        190     │
+  ────────────────────────┼────────────┼────────────────┤
+  Total                   │     1648   │        689     │
+
+PRIMARY METRICS
+────────────────────────────────────────────────────────────────────────────────
+  SENSITIVITY (Recall):   97.15%  ← PHI correctly redacted
+  SPECIFICITY:            27.58%  ← Non-PHI correctly preserved
+  PRECISION (PPV):        76.24%  ← Redaction accuracy
+  F1 SCORE:               85.43
+
+SCORE BREAKDOWN
+────────────────────────────────────────────────────────────────────────────────
+  Raw Score:              81.14
+  Penalties/Bonuses:      -138
+  Final Score:            0
+
+PERFORMANCE BY PHI TYPE
+────────────────────────────────────────────────────────────────────────────────
+  ✓ PHONE              300/300 (100.0%)
+  ✗ DATE               184/200 (92.0%) - 16 MISSED
+  ✓ NPI                200/200 (100.0%)
+  ✗ NAME               139/150 (92.7%) - 11 MISSED
+  ✗ SSN                98/100 (98.0%) - 2 MISSED
+  ✓ EMAIL              69/69 (100.0%)
+  ✓ HEALTH_PLAN_ID     68/68 (100.0%)
+  ✗ MRN                46/50 (92.0%) - 4 MISSED
+  ✓ ACCOUNT_NUMBER     50/50 (100.0%)
+  ✗ ADDRESS            48/50 (96.0%) - 2 MISSED
+  ✓ ZIPCODE            50/50 (100.0%)
+  ✓ FAX                50/50 (100.0%)
+  ✓ CREDIT_CARD        50/50 (100.0%)
+  ✓ IP                 50/50 (100.0%)
+  ✓ URL                50/50 (100.0%)
+  ✗ VIN                49/50 (98.0%) - 1 MISSED
+  ✗ LICENSE_PLATE      46/50 (92.0%) - 4 MISSED
+  ✗ DEA                44/50 (88.0%) - 6 MISSED
+  ✗ AGE_90_PLUS        10/11 (90.9%) - 1 MISSED
+
+PERFORMANCE BY ERROR LEVEL
+────────────────────────────────────────────────────────────────────────────────
+  NONE       64/67 (95.5%) - 3 missed
+  LOW        321/328 (97.9%) - 7 missed
+  MEDIUM     662/685 (96.6%) - 23 missed
+  HIGH       489/501 (97.6%) - 12 missed
+  EXTREME    65/67 (97.0%) - 2 missed
+
+MISSED PHI SAMPLES (47 total, showing first 20)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 1 (History & Physical/medium):
+    MRN: "DI 4092523"
+    Source: mrn
+  Doc 2 (Operative Report/medium):
+    DEA: "KD7789270"
+    Source: surgeon_dea
+  Doc 5 (Pathology Report/high):
+    DATE: "11/1 3/23"
+    Source: admit_date
+  Doc 7 (History & Physical/high):
+    DATE: "G/2 /36"
+    Source: dob
+  Doc 8 (Operative Report/medium):
+    DEA: "LY5016266"
+    Source: surgeon_dea
+  Doc 9 (Registration Form/high):
+    NAME: "eLIZ AB3TH tAYLORR"
+    Source: emergency_contact_2
+  Doc 9 (Registration Form/high):
+    MRN: "516 94"
+    Source: mrn
+  Doc 11 (Pathology Report/high):
+    DATE: "68//2020"
+    Source: surgery_date_1
+  Doc 13 (History & Physical/high):
+    SSN: "xX-XXX-5S05"
+    Source: patient_ssn
+  Doc 13 (History & Physical/high):
+    MRN: "523 0Oq0"
+    Source: mrn
+  Doc 14 (Operative Report/medium):
+    DEA: "JJ2906355"
+    Source: surgeon_dea
+  Doc 15 (Registration Form/none):
+    NAME: "Tran Daniel Becker"
+    Source: patient
+  Doc 15 (Registration Form/none):
+    ADDRESS: "5685 Hospital Square"
+    Source: street_address
+  Doc 15 (Registration Form/none):
+    LICENSE_PLATE: "1Kundefined331"
+    Source: license_plate
+  Doc 20 (Operative Report/medium):
+    DEA: "VV8771722"
+    Source: surgeon_dea
+  Doc 21 (Registration Form/medium):
+    LICENSE_PLATE: "MJundefined-2425"
+    Source: license_plate
+  Doc 24 (Insurance EOB/low):
+    NAME: "George Lynn Watanabe"
+    Source: patient
+  Doc 25 (History & Physical/medium):
+    DATE: "/B2/O1"
+    Source: dob
+  Doc 26 (Operative Report/extreme):
+    AGE_90_PLUS: "92"
+    Source: age
+  Doc 27 (Registration Form/low):
+    NAME: "Susa nR. Young"
+    Source: patient
+
+OVER-REDACTIONS (499 total, showing first 10)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 1: PROVIDER_NAME = "Mr. Ibrahim Flores"
+  Doc 1: PROVIDER_NAME = "Rev. Zainab Walsh, DO"
+  Doc 1: PROVIDER_NAME = "Rev. Penelope Weber, PA-C"
+  Doc 1: DIAGNOSIS = "Carotid Artery Stenosis"
+  Doc 1: DIAGNOSIS = "Pituitary Adenoma"
+  Doc 1: MEDICATION = "Tiotropium"
+  Doc 1: MEDICATION = "Liothyronine"
+  Doc 2: PROVIDER_NAME = "Sir Ivan Kaplan"
+  Doc 2: PROVIDER_NAME = "Mrs. Gertrude Ibn Saud"
+  Doc 2: PROVIDER_NAME = "Dr. Mariana Lopez, ACNP-BC"
+
+═══════════════════════════════════════════════════════════════════════════════
+                           CRITICAL FINDINGS
+═══════════════════════════════════════════════════════════════════════════════
+
+  [CRITICAL] 2 Social Security Numbers were NOT redacted
+  Impact: HIPAA violation - SSN is a direct identifier
+  Samples: xX-XXX-5S05, ***-**-937Z
+
+  [CRITICAL] 11 patient names were NOT redacted
+  Impact: HIPAA violation - Names are direct identifiers
+  Samples: eLIZ AB3TH tAYLORR, Tran Daniel Becker, George Lynn Watanabe
+
+  [HIGH] 6 dates of birth were NOT redacted
+  Impact: HIPAA violation - DOB is a key identifier
+  Samples: G/2 /36, /B2/O1, 4/Z00/3
+
+═══════════════════════════════════════════════════════════════════════════════
+                           RECOMMENDATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+  [HIGH] MRN Detection
+  Issue: 4 MRN items missed
+  Suggestions:
+    • Review MRN detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [HIGH] OCR Tolerance
+  Issue: OCR-corrupted values not being detected
+  Suggestions:
+    • Add character substitution patterns to all filters
+    • Implement fuzzy matching with edit distance
+    • Create OCR normalization preprocessing step
+
+  [MEDIUM] DEA Detection
+  Issue: 6 DEA items missed
+  Suggestions:
+    • Review DEA detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] ADDRESS Detection
+  Issue: 2 ADDRESS items missed
+  Suggestions:
+    • Review address detection regex
+    • Add support for apartment/unit variations
+    • Consider multi-line address detection
+
+  [LOW] LICENSE_PLATE Detection
+  Issue: 4 LICENSE_PLATE items missed
+  Suggestions:
+    • Review LICENSE_PLATE detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] AGE_90_PLUS Detection
+  Issue: 1 AGE_90_PLUS items missed
+  Suggestions:
+    • Review AGE_90_PLUS detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] VIN Detection
+  Issue: 1 VIN items missed
+  Suggestions:
+    • Review VIN detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [CRITICAL] DATE Detection
+  Issue: 16 DATE items missed
+  Suggestions:
+    • Add more date format patterns
+    • Support international date formats
+    • Add OCR-tolerant date patterns
+
+  [CRITICAL] NAME Detection
+  Issue: 11 NAME items missed
+  Suggestions:
+    • Review name pattern regex for edge cases
+    • Add support for additional name formats (hyphenated, apostrophes)
+    • Consider fuzzy matching for OCR-corrupted names
+
+  [CRITICAL] SSN Detection
+  Issue: 2 SSN items missed
+  Suggestions:
+    • CRITICAL: SSN detection must be 100%
+    • Add OCR-tolerant patterns (O→0, l→1, etc.)
+    • Support all SSN formats (dashes, spaces, continuous)
+
+══════════════════════════════════════════════════════════════════════════════
+                              END OF REPORT
+══════════════════════════════════════════════════════════════════════════════

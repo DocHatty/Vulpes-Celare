@@ -1,0 +1,586 @@
+{
+  "timestamp": "2025-12-03T23:17:11.178Z",
+  "summary": {
+    "documentsAssessed": 510,
+    "totalPHI": 2784,
+    "detectedPHI": 2723,
+    "missedPHI": 61,
+    "sensitivity": "97.81",
+    "totalNonPHI": 952,
+    "preservedNonPHI": 952,
+    "specificity": "100.00",
+    "overallScore": 98,
+    "grade": "A+",
+    "cleanRate": "98.88",
+    "erroredRate": "93.37",
+    "processingTimeMs": 1880
+  },
+  "byErrorLevel": {
+    "medium": {
+      "total": 660,
+      "detected": 651
+    },
+    "none": {
+      "total": 969,
+      "detected": 958
+    },
+    "low": {
+      "total": 495,
+      "detected": 480
+    },
+    "high": {
+      "total": 550,
+      "detected": 528
+    },
+    "extreme": {
+      "total": 110,
+      "detected": 106
+    }
+  },
+  "missedByType": {
+    "NAME": 50,
+    "PHONE": 5,
+    "DATE": 3,
+    "EMAIL": 2,
+    "SSN": 1
+  },
+  "missedByLevel": {
+    "high": 22,
+    "none": 11,
+    "extreme": 4,
+    "medium": 9,
+    "low": 15
+  },
+  "topIssues": [
+    {
+      "issue": "nameFormat",
+      "count": 27,
+      "examples": [
+        {
+          "orig": "Johnson, Thomas Ann",
+          "val": "Johnson, Thomas Ann"
+        },
+        {
+          "orig": "Perry, Raj Marie",
+          "val": "Perry, Raj Marie"
+        },
+        {
+          "orig": "Thomas Ann Rivera",
+          "val": "Thomas Ann Rivera"
+        },
+        {
+          "orig": "Peterson, Frank Marie",
+          "val": "Peterson, Frank Marie"
+        },
+        {
+          "orig": "Clark, Patricia Ann",
+          "val": "Clark, Patricia Ann"
+        }
+      ]
+    },
+    {
+      "issue": "nameTypo",
+      "count": 19,
+      "examples": [
+        {
+          "orig": "Luis Rose Clark",
+          "val": "Luis R0se Clark"
+        },
+        {
+          "orig": "Cook, Charles",
+          "val": "Cook, Char1e5"
+        },
+        {
+          "orig": "Mr. James",
+          "val": "Mr. Jame5"
+        },
+        {
+          "orig": "Myers, Omar",
+          "val": "Myers, 0mar"
+        },
+        {
+          "orig": "Sarah Rose Lewis",
+          "val": "Sarah R05e Lewis"
+        }
+      ]
+    },
+    {
+      "issue": "phoneOCR",
+      "count": 5,
+      "examples": [
+        {
+          "orig": "403.901.5109",
+          "val": "403.9o1.5|o9"
+        },
+        {
+          "orig": "299.565.1787",
+          "val": "299.S65.|7B7"
+        },
+        {
+          "orig": "593.124.1360",
+          "val": "593.124. 1360"
+        },
+        {
+          "orig": "846.403.1949",
+          "val": "846.403. 1949"
+        },
+        {
+          "orig": "659.628.6908",
+          "val": "659.628 .6908"
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "docId": 338,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Luis Rose Clark",
+      "value": "Luis R0se Clark",
+      "hasErrors": true
+    },
+    {
+      "docId": 338,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Mrs. Brian Butler, DO",
+      "value": "MR5. BRIAN BUT1ER, DO",
+      "hasErrors": true
+    },
+    {
+      "docId": 37,
+      "docType": "Prescription",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Johnson, Thomas Ann",
+      "value": "Johnson, Thomas Ann",
+      "hasErrors": false
+    },
+    {
+      "docId": 496,
+      "docType": "Operative Report",
+      "errorLevel": "extreme",
+      "phiType": "NAME",
+      "original": "Cook, Charles",
+      "value": "Cook, Char1e5",
+      "hasErrors": true
+    },
+    {
+      "docId": 74,
+      "docType": "Discharge Summary",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Perry, Raj Marie",
+      "value": "Perry, Raj Marie",
+      "hasErrors": false
+    },
+    {
+      "docId": 475,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Ashley Torres",
+      "value": "AshleyTorres",
+      "hasErrors": true
+    },
+    {
+      "docId": 499,
+      "docType": "Nursing Assessment",
+      "errorLevel": "extreme",
+      "phiType": "NAME",
+      "original": "Mr. James",
+      "value": "Mr. Jame5",
+      "hasErrors": true
+    },
+    {
+      "docId": 433,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Thomas Ann Rivera",
+      "value": "Thomas Ann Rivera",
+      "hasErrors": false
+    },
+    {
+      "docId": 20,
+      "docType": "Pathology Report",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Peterson, Frank Marie",
+      "value": "Peterson, Frank Marie",
+      "hasErrors": false
+    },
+    {
+      "docId": 346,
+      "docType": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Myers, Omar",
+      "value": "Myers, 0mar",
+      "hasErrors": true
+    },
+    {
+      "docId": 477,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "McKenzie, Laura Marie",
+      "value": "MCKENZIE, LAURA MARIE",
+      "hasErrors": true
+    },
+    {
+      "docId": 444,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "original": "403.901.5109",
+      "value": "403.9o1.5|o9",
+      "hasErrors": true
+    },
+    {
+      "docId": 174,
+      "docType": "Discharge Summary",
+      "errorLevel": "low",
+      "phiType": "PHONE",
+      "original": "299.565.1787",
+      "value": "299.S65.|7B7",
+      "hasErrors": true
+    },
+    {
+      "docId": 430,
+      "docType": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Clark, Patricia Ann",
+      "value": "Clark, Patricia Ann",
+      "hasErrors": false
+    },
+    {
+      "docId": 451,
+      "docType": "Progress Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Roberts, Lakshmi Marie",
+      "value": "ROBERTS, LAKSHMI MARIE",
+      "hasErrors": true
+    },
+    {
+      "docId": 498,
+      "docType": "Consultation Note",
+      "errorLevel": "extreme",
+      "phiType": "NAME",
+      "original": "Sarah Rose Lewis",
+      "value": "Sarah R05e Lewis",
+      "hasErrors": true
+    },
+    {
+      "docId": 54,
+      "docType": "Discharge Summary",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Bailey, Adam Ann",
+      "value": "Bailey, Adam Ann",
+      "hasErrors": false
+    },
+    {
+      "docId": 334,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "original": "593.124.1360",
+      "value": "593.124. 1360",
+      "hasErrors": true
+    },
+    {
+      "docId": 442,
+      "docType": "Lab Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "original": "06/16/1967",
+      "value": "06/1 6/1967",
+      "hasErrors": true
+    },
+    {
+      "docId": 320,
+      "docType": "Pathology Report",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Hill, Sharon Marie",
+      "value": "Hill, Sharon Marie",
+      "hasErrors": false
+    },
+    {
+      "docId": 320,
+      "docType": "Pathology Report",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Ms. Carolyn Evans",
+      "value": "M5. Car01yn Evans",
+      "hasErrors": true
+    },
+    {
+      "docId": 328,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Stephanie Thomas Nakamura",
+      "value": "Stephanie Th0mas Nakarnura",
+      "hasErrors": true
+    },
+    {
+      "docId": 439,
+      "docType": "Nursing Assessment",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Mr. Ortiz",
+      "value": "Mr. 0rtiz",
+      "hasErrors": true
+    },
+    {
+      "docId": 170,
+      "docType": "Pathology Report",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Sharma, Anthony Ann",
+      "value": "Sharma,Anthony Ann",
+      "hasErrors": true
+    },
+    {
+      "docId": 58,
+      "docType": "Consultation Note",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Justin Marie Thompson",
+      "value": "Justin Marie Thompson",
+      "hasErrors": false
+    },
+    {
+      "docId": 230,
+      "docType": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Ms. Ashley Ramirez, RN",
+      "value": "Ms. A5hley Rarnirez, RN",
+      "hasErrors": true
+    },
+    {
+      "docId": 474,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Davis, Lakshmi James",
+      "value": "Davis, Lak5hmi James",
+      "hasErrors": true
+    },
+    {
+      "docId": 347,
+      "docType": "Prescription",
+      "errorLevel": "high",
+      "phiType": "PHONE",
+      "original": "846.403.1949",
+      "value": "846.403. 1949",
+      "hasErrors": true
+    },
+    {
+      "docId": 315,
+      "docType": "Emergency Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Matthew Taylor",
+      "value": "Matthew Tayl0r",
+      "hasErrors": true
+    },
+    {
+      "docId": 83,
+      "docType": "Radiology Report",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Benjamin Marie Parker",
+      "value": "Benjamin Marie Parker",
+      "hasErrors": false
+    },
+    {
+      "docId": 201,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Ramirez, Emma Ann",
+      "value": "Ramirez, Emma Ann",
+      "hasErrors": false
+    },
+    {
+      "docId": 468,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "EMAIL",
+      "original": "jack.young@yahoo.com",
+      "value": "jack.young@yah oo.com",
+      "hasErrors": true
+    },
+    {
+      "docId": 283,
+      "docType": "Radiology Report",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Justin Thomas Wright",
+      "value": "Justin Th0mas Wright",
+      "hasErrors": true
+    },
+    {
+      "docId": 209,
+      "docType": "Nursing Assessment",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Mr. O'Malley",
+      "value": "Mr. O'Malley",
+      "hasErrors": false
+    },
+    {
+      "docId": 381,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Rivera, John Ann",
+      "value": "Rivera, John Ann",
+      "hasErrors": false
+    },
+    {
+      "docId": 193,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Ryan Marie Young",
+      "value": "Ryan Marie Young",
+      "hasErrors": false
+    },
+    {
+      "docId": 193,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Ms. Carol Perry, NP",
+      "value": "M5. Car0l Perry, NP",
+      "hasErrors": true
+    },
+    {
+      "docId": 141,
+      "docType": "Progress Note",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "original": "Yamamoto, Kenneth Marie",
+      "value": "Yamamoto, Kenneth Marie",
+      "hasErrors": false
+    },
+    {
+      "docId": 294,
+      "docType": "Discharge Summary",
+      "errorLevel": "high",
+      "phiType": "SSN",
+      "original": "457-84-3224",
+      "value": "4s7-B4-3224",
+      "hasErrors": true
+    },
+    {
+      "docId": 240,
+      "docType": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "original": "Gomez, Hiroshi Ann",
+      "value": "Gomez, Hiroshi Ann",
+      "hasErrors": false
+    },
+    {
+      "docId": 168,
+      "docType": "Consultation Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Christine Marie Baker",
+      "value": "Christine Marie Baker",
+      "hasErrors": false
+    },
+    {
+      "docId": 450,
+      "docType": "Pathology Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "original": "01/14/1973",
+      "value": "01/1 4/1973",
+      "hasErrors": true
+    },
+    {
+      "docId": 181,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "DATE",
+      "original": "10/07/1991",
+      "value": "|O/07/199|",
+      "hasErrors": true
+    },
+    {
+      "docId": 438,
+      "docType": "Consultation Note",
+      "errorLevel": "medium",
+      "phiType": "EMAIL",
+      "original": "kyle.perez@hospital.org",
+      "value": "kyle.perez@hospital.0rg",
+      "hasErrors": true
+    },
+    {
+      "docId": 377,
+      "docType": "Prescription",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Evans, Benjamin Marie",
+      "value": "Evans, Benjamin Marie",
+      "hasErrors": false
+    },
+    {
+      "docId": 371,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Yamamoto, Dennis Marie",
+      "value": "Yamamoto, Dennis Marie",
+      "hasErrors": false
+    },
+    {
+      "docId": 371,
+      "docType": "Progress Note",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Mr. Alejandro Sanchez",
+      "value": "Mr.Alejandro Sanchez",
+      "hasErrors": true
+    },
+    {
+      "docId": 384,
+      "docType": "Discharge Summary",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Schneider, Laura Ann",
+      "value": "Schneider, Laura Ann",
+      "hasErrors": false
+    },
+    {
+      "docId": 153,
+      "docType": "Radiology Report",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "original": "Emily Louise Martin",
+      "value": "Ernily Loui5e Martin",
+      "hasErrors": true
+    },
+    {
+      "docId": 348,
+      "docType": "Consultation Note",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "original": "Jonathan Marie Powell",
+      "value": "Jonathan Marie Powell",
+      "hasErrors": false
+    }
+  ]
+}

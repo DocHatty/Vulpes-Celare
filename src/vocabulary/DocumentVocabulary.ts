@@ -173,6 +173,187 @@ export class DocumentVocabulary {
     "parkinson disease",
     "epilepsy",
     "migraine",
+
+    // Additional conditions (from test failures)
+    "melanoma",
+    "bacteremia",
+    "b12 deficiency",
+    "vitamin b12 deficiency",
+    "hypertrophic cardiomyopathy",
+    "glioblastoma",
+    "emphysema",
+    "obsessive-compulsive disorder",
+    "obsessive compulsive disorder",
+    "end stage renal disease",
+    "end-stage renal disease",
+    "esrd",
+    "ocd",
+    "aids",
+    "hiv",
+    "pcos",
+    "copd",
+    "gerd",
+    "ibs",
+    "chf",
+    "cad",
+    "dvt",
+    "pe",
+    "uti",
+    "mi",
+    "cva",
+    "tia",
+    "afib",
+    "nstemi",
+    "stemi",
+    "cholangitis",
+    "osteopenia",
+    "deep vein thrombosis",
+    "lap band",
+    "lap-band",
+    "gastric band",
+    "penicillin vk",
+    "penicillin v",
+    "diphenoxylate",
+    "diphenoxylate-atropine",
+    "lomotil",
+
+    // Mental health conditions (commonly over-redacted as names)
+    "major depressive disorder",
+    "major depressive",
+    "major depression",
+    "post-traumatic stress disorder",
+    "post-traumatic stress",
+    "generalized anxiety disorder",
+    "generalized anxiety",
+    "obsessive compulsive disorder",
+    "obsessive compulsive",
+    "panic disorder",
+    "social anxiety disorder",
+    "social anxiety",
+    "attention deficit hyperactivity disorder",
+    "attention deficit",
+    "binge eating disorder",
+    "binge eating",
+    "borderline personality disorder",
+    "borderline personality",
+    "antisocial personality disorder",
+    "antisocial personality",
+
+    // Cancer types
+    "colon cancer",
+    "breast cancer",
+    "lung cancer",
+    "prostate cancer",
+    "bladder cancer",
+    "kidney cancer",
+    "liver cancer",
+    "pancreatic cancer",
+    "ovarian cancer",
+    "thyroid cancer",
+    "skin cancer",
+    "brain cancer",
+    "stomach cancer",
+    "esophageal cancer",
+    "melanoma",
+    "leukemia",
+    "lymphoma",
+    "sarcoma",
+    "carcinoma",
+    "adenocarcinoma",
+    "squamous cell carcinoma",
+    "basal cell carcinoma",
+
+    // Cardiovascular conditions
+    "metabolic syndrome",
+    "portal hypertension",
+    "pulmonary hypertension",
+    "aortic stenosis",
+    "mitral regurgitation",
+    "aortic aneurysm",
+    "peripheral artery disease",
+    "carotid stenosis",
+    "heart failure",
+    "cardiac arrest",
+    "ventricular tachycardia",
+    "supraventricular tachycardia",
+    "atrial flutter",
+
+    // Neurological conditions
+    "multiple sclerosis",
+    "amyotrophic lateral sclerosis",
+    "bell palsy",
+    "trigeminal neuralgia",
+    "peripheral neuropathy",
+    "lumbar radiculopathy",
+    "cervical radiculopathy",
+    "carpal tunnel syndrome",
+    "carpal tunnel",
+    "restless leg syndrome",
+    "restless legs",
+    "essential tremor",
+
+    // Pulmonary conditions
+    "central sleep apnea",
+    "obstructive sleep apnea",
+    "sleep apnea",
+    "pleural effusion",
+    "pneumothorax",
+    "hemothorax",
+    "pulmonary fibrosis",
+    "interstitial lung disease",
+
+    // GI/Hepatic conditions
+    "fatty liver disease",
+    "nonalcoholic fatty liver",
+    "gastric ulcer",
+    "duodenal ulcer",
+    "peptic ulcer disease",
+    "peptic ulcer",
+    "hiatal hernia",
+    "inguinal hernia",
+
+    // Musculoskeletal conditions
+    "rotator cuff tear",
+    "rotator cuff",
+    "meniscus tear",
+    "acl tear",
+    "herniated disc",
+    "degenerative disc disease",
+    "spinal stenosis",
+    "psoriatic arthritis",
+    "ankylosing spondylitis",
+    "gout",
+
+    // Endocrine/Metabolic
+    "thyroid nodule",
+    "graves disease",
+    "hashimoto thyroiditis",
+    "addison disease",
+    "cushing syndrome",
+    "pheochromocytoma",
+    "diabetes insipidus",
+
+    // Cardiac conditions
+    "pericarditis",
+    "myocarditis",
+    "endocarditis",
+    "pericardial effusion",
+
+    // Renal conditions
+    "kidney stone",
+    "nephrolithiasis",
+    "acute kidney injury",
+    "chronic kidney disease",
+    "polycystic kidney disease",
+    "glomerulonephritis",
+
+    // Other conditions
+    "systemic lupus erythematosus",
+    "systemic lupus",
+    "lupus",
+    "rheumatoid arthritis",
+    "temporal arteritis",
+    "giant cell arteritis",
     "asthma",
     "allergic rhinitis",
     "gastroesophageal reflux",
@@ -231,9 +412,70 @@ export class DocumentVocabulary {
     "mammogram",
     "mammography",
     "ultrasound",
+    "abdominal ultrasound",
+    "pelvic ultrasound",
+    "renal ultrasound",
+    "thyroid ultrasound",
+    "transvaginal ultrasound",
+    "carotid ultrasound",
+    "doppler ultrasound",
     "echocardiogram",
     "angiogram",
     "arthroplasty",
+
+    // Additional procedures (commonly over-redacted)
+    "prostate biopsy",
+    "nerve conduction study",
+    "turp",
+    "deep brain stimulation",
+    "mra of head and neck",
+    "mra",
+    "transesophageal echo",
+    "transesophageal echocardiogram",
+    "mri",
+    "ct scan",
+    "pet scan",
+    "eeg",
+    "emg",
+    "capsule endoscopy",
+    "carpal tunnel release",
+    "orif",
+    "open reduction internal fixation",
+    "excisional biopsy",
+    "incisional biopsy",
+    "carotid endarterectomy",
+    "oophorectomy",
+    "salpingectomy",
+    "thrombectomy",
+    "endarterectomy",
+    "acl reconstruction",
+    "rotator cuff repair",
+    "meniscectomy",
+    "arthroscopy",
+    "cataract surgery",
+    "whipple procedure",
+    "thoracentesis",
+    "paracentesis",
+    "lumbar puncture",
+    "spinal tap",
+    "bone marrow biopsy",
+    "spirometry",
+    "pulmonary function test",
+    "parathyroidectomy",
+    "adrenalectomy",
+    "prostatectomy",
+    "cystectomy",
+    "laryngectomy",
+    "esophagectomy",
+    "pneumonectomy",
+    "lobectomy",
+    "ablation",
+    "cardioversion",
+    "defibrillation",
+    "pericardiocentesis",
+    "angiography",
+    "venography",
+    "arteriography",
 
     // Pathology/radiology terms
     "microcalcifications",
@@ -325,6 +567,110 @@ export class DocumentVocabulary {
     "diclofenac",
     "paroxetine",
 
+    // Additional medications (commonly over-redacted)
+    "quetiapine",
+    "flecainide",
+    "fluticasone",
+    "polyethylene glycol",
+    "tamsulosin",
+    "rosuvastatin",
+    "empagliflozin",
+    "nortriptyline",
+    "bumetanide",
+    "clindamycin",
+    "minoxidil",
+    "pramipexole",
+    "ropinirole",
+    "torsemide",
+    "dulaglutide",
+    "verapamil",
+    "rasagiline",
+    "amiodarone",
+    "carvedilol",
+    "diltiazem",
+    "furosemide",
+    "spironolactone",
+    "linagliptin",
+    "sitagliptin",
+    "canagliflozin",
+    "dapagliflozin",
+    "liraglutide",
+    "semaglutide",
+    "tirzepatide",
+    "insulin glargine",
+    "insulin lispro",
+    "insulin aspart",
+    "insulin detemir",
+    "insulin degludec",
+    "clopidogrel",
+    "rivaroxaban",
+    "apixaban",
+    "dabigatran",
+    "enoxaparin",
+    "fondaparinux",
+    "levetiracetam",
+    "valproic acid",
+    "carbamazepine",
+    "phenytoin",
+    "oxcarbazepine",
+    "lacosamide",
+    "aripiprazole",
+    "olanzapine",
+    "risperidone",
+    "ziprasidone",
+    "paliperidone",
+    "lurasidone",
+    "clozapine",
+    "lithium",
+    "divalproex",
+    "memantine",
+    "donepezil",
+    "rivastigmine",
+    "galantamine",
+    "infliximab",
+    "adalimumab",
+    "etanercept",
+    "rituximab",
+    "methotrexate",
+    "hydroxychloroquine",
+    "sulfasalazine",
+    "leflunomide",
+    "colchicine",
+    "allopurinol",
+    "febuxostat",
+    "montelukast",
+    "cetirizine",
+    "loratadine",
+    "fexofenadine",
+    "diphenhydramine",
+    "famotidine",
+    "pantoprazole",
+    "esomeprazole",
+    "lansoprazole",
+    "rabeprazole",
+    "ondansetron",
+    "promethazine",
+    "metoclopramide",
+    "docusate",
+    "bisacodyl",
+    "lactulose",
+    "linaclotide",
+    "loperamide",
+    "mesalamine",
+    "budesonide",
+    "tacrolimus",
+    "cyclosporine",
+    "mycophenolate",
+    "azathioprine",
+    "finasteride",
+    "dutasteride",
+    "sildenafil",
+    "tadalafil",
+    "oxybutynin",
+    "tolterodine",
+    "solifenacin",
+    "mirabegron",
+
     // Anatomical terms
     "cardiovascular",
     "respiratory",
@@ -389,6 +735,99 @@ export class DocumentVocabulary {
     "oscar health",
     "bright health",
     "clover health",
+  ]);
+
+  /**
+   * Hospital and medical facility names - should never be redacted as patient names
+   * These are healthcare facility identifiers, NOT patient PHI under HIPAA Safe Harbor
+   */
+  static readonly HOSPITAL_NAMES = new Set([
+    // Major academic medical centers (short and full forms)
+    "johns hopkins",
+    "johns hopkins hospital",
+    "the johns hopkins hospital",
+    "beth israel",
+    "beth israel deaconess",
+    "beth israel deaconess medical center",
+    "mount sinai",
+    "mount sinai hospital",
+    "mount sinai beth israel",
+    "cedars sinai",
+    "cedars-sinai",
+    "cedars sinai medical center",
+    "mayo clinic",
+    "cleveland clinic",
+    "massachusetts general",
+    "mass general",
+    "brigham and women",
+    "brigham and women's",
+    "ucla medical center",
+    "ucsf medical center",
+    "stanford hospital",
+    "stanford health care",
+    "ut southwestern",
+    "ut southwestern medical center",
+    "ut southwestern university hospital",
+    "md anderson",
+    "md anderson cancer center",
+    "memorial sloan kettering",
+    "sloan kettering",
+    "duke university hospital",
+    "duke medical center",
+    "northwestern memorial",
+    "northwestern memorial hospital",
+    "new york presbyterian",
+    "ny presbyterian",
+    "nyu langone",
+    "langone medical center",
+    "upmc",
+    "university of pittsburgh medical center",
+    "penn medicine",
+    "hospital of the university of pennsylvania",
+    "vanderbilt university medical center",
+    "emory university hospital",
+    "rush university medical center",
+    "university of michigan hospital",
+    "michigan medicine",
+    "barnes jewish",
+    "barnes-jewish hospital",
+    "washington university",
+
+    // Regional/community hospital patterns
+    "regional medical center",
+    "community hospital",
+    "general hospital",
+    "memorial hospital",
+    "medical center",
+    "health center",
+    "healthcare center",
+    "university hospital",
+
+    // Religious-affiliated hospitals
+    "st mary",
+    "st. mary",
+    "saint mary",
+    "st joseph",
+    "st. joseph",
+    "saint joseph",
+    "sacred heart",
+    "good samaritan",
+    "holy cross",
+    "mercy hospital",
+    "providence hospital",
+    "baptist hospital",
+    "methodist hospital",
+    "presbyterian hospital",
+    "lutheran hospital",
+    "adventist health",
+
+    // VA and government
+    "veterans affairs",
+    "va hospital",
+    "va medical center",
+    "walter reed",
+    "tripler army medical center",
+    "naval medical center",
   ]);
 
   /**
@@ -669,11 +1108,51 @@ export class DocumentVocabulary {
   }
 
   /**
+   * Lazy-initialized lowercase lookup set for performance
+   * Includes all medical terms in lowercase for fast matching
+   */
+  private static lowerMedicalTerms: Set<string> | null = null;
+
+  private static getLowerMedicalTerms(): Set<string> {
+    if (!this.lowerMedicalTerms) {
+      this.lowerMedicalTerms = new Set();
+      for (const term of this.MEDICAL_TERMS) {
+        this.lowerMedicalTerms.add(term.toLowerCase());
+      }
+    }
+    return this.lowerMedicalTerms;
+  }
+
+  /**
    * Check if a term is a known medical term
+   * Handles case variations: lowercase, capitalized, ALL CAPS
    */
   static isMedicalTerm(text: string): boolean {
-    const normalized = text.toLowerCase().trim();
-    return this.MEDICAL_TERMS.has(normalized);
+    // Quick check for direct match
+    if (this.MEDICAL_TERMS.has(text)) return true;
+
+    // Normalize: trim and remove leading/trailing punctuation
+    const normalized = text
+      .trim()
+      .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, "");
+
+    // Check if it's in the set directly
+    if (this.MEDICAL_TERMS.has(normalized)) return true;
+
+    // Check lowercase (handles multi-word phrases like "Congestive Heart Failure")
+    const lowerTerms = this.getLowerMedicalTerms();
+    if (lowerTerms.has(normalized.toLowerCase())) return true;
+
+    // Check capitalized version (e.g. "htn" -> "HTN", "cancer" -> "Cancer")
+    const capitalized =
+      normalized.charAt(0).toUpperCase() + normalized.slice(1).toLowerCase();
+    if (this.MEDICAL_TERMS.has(capitalized)) return true;
+
+    // Check all caps (e.g. "copd" -> "COPD")
+    const allCaps = normalized.toUpperCase();
+    if (this.MEDICAL_TERMS.has(allCaps)) return true;
+
+    return false;
   }
 
   /**
@@ -709,6 +1188,14 @@ export class DocumentVocabulary {
   }
 
   /**
+   * Check if a term is a hospital or medical facility name
+   */
+  static isHospitalName(text: string): boolean {
+    const normalized = text.toLowerCase().trim();
+    return this.HOSPITAL_NAMES.has(normalized);
+  }
+
+  /**
    * Master check - is this text definitely NOT PHI?
    * Combines all checks into a single method
    */
@@ -721,7 +1208,8 @@ export class DocumentVocabulary {
       this.MEDICAL_TERMS.has(normalized) ||
       this.GEOGRAPHIC_TERMS.has(normalized) ||
       this.FIELD_LABELS.has(normalized) ||
-      this.INSURANCE_TERMS.has(normalized)
+      this.INSURANCE_TERMS.has(normalized) ||
+      this.HOSPITAL_NAMES.has(normalized)
     ) {
       return true;
     }

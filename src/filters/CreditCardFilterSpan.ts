@@ -8,10 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 export class CreditCardFilterSpan extends SpanBasedFilter {
@@ -29,12 +26,24 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
     /\b(?:card|cc|credit\s*card)\s*[:#]?\s*([\d\s-]{13,23})\b/gi,
     // Standalone card numbers (13-19 digits with optional separators)
     /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{1,7}\b/g,
+    // Space-separated 16-digit cards: "4964 6696 6947 6761"
+    /\b(\d{4}\s+\d{4}\s+\d{4}\s+\d{4})\b/g,
+    // Space-separated with varying group sizes
+    /\b(\d{4}\s+\d{4}\s+\d{4}\s+\d{1,4})\b/g,
+    // Dash-separated with spaces: "4964-6696 - 6947-6761"
+    /\b(\d{4}[\s-]+\d{4}[\s-]+\d{4}[\s-]+\d{4})\b/g,
+    // OCR errors - extra spaces between groups
+    /\b(\d{4}\s{2,}\d{4}\s{2,}\d{4}\s{2,}\d{4})\b/g,
     // AMEX format: 15 digits starting with 34 or 37 (with separators)
     /\b3[47]\d{2}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{3}\b/g,
     // AMEX without separators: 34XXXXXXXXXXXXX or 37XXXXXXXXXXXXX
     /\b3[47]\d{13}\b/g,
     // AMEX with various separator patterns
     /\b3[47]\d{2}[\s-]\d{6}[\s-]\d{5}\b/g,
+    // AMEX with spaces: "3782 822463 10005"
+    /\b(3[47]\d{2}\s+\d{6}\s+\d{5})\b/g,
+    // Continuous 13-19 digits (no separators)
+    /\b(\d{13,19})\b/g,
   ];
 
   /**
@@ -127,7 +136,7 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
     // For HIPAA: Accept cards that LOOK like credit cards
     // even if they fail Luhn (e.g., example numbers in documentation)
     // This prevents data leakage of fake/test card numbers
-    
+
     // AMEX cards start with 34 or 37 and are 15 digits
     const isAMEX = /^3[47]/.test(digits) && digits.length === 15;
     if (isAMEX) {

@@ -9,6 +9,7 @@
 
 /**
  * Common name prefixes/titles
+ * IMPORTANT: These are used to identify PROVIDER names that should NOT be redacted
  */
 export const NAME_PREFIXES = [
   "Mr",
@@ -24,24 +25,134 @@ export const NAME_PREFIXES = [
   "Sgt",
   "Col",
   "Gen",
+  // Additional honorifics (were missing - caused provider name redaction)
+  "Dame",
+  "Sir",
+  "Lord",
+  "Lady",
+  "Baron",
+  "Count",
+  "Duke",
+  "Earl",
+  "Msgr", // Monsignor
+  "Fr", // Father
+  "Sr", // Sister (religious)
+  "Br", // Brother (religious)
+  "Rabbi",
+  "Imam",
+  "Pastor",
+  "Bishop",
+  "Archbishop",
+  "Cardinal",
+  "Deacon",
+  "Elder",
+  "Atty", // Attorney
+  "Judge",
+  "Justice",
+  "Cmdr", // Commander
+  "Adm", // Admiral
+  "Maj", // Major
+  "Cpl", // Corporal
+  "Pvt", // Private
+  "Chief",
+  "Officer",
+  "Det", // Detective
+  "Insp", // Inspector
+  "Supt", // Superintendent
+  "Commissioner",
 ];
 
 /**
- * Common name suffixes
+ * Common name suffixes and professional credentials
+ * IMPORTANT: These help identify PROVIDER names that should NOT be redacted
  */
 export const NAME_SUFFIXES = [
+  // Generational suffixes
   "Jr",
   "Sr",
   "II",
   "III",
   "IV",
+  "V",
+
+  // Doctoral degrees
   "MD",
+  "DO", // Doctor of Osteopathic Medicine (was missing!)
   "PhD",
   "DDS",
-  "Esq",
+  "DMD", // Doctor of Dental Medicine
+  "DPM", // Doctor of Podiatric Medicine
+  "DVM", // Doctor of Veterinary Medicine
+  "OD", // Doctor of Optometry (was missing!)
+  "PsyD", // Doctor of Psychology
+  "PharmD", // Doctor of Pharmacy
+  "EdD", // Doctor of Education
+  "DrPH", // Doctor of Public Health
+  "DC", // Doctor of Chiropractic
+  "ND", // Doctor of Naturopathy
+  "JD", // Juris Doctor
+
+  // Nursing credentials
   "RN",
   "NP",
+  "BSN", // Bachelor of Science in Nursing (was missing!)
+  "MSN", // Master of Science in Nursing
+  "DNP", // Doctor of Nursing Practice
+  "APRN", // Advanced Practice Registered Nurse
+  "CRNA", // Certified Registered Nurse Anesthetist (was missing!)
+  "CNS", // Clinical Nurse Specialist
+  "CNM", // Certified Nurse Midwife
+  "LPN", // Licensed Practical Nurse
+  "LVN", // Licensed Vocational Nurse
+  "CNA", // Certified Nursing Assistant
+  "ACNP-BC", // Acute Care Nurse Practitioner - Board Certified (was missing!)
+  "FNP-BC", // Family Nurse Practitioner - Board Certified
+  "ANP-BC", // Adult Nurse Practitioner - Board Certified
+  "PNP-BC", // Pediatric Nurse Practitioner - Board Certified
+  "PMHNP-BC", // Psychiatric-Mental Health Nurse Practitioner
+
+  // Physician Assistant
   "PA",
+  "PA-C", // Physician Assistant - Certified
+
+  // Other medical professionals
+  "PT", // Physical Therapist
+  "DPT", // Doctor of Physical Therapy
+  "OT", // Occupational Therapist
+  "OTR", // Occupational Therapist Registered
+  "SLP", // Speech-Language Pathologist
+  "CCC-SLP", // Certificate of Clinical Competence in SLP
+  "RT", // Respiratory Therapist
+  "RRT", // Registered Respiratory Therapist
+  "RD", // Registered Dietitian
+  "RDN", // Registered Dietitian Nutritionist
+  "LCSW", // Licensed Clinical Social Worker
+  "LMFT", // Licensed Marriage and Family Therapist
+  "LPC", // Licensed Professional Counselor
+  "LCPC", // Licensed Clinical Professional Counselor
+
+  // Medical specialties and board certifications
+  "FACS", // Fellow of the American College of Surgeons
+  "FACP", // Fellow of the American College of Physicians
+  "FACC", // Fellow of the American College of Cardiology
+  "FACOG", // Fellow of American College of Obstetricians and Gynecologists
+  "FASN", // Fellow of the American Society of Nephrology (was missing!)
+  "FAAN", // Fellow of the American Academy of Nursing
+  "FAAP", // Fellow of the American Academy of Pediatrics
+  "FACHE", // Fellow of the American College of Healthcare Executives
+
+  // Other credentials
+  "Esq",
+  "CPA",
+  "MBA",
+  "MPH", // Master of Public Health
+  "MHA", // Master of Health Administration
+  "MHSA", // Master of Health Services Administration
+  "MS",
+  "MA",
+  "BA",
+  "BS",
+  "BBA",
 ];
 
 /**
@@ -1098,7 +1209,7 @@ export const EXCLUDED_PHRASES = new Set([
  * Context-aware compound phrases that should NOT be redacted.
  * These are multi-word terms where individual words might look like names,
  * but when appearing together, they form a known non-PHI phrase.
- * 
+ *
  * Format: Map of "trigger word" -> ["words that follow it to form a safe phrase"]
  * If "Johns" is followed by "Hopkins", don't redact "Johns".
  */
@@ -1111,7 +1222,7 @@ export const COMPOUND_PHRASE_WHITELIST: Map<string, string[]> = new Map([
   ["Kaiser", ["Permanente"]],
   ["Cedars", ["Sinai"]],
   ["Cedar", ["Sinai"]],
-  
+
   // Medical conditions where first word looks like a name/title
   ["Major", ["Depression", "Depressive", "Disorder"]],
   ["General", ["Anxiety", "Anesthesia", "Surgery", "Hospital", "Medicine"]],
@@ -1124,7 +1235,7 @@ export const COMPOUND_PHRASE_WHITELIST: Map<string, string[]> = new Map([
   ["Good", ["Samaritan", "Shepherd"]],
   ["Saint", ["Mary", "Joseph", "Luke", "John", "Francis", "Vincent"]],
   ["St", ["Mary", "Joseph", "Luke", "John", "Francis", "Vincent"]],
-  
+
   // Common medical phrase starters
   ["Physical", ["Therapy", "Examination", "Exam", "Medicine"]],
   ["Mental", ["Health", "Status", "Illness"]],
@@ -1133,7 +1244,7 @@ export const COMPOUND_PHRASE_WHITELIST: Map<string, string[]> = new Map([
   ["Emergency", ["Department", "Room", "Contact", "Medicine"]],
   ["Primary", ["Care", "Physician", "Doctor"]],
   ["Intensive", ["Care"]],
-  
+
   // Insurance companies
   ["Blue", ["Cross", "Shield"]],
   ["United", ["Healthcare", "Health"]],
@@ -1142,14 +1253,17 @@ export const COMPOUND_PHRASE_WHITELIST: Map<string, string[]> = new Map([
 /**
  * Check if a word is part of a compound phrase that should not be redacted.
  * Returns true if the word appears to be the START of a whitelisted compound phrase.
- * 
+ *
  * @param word - The potentially triggering word (e.g., "Johns")
  * @param followingText - The text that follows this word
  * @returns true if this appears to be a compound phrase that should be preserved
  */
-export function isCompoundPhraseStart(word: string, followingText: string): boolean {
+export function isCompoundPhraseStart(
+  word: string,
+  followingText: string,
+): boolean {
   const normalizedWord = word.trim();
-  
+
   // Check if this word is a trigger for any compound phrase
   const possibleFollowers = COMPOUND_PHRASE_WHITELIST.get(normalizedWord);
   if (!possibleFollowers) {
@@ -1160,7 +1274,7 @@ export function isCompoundPhraseStart(word: string, followingText: string): bool
         const followingNormalized = followingText.trim();
         for (const follower of followers) {
           // Check if followingText starts with this follower (case-insensitive)
-          const regex = new RegExp(`^\\s*${follower}\\b`, 'i');
+          const regex = new RegExp(`^\\s*${follower}\\b`, "i");
           if (regex.test(followingNormalized)) {
             return true;
           }
@@ -1169,16 +1283,16 @@ export function isCompoundPhraseStart(word: string, followingText: string): bool
     }
     return false;
   }
-  
+
   // Check if any of the expected followers appear at the start of followingText
   const followingNormalized = followingText.trim();
   for (const follower of possibleFollowers) {
-    const regex = new RegExp(`^\\s*${follower}\\b`, 'i');
+    const regex = new RegExp(`^\\s*${follower}\\b`, "i");
     if (regex.test(followingNormalized)) {
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -1186,26 +1300,34 @@ export function isCompoundPhraseStart(word: string, followingText: string): bool
  * Check if text is part of a known compound phrase that should not be redacted.
  * Checks both as a phrase start and within the phrase.
  */
-export function isPartOfCompoundPhrase(text: string, fullContext: string): boolean {
+export function isPartOfCompoundPhrase(
+  text: string,
+  fullContext: string,
+): boolean {
   // Get position of text in context
   const textLower = text.toLowerCase();
   const contextLower = fullContext.toLowerCase();
   const pos = contextLower.indexOf(textLower);
-  
+
   if (pos === -1) return false;
-  
+
   // Get what comes after this text
   const followingText = fullContext.substring(pos + text.length);
-  
+
   // Check if this is the start of a compound phrase
   const words = text.trim().split(/\s+/);
   if (words.length >= 1) {
     const firstWord = words[0];
-    if (isCompoundPhraseStart(firstWord, words.slice(1).join(' ') + ' ' + followingText)) {
+    if (
+      isCompoundPhraseStart(
+        firstWord,
+        words.slice(1).join(" ") + " " + followingText,
+      )
+    ) {
       return true;
     }
   }
-  
+
   // Also check if the text itself is a complete compound phrase
   for (const [trigger, followers] of COMPOUND_PHRASE_WHITELIST.entries()) {
     for (const follower of followers) {
@@ -1215,7 +1337,7 @@ export function isPartOfCompoundPhrase(text: string, fullContext: string): boole
       }
     }
   }
-  
+
   return false;
 }
 

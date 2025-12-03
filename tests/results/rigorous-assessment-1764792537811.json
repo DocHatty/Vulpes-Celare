@@ -1,0 +1,6163 @@
+{
+  "meta": {
+    "timestamp": "2025-12-03T20:08:57.811Z",
+    "testSuite": "rigorous-assessment",
+    "version": "3.0.0"
+  },
+  "engine": {
+    "name": "Vulpes Celare",
+    "version": "1.0.0",
+    "variant": "Hatkoff Redaction Engine",
+    "activeFilters": 26
+  },
+  "metrics": {
+    "confusionMatrix": {
+      "truePositives": 1601,
+      "falseNegatives": 47,
+      "trueNegatives": 190,
+      "falsePositives": 499,
+      "totalPHI": 1648,
+      "totalNonPHI": 689
+    },
+    "sensitivity": 97.1481,
+    "specificity": 27.5762,
+    "precision": 76.2381,
+    "recall": 97.1481,
+    "f1Score": 85.4322,
+    "rawScore": 81.14,
+    "penalties": -138,
+    "finalScore": 0,
+    "grade": "F",
+    "gradeDescription": "CRITICAL FAILURE - Do not use",
+    "byPHIType": {
+      "NAME": {
+        "tp": 139,
+        "fn": 11,
+        "total": 150
+      },
+      "SSN": {
+        "tp": 98,
+        "fn": 2,
+        "total": 100
+      },
+      "DATE": {
+        "tp": 184,
+        "fn": 16,
+        "total": 200
+      },
+      "MRN": {
+        "tp": 46,
+        "fn": 4,
+        "total": 50
+      },
+      "ACCOUNT_NUMBER": {
+        "tp": 50,
+        "fn": 0,
+        "total": 50
+      },
+      "ADDRESS": {
+        "tp": 48,
+        "fn": 2,
+        "total": 50
+      },
+      "ZIPCODE": {
+        "tp": 50,
+        "fn": 0,
+        "total": 50
+      },
+      "PHONE": {
+        "tp": 300,
+        "fn": 0,
+        "total": 300
+      },
+      "FAX": {
+        "tp": 50,
+        "fn": 0,
+        "total": 50
+      },
+      "EMAIL": {
+        "tp": 69,
+        "fn": 0,
+        "total": 69
+      },
+      "HEALTH_PLAN_ID": {
+        "tp": 68,
+        "fn": 0,
+        "total": 68
+      },
+      "CREDIT_CARD": {
+        "tp": 50,
+        "fn": 0,
+        "total": 50
+      },
+      "IP": {
+        "tp": 50,
+        "fn": 0,
+        "total": 50
+      },
+      "URL": {
+        "tp": 50,
+        "fn": 0,
+        "total": 50
+      },
+      "VIN": {
+        "tp": 49,
+        "fn": 1,
+        "total": 50
+      },
+      "LICENSE_PLATE": {
+        "tp": 46,
+        "fn": 4,
+        "total": 50
+      },
+      "NPI": {
+        "tp": 200,
+        "fn": 0,
+        "total": 200
+      },
+      "DEA": {
+        "tp": 44,
+        "fn": 6,
+        "total": 50
+      },
+      "AGE_90_PLUS": {
+        "tp": 10,
+        "fn": 1,
+        "total": 11
+      }
+    },
+    "byErrorLevel": {
+      "medium": {
+        "tp": 662,
+        "fn": 23,
+        "tn": 88,
+        "fp": 206
+      },
+      "high": {
+        "tp": 489,
+        "fn": 12,
+        "tn": 56,
+        "fp": 149
+      },
+      "low": {
+        "tp": 321,
+        "fn": 7,
+        "tn": 34,
+        "fp": 101
+      },
+      "none": {
+        "tp": 64,
+        "fn": 3,
+        "tn": 6,
+        "fp": 22
+      },
+      "extreme": {
+        "tp": 65,
+        "fn": 2,
+        "tn": 6,
+        "fp": 21
+      }
+    },
+    "byTemplate": {
+      "History & Physical": {
+        "tp": 287,
+        "fn": 9,
+        "tn": 66,
+        "fp": 58
+      },
+      "Operative Report": {
+        "tp": 286,
+        "fn": 10,
+        "tn": 25,
+        "fp": 100
+      },
+      "Registration Form": {
+        "tp": 252,
+        "fn": 15,
+        "tn": 25,
+        "fp": 83
+      },
+      "Referral Letter": {
+        "tp": 263,
+        "fn": 2,
+        "tn": 27,
+        "fp": 83
+      },
+      "Pathology Report": {
+        "tp": 256,
+        "fn": 8,
+        "tn": 18,
+        "fp": 92
+      },
+      "Insurance EOB": {
+        "tp": 257,
+        "fn": 3,
+        "tn": 29,
+        "fp": 83
+      }
+    }
+  },
+  "timing": {
+    "processingMs": 47376
+  },
+  "failures": [
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "phiType": "MRN",
+      "value": "DI 4092523",
+      "source": "mrn",
+      "context": "Birth:          12/06/09 Medical Record #:       DI 4092523 Social Security #:      330 39 2887 Admission Dat"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "DEA",
+      "value": "KD7789270",
+      "source": "surgeon_dea",
+      "context": "NPI: 6930275989                         DEA: KD7789270  First Assistant:        Prof. Beatrice Desai Ane"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "value": "11/1 3/23",
+      "source": "admit_date",
+      "context": "ved:           2/13/2020 Date of Report:          11/1 3/23 Requesting Physician:    Sir Mortimer Lopez, PMHN"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "value": "G/2 /36",
+      "source": "dob",
+      "context": "Pillai, Noo Vincent Date of Birth:          G/2 /36 Medical Record #:       ACC 2023-7409354 Social S"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "DEA",
+      "value": "LY5016266",
+      "source": "surgeon_dea",
+      "context": "NPI: 3444751807                         DEA: LY5016266  First Assistant:        Mrs. Destiny Klein Anest"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "phiType": "NAME",
+      "value": "eLIZ AB3TH tAYLORR",
+      "source": "emergency_contact_2",
+      "context": "CONTACT #2: Name:                                eLIZ AB3TH tAYLORR Relationship:                        Sibling Phon"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "phiType": "MRN",
+      "value": "516 94",
+      "source": "mrn",
+      "context": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  MRN: 516 94                                         Account:"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "value": "68//2020",
+      "source": "surgery_date_1",
+      "context": "════════════════════════ Date of Collection:      68//2020 Date Received:           68//2020 Date of Report:"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "phiType": "SSN",
+      "value": "xX-XXX-5S05",
+      "source": "patient_ssn",
+      "context": "Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Date:         06/14/2023 Attending Phys"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "phiType": "MRN",
+      "value": "523 0Oq0",
+      "source": "mrn",
+      "context": "irth:          1932-o2-11 Medical Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Dat"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "DEA",
+      "value": "JJ2906355",
+      "source": "surgeon_dea",
+      "context": "NPI: 4412776019                         DEA: JJ2906355  First Assistant:        Dame Marcus La Fontaine"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "phiType": "NAME",
+      "value": "Tran Daniel Becker",
+      "source": "patient",
+      "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Tran Daniel Becker Preferred Name:                      N/A Date of"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "phiType": "ADDRESS",
+      "value": "5685 Hospital Square",
+      "source": "street_address",
+      "context": "ENT ADDRESS: Street Address:                      5685 Hospital Square Apartment/Unit:                      N/A City, St"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "phiType": "LICENSE_PLATE",
+      "value": "1Kundefined331",
+      "source": "license_plate",
+      "context": "Black License Plate:                       1Kundefined331 State:                               NE VIN (for"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "DEA",
+      "value": "VV8771722",
+      "source": "surgeon_dea",
+      "context": "NPI: 7340976476                         DEA: VV8771722  First Assistant:        Sir George Murphy Anesth"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "phiType": "LICENSE_PLATE",
+      "value": "MJundefined-2425",
+      "source": "license_plate",
+      "context": "Red License Plate:                       MJundefined-2425 State:                               CT VIN (for"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "value": "George Lynn Watanabe",
+      "source": "patient",
+      "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             George Lynn Watanabe Member ID:               DRM675623766 Group Numbe"
+    },
+    {
+      "docId": 25,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "value": "/B2/O1",
+      "source": "dob",
+      "context": "siNGh, NGuYEN pfTer Date of Birth:          /B2/O1 Medical Record #:       MED1751979 Social Securit"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "phiType": "AGE_90_PLUS",
+      "value": "92",
+      "source": "age",
+      "context": "NPI: 2570618140                         DEA: AS7059201  First Assistant:        Hon. Pedro Rivera-Mart"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "value": "Susa nR. Young",
+      "source": "patient",
+      "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Susa nR. Young Preferred Name:                      N/A Date of"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "phiType": "SSN",
+      "value": "***-**-937Z",
+      "source": "guarantor_ssn",
+      "context": "Guardian SSN:                                 ***-**-937Z Phone:                               790.647.5623"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "value": "4/Z00/3",
+      "source": "dob",
+      "context": "cord #:        Ac:995756 Date of Birth:           4/Z00/3 Age:                     53 years Sex:"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "value": "o11/0 4/23",
+      "source": "surgery_date_1",
+      "context": "════════════════════════ Date of Collection:      o11/0 4/23 Date Received:           o11/0 4/23 Date of Repor"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "MRN",
+      "value": "Ac:995756",
+      "source": "mrn",
+      "context": "IBRAHIM GUPTA Medical Record #:        Ac:995756 Date of Birth:           4/Z00/3 Age:"
+    },
+    {
+      "docId": 31,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "value": "corneliius 5aleh",
+      "source": "emergency_contact_1",
+      "context": "───────────────────────── Name:                   corneliius 5aleh Relationship:           Spouse Phone:"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "value": "1/12S/|9G7",
+      "source": "dob",
+      "context": "l Record #:       7468146 Date of Birth:          1/12S/|9G7 Date of Surgery:        2023-04-27 Account Number"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "phiType": "LICENSE_PLATE",
+      "value": "PundefinedDundefined56",
+      "source": "license_plate",
+      "context": "Gray License Plate:                       PundefinedDundefined56 State:                               CO VIN (for"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "value": "09/1 0/24",
+      "source": "admit_date",
+      "context": "ived:           06/Z1/21 Date of Report:          09/1 0/24 Requesting Physician:    Mr. Linda Anderson, OTR/"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "value": "06/Z1/21",
+      "source": "surgery_date_1",
+      "context": "════════════════════════ Date of Collection:      06/Z1/21 Date Received:           06/Z1/21 Date of Report:"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "value": "Karen Clark",
+      "source": "patient",
+      "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Karen Clark Member ID:               XCW360078849 Group Numbe"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "phiType": "DATE",
+      "value": "06/0 9/24",
+      "source": "admit_date",
+      "context": "33818 Atlanta, IN 22488  Statement Date:          06/0 9/24 Claim Number:            CLM-1764792526567-3836 M"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "phiType": "NAME",
+      "value": "Daniel Weiss",
+      "source": "emergency_contact_1",
+      "context": "───────────────────────── Name:                   Daniel Weiss Relationship:           Partner Phone:"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "value": "12/1 2/99",
+      "source": "dob",
+      "context": "l Record #:       9377476 Date of Birth:          12/1 2/99 Date of Surgery:        9/27/21 Account Number:"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "phiType": "DEA",
+      "value": "KV1891383",
+      "source": "surgeon_dea",
+      "context": "NPI: 7731654316                         DEA: KV1891383  First Assistant:        Ms. Karen Tanaka Anesthe"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "value": "aL3JADRO mOREAU",
+      "source": "emergency_contact_2",
+      "context": "CONTACT #2: Name:                                aL3JADRO mOREAU Relationship:                        Parent Phone"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "phiType": "ADDRESS",
+      "value": "863 DhURcHH RidgE",
+      "source": "street_address",
+      "context": "ENT ADDRESS: Street Address:                      863 DhURcHH RidgE Apartment/Unit:                      N/A City, St"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "phiType": "DATE",
+      "value": "1oo/0 4/2024",
+      "source": "admit_date",
+      "context": "Philadelphia Department of Palliative Care  Date: 1oo/0 4/2024  Rev. Destiny Klein Medical Group 8529 Front Plac"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "value": "Keiko A. Lopez",
+      "source": "patient",
+      "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Keiko A. Lopez Preferred Name:                      N/A Date of"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "value": "TakeshiL ee",
+      "source": "emergency_contact_1",
+      "context": "CONTACT #1: Name:                                TakeshiL ee Relationship:                        Child Phone"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "phiType": "VIN",
+      "value": "AZMZFWLJ6G5NHRZRZ",
+      "source": "vin",
+      "context": "WY VIN (for motor vehicle accident claims): AZMZFWLJ6G5NHRZRZ  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "phiType": "LICENSE_PLATE",
+      "value": "undefined71 ZAW",
+      "source": "license_plate",
+      "context": "Silver License Plate:                       undefined71 ZAW State:                               WY VIN (for"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "phiType": "NAME",
+      "value": "Taakeshi A.C lark",
+      "source": "patient",
+      "context": "8 Market Point, Madison, TN 56125  RE:   Patient: Taakeshi A.C lark       DOB: 03/25/66       MRN: MED 6433004  Dear"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "value": "o5/24/3|",
+      "source": "dob",
+      "context": "rd #:        pt: 7642437 Date of Birth:           o5/24/3| Age:                     74 years Sex:"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "value": "2023-i3177",
+      "source": "admit_date",
+      "context": "urity #:      ***-**-7533 Admission Date:         2023-i3177 Attending Physician:    Ms. Cornelius Tanaka Prim"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "phiType": "DATE",
+      "value": "04/2s/22",
+      "source": "surgery_date_1",
+      "context": "─────────────────────────────── 1. Brain Biopsy - 04/2s/22 2. Cholecystectomy - 10-23-2022  MEDICATIONS ────"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "DATE",
+      "value": "l0/16/202Z",
+      "source": "surgery_date_1",
+      "context": "Birth:          6/12/1958 Date of Surgery:        l0/16/202Z Account Number:         61418714  ═══════════════"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "phiType": "DEA",
+      "value": "WC9641533",
+      "source": "surgeon_dea",
+      "context": "NPI: 3759405805                         DEA: WC9641533  First Assistant:        Rev. Javier Kumar Anesth"
+    }
+  ],
+  "overRedactions": [
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Ibrahim Flores",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Zainab Walsh, DO",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Penelope Weber, PA-C",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Carotid Artery Stenosis",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Pituitary Adenoma",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Tiotropium",
+      "source": "medication2"
+    },
+    {
+      "docId": 1,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Liothyronine",
+      "source": "medication3"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Ivan Kaplan",
+      "source": "attending_name"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Gertrude Ibn Saud",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Mariana Lopez, ACNP-BC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Wei St. James, OD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Dilated Cardiomyopathy",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Supraventricular Tachycardia",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Colectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Amitriptyline",
+      "source": "medication1"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Beclomethasone",
+      "source": "medication2"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Insulin Aspart",
+      "source": "medication3"
+    },
+    {
+      "docId": 2,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Kaiser Permanente",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Diego Weiss",
+      "source": "attending_name"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. David Bui, AGNP-C",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Mariana Brown, PA-C",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Lung Cancer",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Chronic Obstructive Pulmonary Disease",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Cervical Spondylosis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Shoulder Replacement",
+      "source": "procedure"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Benzonatate",
+      "source": "medication1"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Pregabalin",
+      "source": "medication2"
+    },
+    {
+      "docId": 3,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Doxycycline",
+      "source": "medication3"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Vladimir Wisniewski",
+      "source": "attending_name"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Carol Martin",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Karen Yoon, FACP",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Vladimir Rao, FCCP",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "Pleurodesis",
+      "source": "procedure"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Amiodarone",
+      "source": "medication1"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Diazepam",
+      "source": "medication2"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Levothyroxine",
+      "source": "medication3"
+    },
+    {
+      "docId": 4,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "INSURANCE_COMPANY",
+      "value": "Cigna",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "HOSPITAL",
+      "value": "Stanford Health Care",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Winifred Walker",
+      "source": "attending_name"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Camila O'Brien",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Mortimer Lopez, PMHNP-BC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Karen Kang, OTR/L",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Hypertriglyceridemia",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Cellulitis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Carpal Tunnel Release",
+      "source": "procedure"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Methylphenidate",
+      "source": "medication1"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Escitalopram",
+      "source": "medication2"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Oxcarbazepine",
+      "source": "medication3"
+    },
+    {
+      "docId": 5,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "United Healthcare",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Archibald Wisniewski",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Deepa Andersson, OTR/L",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Mariana Meyer, FACS",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Hypertriglyceridemia",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Atrial Fibrillation",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Trigger Finger Release",
+      "source": "procedure"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Olmesartan",
+      "source": "medication1"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Duloxetine",
+      "source": "medication2"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Clindamycin",
+      "source": "medication3"
+    },
+    {
+      "docId": 6,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "AGE_UNDER_90",
+      "value": "42",
+      "source": "age_under_90"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "HOSPITAL",
+      "value": "Stanford Health Care",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Tamika Lewis",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Gertrude Sato, FACS",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Winifred Weber, DPT",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Giant Cell Arteritis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Mometasone",
+      "source": "medication1"
+    },
+    {
+      "docId": 7,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Zolmitriptan",
+      "source": "medication3"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Melissa Schneider",
+      "source": "attending_name"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Joseph Lopez",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Susan Martin, PA-C",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Amanda Wagner, PsyD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Iron Deficiency Anemia",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Coronary Artery Disease",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Schizoaffective Disorder",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "MRI of Shoulder",
+      "source": "procedure"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Insulin Detemir",
+      "source": "medication1"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Venlafaxine",
+      "source": "medication2"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Fluticasone",
+      "source": "medication3"
+    },
+    {
+      "docId": 8,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Cigna",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Noor Liu",
+      "source": "attending_name"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Irina Ashford-Cross",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Brian Schmidt, BSN",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Katya Goldberg, FACS",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "IBS",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Migraine without Aura",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Aortic Aneurysm",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Brain Biopsy",
+      "source": "procedure"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Glimepiride",
+      "source": "medication1"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Rosiglitazone",
+      "source": "medication2"
+    },
+    {
+      "docId": 9,
+      "templateName": "Registration Form",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Lactulose",
+      "source": "medication3"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "HOSPITAL",
+      "value": "UT Southwestern",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Andres Youssef",
+      "source": "attending_name"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Destiny Rivera-Martinez, PharmD",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Richard Silverman, LCSW",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Migraine with Aura",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "Paracentesis",
+      "source": "procedure"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Ramipril",
+      "source": "medication1"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Clarithromycin",
+      "source": "medication2"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Loperamide",
+      "source": "medication3"
+    },
+    {
+      "docId": 10,
+      "templateName": "Referral Letter",
+      "errorLevel": "low",
+      "type": "INSURANCE_COMPANY",
+      "value": "Kaiser Permanente",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Jessica Joshi",
+      "source": "attending_name"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Svetlana Lefebvre",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Anthony Flores, PA-C",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Shaniqua Rosen, FNP-BC",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Renal Cell Carcinoma",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Metabolic Syndrome",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Nephrectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Torsemide",
+      "source": "medication1"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Bupropion",
+      "source": "medication2"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Topiramate",
+      "source": "medication3"
+    },
+    {
+      "docId": 11,
+      "templateName": "Pathology Report",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "United Healthcare",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "HOSPITAL",
+      "value": "Children's Hospital of Philadelphia",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Nguyen Al-Mahmoud",
+      "source": "attending_name"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Susan Rosenberg",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Luis Bernard, PMHNP-BC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. George Hill, ACNP-BC",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Hypertriglyceridemia",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Brain Tumor",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "Renal Ultrasound",
+      "source": "procedure"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Diazepam",
+      "source": "medication1"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Valproic Acid",
+      "source": "medication2"
+    },
+    {
+      "docId": 12,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Regular Insulin",
+      "source": "medication3"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Chen Shah",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Pavel Tran, FACC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Yumiko Al-Farsi, OD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Migraine with Aura",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Heart Failure with Reduced EF",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Linagliptin",
+      "source": "medication1"
+    },
+    {
+      "docId": 13,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Metronidazole",
+      "source": "medication2"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Javier Youssef",
+      "source": "attending_name"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Svetlana Choi",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Hortense Mehta, RN",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Christopher Sanchez, OTR/L",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Panic Disorder",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Folate Deficiency",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "NPH Insulin",
+      "source": "medication1"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Finasteride",
+      "source": "medication2"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Topiramate",
+      "source": "medication3"
+    },
+    {
+      "docId": 14,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Kaiser Permanente",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Andrew Jackson",
+      "source": "attending_name"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Tatiana Wagner, DPM",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Jessica Al-Mahmoud, FACS",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "DIAGNOSIS",
+      "value": "Prostate Cancer",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "DIAGNOSIS",
+      "value": "Seizure Disorder",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "DIAGNOSIS",
+      "value": "Cholecystitis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "PROCEDURE",
+      "value": "Angioplasty",
+      "source": "procedure"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "MEDICATION",
+      "value": "Diltiazem",
+      "source": "medication1"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "MEDICATION",
+      "value": "Tetracycline",
+      "source": "medication2"
+    },
+    {
+      "docId": 15,
+      "templateName": "Registration Form",
+      "errorLevel": "none",
+      "type": "MEDICATION",
+      "value": "Ramipril",
+      "source": "medication3"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Fernando Dela Rosa",
+      "source": "attending_name"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. James Desai",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Emily Rodriguez, FAHA",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Mohammed Gonzalez, ACNP-BC",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Chronic Lymphocytic Leukemia",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Gastric Cancer",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "VP Shunt Placement",
+      "source": "procedure"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Insulin Lispro",
+      "source": "medication1"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Isosorbide Dinitrate",
+      "source": "medication2"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Lamotrigine",
+      "source": "medication3"
+    },
+    {
+      "docId": 16,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "Aetna",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Andrei Flores",
+      "source": "attending_name"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Carlos Torres",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Stephanie Brown, FCCP",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Sara Kowalczyk, DNP",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Cystitis",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Renal Cell Carcinoma",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Excisional Biopsy",
+      "source": "procedure"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Sumatriptan",
+      "source": "medication1"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Infliximab",
+      "source": "medication2"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Cefdinir",
+      "source": "medication3"
+    },
+    {
+      "docId": 17,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Medicaid",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Christopher Williams",
+      "source": "attending_name"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Ebenezer Wojcik",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Natasha Fischer, LCSW",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Elena Meyer, RN",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "CKD Stage 3",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Rheumatoid Arthritis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "Nerve Conduction Study",
+      "source": "procedure"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Tamsulosin",
+      "source": "medication1"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Metformin",
+      "source": "medication2"
+    },
+    {
+      "docId": 18,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Tiotropium",
+      "source": "medication3"
+    },
+    {
+      "docId": 19,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Prudence Girard",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 19,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Kevin Friedman, CNM",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 19,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Mohammed Nguyen, MD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 19,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Hepatic Encephalopathy",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 19,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Dabigatran",
+      "source": "medication2"
+    },
+    {
+      "docId": 19,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Ipratropium",
+      "source": "medication3"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Paul Pillai",
+      "source": "attending_name"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Andrea Al-Mahmoud",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Olga Larsson, DPM",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Irina Haddad, OTR/L",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Myasthenia Gravis",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Persistent Depressive Disorder",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Amyotrophic Lateral Sclerosis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Angioplasty",
+      "source": "procedure"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Glimepiride",
+      "source": "medication1"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Irbesartan",
+      "source": "medication2"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Nitroglycerin",
+      "source": "medication3"
+    },
+    {
+      "docId": 20,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "United Healthcare",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "HOSPITAL",
+      "value": "NYU Langone Health",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Diego Levy",
+      "source": "attending_name"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Zainab Wojcik, FACS",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Joshua Dubois, AGNP-C",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Pancreatic Cancer",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Peptic Ulcer Disease",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "IBS",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "DEXA Scan",
+      "source": "procedure"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Linagliptin",
+      "source": "medication1"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Clindamycin",
+      "source": "medication2"
+    },
+    {
+      "docId": 21,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Vancomycin",
+      "source": "medication3"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "HOSPITAL",
+      "value": "Seattle Children's Hospital",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Sir DeShawn Khalil",
+      "source": "attending_name"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Paul Suzuki",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Latoya Shapiro, CNM",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Paul Cho, DPT",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Ankylosing Spondylitis",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Peritoneal Dialysis",
+      "source": "procedure"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Galantamine",
+      "source": "medication1"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Nitroglycerin",
+      "source": "medication2"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Hydrochlorothiazide",
+      "source": "medication3"
+    },
+    {
+      "docId": 22,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "Medicaid",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Kim Jackson",
+      "source": "attending_name"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Prudence Hernandez",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Alejandro Lee, LMFT",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Dmitri Dela Rosa, CNM",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "DIAGNOSIS",
+      "value": "Cervical Spondylosis",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "DIAGNOSIS",
+      "value": "Status Epilepticus",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "DIAGNOSIS",
+      "value": "Idiopathic Pulmonary Fibrosis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "PROCEDURE",
+      "value": "Spinal Fusion",
+      "source": "procedure"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "MEDICATION",
+      "value": "Nitrofurantoin",
+      "source": "medication1"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "MEDICATION",
+      "value": "Sotalol",
+      "source": "medication2"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "MEDICATION",
+      "value": "Triamterene",
+      "source": "medication3"
+    },
+    {
+      "docId": 23,
+      "templateName": "Pathology Report",
+      "errorLevel": "none",
+      "type": "INSURANCE_COMPANY",
+      "value": "Cigna",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Ali Williams",
+      "source": "attending_name"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Wei Rivera-Martinez",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Ronald Goldberg, DMD",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Joseph Girard, PsyD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Kidney Stone",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Sickle Cell Disease",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Binge Eating Disorder",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "Skin Biopsy",
+      "source": "procedure"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Clopidogrel",
+      "source": "medication1"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Fluoxetine",
+      "source": "medication2"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Trazodone",
+      "source": "medication3"
+    },
+    {
+      "docId": 24,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "AGE_UNDER_90",
+      "value": "53",
+      "source": "age_under_90"
+    },
+    {
+      "docId": 25,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 25,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Cornelius Huang",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 25,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Brian Nassar, RN",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 25,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Michael Dubois, PsyD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 25,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Ramelteon",
+      "source": "medication2"
+    },
+    {
+      "docId": 25,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Carbamazepine",
+      "source": "medication3"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Olga Nguyen",
+      "source": "attending_name"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Natasha Hamid",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Sofia Lindberg, FNP-BC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Mikhail O'Neill, FAHA",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "DIAGNOSIS",
+      "value": "Bulimia Nervosa",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "DIAGNOSIS",
+      "value": "Sepsis",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "DIAGNOSIS",
+      "value": "Heart Failure with Reduced EF",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "MEDICATION",
+      "value": "Glyburide",
+      "source": "medication1"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "MEDICATION",
+      "value": "Alprazolam",
+      "source": "medication2"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "MEDICATION",
+      "value": "Methylprednisolone",
+      "source": "medication3"
+    },
+    {
+      "docId": 26,
+      "templateName": "Operative Report",
+      "errorLevel": "extreme",
+      "type": "INSURANCE_COMPANY",
+      "value": "Humana",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "HOSPITAL",
+      "value": "Veterans Affairs Medical Center",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. William O'Sullivan",
+      "source": "attending_name"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Betty Patel, AGNP-C",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Deborah Becker, FAAN",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Osteoarthritis",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Endocarditis",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Central Sleep Apnea",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "EMG",
+      "source": "procedure"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Lithium",
+      "source": "medication1"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Apixaban",
+      "source": "medication2"
+    },
+    {
+      "docId": 27,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Glipizide",
+      "source": "medication3"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Camila Girard",
+      "source": "attending_name"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Tatiana Van der Berg",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Nikolai Harris, FACS",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Linda Walker, PhD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Kidney Stone",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Cholecystectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Warfarin",
+      "source": "medication1"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Amiodarone",
+      "source": "medication2"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Amphetamine",
+      "source": "medication3"
+    },
+    {
+      "docId": 28,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "Medicaid",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Yusuf McKenzie",
+      "source": "attending_name"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Kim Girard",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Sofia Hill, ANP-BC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Chen Dang, OD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "CKD Stage 4",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "NAFLD",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Pulmonary Fibrosis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "MRI of Spine",
+      "source": "procedure"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Diazepam",
+      "source": "medication1"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Erythromycin",
+      "source": "medication2"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Lorazepam",
+      "source": "medication3"
+    },
+    {
+      "docId": 29,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Aetna",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. James Schwartz",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Park Lee, LCSW",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Shaniqua Kowalczyk, FAHA",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Dilated Cardiomyopathy",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Binge Eating Disorder",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Mechanical Ventilation",
+      "source": "procedure"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Digoxin",
+      "source": "medication1"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Aspirin",
+      "source": "medication2"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Polyethylene Glycol",
+      "source": "medication3"
+    },
+    {
+      "docId": 30,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "AGE_UNDER_90",
+      "value": "58",
+      "source": "age_under_90"
+    },
+    {
+      "docId": 31,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "HOSPITAL",
+      "value": "Penn Medicine",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 31,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Diego Yamamoto",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 31,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Beatrice Hill, OD",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 31,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Noor Ashford-Cross, OTR/L",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 31,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Polymyalgia Rheumatica",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 31,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Lithium",
+      "source": "medication3"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Hana Khalil",
+      "source": "attending_name"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Wilfred Suzuki",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Vladimir Lopez, PA-C",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Diabetic Ketoacidosis",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "BPH",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Parathyroidectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Methimazole",
+      "source": "medication1"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Adalimumab",
+      "source": "medication2"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Lorazepam",
+      "source": "medication3"
+    },
+    {
+      "docId": 32,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "Humana",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Carlos Friedman",
+      "source": "attending_name"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Fernando DuPont, DC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Minh Joshi, MD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Urinary Tract Infection",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Opioid Use Disorder",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Anemia",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "KUB",
+      "source": "procedure"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Fentanyl",
+      "source": "medication1"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Suvorexant",
+      "source": "medication2"
+    },
+    {
+      "docId": 33,
+      "templateName": "Registration Form",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Rasagiline",
+      "source": "medication3"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Joshua Kaminski",
+      "source": "attending_name"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Nguyen Gupta",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Elena Rosen, FACP",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Malik Miller, DNP",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "CKD Stage 3",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Polycythemia Vera",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "PET-CT",
+      "source": "procedure"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Mirtazapine",
+      "source": "medication1"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Prochlorperazine",
+      "source": "medication2"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Cephalexin",
+      "source": "medication3"
+    },
+    {
+      "docId": 34,
+      "templateName": "Referral Letter",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "Aetna",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Olga Nguyen",
+      "source": "attending_name"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dame LaTonya Smith",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Linda Anderson, OTR/L",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Ali Ben-David, ACNP-BC",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Acute Myocardial Infarction",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Metabolic Syndrome",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Sentinel Node Biopsy",
+      "source": "procedure"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Nitrofurantoin",
+      "source": "medication1"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Oxcarbazepine",
+      "source": "medication2"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Mirtazapine",
+      "source": "medication3"
+    },
+    {
+      "docId": 35,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Blue Cross Blue Shield",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "HOSPITAL",
+      "value": "Stanford Health Care",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Andres Takahashi",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Susan Allen, PA-C",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Timothy Worthington-Smythe, DMD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Hyperglycemia",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Esophageal Varices",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "Pacemaker Insertion",
+      "source": "procedure"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Metronidazole",
+      "source": "medication1"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Escitalopram",
+      "source": "medication2"
+    },
+    {
+      "docId": 36,
+      "templateName": "Insurance EOB",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Sulfasalazine",
+      "source": "medication3"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Elizabeth Kim",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Malik Meyer, OD",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Ebenezer Brown, FAAN",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Polymyalgia Rheumatica",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Canagliflozin",
+      "source": "medication1"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Torsemide",
+      "source": "medication2"
+    },
+    {
+      "docId": 37,
+      "templateName": "History & Physical",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Rivastigmine",
+      "source": "medication3"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Priya Goldberg",
+      "source": "attending_name"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Ronald Lopez",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Timothy Al-Mahmoud, FACC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Malik Yamamoto, FAAN",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Myelodysplastic Syndrome",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Esophageal Varices",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Lobectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Colchicine",
+      "source": "medication1"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Methylphenidate",
+      "source": "medication2"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Clarithromycin",
+      "source": "medication3"
+    },
+    {
+      "docId": 38,
+      "templateName": "Operative Report",
+      "errorLevel": "high",
+      "type": "INSURANCE_COMPANY",
+      "value": "United Healthcare",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Andrei Yamamoto",
+      "source": "attending_name"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Thomas Girard, RN",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Martina Wagner, DDS",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Cervical Radiculopathy",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Anorexia Nervosa",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Lung Cancer",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Cystoscopy",
+      "source": "procedure"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Tamsulosin",
+      "source": "medication1"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Nitroglycerin",
+      "source": "medication2"
+    },
+    {
+      "docId": 39,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Ropinirole",
+      "source": "medication3"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Ms. Noor Larsson",
+      "source": "attending_name"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Sir DeShawn Montgomery-Wells",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Luis Lewis, AGNP-C",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Martina Hill, CRNA",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "DIAGNOSIS",
+      "value": "CKD Stage 4",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "PROCEDURE",
+      "value": "Vertebroplasty",
+      "source": "procedure"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "MEDICATION",
+      "value": "Chlorthalidone",
+      "source": "medication1"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "MEDICATION",
+      "value": "Clonazepam",
+      "source": "medication2"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "MEDICATION",
+      "value": "Digoxin",
+      "source": "medication3"
+    },
+    {
+      "docId": 40,
+      "templateName": "Referral Letter",
+      "errorLevel": "extreme",
+      "type": "INSURANCE_COMPANY",
+      "value": "Medicaid",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Dame Kenneth Zhao",
+      "source": "attending_name"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Ali King",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Sofia Agarwal, BSN",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Heart Failure with Reduced EF",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Alzheimer Disease",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "DIAGNOSIS",
+      "value": "Osteomyelitis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "PROCEDURE",
+      "value": "Upper Endoscopy",
+      "source": "procedure"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Cefdinir",
+      "source": "medication1"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Prednisone",
+      "source": "medication2"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "MEDICATION",
+      "value": "Methotrexate",
+      "source": "medication3"
+    },
+    {
+      "docId": 41,
+      "templateName": "Pathology Report",
+      "errorLevel": "low",
+      "type": "INSURANCE_COMPANY",
+      "value": "United Healthcare",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Sara Allen",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Layla Lindberg, FCCP",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Ricardo McKenzie, FACC",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Carotid Artery Stenosis",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Nephrolithiasis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Hemodialysis",
+      "source": "procedure"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Oxycodone",
+      "source": "medication1"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Tramadol",
+      "source": "medication2"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Metformin",
+      "source": "medication3"
+    },
+    {
+      "docId": 42,
+      "templateName": "Insurance EOB",
+      "errorLevel": "medium",
+      "type": "AGE_UNDER_90",
+      "value": "38",
+      "source": "age_under_90"
+    },
+    {
+      "docId": 43,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. John Sullivan",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 43,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Chen Pillai, PharmD",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 43,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Elena Al-Mahmoud, NP",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 43,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Eszopiclone",
+      "source": "medication1"
+    },
+    {
+      "docId": 43,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Allopurinol",
+      "source": "medication2"
+    },
+    {
+      "docId": 43,
+      "templateName": "History & Physical",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Linagliptin",
+      "source": "medication3"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Diego Hoang",
+      "source": "attending_name"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Tatiana Thompson",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Susan Lewandowski, FACP",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Winifred Nassar, FACS",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Atrial Fibrillation",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Meningitis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "X-Ray",
+      "source": "procedure"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Carvedilol",
+      "source": "medication1"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Metformin",
+      "source": "medication2"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Amoxicillin",
+      "source": "medication3"
+    },
+    {
+      "docId": 44,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Aetna",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Wilfred Menon",
+      "source": "attending_name"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir William Kumar, AGNP-C",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Joshua McMillan, LMFT",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Osteoporosis",
+      "source": "diagnosis1"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "CKD Stage 5",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "ALS",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Stress Test",
+      "source": "procedure"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Canagliflozin",
+      "source": "medication1"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Erythromycin",
+      "source": "medication2"
+    },
+    {
+      "docId": 45,
+      "templateName": "Registration Form",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Valproic Acid",
+      "source": "medication3"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Beatrice Schmidt",
+      "source": "attending_name"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Sergei Zhang",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Dr. Barbara Li, LCSW",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Tran Allen, OD",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Tension Headache",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Aortic Stenosis",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Total Knee Replacement",
+      "source": "procedure"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Fentanyl",
+      "source": "medication1"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Prednisone",
+      "source": "medication2"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Eletriptan",
+      "source": "medication3"
+    },
+    {
+      "docId": 46,
+      "templateName": "Referral Letter",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Humana",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "HOSPITAL",
+      "value": "Houston Methodist",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Layla Worthington-Smythe",
+      "source": "attending_name"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Mrs. Jasmine Rivera-Martinez",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Timothy Martin, FCCP",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Margaret Khalil, FASN",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Uterine Cancer",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Bacteremia",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Carotid Endarterectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Chlorthalidone",
+      "source": "medication1"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Sertraline",
+      "source": "medication2"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Venlafaxine",
+      "source": "medication3"
+    },
+    {
+      "docId": 47,
+      "templateName": "Pathology Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "Blue Cross Blue Shield",
+      "source": "insurance_name"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Omar Menon",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Algernon Levy, LMFT",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Hon. Margaret Tanaka, PMHNP-BC",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Kidney Stone",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Acute Myeloid Leukemia",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "PROCEDURE",
+      "value": "Lobectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Gabapentin",
+      "source": "medication1"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Methylphenidate",
+      "source": "medication2"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Liraglutide",
+      "source": "medication3"
+    },
+    {
+      "docId": 48,
+      "templateName": "Insurance EOB",
+      "errorLevel": "high",
+      "type": "AGE_UNDER_90",
+      "value": "85",
+      "source": "age_under_90"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "HOSPITAL",
+      "value": "Johns Hopkins Hospital",
+      "source": "hospital_name"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Winifred Youssef",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Mr. Carol Chen-Wang, DPM",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Yuki Kumar, DPT",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "DIAGNOSIS",
+      "value": "Migraine with Aura",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 49,
+      "templateName": "History & Physical",
+      "errorLevel": "high",
+      "type": "MEDICATION",
+      "value": "Propranolol",
+      "source": "medication2"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Prof. Gabriela Silverman",
+      "source": "attending_name"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Rev. Jin Harris",
+      "source": "pcp_name"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir Juan Gupta, ANP-BC",
+      "source": "surgeon_name"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROVIDER_NAME",
+      "value": "Sir LaTonya Mueller, DPT",
+      "source": "pathologist_name"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Duodenal Ulcer",
+      "source": "diagnosis2"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "DIAGNOSIS",
+      "value": "Bulimia Nervosa",
+      "source": "diagnosis3"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "PROCEDURE",
+      "value": "Oophorectomy",
+      "source": "procedure"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Rivastigmine",
+      "source": "medication1"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Levofloxacin",
+      "source": "medication2"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "MEDICATION",
+      "value": "Valsartan",
+      "source": "medication3"
+    },
+    {
+      "docId": 50,
+      "templateName": "Operative Report",
+      "errorLevel": "medium",
+      "type": "INSURANCE_COMPANY",
+      "value": "United Healthcare",
+      "source": "insurance_name"
+    }
+  ],
+  "investigation": {
+    "summary": "47 PHI items missed, 499 over-redactions",
+    "patterns": {
+      "byType": {
+        "MRN": [
+          {
+            "docId": 1,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "MRN",
+            "value": "DI 4092523",
+            "source": "mrn",
+            "context": "Birth:          12/06/09 Medical Record #:       DI 4092523 Social Security #:      330 39 2887 Admission Dat"
+          },
+          {
+            "docId": 9,
+            "templateName": "Registration Form",
+            "errorLevel": "high",
+            "phiType": "MRN",
+            "value": "516 94",
+            "source": "mrn",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  MRN: 516 94                                         Account:"
+          },
+          {
+            "docId": 13,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "MRN",
+            "value": "523 0Oq0",
+            "source": "mrn",
+            "context": "irth:          1932-o2-11 Medical Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Dat"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "MRN",
+            "value": "Ac:995756",
+            "source": "mrn",
+            "context": "IBRAHIM GUPTA Medical Record #:        Ac:995756 Date of Birth:           4/Z00/3 Age:"
+          }
+        ],
+        "DEA": [
+          {
+            "docId": 2,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "KD7789270",
+            "source": "surgeon_dea",
+            "context": "NPI: 6930275989                         DEA: KD7789270  First Assistant:        Prof. Beatrice Desai Ane"
+          },
+          {
+            "docId": 8,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "LY5016266",
+            "source": "surgeon_dea",
+            "context": "NPI: 3444751807                         DEA: LY5016266  First Assistant:        Mrs. Destiny Klein Anest"
+          },
+          {
+            "docId": 14,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "JJ2906355",
+            "source": "surgeon_dea",
+            "context": "NPI: 4412776019                         DEA: JJ2906355  First Assistant:        Dame Marcus La Fontaine"
+          },
+          {
+            "docId": 20,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "VV8771722",
+            "source": "surgeon_dea",
+            "context": "NPI: 7340976476                         DEA: VV8771722  First Assistant:        Sir George Murphy Anesth"
+          },
+          {
+            "docId": 38,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DEA",
+            "value": "KV1891383",
+            "source": "surgeon_dea",
+            "context": "NPI: 7731654316                         DEA: KV1891383  First Assistant:        Ms. Karen Tanaka Anesthe"
+          },
+          {
+            "docId": 50,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "WC9641533",
+            "source": "surgeon_dea",
+            "context": "NPI: 3759405805                         DEA: WC9641533  First Assistant:        Rev. Javier Kumar Anesth"
+          }
+        ],
+        "DATE": [
+          {
+            "docId": 5,
+            "templateName": "Pathology Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "11/1 3/23",
+            "source": "admit_date",
+            "context": "ved:           2/13/2020 Date of Report:          11/1 3/23 Requesting Physician:    Sir Mortimer Lopez, PMHN"
+          },
+          {
+            "docId": 7,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "G/2 /36",
+            "source": "dob",
+            "context": "Pillai, Noo Vincent Date of Birth:          G/2 /36 Medical Record #:       ACC 2023-7409354 Social S"
+          },
+          {
+            "docId": 11,
+            "templateName": "Pathology Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "68//2020",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      68//2020 Date Received:           68//2020 Date of Report:"
+          },
+          {
+            "docId": 25,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "/B2/O1",
+            "source": "dob",
+            "context": "siNGh, NGuYEN pfTer Date of Birth:          /B2/O1 Medical Record #:       MED1751979 Social Securit"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "4/Z00/3",
+            "source": "dob",
+            "context": "cord #:        Ac:995756 Date of Birth:           4/Z00/3 Age:                     53 years Sex:"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "o11/0 4/23",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      o11/0 4/23 Date Received:           o11/0 4/23 Date of Repor"
+          },
+          {
+            "docId": 32,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "1/12S/|9G7",
+            "source": "dob",
+            "context": "l Record #:       7468146 Date of Birth:          1/12S/|9G7 Date of Surgery:        2023-04-27 Account Number"
+          },
+          {
+            "docId": 35,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "09/1 0/24",
+            "source": "admit_date",
+            "context": "ived:           06/Z1/21 Date of Report:          09/1 0/24 Requesting Physician:    Mr. Linda Anderson, OTR/"
+          },
+          {
+            "docId": 35,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "06/Z1/21",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      06/Z1/21 Date Received:           06/Z1/21 Date of Report:"
+          },
+          {
+            "docId": 36,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "DATE",
+            "value": "06/0 9/24",
+            "source": "admit_date",
+            "context": "33818 Atlanta, IN 22488  Statement Date:          06/0 9/24 Claim Number:            CLM-1764792526567-3836 M"
+          },
+          {
+            "docId": 38,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "12/1 2/99",
+            "source": "dob",
+            "context": "l Record #:       9377476 Date of Birth:          12/1 2/99 Date of Surgery:        9/27/21 Account Number:"
+          },
+          {
+            "docId": 40,
+            "templateName": "Referral Letter",
+            "errorLevel": "extreme",
+            "phiType": "DATE",
+            "value": "1oo/0 4/2024",
+            "source": "admit_date",
+            "context": "Philadelphia Department of Palliative Care  Date: 1oo/0 4/2024  Rev. Destiny Klein Medical Group 8529 Front Plac"
+          },
+          {
+            "docId": 47,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "o5/24/3|",
+            "source": "dob",
+            "context": "rd #:        pt: 7642437 Date of Birth:           o5/24/3| Age:                     74 years Sex:"
+          },
+          {
+            "docId": 49,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "2023-i3177",
+            "source": "admit_date",
+            "context": "urity #:      ***-**-7533 Admission Date:         2023-i3177 Attending Physician:    Ms. Cornelius Tanaka Prim"
+          },
+          {
+            "docId": 49,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "04/2s/22",
+            "source": "surgery_date_1",
+            "context": "─────────────────────────────── 1. Brain Biopsy - 04/2s/22 2. Cholecystectomy - 10-23-2022  MEDICATIONS ────"
+          },
+          {
+            "docId": 50,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "l0/16/202Z",
+            "source": "surgery_date_1",
+            "context": "Birth:          6/12/1958 Date of Surgery:        l0/16/202Z Account Number:         61418714  ═══════════════"
+          }
+        ],
+        "NAME": [
+          {
+            "docId": 9,
+            "templateName": "Registration Form",
+            "errorLevel": "high",
+            "phiType": "NAME",
+            "value": "eLIZ AB3TH tAYLORR",
+            "source": "emergency_contact_2",
+            "context": "CONTACT #2: Name:                                eLIZ AB3TH tAYLORR Relationship:                        Sibling Phon"
+          },
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "NAME",
+            "value": "Tran Daniel Becker",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Tran Daniel Becker Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 24,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "George Lynn Watanabe",
+            "source": "patient",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             George Lynn Watanabe Member ID:               DRM675623766 Group Numbe"
+          },
+          {
+            "docId": 27,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Susa nR. Young",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Susa nR. Young Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 31,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "corneliius 5aleh",
+            "source": "emergency_contact_1",
+            "context": "───────────────────────── Name:                   corneliius 5aleh Relationship:           Spouse Phone:"
+          },
+          {
+            "docId": 36,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Karen Clark",
+            "source": "patient",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Karen Clark Member ID:               XCW360078849 Group Numbe"
+          },
+          {
+            "docId": 37,
+            "templateName": "History & Physical",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Daniel Weiss",
+            "source": "emergency_contact_1",
+            "context": "───────────────────────── Name:                   Daniel Weiss Relationship:           Partner Phone:"
+          },
+          {
+            "docId": 39,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "aL3JADRO mOREAU",
+            "source": "emergency_contact_2",
+            "context": "CONTACT #2: Name:                                aL3JADRO mOREAU Relationship:                        Parent Phone"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "Keiko A. Lopez",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Keiko A. Lopez Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "TakeshiL ee",
+            "source": "emergency_contact_1",
+            "context": "CONTACT #1: Name:                                TakeshiL ee Relationship:                        Child Phone"
+          },
+          {
+            "docId": 46,
+            "templateName": "Referral Letter",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "Taakeshi A.C lark",
+            "source": "patient",
+            "context": "8 Market Point, Madison, TN 56125  RE:   Patient: Taakeshi A.C lark       DOB: 03/25/66       MRN: MED 6433004  Dear"
+          }
+        ],
+        "SSN": [
+          {
+            "docId": 13,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "SSN",
+            "value": "xX-XXX-5S05",
+            "source": "patient_ssn",
+            "context": "Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Date:         06/14/2023 Attending Phys"
+          },
+          {
+            "docId": 27,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "SSN",
+            "value": "***-**-937Z",
+            "source": "guarantor_ssn",
+            "context": "Guardian SSN:                                 ***-**-937Z Phone:                               790.647.5623"
+          }
+        ],
+        "ADDRESS": [
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "ADDRESS",
+            "value": "5685 Hospital Square",
+            "source": "street_address",
+            "context": "ENT ADDRESS: Street Address:                      5685 Hospital Square Apartment/Unit:                      N/A City, St"
+          },
+          {
+            "docId": 39,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "ADDRESS",
+            "value": "863 DhURcHH RidgE",
+            "source": "street_address",
+            "context": "ENT ADDRESS: Street Address:                      863 DhURcHH RidgE Apartment/Unit:                      N/A City, St"
+          }
+        ],
+        "LICENSE_PLATE": [
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "LICENSE_PLATE",
+            "value": "1Kundefined331",
+            "source": "license_plate",
+            "context": "Black License Plate:                       1Kundefined331 State:                               NE VIN (for"
+          },
+          {
+            "docId": 21,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "LICENSE_PLATE",
+            "value": "MJundefined-2425",
+            "source": "license_plate",
+            "context": "Red License Plate:                       MJundefined-2425 State:                               CT VIN (for"
+          },
+          {
+            "docId": 33,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "LICENSE_PLATE",
+            "value": "PundefinedDundefined56",
+            "source": "license_plate",
+            "context": "Gray License Plate:                       PundefinedDundefined56 State:                               CO VIN (for"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "LICENSE_PLATE",
+            "value": "undefined71 ZAW",
+            "source": "license_plate",
+            "context": "Silver License Plate:                       undefined71 ZAW State:                               WY VIN (for"
+          }
+        ],
+        "AGE_90_PLUS": [
+          {
+            "docId": 26,
+            "templateName": "Operative Report",
+            "errorLevel": "extreme",
+            "phiType": "AGE_90_PLUS",
+            "value": "92",
+            "source": "age",
+            "context": "NPI: 2570618140                         DEA: AS7059201  First Assistant:        Hon. Pedro Rivera-Mart"
+          }
+        ],
+        "VIN": [
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "VIN",
+            "value": "AZMZFWLJ6G5NHRZRZ",
+            "source": "vin",
+            "context": "WY VIN (for motor vehicle accident claims): AZMZFWLJ6G5NHRZRZ  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          }
+        ]
+      },
+      "byErrorLevel": {
+        "medium": [
+          {
+            "docId": 1,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "MRN",
+            "value": "DI 4092523",
+            "source": "mrn",
+            "context": "Birth:          12/06/09 Medical Record #:       DI 4092523 Social Security #:      330 39 2887 Admission Dat"
+          },
+          {
+            "docId": 2,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "KD7789270",
+            "source": "surgeon_dea",
+            "context": "NPI: 6930275989                         DEA: KD7789270  First Assistant:        Prof. Beatrice Desai Ane"
+          },
+          {
+            "docId": 8,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "LY5016266",
+            "source": "surgeon_dea",
+            "context": "NPI: 3444751807                         DEA: LY5016266  First Assistant:        Mrs. Destiny Klein Anest"
+          },
+          {
+            "docId": 14,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "JJ2906355",
+            "source": "surgeon_dea",
+            "context": "NPI: 4412776019                         DEA: JJ2906355  First Assistant:        Dame Marcus La Fontaine"
+          },
+          {
+            "docId": 20,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "VV8771722",
+            "source": "surgeon_dea",
+            "context": "NPI: 7340976476                         DEA: VV8771722  First Assistant:        Sir George Murphy Anesth"
+          },
+          {
+            "docId": 21,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "LICENSE_PLATE",
+            "value": "MJundefined-2425",
+            "source": "license_plate",
+            "context": "Red License Plate:                       MJundefined-2425 State:                               CT VIN (for"
+          },
+          {
+            "docId": 25,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "/B2/O1",
+            "source": "dob",
+            "context": "siNGh, NGuYEN pfTer Date of Birth:          /B2/O1 Medical Record #:       MED1751979 Social Securit"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "4/Z00/3",
+            "source": "dob",
+            "context": "cord #:        Ac:995756 Date of Birth:           4/Z00/3 Age:                     53 years Sex:"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "o11/0 4/23",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      o11/0 4/23 Date Received:           o11/0 4/23 Date of Repor"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "MRN",
+            "value": "Ac:995756",
+            "source": "mrn",
+            "context": "IBRAHIM GUPTA Medical Record #:        Ac:995756 Date of Birth:           4/Z00/3 Age:"
+          },
+          {
+            "docId": 31,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "corneliius 5aleh",
+            "source": "emergency_contact_1",
+            "context": "───────────────────────── Name:                   corneliius 5aleh Relationship:           Spouse Phone:"
+          },
+          {
+            "docId": 35,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "09/1 0/24",
+            "source": "admit_date",
+            "context": "ived:           06/Z1/21 Date of Report:          09/1 0/24 Requesting Physician:    Mr. Linda Anderson, OTR/"
+          },
+          {
+            "docId": 35,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "06/Z1/21",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      06/Z1/21 Date Received:           06/Z1/21 Date of Report:"
+          },
+          {
+            "docId": 39,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "aL3JADRO mOREAU",
+            "source": "emergency_contact_2",
+            "context": "CONTACT #2: Name:                                aL3JADRO mOREAU Relationship:                        Parent Phone"
+          },
+          {
+            "docId": 39,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "ADDRESS",
+            "value": "863 DhURcHH RidgE",
+            "source": "street_address",
+            "context": "ENT ADDRESS: Street Address:                      863 DhURcHH RidgE Apartment/Unit:                      N/A City, St"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "Keiko A. Lopez",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Keiko A. Lopez Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "TakeshiL ee",
+            "source": "emergency_contact_1",
+            "context": "CONTACT #1: Name:                                TakeshiL ee Relationship:                        Child Phone"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "VIN",
+            "value": "AZMZFWLJ6G5NHRZRZ",
+            "source": "vin",
+            "context": "WY VIN (for motor vehicle accident claims): AZMZFWLJ6G5NHRZRZ  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "LICENSE_PLATE",
+            "value": "undefined71 ZAW",
+            "source": "license_plate",
+            "context": "Silver License Plate:                       undefined71 ZAW State:                               WY VIN (for"
+          },
+          {
+            "docId": 46,
+            "templateName": "Referral Letter",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "Taakeshi A.C lark",
+            "source": "patient",
+            "context": "8 Market Point, Madison, TN 56125  RE:   Patient: Taakeshi A.C lark       DOB: 03/25/66       MRN: MED 6433004  Dear"
+          },
+          {
+            "docId": 47,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "o5/24/3|",
+            "source": "dob",
+            "context": "rd #:        pt: 7642437 Date of Birth:           o5/24/3| Age:                     74 years Sex:"
+          },
+          {
+            "docId": 50,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "l0/16/202Z",
+            "source": "surgery_date_1",
+            "context": "Birth:          6/12/1958 Date of Surgery:        l0/16/202Z Account Number:         61418714  ═══════════════"
+          },
+          {
+            "docId": 50,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "WC9641533",
+            "source": "surgeon_dea",
+            "context": "NPI: 3759405805                         DEA: WC9641533  First Assistant:        Rev. Javier Kumar Anesth"
+          }
+        ],
+        "high": [
+          {
+            "docId": 5,
+            "templateName": "Pathology Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "11/1 3/23",
+            "source": "admit_date",
+            "context": "ved:           2/13/2020 Date of Report:          11/1 3/23 Requesting Physician:    Sir Mortimer Lopez, PMHN"
+          },
+          {
+            "docId": 7,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "G/2 /36",
+            "source": "dob",
+            "context": "Pillai, Noo Vincent Date of Birth:          G/2 /36 Medical Record #:       ACC 2023-7409354 Social S"
+          },
+          {
+            "docId": 9,
+            "templateName": "Registration Form",
+            "errorLevel": "high",
+            "phiType": "NAME",
+            "value": "eLIZ AB3TH tAYLORR",
+            "source": "emergency_contact_2",
+            "context": "CONTACT #2: Name:                                eLIZ AB3TH tAYLORR Relationship:                        Sibling Phon"
+          },
+          {
+            "docId": 9,
+            "templateName": "Registration Form",
+            "errorLevel": "high",
+            "phiType": "MRN",
+            "value": "516 94",
+            "source": "mrn",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  MRN: 516 94                                         Account:"
+          },
+          {
+            "docId": 11,
+            "templateName": "Pathology Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "68//2020",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      68//2020 Date Received:           68//2020 Date of Report:"
+          },
+          {
+            "docId": 13,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "SSN",
+            "value": "xX-XXX-5S05",
+            "source": "patient_ssn",
+            "context": "Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Date:         06/14/2023 Attending Phys"
+          },
+          {
+            "docId": 13,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "MRN",
+            "value": "523 0Oq0",
+            "source": "mrn",
+            "context": "irth:          1932-o2-11 Medical Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Dat"
+          },
+          {
+            "docId": 32,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "1/12S/|9G7",
+            "source": "dob",
+            "context": "l Record #:       7468146 Date of Birth:          1/12S/|9G7 Date of Surgery:        2023-04-27 Account Number"
+          },
+          {
+            "docId": 38,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "12/1 2/99",
+            "source": "dob",
+            "context": "l Record #:       9377476 Date of Birth:          12/1 2/99 Date of Surgery:        9/27/21 Account Number:"
+          },
+          {
+            "docId": 38,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DEA",
+            "value": "KV1891383",
+            "source": "surgeon_dea",
+            "context": "NPI: 7731654316                         DEA: KV1891383  First Assistant:        Ms. Karen Tanaka Anesthe"
+          },
+          {
+            "docId": 49,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "2023-i3177",
+            "source": "admit_date",
+            "context": "urity #:      ***-**-7533 Admission Date:         2023-i3177 Attending Physician:    Ms. Cornelius Tanaka Prim"
+          },
+          {
+            "docId": 49,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "04/2s/22",
+            "source": "surgery_date_1",
+            "context": "─────────────────────────────── 1. Brain Biopsy - 04/2s/22 2. Cholecystectomy - 10-23-2022  MEDICATIONS ────"
+          }
+        ],
+        "none": [
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "NAME",
+            "value": "Tran Daniel Becker",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Tran Daniel Becker Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "ADDRESS",
+            "value": "5685 Hospital Square",
+            "source": "street_address",
+            "context": "ENT ADDRESS: Street Address:                      5685 Hospital Square Apartment/Unit:                      N/A City, St"
+          },
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "LICENSE_PLATE",
+            "value": "1Kundefined331",
+            "source": "license_plate",
+            "context": "Black License Plate:                       1Kundefined331 State:                               NE VIN (for"
+          }
+        ],
+        "low": [
+          {
+            "docId": 24,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "George Lynn Watanabe",
+            "source": "patient",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             George Lynn Watanabe Member ID:               DRM675623766 Group Numbe"
+          },
+          {
+            "docId": 27,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Susa nR. Young",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Susa nR. Young Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 27,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "SSN",
+            "value": "***-**-937Z",
+            "source": "guarantor_ssn",
+            "context": "Guardian SSN:                                 ***-**-937Z Phone:                               790.647.5623"
+          },
+          {
+            "docId": 33,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "LICENSE_PLATE",
+            "value": "PundefinedDundefined56",
+            "source": "license_plate",
+            "context": "Gray License Plate:                       PundefinedDundefined56 State:                               CO VIN (for"
+          },
+          {
+            "docId": 36,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Karen Clark",
+            "source": "patient",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Karen Clark Member ID:               XCW360078849 Group Numbe"
+          },
+          {
+            "docId": 36,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "DATE",
+            "value": "06/0 9/24",
+            "source": "admit_date",
+            "context": "33818 Atlanta, IN 22488  Statement Date:          06/0 9/24 Claim Number:            CLM-1764792526567-3836 M"
+          },
+          {
+            "docId": 37,
+            "templateName": "History & Physical",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Daniel Weiss",
+            "source": "emergency_contact_1",
+            "context": "───────────────────────── Name:                   Daniel Weiss Relationship:           Partner Phone:"
+          }
+        ],
+        "extreme": [
+          {
+            "docId": 26,
+            "templateName": "Operative Report",
+            "errorLevel": "extreme",
+            "phiType": "AGE_90_PLUS",
+            "value": "92",
+            "source": "age",
+            "context": "NPI: 2570618140                         DEA: AS7059201  First Assistant:        Hon. Pedro Rivera-Mart"
+          },
+          {
+            "docId": 40,
+            "templateName": "Referral Letter",
+            "errorLevel": "extreme",
+            "phiType": "DATE",
+            "value": "1oo/0 4/2024",
+            "source": "admit_date",
+            "context": "Philadelphia Department of Palliative Care  Date: 1oo/0 4/2024  Rev. Destiny Klein Medical Group 8529 Front Plac"
+          }
+        ]
+      },
+      "byTemplate": {
+        "History & Physical": [
+          {
+            "docId": 1,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "MRN",
+            "value": "DI 4092523",
+            "source": "mrn",
+            "context": "Birth:          12/06/09 Medical Record #:       DI 4092523 Social Security #:      330 39 2887 Admission Dat"
+          },
+          {
+            "docId": 7,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "G/2 /36",
+            "source": "dob",
+            "context": "Pillai, Noo Vincent Date of Birth:          G/2 /36 Medical Record #:       ACC 2023-7409354 Social S"
+          },
+          {
+            "docId": 13,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "SSN",
+            "value": "xX-XXX-5S05",
+            "source": "patient_ssn",
+            "context": "Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Date:         06/14/2023 Attending Phys"
+          },
+          {
+            "docId": 13,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "MRN",
+            "value": "523 0Oq0",
+            "source": "mrn",
+            "context": "irth:          1932-o2-11 Medical Record #:       523 0Oq0 Social Security #:      xX-XXX-5S05 Admission Dat"
+          },
+          {
+            "docId": 25,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "/B2/O1",
+            "source": "dob",
+            "context": "siNGh, NGuYEN pfTer Date of Birth:          /B2/O1 Medical Record #:       MED1751979 Social Securit"
+          },
+          {
+            "docId": 31,
+            "templateName": "History & Physical",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "corneliius 5aleh",
+            "source": "emergency_contact_1",
+            "context": "───────────────────────── Name:                   corneliius 5aleh Relationship:           Spouse Phone:"
+          },
+          {
+            "docId": 37,
+            "templateName": "History & Physical",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Daniel Weiss",
+            "source": "emergency_contact_1",
+            "context": "───────────────────────── Name:                   Daniel Weiss Relationship:           Partner Phone:"
+          },
+          {
+            "docId": 49,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "2023-i3177",
+            "source": "admit_date",
+            "context": "urity #:      ***-**-7533 Admission Date:         2023-i3177 Attending Physician:    Ms. Cornelius Tanaka Prim"
+          },
+          {
+            "docId": 49,
+            "templateName": "History & Physical",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "04/2s/22",
+            "source": "surgery_date_1",
+            "context": "─────────────────────────────── 1. Brain Biopsy - 04/2s/22 2. Cholecystectomy - 10-23-2022  MEDICATIONS ────"
+          }
+        ],
+        "Operative Report": [
+          {
+            "docId": 2,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "KD7789270",
+            "source": "surgeon_dea",
+            "context": "NPI: 6930275989                         DEA: KD7789270  First Assistant:        Prof. Beatrice Desai Ane"
+          },
+          {
+            "docId": 8,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "LY5016266",
+            "source": "surgeon_dea",
+            "context": "NPI: 3444751807                         DEA: LY5016266  First Assistant:        Mrs. Destiny Klein Anest"
+          },
+          {
+            "docId": 14,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "JJ2906355",
+            "source": "surgeon_dea",
+            "context": "NPI: 4412776019                         DEA: JJ2906355  First Assistant:        Dame Marcus La Fontaine"
+          },
+          {
+            "docId": 20,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "VV8771722",
+            "source": "surgeon_dea",
+            "context": "NPI: 7340976476                         DEA: VV8771722  First Assistant:        Sir George Murphy Anesth"
+          },
+          {
+            "docId": 26,
+            "templateName": "Operative Report",
+            "errorLevel": "extreme",
+            "phiType": "AGE_90_PLUS",
+            "value": "92",
+            "source": "age",
+            "context": "NPI: 2570618140                         DEA: AS7059201  First Assistant:        Hon. Pedro Rivera-Mart"
+          },
+          {
+            "docId": 32,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "1/12S/|9G7",
+            "source": "dob",
+            "context": "l Record #:       7468146 Date of Birth:          1/12S/|9G7 Date of Surgery:        2023-04-27 Account Number"
+          },
+          {
+            "docId": 38,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "12/1 2/99",
+            "source": "dob",
+            "context": "l Record #:       9377476 Date of Birth:          12/1 2/99 Date of Surgery:        9/27/21 Account Number:"
+          },
+          {
+            "docId": 38,
+            "templateName": "Operative Report",
+            "errorLevel": "high",
+            "phiType": "DEA",
+            "value": "KV1891383",
+            "source": "surgeon_dea",
+            "context": "NPI: 7731654316                         DEA: KV1891383  First Assistant:        Ms. Karen Tanaka Anesthe"
+          },
+          {
+            "docId": 50,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "l0/16/202Z",
+            "source": "surgery_date_1",
+            "context": "Birth:          6/12/1958 Date of Surgery:        l0/16/202Z Account Number:         61418714  ═══════════════"
+          },
+          {
+            "docId": 50,
+            "templateName": "Operative Report",
+            "errorLevel": "medium",
+            "phiType": "DEA",
+            "value": "WC9641533",
+            "source": "surgeon_dea",
+            "context": "NPI: 3759405805                         DEA: WC9641533  First Assistant:        Rev. Javier Kumar Anesth"
+          }
+        ],
+        "Pathology Report": [
+          {
+            "docId": 5,
+            "templateName": "Pathology Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "11/1 3/23",
+            "source": "admit_date",
+            "context": "ved:           2/13/2020 Date of Report:          11/1 3/23 Requesting Physician:    Sir Mortimer Lopez, PMHN"
+          },
+          {
+            "docId": 11,
+            "templateName": "Pathology Report",
+            "errorLevel": "high",
+            "phiType": "DATE",
+            "value": "68//2020",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      68//2020 Date Received:           68//2020 Date of Report:"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "4/Z00/3",
+            "source": "dob",
+            "context": "cord #:        Ac:995756 Date of Birth:           4/Z00/3 Age:                     53 years Sex:"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "o11/0 4/23",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      o11/0 4/23 Date Received:           o11/0 4/23 Date of Repor"
+          },
+          {
+            "docId": 29,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "MRN",
+            "value": "Ac:995756",
+            "source": "mrn",
+            "context": "IBRAHIM GUPTA Medical Record #:        Ac:995756 Date of Birth:           4/Z00/3 Age:"
+          },
+          {
+            "docId": 35,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "09/1 0/24",
+            "source": "admit_date",
+            "context": "ived:           06/Z1/21 Date of Report:          09/1 0/24 Requesting Physician:    Mr. Linda Anderson, OTR/"
+          },
+          {
+            "docId": 35,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "06/Z1/21",
+            "source": "surgery_date_1",
+            "context": "════════════════════════ Date of Collection:      06/Z1/21 Date Received:           06/Z1/21 Date of Report:"
+          },
+          {
+            "docId": 47,
+            "templateName": "Pathology Report",
+            "errorLevel": "medium",
+            "phiType": "DATE",
+            "value": "o5/24/3|",
+            "source": "dob",
+            "context": "rd #:        pt: 7642437 Date of Birth:           o5/24/3| Age:                     74 years Sex:"
+          }
+        ],
+        "Registration Form": [
+          {
+            "docId": 9,
+            "templateName": "Registration Form",
+            "errorLevel": "high",
+            "phiType": "NAME",
+            "value": "eLIZ AB3TH tAYLORR",
+            "source": "emergency_contact_2",
+            "context": "CONTACT #2: Name:                                eLIZ AB3TH tAYLORR Relationship:                        Sibling Phon"
+          },
+          {
+            "docId": 9,
+            "templateName": "Registration Form",
+            "errorLevel": "high",
+            "phiType": "MRN",
+            "value": "516 94",
+            "source": "mrn",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  MRN: 516 94                                         Account:"
+          },
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "NAME",
+            "value": "Tran Daniel Becker",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Tran Daniel Becker Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "ADDRESS",
+            "value": "5685 Hospital Square",
+            "source": "street_address",
+            "context": "ENT ADDRESS: Street Address:                      5685 Hospital Square Apartment/Unit:                      N/A City, St"
+          },
+          {
+            "docId": 15,
+            "templateName": "Registration Form",
+            "errorLevel": "none",
+            "phiType": "LICENSE_PLATE",
+            "value": "1Kundefined331",
+            "source": "license_plate",
+            "context": "Black License Plate:                       1Kundefined331 State:                               NE VIN (for"
+          },
+          {
+            "docId": 21,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "LICENSE_PLATE",
+            "value": "MJundefined-2425",
+            "source": "license_plate",
+            "context": "Red License Plate:                       MJundefined-2425 State:                               CT VIN (for"
+          },
+          {
+            "docId": 27,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Susa nR. Young",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Susa nR. Young Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 27,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "SSN",
+            "value": "***-**-937Z",
+            "source": "guarantor_ssn",
+            "context": "Guardian SSN:                                 ***-**-937Z Phone:                               790.647.5623"
+          },
+          {
+            "docId": 33,
+            "templateName": "Registration Form",
+            "errorLevel": "low",
+            "phiType": "LICENSE_PLATE",
+            "value": "PundefinedDundefined56",
+            "source": "license_plate",
+            "context": "Gray License Plate:                       PundefinedDundefined56 State:                               CO VIN (for"
+          },
+          {
+            "docId": 39,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "aL3JADRO mOREAU",
+            "source": "emergency_contact_2",
+            "context": "CONTACT #2: Name:                                aL3JADRO mOREAU Relationship:                        Parent Phone"
+          },
+          {
+            "docId": 39,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "ADDRESS",
+            "value": "863 DhURcHH RidgE",
+            "source": "street_address",
+            "context": "ENT ADDRESS: Street Address:                      863 DhURcHH RidgE Apartment/Unit:                      N/A City, St"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "Keiko A. Lopez",
+            "source": "patient",
+            "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Keiko A. Lopez Preferred Name:                      N/A Date of"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "TakeshiL ee",
+            "source": "emergency_contact_1",
+            "context": "CONTACT #1: Name:                                TakeshiL ee Relationship:                        Child Phone"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "VIN",
+            "value": "AZMZFWLJ6G5NHRZRZ",
+            "source": "vin",
+            "context": "WY VIN (for motor vehicle accident claims): AZMZFWLJ6G5NHRZRZ  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          },
+          {
+            "docId": 45,
+            "templateName": "Registration Form",
+            "errorLevel": "medium",
+            "phiType": "LICENSE_PLATE",
+            "value": "undefined71 ZAW",
+            "source": "license_plate",
+            "context": "Silver License Plate:                       undefined71 ZAW State:                               WY VIN (for"
+          }
+        ],
+        "Insurance EOB": [
+          {
+            "docId": 24,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "George Lynn Watanabe",
+            "source": "patient",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             George Lynn Watanabe Member ID:               DRM675623766 Group Numbe"
+          },
+          {
+            "docId": 36,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "NAME",
+            "value": "Karen Clark",
+            "source": "patient",
+            "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Karen Clark Member ID:               XCW360078849 Group Numbe"
+          },
+          {
+            "docId": 36,
+            "templateName": "Insurance EOB",
+            "errorLevel": "low",
+            "phiType": "DATE",
+            "value": "06/0 9/24",
+            "source": "admit_date",
+            "context": "33818 Atlanta, IN 22488  Statement Date:          06/0 9/24 Claim Number:            CLM-1764792526567-3836 M"
+          }
+        ],
+        "Referral Letter": [
+          {
+            "docId": 40,
+            "templateName": "Referral Letter",
+            "errorLevel": "extreme",
+            "phiType": "DATE",
+            "value": "1oo/0 4/2024",
+            "source": "admit_date",
+            "context": "Philadelphia Department of Palliative Care  Date: 1oo/0 4/2024  Rev. Destiny Klein Medical Group 8529 Front Plac"
+          },
+          {
+            "docId": 46,
+            "templateName": "Referral Letter",
+            "errorLevel": "medium",
+            "phiType": "NAME",
+            "value": "Taakeshi A.C lark",
+            "source": "patient",
+            "context": "8 Market Point, Madison, TN 56125  RE:   Patient: Taakeshi A.C lark       DOB: 03/25/66       MRN: MED 6433004  Dear"
+          }
+        ]
+      },
+      "characteristics": [
+        {
+          "type": "OCR_CONFUSION",
+          "count": 43,
+          "description": "PHI with OCR-confusable characters (0/O, 1/l/I, etc.)",
+          "samples": [
+            "DI 4092523",
+            "KD7789270",
+            "11/1 3/23",
+            "G/2 /36",
+            "LY5016266"
+          ]
+        },
+        {
+          "type": "CASE_VARIATION",
+          "count": 20,
+          "description": "PHI with mixed case that may not be recognized",
+          "samples": [
+            "eLIZ AB3TH tAYLORR",
+            "xX-XXX-5S05",
+            "523 0Oq0",
+            "Tran Daniel Becker",
+            "5685 Hospital Square"
+          ]
+        },
+        {
+          "type": "DATE_FORMAT",
+          "count": 16,
+          "description": "Dates in unrecognized formats",
+          "samples": [
+            "11/1 3/23",
+            "G/2 /36",
+            "68//2020",
+            "/B2/O1",
+            "4/Z00/3"
+          ]
+        },
+        {
+          "type": "ERROR_CORRELATION",
+          "count": 14,
+          "description": "29.8% of failures occur in high/extreme error documents",
+          "severity": "MEDIUM"
+        }
+      ]
+    },
+    "recommendations": [
+      {
+        "category": "MRN Detection",
+        "priority": "HIGH",
+        "issue": "4 MRN items missed",
+        "samples": [
+          "DI 4092523",
+          "516 94",
+          "523 0Oq0"
+        ],
+        "suggestions": [
+          "Review MRN detection patterns",
+          "Add OCR-tolerant variations",
+          "Check for format variations in real documents"
+        ]
+      },
+      {
+        "category": "OCR Tolerance",
+        "priority": "HIGH",
+        "issue": "OCR-corrupted values not being detected",
+        "suggestions": [
+          "Add character substitution patterns to all filters",
+          "Implement fuzzy matching with edit distance",
+          "Create OCR normalization preprocessing step",
+          "Test with more aggressive OCR error simulation"
+        ]
+      },
+      {
+        "category": "DEA Detection",
+        "priority": "MEDIUM",
+        "issue": "6 DEA items missed",
+        "samples": [
+          "KD7789270",
+          "LY5016266",
+          "JJ2906355"
+        ],
+        "suggestions": [
+          "Review DEA detection patterns",
+          "Add OCR-tolerant variations",
+          "Check for format variations in real documents"
+        ]
+      },
+      {
+        "category": "ADDRESS Detection",
+        "priority": "LOW",
+        "issue": "2 ADDRESS items missed",
+        "samples": [
+          "5685 Hospital Square",
+          "863 DhURcHH RidgE"
+        ],
+        "suggestions": [
+          "Review address detection regex",
+          "Add support for apartment/unit variations",
+          "Consider multi-line address detection",
+          "Add street type abbreviation handling"
+        ]
+      },
+      {
+        "category": "LICENSE_PLATE Detection",
+        "priority": "LOW",
+        "issue": "4 LICENSE_PLATE items missed",
+        "samples": [
+          "1Kundefined331",
+          "MJundefined-2425",
+          "PundefinedDundefined56"
+        ],
+        "suggestions": [
+          "Review LICENSE_PLATE detection patterns",
+          "Add OCR-tolerant variations",
+          "Check for format variations in real documents"
+        ]
+      },
+      {
+        "category": "AGE_90_PLUS Detection",
+        "priority": "LOW",
+        "issue": "1 AGE_90_PLUS items missed",
+        "samples": [
+          "92"
+        ],
+        "suggestions": [
+          "Review AGE_90_PLUS detection patterns",
+          "Add OCR-tolerant variations",
+          "Check for format variations in real documents"
+        ]
+      },
+      {
+        "category": "VIN Detection",
+        "priority": "LOW",
+        "issue": "1 VIN items missed",
+        "samples": [
+          "AZMZFWLJ6G5NHRZRZ"
+        ],
+        "suggestions": [
+          "Review VIN detection patterns",
+          "Add OCR-tolerant variations",
+          "Check for format variations in real documents"
+        ]
+      },
+      {
+        "category": "DATE Detection",
+        "priority": "CRITICAL",
+        "issue": "16 DATE items missed",
+        "samples": [
+          "11/1 3/23",
+          "G/2 /36",
+          "68//2020"
+        ],
+        "suggestions": [
+          "Add more date format patterns",
+          "Support international date formats",
+          "Add OCR-tolerant date patterns",
+          "Consider context-aware date detection"
+        ]
+      },
+      {
+        "category": "NAME Detection",
+        "priority": "CRITICAL",
+        "issue": "11 NAME items missed",
+        "samples": [
+          "eLIZ AB3TH tAYLORR",
+          "Tran Daniel Becker",
+          "George Lynn Watanabe"
+        ],
+        "suggestions": [
+          "Review name pattern regex for edge cases",
+          "Add support for additional name formats (hyphenated, apostrophes)",
+          "Consider fuzzy matching for OCR-corrupted names",
+          "Check name tokenization logic"
+        ]
+      },
+      {
+        "category": "SSN Detection",
+        "priority": "CRITICAL",
+        "issue": "2 SSN items missed",
+        "samples": [
+          "xX-XXX-5S05",
+          "***-**-937Z"
+        ],
+        "suggestions": [
+          "CRITICAL: SSN detection must be 100%",
+          "Add OCR-tolerant patterns (O→0, l→1, etc.)",
+          "Support all SSN formats (dashes, spaces, continuous)",
+          "Consider partial SSN detection (last 4 digits)"
+        ]
+      }
+    ],
+    "criticalFindings": [
+      {
+        "severity": "CRITICAL",
+        "finding": "2 Social Security Numbers were NOT redacted",
+        "impact": "HIPAA violation - SSN is a direct identifier",
+        "samples": [
+          "xX-XXX-5S05",
+          "***-**-937Z"
+        ]
+      },
+      {
+        "severity": "CRITICAL",
+        "finding": "11 patient names were NOT redacted",
+        "impact": "HIPAA violation - Names are direct identifiers",
+        "samples": [
+          "eLIZ AB3TH tAYLORR",
+          "Tran Daniel Becker",
+          "George Lynn Watanabe"
+        ]
+      },
+      {
+        "severity": "HIGH",
+        "finding": "6 dates of birth were NOT redacted",
+        "impact": "HIPAA violation - DOB is a key identifier",
+        "samples": [
+          "G/2 /36",
+          "/B2/O1",
+          "4/Z00/3"
+        ]
+      }
+    ]
+  }
+}

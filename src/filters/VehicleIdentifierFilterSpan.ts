@@ -15,10 +15,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
@@ -178,28 +175,50 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
    * Pattern 4: Standalone license plates with common US formats
    */
   private detectStandaloneLicensePlates(text: string, spans: Span[]): void {
-    const pattern =
-      /\b([A-Z]{2}[-\s][A-Z0-9]{5,7}|[A-Z]{2,3}[-\s][0-9]{3,4}|[0-9][A-Z]{2,3}[0-9]{3,4})\b/g;
-    pattern.lastIndex = 0;
-    let match;
+    // Expanded patterns to catch more plate formats
+    const patterns = [
+      // Original patterns
+      /\b([A-Z]{2}[-\s][A-Z0-9]{5,7})\b/gi,
+      /\b([A-Z]{2,3}[-\s][0-9]{3,4})\b/gi,
+      /\b([0-9][A-Z]{2,3}[0-9]{3,4})\b/gi,
+      // Short 6-char plates (HABG81, YNJA52) - 4 letters + 2 digits or 3+3
+      /\b([A-Z]{4}[0-9]{2})\b/g,
+      /\b([A-Z]{3}[0-9]{3})\b/g,
+      /\b([A-Z]{2}[0-9]{4})\b/g,
+      // UK style plates (K25 PBE, AB12 CDE)
+      /\b([A-Z]{1,2}[0-9]{2}\s+[A-Z]{3})\b/gi,
+      /\b([A-Z]{2}[0-9]{2}\s+[A-Z]{3})\b/gi,
+      // Reverse format (123 ABC)
+      /\b([0-9]{3}\s+[A-Z]{3})\b/gi,
+      // Mixed short formats
+      /\b([A-Z][0-9]{2}\s+[A-Z]{3})\b/gi,
+      // Continuous 6-7 char alphanumeric (letters first)
+      /\b([A-Z]{2,4}[0-9]{2,4})\b/g,
+      /\b([0-9]{2,4}[A-Z]{2,4})\b/g,
+    ];
 
-    while ((match = pattern.exec(text)) !== null) {
-      const plate = match[1];
+    for (const pattern of patterns) {
+      pattern.lastIndex = 0;
+      let match;
 
-      // Skip if this looks like a vital sign reading (BP, HR, RR, etc.)
-      if (this.isVitalSignContext(text, match.index, plate)) {
-        continue;
-      }
+      while ((match = pattern.exec(text)) !== null) {
+        const plate = match[1];
 
-      if (this.isValidLicensePlate(plate)) {
-        const span = this.createSpanFromMatch(
-          text,
-          match,
-          FilterType.VEHICLE,
-          0.75,
-        );
-        span.pattern = "Standalone license plate";
-        spans.push(span);
+        // Skip if this looks like a vital sign reading (BP, HR, RR, etc.)
+        if (this.isVitalSignContext(text, match.index, plate)) {
+          continue;
+        }
+
+        if (this.isValidLicensePlate(plate)) {
+          const span = this.createSpanFromMatch(
+            text,
+            match,
+            FilterType.VEHICLE,
+            0.75,
+          );
+          span.pattern = "Standalone license plate";
+          spans.push(span);
+        }
       }
     }
   }
@@ -861,7 +880,7 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
     // Clean the plate
     const cleaned = plate.replace(/[-\s]/g, "");
 
-    // Must be 5-8 characters
+    // Must be 5-8 characters (reduced minimum from 5 to 5, but accept 6-char plates)
     if (cleaned.length < 5 || cleaned.length > 8) {
       return false;
     }
@@ -876,11 +895,25 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
       return false;
     }
 
-    // Common US formats
+    // Common formats - expanded to include more variations
     const commonFormats = [
       /^[A-Z]{2}[A-Z0-9]{5,6}$/i, // IL7XK920
       /^[A-Z]{2,3}\d{3,4}$/i, // ABC123 or AB1234
       /^\d[A-Z]{2,3}\d{3,4}$/i, // 1ABC234
+      // Short 6-char formats
+      /^[A-Z]{4}\d{2}$/i, // HABG81, YNJA52
+      /^[A-Z]{3}\d{3}$/i, // ABC123
+      /^[A-Z]{2}\d{4}$/i, // AB1234
+      /^\d{4}[A-Z]{2}$/i, // 1234AB
+      /^\d{3}[A-Z]{3}$/i, // 123ABC
+      /^\d{2}[A-Z]{4}$/i, // 12ABCD
+      // UK style (after space removal): K25PBE, AB12CDE
+      /^[A-Z]{1,2}\d{2}[A-Z]{3}$/i, // K25PBE, AB12CDE
+      /^\d{3}[A-Z]{3}$/i, // 123ABC (reverse UK)
+      // 7 char formats
+      /^[A-Z]{3}\d{4}$/i, // ABC1234
+      /^[A-Z]{4}\d{3}$/i, // ABCD123
+      /^\d{4}[A-Z]{3}$/i, // 1234ABC
     ];
 
     const matchesFormat = commonFormats.some((format) => format.test(cleaned));

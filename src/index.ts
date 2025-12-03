@@ -41,13 +41,18 @@ export {
   RedactionExecutionReport,
   FilterExecutionResult,
 } from "./core/ParallelRedactionEngine";
-export { SpanBasedFilter } from "./core/SpanBasedFilter";
+export { SpanBasedFilter, FilterPriority } from "./core/SpanBasedFilter";
+export { SpanFactory, SpanCreateOptions } from "./core/SpanFactory";
 export { FilterAdapter } from "./core/FilterAdapter";
 export {
   FieldContextDetector,
   FieldContext,
 } from "./core/FieldContextDetector";
 export { FieldLabelWhitelist } from "./core/FieldLabelWhitelist";
+export {
+  PostFilterService,
+  IPostFilterStrategy,
+} from "./core/filters/PostFilterService";
 
 // ============================================================================
 // DATA MODELS
@@ -96,7 +101,7 @@ export { ZipCodeFilterSpan } from "./filters/ZipCodeFilterSpan";
 export { MRNFilterSpan } from "./filters/MRNFilterSpan";
 export { NPIFilterSpan } from "./filters/NPIFilterSpan";
 export { HealthPlanNumberFilterSpan } from "./filters/HealthPlanNumberFilterSpan";
-export { HospitalFilterSpan } from "./filters/HospitalFilterSpan";
+// HospitalFilterSpan removed - hospital names are NOT PHI under HIPAA Safe Harbor
 export { AgeFilterSpan } from "./filters/AgeFilterSpan";
 export { DateFilterSpan } from "./filters/DateFilterSpan";
 
@@ -131,6 +136,14 @@ export { ReplacementContextService } from "./services/ReplacementContextService"
 // DIAGNOSTICS & UTILITIES
 // ============================================================================
 
+export { ValidationUtils } from "./utils/ValidationUtils";
+export {
+  NameDetectionUtils,
+  PROVIDER_TITLE_PREFIXES,
+  PROVIDER_CREDENTIALS,
+  NON_PERSON_STRUCTURE_TERMS,
+  FAMILY_RELATIONSHIP_KEYWORDS,
+} from "./utils/NameDetectionUtils";
 export { FilterHealthCheck } from "./diagnostics/FilterHealthCheck";
 export { StatisticsTracker } from "./stats/StatisticsTracker";
 export { TokenManager } from "./tokens/TokenManager";

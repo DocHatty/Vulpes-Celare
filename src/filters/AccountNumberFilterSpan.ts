@@ -8,10 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 interface PatternDef {
@@ -36,6 +33,13 @@ export class AccountNumberFilterSpan extends SpanBasedFilter {
         /\b(?:Account|Acct)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{5,20})\b/gi,
       validator: "alphanumericAccount",
       description: "Account number (alphanumeric)",
+    },
+    {
+      // ACC: prefix format (common in medical billing)
+      // Matches: "ACC: 97167769", "ACC: 47952040", "ACCT: 12345678"
+      regex: /\b(ACC[T]?:\s*\d{6,14})\b/gi,
+      validator: "accPrefix",
+      description: "ACC: prefixed account",
     },
     {
       regex:
@@ -178,6 +182,8 @@ export class AccountNumberFilterSpan extends SpanBasedFilter {
         return this.isValidAccountNumber(value);
       case "alphanumericAccount":
         return this.isValidAlphanumericAccount(value);
+      case "accPrefix":
+        return this.isValidAccPrefix(value);
       case "bank":
         return this.isValidBankAccount(value);
       case "policy":
@@ -206,6 +212,14 @@ export class AccountNumberFilterSpan extends SpanBasedFilter {
       digitsOnly.length <= 15 &&
       /^\d+$/.test(digitsOnly)
     );
+  }
+
+  private isValidAccPrefix(value: string): boolean {
+    // ACC: or ACCT: followed by 6-14 digits
+    const match = value.match(/^ACCT?:\s*(\d+)$/i);
+    if (!match) return false;
+    const digits = match[1];
+    return digits.length >= 6 && digits.length <= 14;
   }
 
   private isValidAlphanumericAccount(number: string): boolean {

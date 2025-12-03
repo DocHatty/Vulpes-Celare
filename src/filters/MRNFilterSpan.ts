@@ -8,10 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 export class MRNFilterSpan extends SpanBasedFilter {
@@ -74,6 +71,34 @@ export class MRNFilterSpan extends SpanBasedFilter {
       // Use (?:^|[\s:;,\(\[]) instead of \b because # is not a word char
       regex: /(?:^|[\s:;,\(\[])#(\d{6,12})\b/g,
       description: "Standalone Hash ID",
+    },
+    {
+      // Pattern 10: Space-separated prefix + number (OCR common errors)
+      // Matches: "PAT 5361182", "MED 6936859", "REC 4281116", "ID 4952807"
+      // Also handles colons: "ID: 4952807", "ACC: 8819217"
+      regex:
+        /\b((?:PAT|PT|MRN|MED|REC|REEC|ID|ACC|AACC|CAC|CHART|CASE)[:\s]+\d{5,14})\b/gi,
+      description: "Space-separated MRN prefix",
+    },
+    {
+      // Pattern 11: Hyphenated year-based MRN (common in EMR systems)
+      // Matches: "MRN2018-16416004", "pt2023-805069", "ID-2019-8078118"
+      regex:
+        /\b((?:MRN|PT|PAT|ID|REC|MED)[\s:-]?(?:19|20)\d{2}[-]?\d{5,10})\b/gi,
+      description: "Year-based MRN format",
+    },
+    {
+      // Pattern 12: Colon-prefixed with OCR errors
+      // Matches: "MRN: 2024-!q66ob2", "ME0: 23bq735", "adc: 3557592"
+      regex:
+        /\b((?:MRN|MED|ME0|REC|PAT|PT|ID|ACC|ADC)[:\s]+[A-Z0-9!@#$%^&*()_+=\-]{5,20})\b/gi,
+      description: "OCR-tolerant MRN with special chars",
+    },
+    {
+      // Pattern 13: Double colon or space in prefix (OCR artifact)
+      // Matches: "MRN:: 1831486", "ID:: 123456"
+      regex: /\b((?:MRN|MED|REC|PAT|PT|ID|ACC)[:]{1,2}\s*\d{5,14})\b/gi,
+      description: "Double colon MRN",
     },
   ];
 

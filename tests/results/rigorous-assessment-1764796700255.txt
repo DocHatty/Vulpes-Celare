@@ -1,0 +1,252 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    VULPES CELARE - ASSESSMENT REPORT                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+ENGINE INFORMATION
+────────────────────────────────────────────────────────────────────────────────
+  Name:            Vulpes Celare
+  Version:         1.0.0
+  Variant:         Hatkoff Redaction Engine
+  Active Filters:  26
+
+TEST CONFIGURATION
+────────────────────────────────────────────────────────────────────────────────
+  Documents:       200
+  Processing Time: 70.66s
+  Avg per Doc:     353.3ms
+
+══════════════════════════════════════════════════════════════════════════════
+                              FINAL GRADE
+══════════════════════════════════════════════════════════════════════════════
+
+                         ╔═══════════════╗
+                         ║      F        ║
+                         ║   0/100     ║
+                         ╚═══════════════╝
+
+  CRITICAL FAILURE - Do not use
+
+══════════════════════════════════════════════════════════════════════════════
+
+CONFUSION MATRIX
+────────────────────────────────────────────────────────────────────────────────
+                          │ Actual PHI │ Actual Non-PHI │
+  ────────────────────────┼────────────┼────────────────┤
+  Predicted PHI (Redacted)│     6378   │       1863     │
+  Predicted Non-PHI       │      220   │        910     │
+  ────────────────────────┼────────────┼────────────────┤
+  Total                   │     6598   │       2773     │
+
+PRIMARY METRICS
+────────────────────────────────────────────────────────────────────────────────
+  SENSITIVITY (Recall):   96.67%  ← PHI correctly redacted
+  SPECIFICITY:            32.82%  ← Non-PHI correctly preserved
+  PRECISION (PPV):        77.39%  ← Redaction accuracy
+  F1 SCORE:               85.96
+
+SCORE BREAKDOWN
+────────────────────────────────────────────────────────────────────────────────
+  Raw Score:              81.97
+  Penalties/Bonuses:      -897
+  Final Score:            0
+
+PERFORMANCE BY PHI TYPE
+────────────────────────────────────────────────────────────────────────────────
+  ✗ PHONE              1189/1200 (99.1%) - 11 MISSED
+  ✗ DATE               749/800 (93.6%) - 51 MISSED
+  ✓ NPI                800/800 (100.0%)
+  ✗ NAME               511/600 (85.2%) - 89 MISSED
+  ✗ SSN                388/400 (97.0%) - 12 MISSED
+  ✓ EMAIL              307/307 (100.0%)
+  ✓ HEALTH_PLAN_ID     264/264 (100.0%)
+  ✗ MRN                193/200 (96.5%) - 7 MISSED
+  ✓ ACCOUNT_NUMBER     200/200 (100.0%)
+  ✗ ADDRESS            194/200 (97.0%) - 6 MISSED
+  ✓ ZIPCODE            200/200 (100.0%)
+  ✗ FAX                199/200 (99.5%) - 1 MISSED
+  ✓ CREDIT_CARD        200/200 (100.0%)
+  ✓ IP                 200/200 (100.0%)
+  ✓ URL                200/200 (100.0%)
+  ✗ VIN                197/200 (98.5%) - 3 MISSED
+  ✗ LICENSE_PLATE      190/200 (95.0%) - 10 MISSED
+  ✗ DEA                176/200 (88.0%) - 24 MISSED
+  ✗ AGE_90_PLUS        21/27 (77.8%) - 6 MISSED
+
+PERFORMANCE BY ERROR LEVEL
+────────────────────────────────────────────────────────────────────────────────
+  NONE       490/495 (99.0%) - 5 missed
+  LOW        1460/1500 (97.3%) - 40 missed
+  MEDIUM     2930/3024 (96.9%) - 94 missed
+  HIGH       1284/1350 (95.1%) - 66 missed
+  EXTREME    214/229 (93.4%) - 15 missed
+
+MISSED PHI SAMPLES (220 total, showing first 20)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 1 (History & Physical/low):
+    NAME: "Omar DuPont"
+    Source: emergency_contact_1
+  Doc 3 (Registration Form/medium):
+    NAME: "Arjun McLaug1bin"
+    Source: emergency_contact_2
+  Doc 3 (Registration Form/medium):
+    SSN: "!62-7 8-8496"
+    Source: guarantor_ssn
+  Doc 3 (Registration Form/medium):
+    VIN: "9SMUZFLUZCTJB4NAY"
+    Source: vin
+  Doc 4 (Referral Letter/high):
+    DATE: "1/2 88/69"
+    Source: dob
+  Doc 4 (Referral Letter/high):
+    MRN: "AVC: 1619970"
+    Source: mrn
+  Doc 5 (Pathology Report/medium):
+    NAME: "jAMAL pOTEL"
+    Source: patient
+  Doc 8 (Operative Report/none):
+    DEA: "LG6797089"
+    Source: surgeon_dea
+  Doc 9 (Registration Form/extreme):
+    NAME: "$ergei cba"
+    Source: emergency_contact_2
+  Doc 9 (Registration Form/extreme):
+    DATE: "83//24"
+    Source: admit_date
+  Doc 9 (Registration Form/extreme):
+    PHONE: "60.60 9.2558"
+    Source: emergency_phone2
+  Doc 11 (Pathology Report/medium):
+    NAME: "AL-FARXI, LINH"
+    Source: patient
+  Doc 12 (Insurance EOB/none):
+    NAME: "Terrence J. Yoon"
+    Source: patient
+  Doc 15 (Registration Form/low):
+    NAME: "Santiago .G Youssef"
+    Source: patient
+  Doc 15 (Registration Form/low):
+    ADDRESS: "6574 Chur(h Way, # 8S"
+    Source: street_address
+  Doc 16 (Referral Letter/extreme):
+    DATE: "021 7/24"
+    Source: admit_date
+  Doc 18 (Insurance EOB/high):
+    NAME: "Margaret ElizabethSmith"
+    Source: patient
+  Doc 18 (Insurance EOB/high):
+    DATE: "/624/20Z3"
+    Source: admit_date
+  Doc 19 (History & Physical/high):
+    SSN: "758 96 !512"
+    Source: patient_ssn
+  Doc 19 (History & Physical/high):
+    DATE: "03/24/Z3"
+    Source: admit_date
+
+OVER-REDACTIONS (1863 total, showing first 10)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 1: PROVIDER_NAME = "Dr. Ronald Nair"
+  Doc 1: PROVIDER_NAME = "Ms. Anastasia Kowalski, OD"
+  Doc 1: PROVIDER_NAME = "Mrs. Andres Garcia, PsyD"
+  Doc 1: DIAGNOSIS = "Trigeminal Neuralgia"
+  Doc 2: PROVIDER_NAME = "Prof. Emily Ibn Saud"
+  Doc 2: PROVIDER_NAME = "Prof. Luis Nowak"
+  Doc 2: PROVIDER_NAME = "Ms. Joseph Tran, CNM"
+  Doc 2: PROVIDER_NAME = "Mr. Kenneth DuPont, CRNA"
+  Doc 2: DIAGNOSIS = "H. pylori Infection"
+  Doc 2: DIAGNOSIS = "Bell Palsy"
+
+═══════════════════════════════════════════════════════════════════════════════
+                           CRITICAL FINDINGS
+═══════════════════════════════════════════════════════════════════════════════
+
+  [CRITICAL] 12 Social Security Numbers were NOT redacted
+  Impact: HIPAA violation - SSN is a direct identifier
+  Samples: !62-7 8-8496, 758 96 !512, 406 73 836
+
+  [CRITICAL] 89 patient names were NOT redacted
+  Impact: HIPAA violation - Names are direct identifiers
+  Samples: Omar DuPont, Arjun McLaug1bin, jAMAL pOTEL
+
+  [HIGH] 13 dates of birth were NOT redacted
+  Impact: HIPAA violation - DOB is a key identifier
+  Samples: 1/2 88/69, 1220/20o2, 1Z/22 /196S
+
+═══════════════════════════════════════════════════════════════════════════════
+                           RECOMMENDATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+  [HIGH] MRN Detection
+  Issue: 7 MRN items missed
+  Suggestions:
+    • Review MRN detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [HIGH] DEA Detection
+  Issue: 24 DEA items missed
+  Suggestions:
+    • Review DEA detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [HIGH] PHONE Detection
+  Issue: 11 PHONE items missed
+  Suggestions:
+    • Expand phone number format support
+    • Add international phone number patterns
+    • Support extensions and additional notations
+
+  [HIGH] ADDRESS Detection
+  Issue: 6 ADDRESS items missed
+  Suggestions:
+    • Review address detection regex
+    • Add support for apartment/unit variations
+    • Consider multi-line address detection
+
+  [HIGH] OCR Tolerance
+  Issue: OCR-corrupted values not being detected
+  Suggestions:
+    • Add character substitution patterns to all filters
+    • Implement fuzzy matching with edit distance
+    • Create OCR normalization preprocessing step
+
+  [MEDIUM] LICENSE_PLATE Detection
+  Issue: 10 LICENSE_PLATE items missed
+  Suggestions:
+    • Review LICENSE_PLATE detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [MEDIUM] AGE_90_PLUS Detection
+  Issue: 6 AGE_90_PLUS items missed
+  Suggestions:
+    • Review AGE_90_PLUS detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] VIN Detection
+  Issue: 3 VIN items missed
+  Suggestions:
+    • Review VIN detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] FAX Detection
+  Issue: 1 FAX items missed
+  Suggestions:
+    • Review FAX detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [CRITICAL] NAME Detection
+  Issue: 89 NAME items missed
+  Suggestions:
+    • Review name pattern regex for edge cases
+    • Add support for additional name formats (hyphenated, apostrophes)
+    • Consider fuzzy matching for OCR-corrupted names
+
+══════════════════════════════════════════════════════════════════════════════
+                              END OF REPORT
+══════════════════════════════════════════════════════════════════════════════
