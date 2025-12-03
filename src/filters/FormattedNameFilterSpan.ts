@@ -23,6 +23,7 @@ import {
 } from "./constants/NameFilterConstants";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
 import { MedicalTermDictionary } from "../dictionaries/MedicalTermDictionary";
+import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
 
 export class FormattedNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -185,7 +186,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
           firstName.length >= 2 &&
           !isExcludedAllCaps(lastName) &&
           !isExcludedAllCaps(firstName) &&
-          !this.isWhitelisted(fullName, true) // STREET-SMART: use ALL CAPS mode
+          !this.isWhitelisted(fullName, true, text) // STREET-SMART: use ALL CAPS mode with context
         ) {
           const span = new Span({
             text: fullName,
@@ -245,7 +246,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
       if (
         lastName.length >= 2 &&
         firstName.length >= 2 &&
-        !this.isWhitelisted(fullName) &&
+        !this.isWhitelisted(fullName, false, text) &&
         this.validateLastFirst(fullName)
       ) {
         const span = new Span({
@@ -290,7 +291,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const matchedText = match[0];
 
-      if (!this.isWhitelisted(matchedText)) {
+      if (!this.isWhitelisted(matchedText, false, text)) {
         const span = new Span({
           text: matchedText,
           originalValue: matchedText,
@@ -330,7 +331,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
       const name = match[1];
       const fullMatch = match[0];
 
-      if (!this.isWhitelisted(name)) {
+      if (!this.isWhitelisted(name, false, text)) {
         // Find position of name within full match
         const matchPos = match.index;
         const nameStart = matchPos + fullMatch.indexOf(name);
@@ -489,8 +490,8 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
 
-      // Skip if whitelisted (medications, medical terms, etc.)
-      if (this.isWhitelisted(name)) {
+      // Skip if whitelisted (medications, medical terms, hospital names, etc.)
+      if (this.isWhitelisted(name, false, text)) {
         continue;
       }
 
@@ -634,7 +635,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     while ((match = pattern.exec(text)) !== null) {
       const name = match[1];
 
-      if (!this.isWhitelisted(name) && this.isLikelyPersonName(name)) {
+      if (!this.isWhitelisted(name, false, text) && this.isLikelyPersonName(name)) {
         const span = this.createSpanFromMatch(
           text,
           match,
@@ -780,18 +781,25 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
   }
 
   /**
-   * Enhanced whitelist check that includes medical terms and word-by-word checking
+   * Enhanced whitelist check that includes medical terms, hospital names, and word-by-word checking
    * STREET-SMART: For ALL CAPS LAST, FIRST format, be more permissive -
    * these are almost always patient names in medical documents
    */
   private isWhitelisted(
     text: string,
     isAllCapsLastFirst: boolean = false,
+    context?: string,
   ): boolean {
     const normalized = text.trim();
 
     // Check base whitelist
     if (baseIsWhitelisted(normalized)) {
+      return true;
+    }
+
+    // HOSPITAL WHITELIST: Check if this is part of a hospital name
+    // Hospital names are NOT patient PHI under HIPAA Safe Harbor
+    if (context && HospitalDictionary.isPartOfHospitalName(normalized, context)) {
       return true;
     }
 
