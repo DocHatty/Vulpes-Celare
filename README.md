@@ -330,6 +330,15 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
 ---
 
+## Community Standards
+
+- Read the [Code of Conduct](CODE_OF_CONDUCT.md) before participating in discussions or contributions.
+- Report vulnerabilities through the [Security Policy](SECURITY.md); avoid sharing real PHI in any issue.
+- File issues using the provided templates (bug reports or feature requests) to ensure we have the context we need.
+- Submit pull requests with the template checklist to document testing and avoid accidental PHI leaks.
+
+---
+
 <div align="center">
 
 **Built for transparency. Requires validation. Welcomes collaboration.**
