@@ -64,7 +64,7 @@ export class DEAFilterSpan extends SpanBasedFilter {
 
     // Pattern 5: Separator-tolerant (spaces/dashes within digits)
     /\bDEA\s*[:#-]?\s*([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/gi,
-    /\b([ABCDEFGHJKLMPRSTUX][A-Z])[-\s]?[0-9OoIlBbSs]{2}[-\s]?[0-9OoIlBbSs]{5}\b/g,
+    /\b([ABCDEFGHJKLMPRSTUX][A-Z])[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/g,
   ];
 
   /**
