@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc && node scripts/copy-assets.js",
     "build:watch": "tsc --watch",
-    "test": "node tests/mega-assessment.js",
+    "test": "node tests/master-suite/run.js",
     "clean": "rm -rf dist",
     "rebuild": "npm run clean && npm run build"
   },

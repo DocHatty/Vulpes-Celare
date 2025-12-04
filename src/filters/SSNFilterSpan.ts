@@ -19,6 +19,9 @@ export class SSNFilterSpan extends SpanBasedFilter {
   private static readonly COMPILED_PATTERNS = SSNFilterSpan.compilePatterns([
     /\b(\d{3})-(\d{2})-(\d{4})\b/g, // 123-45-6789
     /\b(\d{3})[ \t](\d{2})[ \t](\d{4})\b/g, // 123 45 6789
+    /\b(\d{3})[\u2013.](\d{2})[\u2013.](\d{4})\b/g, // 123–45–6789 or 123.45.6789
+    /\b\d{3}\s*[-.\u2013]\s*\d{2}\s*[-.\u2013]\s*\d{4}\b/g, // allow stray spaces around separators
+    /\b\d{2}-\d{3}-\d{4}\b/g, // transposed group split 12-345-6789
     /\b(\d{9})\b/g, // 123456789 (9 consecutive digits)
     // Partially masked SSN patterns (last 4 visible)
     /[\*Xx]{3}-[\*Xx]{2}-(\d{4})\b/g, // ***-**-6789 or XXX-XX-6789

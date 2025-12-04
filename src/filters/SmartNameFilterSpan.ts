@@ -74,6 +74,9 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     // Pattern 9: General full names (First Last format)
     this.detectGeneralFullNames(text, spans);
 
+    // Pattern 9a: Labeled names with OCR/noisy spacing (Patient: MAR1A G0NZ ALEZ)
+    this.detectLabeledOcrNames(text, spans);
+
     // Pattern 10: Hyphenated names (Mary-Ann Johnson)
     this.detectHyphenatedNames(text, spans);
 
@@ -735,6 +738,94 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         spans.push(span);
       }
     }
+  }
+
+  /**
+   * Pattern 9a: Labeled names with noisy/OCR spelling
+   *
+   * Captures names that follow common patient/contact labels even when
+   * separators are distorted (extra spaces, colons, dashes) or characters are
+   * OCR-substituted (0/O, 1/l, 5/S).
+   *
+   * Examples:
+   * - "Patient: MAR1A G0NZ ALEZ"
+   * - "Emergency Contact - RlCK   SANTOS"
+   * - "Pt Name  LOPEZ  DE LA  CRUZ"
+   */
+  private detectLabeledOcrNames(text: string, spans: Span[]): void {
+    const labeledPattern =
+      /\b(?:patient(?:\s+name)?|pt(?:\s*name)?|emergency\s+contact|next\s+of\s+kin|contact|guardian|spouse|mother|father|daughter|son|caregiver)[\s:;#-]*([A-Z0-9][A-Za-z0-9'`’.-]{1,40}(?:\s+[A-Z0-9][A-Za-z0-9'`’.-]{1,40}){0,2})/gi;
+
+    labeledPattern.lastIndex = 0;
+    let match;
+
+    while ((match = labeledPattern.exec(text)) !== null) {
+      const rawName = match[1];
+      const normalizedName = this.normalizeOcrName(rawName);
+
+      if (!this.isNoisyNameCandidate(normalizedName)) {
+        continue;
+      }
+
+      // Skip provider contexts (Dr., Prof., credentials) even if labeled
+      if (this.isInProviderContext(normalizedName, match.index, text)) {
+        continue;
+      }
+
+      const nameStart = match.index + match[0].indexOf(rawName);
+      const span = new Span({
+        text: rawName,
+        originalValue: rawName,
+        characterStart: nameStart,
+        characterEnd: nameStart + rawName.length,
+        filterType: FilterType.NAME,
+        confidence: 0.91,
+        priority: this.getPriority(),
+        context: this.getContext(text, nameStart, rawName.length),
+        window: [],
+        replacement: null,
+        salt: null,
+        pattern: "Labeled noisy name",
+        applied: false,
+        ignored: false,
+        ambiguousWith: [],
+        disambiguationScore: null,
+      });
+
+      spans.push(span);
+    }
+  }
+
+  /**
+   * Normalize common OCR substitutions in names
+   */
+  private normalizeOcrName(name: string): string {
+    const cleaned = name
+      .replace(/[0O]/g, "o")
+      .replace(/[1Il|]/g, "l")
+      .replace(/[5Ss]/g, "s")
+      .replace(/[8B]/g, "b")
+      .replace(/[6G]/g, "g");
+
+    return cleaned
+      .split(/\s+/)
+      .filter((part) => part.length > 0)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  }
+
+  /**
+   * Validate whether an OCR-normalized candidate looks like a person name
+   */
+  private isNoisyNameCandidate(name: string): boolean {
+    const pieces = name.split(/\s+/).filter((p) => p.length > 1);
+    if (pieces.length === 0) return false;
+
+    const allLookLikeNames = pieces.every((piece) =>
+      /^[A-Z][a-z'`’.-]{1,}$/.test(piece),
+    );
+
+    return allLookLikeNames && this.isLikelyPersonName(name);
   }
 
   /**

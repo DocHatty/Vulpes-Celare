@@ -51,11 +51,17 @@ export class DateFilterSpan extends SpanBasedFilter {
    * - 15 Jan 2024
    */
   private static readonly DATE_PATTERN_SOURCES = [
+    // ===== LABELED DOB PATTERNS =====
+    // DOB: 10/24/1961, D.O.B. - 7-3-60 (short year), Date of Birth 12.01.1980
+    /\b(?:dob|d\.o\.b\.|date\s+of\s+birth)[:\s#-]*((?:0?[1-9]|1[0-2])[\s./-](?:0?[1-9]|[12]\d|3[01])[\s./-](?:\d{2}|(?:19|20)\d{2}))\b/gi,
+
     // ===== US FORMATS =====
     // MM/DD/YYYY or MM-DD-YYYY
     /\b(0?[1-9]|1[0-2])[-/](0?[1-9]|[12]\d|3[01])[-/](19|20)\d{2}\b/g,
     // MM/DD/YY or MM-DD-YY (short year format like 1/15/60)
     /\b(0?[1-9]|1[0-2])[-/](0?[1-9]|[12]\d|3[01])[-/]\d{2}\b/g,
+    // En dash or dot separators: 10–24–1961, 10.24.61
+    /\b(0?[1-9]|1[0-2])[.\u2013-](0?[1-9]|[12]\d|3[01])[.\u2013-](?:\d{2}|(19|20)\d{2})\b/g,
 
     // ===== OCR ERROR TOLERANT FORMATS =====
     // OCR often substitutes: l for 1, O for 0, I for 1, | for 1, o for 0
