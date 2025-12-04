@@ -201,45 +201,4 @@ export class HospitalDictionary {
     return false;
   }
 
-  /**
-   * Common hospital name patterns that should never be treated as patient names.
-   * These are hospital names where component words look like names.
-   */
-  private static readonly PROTECTED_HOSPITAL_PATTERNS = [
-    "johns hopkins",
-    "mount sinai",
-    "cedars sinai",
-    "cedar sinai",
-    "mayo clinic",
-    "cleveland clinic",
-    "kaiser permanente",
-    "st. mary",
-    "st mary",
-    "st. joseph",
-    "st joseph",
-    "sacred heart",
-    "good samaritan",
-    "holy cross",
-  ];
-
-  /**
-   * Quick check if a word is a common hospital name component.
-   * Used for fast whitelisting without full context search.
-   */
-  static isCommonHospitalWord(word: string, followingWords: string): boolean {
-    const wordLower = word.toLowerCase().trim();
-    const followingLower = followingWords.toLowerCase().trim();
-    
-    // Check known patterns
-    for (const pattern of this.PROTECTED_HOSPITAL_PATTERNS) {
-      if (pattern.startsWith(wordLower)) {
-        const remainder = pattern.substring(wordLower.length).trim();
-        if (followingLower.startsWith(remainder)) {
-          return true;
-        }
-      }
-    }
-    
-    return false;
-  }
 }
