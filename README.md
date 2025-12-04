@@ -25,7 +25,7 @@
 |:------:|:-----:|:------|
 | **Sensitivity** | 99.6% | PHI correctly identified |
 | **Specificity** | 96-100% |
-| **Documents** | 250+ | Synthetic adversarial documents |
+| **Documents** | 7000+ | Synthetic adversarial documents |
 
 <sub>Tested on programmatically generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
 
@@ -302,7 +302,7 @@ npm test  # Runs comprehensive synthetic test suite
 
 > **Experimental Status**
 >
-> This software is experimental. The metrics reported (99.6% sensitivity, 100% specificity) are based on author-performed testing using 250+ programmatically generated synthetic documents. These results have not been independently verified or tested against real clinical data.
+> This software is experimental. The metrics reported (99.6% sensitivity, 100% specificity) are based on author-performed testing using 7000+ programmatically generated synthetic documents. These results have not been independently verified or tested against real clinical data.
 
 > **Not a Compliance Solution**
 >
