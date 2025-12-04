@@ -61,6 +61,10 @@ export class DEAFilterSpan extends SpanBasedFilter {
 
     // Pattern 4: Standalone with OCR errors in digits
     /\b([ABCDEFGHJKLMPRSTUX][A-Z][0-9OoIlBbSs]{7})\b/g,
+
+    // Pattern 5: Separator-tolerant (spaces/dashes within digits)
+    /\bDEA\s*[:#-]?\s*([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/gi,
+    /\b([ABCDEFGHJKLMPRSTUX][A-Z])[-\s]?[0-9OoIlBbSs]{2}[-\s]?[0-9OoIlBbSs]{5}\b/g,
   ];
 
   /**
@@ -87,7 +91,10 @@ export class DEAFilterSpan extends SpanBasedFilter {
 
       while ((match = pattern.exec(text)) !== null) {
         const fullMatch = match[0];
-        const deaNumber = match[1] || match[0];
+        const deaNumber =
+          match.length > 3 && match[1] && match[2] && match[3]
+            ? `${match[1]}${match[2]}${match[3]}`
+            : match[1] || match[0];
 
         // Validate DEA number format
         if (this.isValidDEA(deaNumber)) {

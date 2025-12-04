@@ -71,9 +71,15 @@ export class PhoneFilterSpan extends SpanBasedFilter {
     // Australian without +61: (02) 9876 5432
     /\b\(?0[2-9]\)?[ \t.-]?\d{4}[ \t.-]?\d{4}(?:[ \t]*(?:ext\.?|x)[ \t]*[A-Z0-9]{1,6})?\b/g,
 
+    // ===== HIGH-VARIANCE INTERNATIONAL (INDIA/LATAM) =====
+    // +91-98765-43210, +52 55 1234 5678, with optional extensions or extn labels
+    /\+[1-9]\d{0,2}[ \t.-]?\d{2,5}[ \t.-]?\d{3,5}[ \t.-]?\d{3,5}(?:[ \t]*(?:ext\.?|extn|x|extension)[ \t]*[A-Z0-9]{1,6})?\b/gi,
+
     // ===== GENERIC INTERNATIONAL =====
     // Generic +XX format (catches other country codes)
     /\+[1-9]\d{0,2}[ \t.-]?\(?\d{1,4}\)?(?:[ \t.-]?\d{1,4}){2,4}(?:[ \t]*(?:ext\.?|x|extension)[ \t]*[A-Z0-9]{1,6})?\b/gi,
+    // Parenthesized country codes with extensions: (+49) 30 123456 extn 45
+    /\(\+[1-9]\d{0,2}\)[ \t.-]*\d{2,4}[ \t.-]?\d{3,5}[ \t.-]?\d{3,5}(?:[ \t]*(?:ext\.?|extn|x|extension)[ \t]*[A-Z0-9]{1,6})?\b/gi,
 
     // ===== OCR/FORMATTING VARIATIONS =====
     // Dot-prefix format with dot separators: .509. 988.8586

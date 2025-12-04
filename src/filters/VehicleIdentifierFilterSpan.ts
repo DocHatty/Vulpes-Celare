@@ -195,6 +195,10 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
       // Continuous 6-7 char alphanumeric (letters first)
       /\b([A-Z]{2,4}[0-9]{2,4})\b/g,
       /\b([0-9]{2,4}[A-Z]{2,4})\b/g,
+      // En-dash or hyphen separated alphanumerics (ABC–1234, AB-12-XYZ)
+      /\b([A-Z0-9]{2,4}[\u2013-][A-Z0-9]{2,4})\b/gi,
+      // Three-way split plates with separators or dots (AB-123-CD, A·123·BC)
+      /\b([A-Z0-9]{1,3}[.\u2013-\s][A-Z0-9]{1,3}[.\u2013-\s][A-Z0-9]{1,4})\b/gi,
     ];
 
     for (const pattern of patterns) {
@@ -878,7 +882,7 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
    */
   private isValidLicensePlate(plate: string): boolean {
     // Clean the plate
-    const cleaned = plate.replace(/[-\s]/g, "");
+    const cleaned = plate.replace(/[-\s.\u2013]/g, "");
 
     // Must be 5-8 characters (reduced minimum from 5 to 5, but accept 6-char plates)
     if (cleaned.length < 5 || cleaned.length > 8) {
