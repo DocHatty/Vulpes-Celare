@@ -149,10 +149,13 @@ export class ParallelRedactionEngine {
         result.executionTimeMs = Date.now() - filterStartTime;
         filterResults.push(result);
 
-        RadiologyLogger.info(
-          "REDACTION",
-          `[OK] Filter ${filterType} (${filterName}): detected ${spans.length} spans in ${result.executionTimeMs}ms`,
-        );
+        RadiologyLogger.filterComplete({
+          filterName,
+          filterType,
+          spansDetected: spans.length,
+          executionTimeMs: result.executionTimeMs,
+          success: true,
+        });
         return spans;
       } catch (error) {
         result.success = false;
@@ -161,11 +164,14 @@ export class ParallelRedactionEngine {
         result.executionTimeMs = Date.now() - filterStartTime;
         filterResults.push(result);
 
-        RadiologyLogger.error(
-          "REDACTION",
-          `[X] Filter ${filterType} (${filterName}) FAILED after ${result.executionTimeMs}ms`,
-          error,
-        );
+        RadiologyLogger.filterComplete({
+          filterName,
+          filterType,
+          spansDetected: 0,
+          executionTimeMs: result.executionTimeMs,
+          success: false,
+          error: result.error,
+        });
         return [];
       }
     });
@@ -280,74 +286,82 @@ export class ParallelRedactionEngine {
     const beforeWhitelist = allSpans.length;
     allSpans = FieldLabelWhitelist.filterSpans(allSpans);
     const whitelistRemoved = beforeWhitelist - allSpans.length;
-    if (whitelistRemoved > 0) {
-      RadiologyLogger.info(
-        "REDACTION",
-        `Field label whitelist removed ${whitelistRemoved} false positives`,
-      );
-    }
+    RadiologyLogger.pipelineStage(
+      "WHITELIST",
+      `Field label whitelist removed ${whitelistRemoved} false positives`,
+      allSpans.length,
+    );
 
     // STEP 1.7b: Filter spans using DocumentVocabulary (centralized non-PHI detection)
     // NOTE: Spans with priority >= 150 are protected from vocabulary filtering
     const beforeVocab = allSpans.length;
     allSpans = this.filterUsingDocumentVocabulary(allSpans);
     const vocabRemoved = beforeVocab - allSpans.length;
-    if (vocabRemoved > 0) {
-      RadiologyLogger.info(
-        "REDACTION",
-        `DocumentVocabulary removed ${vocabRemoved} non-PHI terms`,
-      );
-    }
+    RadiologyLogger.pipelineStage(
+      "VOCABULARY",
+      `DocumentVocabulary removed ${vocabRemoved} non-PHI terms`,
+      allSpans.length,
+    );
 
     // STEP 1.7c: Filter ALL CAPS section headings (document structure detection)
     const beforeAllCaps = allSpans.length;
     allSpans = this.filterAllCapsStructure(allSpans, text);
     const allCapsRemoved = beforeAllCaps - allSpans.length;
-    if (allCapsRemoved > 0) {
-      RadiologyLogger.info(
-        "REDACTION",
-        `ALL CAPS structure filter removed ${allCapsRemoved} section headings`,
-      );
-    }
+    RadiologyLogger.pipelineStage(
+      "ALL-CAPS",
+      `Structure filter removed ${allCapsRemoved} section headings`,
+      allSpans.length,
+    );
 
     // STEP 1.8: Apply field context to boost/suppress confidence
     this.applyFieldContextToSpans(allSpans, fieldContexts);
+    RadiologyLogger.pipelineStage(
+      "FIELD-CONTEXT",
+      "Applied field context confidence modifiers",
+      allSpans.length,
+    );
 
     // STEP 2: Populate context windows for all spans
     WindowService.populateWindows(text, allSpans);
-    RadiologyLogger.info(
-      "REDACTION",
-      `Context windows populated for ${allSpans.length} spans`,
+    RadiologyLogger.pipelineStage(
+      "WINDOWS",
+      "Context windows populated for all spans",
+      allSpans.length,
     );
 
     // STEP 2.5: Apply confidence modifiers based on context
     const confidenceModifier = new ConfidenceModifierService();
     confidenceModifier.applyModifiersToAll(text, allSpans);
-    RadiologyLogger.info(
-      "REDACTION",
-      `Confidence modifiers applied to ${allSpans.length} spans`,
+    RadiologyLogger.pipelineStage(
+      "CONFIDENCE",
+      "Confidence modifiers applied based on context",
+      allSpans.length,
     );
 
     // STEP 2.75: Disambiguate ambiguous spans using vector similarity
+    const beforeDisambiguation = allSpans.length;
     const disambiguatedSpans =
       this.disambiguationService.disambiguate(allSpans);
-    RadiologyLogger.info(
-      "REDACTION",
-      `Disambiguation complete: ${allSpans.length} -> ${disambiguatedSpans.length} spans`,
+    RadiologyLogger.pipelineStage(
+      "DISAMBIGUATION",
+      `Resolved ambiguous spans: ${beforeDisambiguation} -> ${disambiguatedSpans.length}`,
+      disambiguatedSpans.length,
     );
 
     // STEP 3: Resolve overlaps and deduplicate
     const mergedSpans = SpanUtils.dropOverlappingSpans(disambiguatedSpans);
-    RadiologyLogger.info(
-      "REDACTION",
-      `After overlap resolution: ${mergedSpans.length} spans`,
+    RadiologyLogger.pipelineStage(
+      "OVERLAP",
+      `Resolved overlapping spans: ${disambiguatedSpans.length} -> ${mergedSpans.length}`,
+      mergedSpans.length,
     );
 
     // STEP 4: Post-filter to remove false positives (using PostFilterService)
     const validSpans = PostFilterService.filter(mergedSpans, text);
-    RadiologyLogger.info(
-      "REDACTION",
-      `After post-filtering: ${validSpans.length} spans`,
+    RadiologyLogger.pipelineStage(
+      "POST-FILTER",
+      `Final false positive removal: ${mergedSpans.length} -> ${validSpans.length}`,
+      validSpans.length,
     );
 
     // STEP 5: Apply all spans at once
@@ -371,16 +385,24 @@ export class ParallelRedactionEngine {
       failedFilters,
     };
 
-    // Log summary
-    RadiologyLogger.info(
-      "REDACTION",
-      `Parallel redaction complete in ${totalTime}ms - ${validSpans.length} tokens applied`,
-    );
+    // Log comprehensive summary
+    RadiologyLogger.redactionSummary({
+      inputLength: text.length,
+      outputLength: redactedText.length,
+      totalSpansDetected: filterResults.reduce(
+        (sum, r) => sum + r.spansDetected,
+        0,
+      ),
+      spansAfterFiltering: mergedSpans.length,
+      spansApplied: validSpans.length,
+      executionTimeMs: totalTime,
+      filterCount: enabledFilters.length,
+    });
 
     if (failedFilters.length > 0) {
       RadiologyLogger.error(
         "REDACTION",
-        `[!] ${failedFilters.length} filters FAILED: ${failedFilters.join(", ")}`,
+        `${failedFilters.length} filters FAILED: ${failedFilters.join(", ")}`,
       );
     }
 
@@ -445,6 +467,22 @@ export class ParallelRedactionEngine {
     for (const span of sortedSpans) {
       // Create token for this span
       const token = context.createToken(span.filterType, span.text);
+
+      // Log PHI detection with full details
+      const contextStart = Math.max(0, span.characterStart - 30);
+      const contextEnd = Math.min(text.length, span.characterEnd + 30);
+      const contextSnippet = text.substring(contextStart, contextEnd);
+
+      RadiologyLogger.phiDetected({
+        filterType: span.filterType,
+        text: span.text,
+        start: span.characterStart,
+        end: span.characterEnd,
+        confidence: span.confidence,
+        token: token,
+        context: contextSnippet,
+        pattern: span.pattern || undefined,
+      });
 
       // Replace span with token
       result =

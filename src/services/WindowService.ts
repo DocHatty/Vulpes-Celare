@@ -27,12 +27,47 @@ export interface WindowOptions {
 }
 
 /**
+ * Token with position information
+ */
+interface TokenWithPosition {
+  text: string;
+  start: number;
+  end: number;
+}
+
+/**
  * Window Service - Extracts context windows around text spans
  */
 export class WindowService {
   private static readonly DEFAULT_WINDOW_SIZE = 5;
   private static readonly WORD_BOUNDARY_PATTERN = /\b/;
   private static readonly TOKEN_PATTERN = /\w+|[^\w\s]/g;
+
+  /**
+   * Tokenize text with position information
+   * Uses regex matchAll to get exact positions, avoiding indexOf bugs
+   *
+   * @param text - Text to tokenize
+   * @param includePunctuation - Include punctuation as separate tokens
+   * @returns Array of tokens with their positions
+   */
+  private static tokenizeWithPositions(
+    text: string,
+    includePunctuation: boolean,
+  ): TokenWithPosition[] {
+    const pattern = includePunctuation ? this.TOKEN_PATTERN : /\w+/g;
+    const tokens: TokenWithPosition[] = [];
+
+    for (const match of text.matchAll(pattern)) {
+      tokens.push({
+        text: match[0],
+        start: match.index!,
+        end: match.index! + match[0].length,
+      });
+    }
+
+    return tokens;
+  }
 
   /**
    * Extract context window around a span
@@ -51,31 +86,23 @@ export class WindowService {
     const includePunctuation = options.includePunctuation ?? false;
     const toLowerCase = options.toLowerCase ?? false;
 
-    // Tokenize the entire text
-    const tokens = this.tokenize(text, includePunctuation);
+    // Tokenize with positions to avoid indexOf bugs
+    const tokensWithPos = this.tokenizeWithPositions(text, includePunctuation);
 
-    // Find which tokens overlap with the span
+    // Find which tokens overlap with the span using exact positions
     let spanTokenStart = -1;
     let spanTokenEnd = -1;
-    let currentPos = 0;
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      const tokenStart = text.indexOf(token, currentPos);
-      const tokenEnd = tokenStart + token.length;
+    for (let i = 0; i < tokensWithPos.length; i++) {
+      const token = tokensWithPos[i];
 
       // Check if this token overlaps with the span
-      if (
-        tokenStart < span.characterEnd &&
-        tokenEnd > span.characterStart
-      ) {
+      if (token.start < span.characterEnd && token.end > span.characterStart) {
         if (spanTokenStart === -1) {
           spanTokenStart = i;
         }
         spanTokenEnd = i;
       }
-
-      currentPos = tokenEnd;
     }
 
     if (spanTokenStart === -1) {
@@ -84,9 +111,14 @@ export class WindowService {
 
     // Extract window: [start-windowSize, end+windowSize]
     const windowStart = Math.max(0, spanTokenStart - windowSize);
-    const windowEnd = Math.min(tokens.length, spanTokenEnd + 1 + windowSize);
+    const windowEnd = Math.min(
+      tokensWithPos.length,
+      spanTokenEnd + 1 + windowSize,
+    );
 
-    let windowTokens = tokens.slice(windowStart, windowEnd);
+    let windowTokens = tokensWithPos
+      .slice(windowStart, windowEnd)
+      .map((t) => t.text);
 
     if (toLowerCase) {
       windowTokens = windowTokens.map((t) => t.toLowerCase());
@@ -114,28 +146,23 @@ export class WindowService {
     const includePunctuation = options.includePunctuation ?? false;
     const toLowerCase = options.toLowerCase ?? false;
 
-    // Tokenize the entire text
-    const tokens = this.tokenize(text, includePunctuation);
+    // Tokenize with positions to avoid indexOf bugs
+    const tokensWithPos = this.tokenizeWithPositions(text, includePunctuation);
 
-    // Find which tokens overlap with the position
+    // Find which tokens overlap with the position using exact positions
     let spanTokenStart = -1;
     let spanTokenEnd = -1;
-    let currentPos = 0;
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      const tokenStart = text.indexOf(token, currentPos);
-      const tokenEnd = tokenStart + token.length;
+    for (let i = 0; i < tokensWithPos.length; i++) {
+      const token = tokensWithPos[i];
 
       // Check if this token overlaps with the position
-      if (tokenStart < end && tokenEnd > start) {
+      if (token.start < end && token.end > start) {
         if (spanTokenStart === -1) {
           spanTokenStart = i;
         }
         spanTokenEnd = i;
       }
-
-      currentPos = tokenEnd;
     }
 
     if (spanTokenStart === -1) {
@@ -144,9 +171,14 @@ export class WindowService {
 
     // Extract window
     const windowStart = Math.max(0, spanTokenStart - windowSize);
-    const windowEnd = Math.min(tokens.length, spanTokenEnd + 1 + windowSize);
+    const windowEnd = Math.min(
+      tokensWithPos.length,
+      spanTokenEnd + 1 + windowSize,
+    );
 
-    let windowTokens = tokens.slice(windowStart, windowEnd);
+    let windowTokens = tokensWithPos
+      .slice(windowStart, windowEnd)
+      .map((t) => t.text);
 
     if (toLowerCase) {
       windowTokens = windowTokens.map((t) => t.toLowerCase());
@@ -162,10 +194,7 @@ export class WindowService {
    * @param includePunctuation - Include punctuation as separate tokens
    * @returns Array of tokens
    */
-  private static tokenize(
-    text: string,
-    includePunctuation: boolean,
-  ): string[] {
+  private static tokenize(text: string, includePunctuation: boolean): string[] {
     if (includePunctuation) {
       // Match words and punctuation separately
       return Array.from(text.matchAll(this.TOKEN_PATTERN)).map((m) => m[0]);
@@ -214,21 +243,16 @@ export class WindowService {
     span: Span,
     count: number = 5,
   ): string[] {
-    const tokens = this.tokenize(text, false);
-    let currentPos = 0;
+    const tokensWithPos = this.tokenizeWithPositions(text, false);
     let spanTokenStart = -1;
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      const tokenStart = text.indexOf(token, currentPos);
-      const tokenEnd = tokenStart + token.length;
+    for (let i = 0; i < tokensWithPos.length; i++) {
+      const token = tokensWithPos[i];
 
-      if (tokenStart >= span.characterStart) {
+      if (token.start >= span.characterStart) {
         spanTokenStart = i;
         break;
       }
-
-      currentPos = tokenEnd;
     }
 
     if (spanTokenStart === -1) {
@@ -236,7 +260,7 @@ export class WindowService {
     }
 
     const start = Math.max(0, spanTokenStart - count);
-    return tokens.slice(start, spanTokenStart);
+    return tokensWithPos.slice(start, spanTokenStart).map((t) => t.text);
   }
 
   /**
@@ -248,29 +272,24 @@ export class WindowService {
    * @returns Array of tokens after span
    */
   static getTokensAfter(text: string, span: Span, count: number = 5): string[] {
-    const tokens = this.tokenize(text, false);
-    let currentPos = 0;
+    const tokensWithPos = this.tokenizeWithPositions(text, false);
     let spanTokenEnd = -1;
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      const tokenStart = text.indexOf(token, currentPos);
-      const tokenEnd = tokenStart + token.length;
+    for (let i = 0; i < tokensWithPos.length; i++) {
+      const token = tokensWithPos[i];
 
-      if (tokenEnd > span.characterEnd) {
+      if (token.end > span.characterEnd) {
         spanTokenEnd = i;
         break;
       }
-
-      currentPos = tokenEnd;
     }
 
     if (spanTokenEnd === -1) {
-      spanTokenEnd = tokens.length;
+      spanTokenEnd = tokensWithPos.length;
     }
 
-    const end = Math.min(tokens.length, spanTokenEnd + count);
-    return tokens.slice(spanTokenEnd, end);
+    const end = Math.min(tokensWithPos.length, spanTokenEnd + count);
+    return tokensWithPos.slice(spanTokenEnd, end).map((t) => t.text);
   }
 
   /**

@@ -63,14 +63,44 @@ export class RedactionEngine {
   /**
    * Redact sensitive information from text
    * Parallel processing: Regex filters AND NER both process original text
+   *
+   * @throws {Error} If text is empty/null when policy requires redaction
+   * @throws {Error} If policy is invalid or missing required fields
+   * @throws {Error} If context is missing or invalid
    */
   static async redact(
     text: string,
     policy: any,
     context: RedactionContext,
   ): Promise<string> {
-    if (!text || !policy || !context) {
+    // Validate inputs - fail fast with clear error messages
+    if (text === null || text === undefined) {
+      throw new Error("Redaction failed: text cannot be null or undefined");
+    }
+
+    // Empty text is valid - return as-is
+    if (text === "") {
       return text;
+    }
+
+    if (!policy) {
+      throw new Error("Redaction failed: policy is required");
+    }
+
+    if (!policy.identifiers || typeof policy.identifiers !== "object") {
+      throw new Error(
+        "Redaction failed: policy must have an 'identifiers' object",
+      );
+    }
+
+    if (!context) {
+      throw new Error("Redaction failed: context is required");
+    }
+
+    if (typeof context.createToken !== "function") {
+      throw new Error(
+        "Redaction failed: context must have a createToken method",
+      );
     }
 
     const textLen = text.length;

@@ -15,21 +15,52 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { RadiologyLogger } from "../utils/RadiologyLogger";
+
+/**
+ * Hospital dictionary initialization error
+ */
+export class HospitalDictionaryInitError extends Error {
+  constructor(
+    message: string,
+    public readonly cause?: Error,
+  ) {
+    super(message);
+    this.name = "HospitalDictionaryInitError";
+  }
+}
+
+/**
+ * Hospital dictionary status
+ */
+export interface HospitalDictionaryStatus {
+  initialized: boolean;
+  hospitalsLoaded: boolean;
+  hospitalCount: number;
+  phraseCount: number;
+  error: string | null;
+}
 
 export class HospitalDictionary {
   private static hospitals: Set<string> | null = null;
   private static hospitalPhrases: string[] | null = null;
   private static initialized: boolean = false;
+  private static initError: string | null = null;
 
   /**
    * Initialize the hospital dictionary from file
+   *
+   * @throws {HospitalDictionaryInitError} If throwOnError is true and loading fails
    */
-  private static init(): void {
+  private static init(options: { throwOnError?: boolean } = {}): void {
     if (this.initialized) return;
 
-    try {
-      const hospitalsPath = path.join(__dirname, "hospitals.txt");
+    const { throwOnError = false } = options;
+    this.initError = null;
 
+    const hospitalsPath = path.join(__dirname, "hospitals.txt");
+
+    try {
       if (fs.existsSync(hospitalsPath)) {
         const content = fs.readFileSync(hospitalsPath, "utf-8");
         const entries = content
@@ -41,20 +72,74 @@ export class HospitalDictionary {
         // Keep array for multi-word phrase matching
         this.hospitalPhrases = entries.filter((e) => e.includes(" "));
 
-      } else {
-        console.warn(
-          `[HospitalDictionary] Hospital file not found: ${hospitalsPath}`
+        RadiologyLogger.info(
+          "DICTIONARY",
+          `Loaded ${this.hospitals.size} hospitals (${this.hospitalPhrases.length} phrases)`,
         );
+      } else {
+        const errorMsg = `Hospital dictionary not found: ${hospitalsPath}`;
+        this.initError = errorMsg;
+        RadiologyLogger.warn("DICTIONARY", errorMsg);
         this.hospitals = new Set();
         this.hospitalPhrases = [];
+
+        if (throwOnError) {
+          throw new HospitalDictionaryInitError(errorMsg);
+        }
       }
     } catch (error) {
-      console.error(`[HospitalDictionary] Error loading hospitals:`, error);
+      if (error instanceof HospitalDictionaryInitError) throw error;
+
+      const errorMsg = `Failed to load hospital dictionary: ${error instanceof Error ? error.message : String(error)}`;
+      this.initError = errorMsg;
+      RadiologyLogger.error("DICTIONARY", errorMsg);
       this.hospitals = new Set();
       this.hospitalPhrases = [];
+
+      if (throwOnError) {
+        throw new HospitalDictionaryInitError(
+          errorMsg,
+          error instanceof Error ? error : undefined,
+        );
+      }
     }
 
     this.initialized = true;
+
+    if (this.initError) {
+      RadiologyLogger.warn(
+        "DICTIONARY",
+        "HospitalDictionary initialized with errors. Hospital name detection may be degraded.",
+      );
+    }
+  }
+
+  /**
+   * Get initialization status
+   */
+  static getStatus(): HospitalDictionaryStatus {
+    return {
+      initialized: this.initialized,
+      hospitalsLoaded: this.hospitals !== null && this.hospitals.size > 0,
+      hospitalCount: this.hospitals?.size || 0,
+      phraseCount: this.hospitalPhrases?.length || 0,
+      error: this.initError,
+    };
+  }
+
+  /**
+   * Check if dictionary is properly loaded
+   */
+  static isHealthy(): boolean {
+    if (!this.initialized) this.init();
+    return (this.hospitals?.size || 0) > 0;
+  }
+
+  /**
+   * Force initialization with error throwing (for tests/startup validation)
+   */
+  static initStrict(): void {
+    this.init({ throwOnError: true });
   }
 
   /**
@@ -76,7 +161,7 @@ export class HospitalDictionary {
    * @returns Array of matches with position and matched text
    */
   static findHospitalsInText(
-    text: string
+    text: string,
   ): Array<{ text: string; start: number; end: number }> {
     if (!this.initialized) this.init();
     if (!this.hospitalPhrases || this.hospitalPhrases.length === 0) return [];
@@ -168,27 +253,27 @@ export class HospitalDictionary {
   /**
    * WHITELIST CHECK: Check if a potential name match is actually part of a hospital name.
    * This is used to PROTECT hospital name components from being redacted as patient names.
-   * 
+   *
    * Hospital names are NOT patient PHI under HIPAA Safe Harbor.
-   * 
+   *
    * @param potentialName - The potential name to check (e.g., "Johns", "Hopkins")
    * @param context - The surrounding text to check for hospital patterns
    * @returns true if this text is part of a hospital name and should NOT be redacted
    */
   static isPartOfHospitalName(potentialName: string, context: string): boolean {
     if (!this.initialized) this.init();
-    
+
     // Quick check: does context contain hospital keywords?
     if (!this.hasHospitalKeywords(context)) {
       return false;
     }
-    
+
     // Find all hospital names in the context
     const hospitalMatches = this.findHospitalsInText(context);
     if (hospitalMatches.length === 0) {
       return false;
     }
-    
+
     // Check if the potential name appears within any hospital name
     const potentialLower = potentialName.toLowerCase().trim();
     for (const match of hospitalMatches) {
@@ -197,8 +282,7 @@ export class HospitalDictionary {
         return true; // This "name" is part of a hospital name - WHITELIST it
       }
     }
-    
+
     return false;
   }
-
 }

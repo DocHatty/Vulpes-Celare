@@ -19,9 +19,16 @@ process.env.NODE_ENV = "test";
 global.require = (moduleName) => {
   if (moduleName === "electron") {
     return {
-      ipcRenderer: { invoke: () => Promise.resolve({}), send: () => {}, on: () => {} },
+      ipcRenderer: {
+        invoke: () => Promise.resolve({}),
+        send: () => {},
+        on: () => {},
+      },
       app: {
-        getPath: (type) => type === "userData" ? path.join(__dirname, "..", "userData") : __dirname,
+        getPath: (type) =>
+          type === "userData"
+            ? path.join(__dirname, "..", "userData")
+            : __dirname,
         getName: () => "VulpesTest",
         getVersion: () => "1.0.0",
       },
@@ -56,51 +63,315 @@ function shuffleArray(arr) {
 // COMPREHENSIVE NAME DATABASE
 // ============================================================================
 const FIRST_NAMES = [
-  "James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda",
-  "David", "Elizabeth", "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica",
-  "Thomas", "Sarah", "Christopher", "Karen", "Charles", "Lisa", "Daniel", "Nancy",
-  "Matthew", "Betty", "Anthony", "Margaret", "Mark", "Sandra", "Donald", "Ashley",
-  "Steven", "Kimberly", "Paul", "Emily", "Andrew", "Donna", "Joshua", "Michelle",
-  "Kenneth", "Dorothy", "Kevin", "Carol", "Brian", "Amanda", "George", "Melissa",
-  "Timothy", "Deborah", "Ronald", "Stephanie", "Edward", "Rebecca", "Jason", "Sharon",
-  "Jeffrey", "Laura", "Ryan", "Cynthia", "Jacob", "Kathleen", "Gary", "Amy",
-  "Nicholas", "Angela", "Eric", "Shirley", "Jonathan", "Anna", "Stephen", "Brenda",
-  "Larry", "Pamela", "Justin", "Emma", "Scott", "Nicole", "Brandon", "Helen",
-  "Benjamin", "Samantha", "Samuel", "Katherine", "Raymond", "Christine", "Gregory", "Debra",
-  "Frank", "Rachel", "Alexander", "Carolyn", "Patrick", "Janet", "Jack", "Maria",
-  "Dennis", "Heather", "Jerry", "Tyler", "Aaron", "Jose", "Adam", "Nathan",
-  "Henry", "Douglas", "Zachary", "Peter", "Kyle", "Noah", "Ethan", "Jeremy",
+  "James",
+  "Mary",
+  "Robert",
+  "Patricia",
+  "John",
+  "Jennifer",
+  "Michael",
+  "Linda",
+  "David",
+  "Elizabeth",
+  "William",
+  "Barbara",
+  "Richard",
+  "Susan",
+  "Joseph",
+  "Jessica",
+  "Thomas",
+  "Sarah",
+  "Christopher",
+  "Karen",
+  "Charles",
+  "Lisa",
+  "Daniel",
+  "Nancy",
+  "Matthew",
+  "Betty",
+  "Anthony",
+  "Margaret",
+  "Mark",
+  "Sandra",
+  "Donald",
+  "Ashley",
+  "Steven",
+  "Kimberly",
+  "Paul",
+  "Emily",
+  "Andrew",
+  "Donna",
+  "Joshua",
+  "Michelle",
+  "Kenneth",
+  "Dorothy",
+  "Kevin",
+  "Carol",
+  "Brian",
+  "Amanda",
+  "George",
+  "Melissa",
+  "Timothy",
+  "Deborah",
+  "Ronald",
+  "Stephanie",
+  "Edward",
+  "Rebecca",
+  "Jason",
+  "Sharon",
+  "Jeffrey",
+  "Laura",
+  "Ryan",
+  "Cynthia",
+  "Jacob",
+  "Kathleen",
+  "Gary",
+  "Amy",
+  "Nicholas",
+  "Angela",
+  "Eric",
+  "Shirley",
+  "Jonathan",
+  "Anna",
+  "Stephen",
+  "Brenda",
+  "Larry",
+  "Pamela",
+  "Justin",
+  "Emma",
+  "Scott",
+  "Nicole",
+  "Brandon",
+  "Helen",
+  "Benjamin",
+  "Samantha",
+  "Samuel",
+  "Katherine",
+  "Raymond",
+  "Christine",
+  "Gregory",
+  "Debra",
+  "Frank",
+  "Rachel",
+  "Alexander",
+  "Carolyn",
+  "Patrick",
+  "Janet",
+  "Jack",
+  "Maria",
+  "Dennis",
+  "Heather",
+  "Jerry",
+  "Tyler",
+  "Aaron",
+  "Jose",
+  "Adam",
+  "Nathan",
+  "Henry",
+  "Douglas",
+  "Zachary",
+  "Peter",
+  "Kyle",
+  "Noah",
+  "Ethan",
+  "Jeremy",
   // International names
-  "Yuki", "Ananya", "Wei", "Fatima", "Omar", "Priya", "Mohammed", "Aisha",
-  "Hiroshi", "Mei", "Raj", "Lakshmi", "Chen", "Yong", "Tran", "Kim", "Park",
-  "Carlos", "Sofia", "Miguel", "Juan", "Pedro", "Luis", "Diego", "Alejandro"
+  "Yuki",
+  "Ananya",
+  "Wei",
+  "Fatima",
+  "Omar",
+  "Priya",
+  "Mohammed",
+  "Aisha",
+  "Hiroshi",
+  "Mei",
+  "Raj",
+  "Lakshmi",
+  "Chen",
+  "Yong",
+  "Tran",
+  "Kim",
+  "Park",
+  "Carlos",
+  "Sofia",
+  "Miguel",
+  "Juan",
+  "Pedro",
+  "Luis",
+  "Diego",
+  "Alejandro",
 ];
 
 const LAST_NAMES = [
-  "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis",
-  "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson",
-  "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson",
-  "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", "Walker",
-  "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill",
-  "Flores", "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell",
-  "Mitchell", "Carter", "Roberts", "Gomez", "Phillips", "Evans", "Turner", "Diaz",
-  "Parker", "Cruz", "Edwards", "Collins", "Reyes", "Stewart", "Morris", "Morales",
-  "Murphy", "Cook", "Rogers", "Gutierrez", "Ortiz", "Morgan", "Cooper", "Peterson",
-  "Bailey", "Reed", "Kelly", "Howard", "Ramos", "Cox", "Ward", "Richardson",
-  "Watson", "Brooks", "Chavez", "Wood", "James", "Bennett", "Gray", "Mendoza",
-  "Ruiz", "Hughes", "Price", "Alvarez", "Castillo", "Sanders", "Patel", "Myers",
-  "Long", "Ross", "Foster", "Jimenez", "Powell", "Jenkins", "Perry", "Russell",
-  "Sullivan", "Bell", "Coleman", "Butler", "Henderson", "Barnes", "Fisher", "Vasquez",
-  "O'Brien", "O'Connor", "O'Malley", "McDonald", "McCarthy", "McMillan", "McKenzie",
+  "Smith",
+  "Johnson",
+  "Williams",
+  "Brown",
+  "Jones",
+  "Garcia",
+  "Miller",
+  "Davis",
+  "Rodriguez",
+  "Martinez",
+  "Hernandez",
+  "Lopez",
+  "Gonzalez",
+  "Wilson",
+  "Anderson",
+  "Thomas",
+  "Taylor",
+  "Moore",
+  "Jackson",
+  "Martin",
+  "Lee",
+  "Perez",
+  "Thompson",
+  "White",
+  "Harris",
+  "Sanchez",
+  "Clark",
+  "Ramirez",
+  "Lewis",
+  "Robinson",
+  "Walker",
+  "Young",
+  "Allen",
+  "King",
+  "Wright",
+  "Scott",
+  "Torres",
+  "Nguyen",
+  "Hill",
+  "Flores",
+  "Green",
+  "Adams",
+  "Nelson",
+  "Baker",
+  "Hall",
+  "Rivera",
+  "Campbell",
+  "Mitchell",
+  "Carter",
+  "Roberts",
+  "Gomez",
+  "Phillips",
+  "Evans",
+  "Turner",
+  "Diaz",
+  "Parker",
+  "Cruz",
+  "Edwards",
+  "Collins",
+  "Reyes",
+  "Stewart",
+  "Morris",
+  "Morales",
+  "Murphy",
+  "Cook",
+  "Rogers",
+  "Gutierrez",
+  "Ortiz",
+  "Morgan",
+  "Cooper",
+  "Peterson",
+  "Bailey",
+  "Reed",
+  "Kelly",
+  "Howard",
+  "Ramos",
+  "Cox",
+  "Ward",
+  "Richardson",
+  "Watson",
+  "Brooks",
+  "Chavez",
+  "Wood",
+  "James",
+  "Bennett",
+  "Gray",
+  "Mendoza",
+  "Ruiz",
+  "Hughes",
+  "Price",
+  "Alvarez",
+  "Castillo",
+  "Sanders",
+  "Patel",
+  "Myers",
+  "Long",
+  "Ross",
+  "Foster",
+  "Jimenez",
+  "Powell",
+  "Jenkins",
+  "Perry",
+  "Russell",
+  "Sullivan",
+  "Bell",
+  "Coleman",
+  "Butler",
+  "Henderson",
+  "Barnes",
+  "Fisher",
+  "Vasquez",
+  "O'Brien",
+  "O'Connor",
+  "O'Malley",
+  "McDonald",
+  "McCarthy",
+  "McMillan",
+  "McKenzie",
   // International names
-  "Nakamura", "Tanaka", "Yamamoto", "Watanabe", "Suzuki", "Kumar", "Sharma", "Singh",
-  "Gupta", "Mueller", "Schmidt", "Schneider", "Fischer", "Weber"
+  "Nakamura",
+  "Tanaka",
+  "Yamamoto",
+  "Watanabe",
+  "Suzuki",
+  "Kumar",
+  "Sharma",
+  "Singh",
+  "Gupta",
+  "Mueller",
+  "Schmidt",
+  "Schneider",
+  "Fischer",
+  "Weber",
 ];
 
-const MIDDLE_NAMES = ["Marie", "Ann", "Lee", "Ray", "James", "Michael", "Elizabeth", "Rose", "Lynn", "Grace", "Mae", "Jean", "Louise", "William", "Thomas", ""];
+const MIDDLE_NAMES = [
+  "Marie",
+  "Ann",
+  "Lee",
+  "Ray",
+  "James",
+  "Michael",
+  "Elizabeth",
+  "Rose",
+  "Lynn",
+  "Grace",
+  "Mae",
+  "Jean",
+  "Louise",
+  "William",
+  "Thomas",
+  "",
+];
 
 const TITLES = ["Dr.", "Mr.", "Mrs.", "Ms.", "Prof."];
-const SUFFIXES = ["Jr.", "Sr.", "II", "III", "IV", "MD", "PhD", "DO", "RN", "NP", "PA"];
+const SUFFIXES = [
+  "Jr.",
+  "Sr.",
+  "II",
+  "III",
+  "IV",
+  "MD",
+  "PhD",
+  "DO",
+  "RN",
+  "NP",
+  "PA",
+];
 
 // ============================================================================
 // PHI GENERATORS
@@ -113,14 +384,16 @@ function generateName(format = "random") {
   const suffix = pickRandom(SUFFIXES);
 
   const formats = {
-    "first_last": `${first} ${last}`,
-    "last_first": `${last}, ${first}`,
-    "last_first_middle": middle ? `${last}, ${first} ${middle}` : `${last}, ${first}`,
-    "full_middle": middle ? `${first} ${middle} ${last}` : `${first} ${last}`,
-    "titled": `${title} ${first} ${last}`,
-    "titled_suffix": `${title} ${first} ${last}, ${suffix}`,
-    "with_suffix": `${first} ${last}, ${suffix}`,
-    "titled_short": `${title} ${last}`,
+    first_last: `${first} ${last}`,
+    last_first: `${last}, ${first}`,
+    last_first_middle: middle
+      ? `${last}, ${first} ${middle}`
+      : `${last}, ${first}`,
+    full_middle: middle ? `${first} ${middle} ${last}` : `${first} ${last}`,
+    titled: `${title} ${first} ${last}`,
+    titled_suffix: `${title} ${first} ${last}, ${suffix}`,
+    with_suffix: `${first} ${last}, ${suffix}`,
+    titled_short: `${title} ${last}`,
   };
 
   if (format === "random") {
@@ -130,8 +403,8 @@ function generateName(format = "random") {
 }
 
 function generateDate() {
-  const month = String(Math.floor(seededRandom() * 12) + 1).padStart(2, '0');
-  const day = String(Math.floor(seededRandom() * 28) + 1).padStart(2, '0');
+  const month = String(Math.floor(seededRandom() * 12) + 1).padStart(2, "0");
+  const day = String(Math.floor(seededRandom() * 28) + 1).padStart(2, "0");
   const year = Math.floor(seededRandom() * 60) + 1950;
   return `${month}/${day}/${year}`;
 }
@@ -149,11 +422,11 @@ function generatePhone(format = "random") {
   const num = String(Math.floor(seededRandom() * 9000) + 1000);
 
   const formats = {
-    "standard": `(${area}) ${exch}-${num}`,
-    "dashes": `${area}-${exch}-${num}`,
-    "dots": `${area}.${exch}.${num}`,
-    "spaces": `${area} ${exch} ${num}`,
-    "international": `+1 ${area} ${exch} ${num}`,
+    standard: `(${area}) ${exch}-${num}`,
+    dashes: `${area}-${exch}-${num}`,
+    dots: `${area}.${exch}.${num}`,
+    spaces: `${area} ${exch} ${num}`,
+    international: `+1 ${area} ${exch} ${num}`,
   };
 
   if (format === "random") format = pickRandom(Object.keys(formats));
@@ -163,7 +436,13 @@ function generatePhone(format = "random") {
 function generateEmail() {
   const first = pickRandom(FIRST_NAMES).toLowerCase();
   const last = pickRandom(LAST_NAMES).toLowerCase();
-  const domain = pickRandom(["gmail.com", "yahoo.com", "outlook.com", "hospital.org", "clinic.net"]);
+  const domain = pickRandom([
+    "gmail.com",
+    "yahoo.com",
+    "outlook.com",
+    "hospital.org",
+    "clinic.net",
+  ]);
   return `${first}.${last}@${domain}`;
 }
 
@@ -173,10 +452,43 @@ function generateMRN() {
 
 function generateAddress() {
   const num = Math.floor(seededRandom() * 9999) + 1;
-  const street = pickRandom(["Main", "Oak", "Maple", "Cedar", "Pine", "Elm", "Washington", "Park", "Lake", "Hill"]);
+  const street = pickRandom([
+    "Main",
+    "Oak",
+    "Maple",
+    "Cedar",
+    "Pine",
+    "Elm",
+    "Washington",
+    "Park",
+    "Lake",
+    "Hill",
+  ]);
   const type = pickRandom(["St", "Ave", "Blvd", "Dr", "Ln", "Rd", "Way", "Ct"]);
-  const city = pickRandom(["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Seattle", "Denver", "Boston", "Miami", "Atlanta"]);
-  const state = pickRandom(["NY", "CA", "IL", "TX", "AZ", "WA", "CO", "MA", "FL", "GA"]);
+  const city = pickRandom([
+    "New York",
+    "Los Angeles",
+    "Chicago",
+    "Houston",
+    "Phoenix",
+    "Seattle",
+    "Denver",
+    "Boston",
+    "Miami",
+    "Atlanta",
+  ]);
+  const state = pickRandom([
+    "NY",
+    "CA",
+    "IL",
+    "TX",
+    "AZ",
+    "WA",
+    "CO",
+    "MA",
+    "FL",
+    "GA",
+  ]);
   const zip = String(Math.floor(seededRandom() * 90000) + 10000);
   return `${num} ${street} ${type}, ${city}, ${state} ${zip}`;
 }
@@ -185,19 +497,31 @@ function generateAddress() {
 // ERROR INJECTION
 // ============================================================================
 const OCR_SUBSTITUTIONS = {
-  "0": ["O", "o"], "1": ["l", "I", "|"], "5": ["S", "s"], "8": ["B"],
-  "O": ["0"], "o": ["0"], "l": ["1"], "I": ["1"], "S": ["5"], "s": ["5"], "B": ["8"],
-  "m": ["rn"], "rn": ["m"], "cl": ["d"], "d": ["cl"]
+  0: ["O", "o"],
+  1: ["l", "I", "|"],
+  5: ["S", "s"],
+  8: ["B"],
+  O: ["0"],
+  o: ["0"],
+  l: ["1"],
+  I: ["1"],
+  S: ["5"],
+  s: ["5"],
+  B: ["8"],
+  m: ["rn"],
+  rn: ["m"],
+  cl: ["d"],
+  d: ["cl"],
 };
 
 function applyErrors(text, level) {
   if (level === "none") return { text, hasErrors: false };
 
   const rates = {
-    "low": { ocr: 0.05, case: 0.08, typo: 0.03, space: 0.02 },
-    "medium": { ocr: 0.12, case: 0.15, typo: 0.08, space: 0.05 },
-    "high": { ocr: 0.20, case: 0.22, typo: 0.12, space: 0.08 },
-    "extreme": { ocr: 0.35, case: 0.30, typo: 0.20, space: 0.12 }
+    low: { ocr: 0.05, case: 0.08, typo: 0.03, space: 0.02 },
+    medium: { ocr: 0.12, case: 0.15, typo: 0.08, space: 0.05 },
+    high: { ocr: 0.2, case: 0.22, typo: 0.12, space: 0.08 },
+    extreme: { ocr: 0.35, case: 0.3, typo: 0.2, space: 0.12 },
   };
 
   const rate = rates[level] || rates["medium"];
@@ -206,14 +530,14 @@ function applyErrors(text, level) {
 
   // OCR errors
   if (seededRandom() < rate.ocr) {
-    const chars = result.split('');
+    const chars = result.split("");
     for (let i = 0; i < chars.length; i++) {
       if (OCR_SUBSTITUTIONS[chars[i]] && seededRandom() < 0.3) {
         chars[i] = pickRandom(OCR_SUBSTITUTIONS[chars[i]]);
         hasErrors = true;
       }
     }
-    result = chars.join('');
+    result = chars.join("");
   }
 
   // Case errors
@@ -222,19 +546,22 @@ function applyErrors(text, level) {
     if (caseType < 0.3) result = result.toUpperCase();
     else if (caseType < 0.6) result = result.toLowerCase();
     else {
-      result = result.split('').map(c => seededRandom() < 0.3 ? c.toUpperCase() : c.toLowerCase()).join('');
+      result = result
+        .split("")
+        .map((c) => (seededRandom() < 0.3 ? c.toUpperCase() : c.toLowerCase()))
+        .join("");
     }
     hasErrors = true;
   }
 
   // Spacing errors
   if (seededRandom() < rate.space) {
-    if (seededRandom() < 0.5 && result.includes(' ')) {
-      const idx = result.indexOf(' ');
+    if (seededRandom() < 0.5 && result.includes(" ")) {
+      const idx = result.indexOf(" ");
       result = result.slice(0, idx) + result.slice(idx + 1);
     } else {
       const idx = Math.floor(seededRandom() * result.length);
-      result = result.slice(0, idx) + ' ' + result.slice(idx);
+      result = result.slice(0, idx) + " " + result.slice(idx);
     }
     hasErrors = true;
   }
@@ -258,11 +585,36 @@ function generateProgressNote(docId, errorLevel) {
   const dobErr = applyErrors(dob, errorLevel);
   const visitErr = applyErrors(visitDate, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: provider, value: providerErr.text, hasErrors: providerErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: visitDate, value: visitErr.text, hasErrors: visitErr.hasErrors });
-  expectedPHI.push({ type: "MRN", original: mrn, value: mrn, hasErrors: false });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: provider,
+    value: providerErr.text,
+    hasErrors: providerErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: visitDate,
+    value: visitErr.text,
+    hasErrors: visitErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "MRN",
+    original: mrn,
+    value: mrn,
+    hasErrors: false,
+  });
 
   const text = `PROGRESS NOTE
 
@@ -282,7 +634,14 @@ Continue current medications. Follow up in 4 weeks.
 
 Signed: ${providerErr.text}`;
 
-  return { docId, type: "Progress Note", text, expectedPHI, expectedNonPHI: ["subjective", "objective"], errorLevel };
+  return {
+    docId,
+    type: "Progress Note",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["subjective", "objective"],
+    errorLevel,
+  };
 }
 
 function generateLabReport(docId, errorLevel) {
@@ -299,11 +658,36 @@ function generateLabReport(docId, errorLevel) {
   const collErr = applyErrors(collectionDate, errorLevel);
   const ssnErr = applyErrors(ssn, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: provider, value: providerErr.text, hasErrors: providerErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: collectionDate, value: collErr.text, hasErrors: collErr.hasErrors });
-  expectedPHI.push({ type: "SSN", original: ssn, value: ssnErr.text, hasErrors: ssnErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: provider,
+    value: providerErr.text,
+    hasErrors: providerErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: collectionDate,
+    value: collErr.text,
+    hasErrors: collErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "SSN",
+    original: ssn,
+    value: ssnErr.text,
+    hasErrors: ssnErr.hasErrors,
+  });
 
   const text = `LABORATORY REPORT
 
@@ -321,7 +705,14 @@ Platelets: 245 x10^9/L (150-400)
 
 ORDERING PHYSICIAN: ${providerErr.text}`;
 
-  return { docId, type: "Lab Report", text, expectedPHI, expectedNonPHI: ["hemoglobin", "platelets"], errorLevel };
+  return {
+    docId,
+    type: "Lab Report",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["hemoglobin", "platelets"],
+    errorLevel,
+  };
 }
 
 function generateRadiologyReport(docId, errorLevel) {
@@ -338,11 +729,36 @@ function generateRadiologyReport(docId, errorLevel) {
   const dobErr = applyErrors(dob, errorLevel);
   const examErr = applyErrors(examDate, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: radiologist, value: radErr.text, hasErrors: radErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: referring, value: refErr.text, hasErrors: refErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: examDate, value: examErr.text, hasErrors: examErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: radiologist,
+    value: radErr.text,
+    hasErrors: radErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: referring,
+    value: refErr.text,
+    hasErrors: refErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: examDate,
+    value: examErr.text,
+    hasErrors: examErr.hasErrors,
+  });
 
   const text = `RADIOLOGY REPORT
 
@@ -362,7 +778,14 @@ No pleural effusion. Mediastinum unremarkable.
 IMPRESSION:
 Normal CT chest.`;
 
-  return { docId, type: "Radiology Report", text, expectedPHI, expectedNonPHI: ["lungs", "mediastinum"], errorLevel };
+  return {
+    docId,
+    type: "Radiology Report",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["lungs", "mediastinum"],
+    errorLevel,
+  };
 }
 
 function generateDischargeSummary(docId, errorLevel) {
@@ -383,13 +806,48 @@ function generateDischargeSummary(docId, errorLevel) {
   const ssnErr = applyErrors(ssn, errorLevel);
   const phoneErr = applyErrors(phone, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: attending, value: attendErr.text, hasErrors: attendErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: admitDate, value: admitErr.text, hasErrors: admitErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dischargeDate, value: dischErr.text, hasErrors: dischErr.hasErrors });
-  expectedPHI.push({ type: "SSN", original: ssn, value: ssnErr.text, hasErrors: ssnErr.hasErrors });
-  expectedPHI.push({ type: "PHONE", original: phone, value: phoneErr.text, hasErrors: phoneErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: attending,
+    value: attendErr.text,
+    hasErrors: attendErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: admitDate,
+    value: admitErr.text,
+    hasErrors: admitErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dischargeDate,
+    value: dischErr.text,
+    hasErrors: dischErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "SSN",
+    original: ssn,
+    value: ssnErr.text,
+    hasErrors: ssnErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "PHONE",
+    original: phone,
+    value: phoneErr.text,
+    hasErrors: phoneErr.hasErrors,
+  });
 
   const text = `DISCHARGE SUMMARY
 
@@ -414,7 +872,14 @@ DISCHARGE MEDICATIONS:
 
 FOLLOW-UP: PCP in 1 week`;
 
-  return { docId, type: "Discharge Summary", text, expectedPHI, expectedNonPHI: ["pneumonia", "antibiotics"], errorLevel };
+  return {
+    docId,
+    type: "Discharge Summary",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["pneumonia", "antibiotics"],
+    errorLevel,
+  };
 }
 
 function generateEmergencyNote(docId, errorLevel) {
@@ -431,11 +896,36 @@ function generateEmergencyNote(docId, errorLevel) {
   const visitErr = applyErrors(visitDate, errorLevel);
   const phoneErr = applyErrors(phone, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: epProvider, value: provErr.text, hasErrors: provErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: visitDate, value: visitErr.text, hasErrors: visitErr.hasErrors });
-  expectedPHI.push({ type: "PHONE", original: phone, value: phoneErr.text, hasErrors: phoneErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: epProvider,
+    value: provErr.text,
+    hasErrors: provErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: visitDate,
+    value: visitErr.text,
+    hasErrors: visitErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "PHONE",
+    original: phone,
+    value: phoneErr.text,
+    hasErrors: phoneErr.hasErrors,
+  });
 
   const text = `EMERGENCY DEPARTMENT NOTE
 
@@ -456,7 +946,14 @@ DISPOSITION: Discharged home with cardiology follow-up.
 
 PROVIDER: ${provErr.text}`;
 
-  return { docId, type: "Emergency Note", text, expectedPHI, expectedNonPHI: ["chest pain", "troponin"], errorLevel };
+  return {
+    docId,
+    type: "Emergency Note",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["chest pain", "troponin"],
+    errorLevel,
+  };
 }
 
 function generateOperativeReport(docId, errorLevel) {
@@ -473,11 +970,36 @@ function generateOperativeReport(docId, errorLevel) {
   const dobErr = applyErrors(dob, errorLevel);
   const surgDateErr = applyErrors(surgDate, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: surgeon, value: surgErr.text, hasErrors: surgErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: anesthesia, value: anesthErr.text, hasErrors: anesthErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: surgDate, value: surgDateErr.text, hasErrors: surgDateErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: surgeon,
+    value: surgErr.text,
+    hasErrors: surgErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: anesthesia,
+    value: anesthErr.text,
+    hasErrors: anesthErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: surgDate,
+    value: surgDateErr.text,
+    hasErrors: surgDateErr.hasErrors,
+  });
 
   const text = `OPERATIVE REPORT
 
@@ -499,7 +1021,14 @@ Gallbladder dissected and removed. Hemostasis confirmed.
 EBL: Minimal
 COMPLICATIONS: None`;
 
-  return { docId, type: "Operative Report", text, expectedPHI, expectedNonPHI: ["cholecystectomy", "hemostasis"], errorLevel };
+  return {
+    docId,
+    type: "Operative Report",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["cholecystectomy", "hemostasis"],
+    errorLevel,
+  };
 }
 
 function generatePrescription(docId, errorLevel) {
@@ -518,12 +1047,42 @@ function generatePrescription(docId, errorLevel) {
   const phoneErr = applyErrors(phone, errorLevel);
   const addrErr = applyErrors(address, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: prescriber, value: prescriberErr.text, hasErrors: prescriberErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: rxDate, value: rxErr.text, hasErrors: rxErr.hasErrors });
-  expectedPHI.push({ type: "PHONE", original: phone, value: phoneErr.text, hasErrors: phoneErr.hasErrors });
-  expectedPHI.push({ type: "ADDRESS", original: address, value: addrErr.text, hasErrors: addrErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: prescriber,
+    value: prescriberErr.text,
+    hasErrors: prescriberErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: rxDate,
+    value: rxErr.text,
+    hasErrors: rxErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "PHONE",
+    original: phone,
+    value: phoneErr.text,
+    hasErrors: phoneErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "ADDRESS",
+    original: address,
+    value: addrErr.text,
+    hasErrors: addrErr.hasErrors,
+  });
 
   const text = `PRESCRIPTION
 
@@ -541,7 +1100,14 @@ Refills: 3
 
 PRESCRIBER: ${prescriberErr.text}`;
 
-  return { docId, type: "Prescription", text, expectedPHI, expectedNonPHI: ["lisinopril"], errorLevel };
+  return {
+    docId,
+    type: "Prescription",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["lisinopril"],
+    errorLevel,
+  };
 }
 
 function generateConsultNote(docId, errorLevel) {
@@ -560,12 +1126,42 @@ function generateConsultNote(docId, errorLevel) {
   const dateErr = applyErrors(consultDate, errorLevel);
   const emailErr = applyErrors(email, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: consultant, value: consultErr.text, hasErrors: consultErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: referring, value: refErr.text, hasErrors: refErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: consultDate, value: dateErr.text, hasErrors: dateErr.hasErrors });
-  expectedPHI.push({ type: "EMAIL", original: email, value: emailErr.text, hasErrors: emailErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: consultant,
+    value: consultErr.text,
+    hasErrors: consultErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: referring,
+    value: refErr.text,
+    hasErrors: refErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: consultDate,
+    value: dateErr.text,
+    hasErrors: dateErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "EMAIL",
+    original: email,
+    value: emailErr.text,
+    hasErrors: emailErr.hasErrors,
+  });
 
   const text = `CONSULTATION NOTE
 
@@ -585,7 +1181,14 @@ RECOMMENDATIONS:
 1. Start methotrexate 15mg weekly
 2. Follow-up in 6 weeks`;
 
-  return { docId, type: "Consultation Note", text, expectedPHI, expectedNonPHI: ["rheumatoid arthritis", "methotrexate"], errorLevel };
+  return {
+    docId,
+    type: "Consultation Note",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["rheumatoid arthritis", "methotrexate"],
+    errorLevel,
+  };
 }
 
 function generateNursingAssessment(docId, errorLevel) {
@@ -604,12 +1207,42 @@ function generateNursingAssessment(docId, errorLevel) {
   const assessErr = applyErrors(assessDate, errorLevel);
   const phoneErr = applyErrors(phone, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: nurse, value: nurseErr.text, hasErrors: nurseErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: supervisor, value: supErr.text, hasErrors: supErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: assessDate, value: assessErr.text, hasErrors: assessErr.hasErrors });
-  expectedPHI.push({ type: "PHONE", original: phone, value: phoneErr.text, hasErrors: phoneErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: nurse,
+    value: nurseErr.text,
+    hasErrors: nurseErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: supervisor,
+    value: supErr.text,
+    hasErrors: supErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: assessDate,
+    value: assessErr.text,
+    hasErrors: assessErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "PHONE",
+    original: phone,
+    value: phoneErr.text,
+    hasErrors: phoneErr.hasErrors,
+  });
 
   const text = `NURSING ASSESSMENT
 
@@ -630,7 +1263,14 @@ Skin: Intact
 
 PLAN: Continue monitoring. Ambulate TID.`;
 
-  return { docId, type: "Nursing Assessment", text, expectedPHI, expectedNonPHI: ["fall risk", "vitals"], errorLevel };
+  return {
+    docId,
+    type: "Nursing Assessment",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["fall risk", "vitals"],
+    errorLevel,
+  };
 }
 
 function generatePathologyReport(docId, errorLevel) {
@@ -647,11 +1287,36 @@ function generatePathologyReport(docId, errorLevel) {
   const dobErr = applyErrors(dob, errorLevel);
   const collErr = applyErrors(collDate, errorLevel);
 
-  expectedPHI.push({ type: "NAME", original: patient, value: patientErr.text, hasErrors: patientErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: pathologist, value: pathErr.text, hasErrors: pathErr.hasErrors });
-  expectedPHI.push({ type: "NAME", original: surgeon, value: surgErr.text, hasErrors: surgErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: dob, value: dobErr.text, hasErrors: dobErr.hasErrors });
-  expectedPHI.push({ type: "DATE", original: collDate, value: collErr.text, hasErrors: collErr.hasErrors });
+  expectedPHI.push({
+    type: "NAME",
+    original: patient,
+    value: patientErr.text,
+    hasErrors: patientErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: pathologist,
+    value: pathErr.text,
+    hasErrors: pathErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "NAME",
+    original: surgeon,
+    value: surgErr.text,
+    hasErrors: surgErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: dob,
+    value: dobErr.text,
+    hasErrors: dobErr.hasErrors,
+  });
+  expectedPHI.push({
+    type: "DATE",
+    original: collDate,
+    value: collErr.text,
+    hasErrors: collErr.hasErrors,
+  });
 
   const text = `PATHOLOGY REPORT
 
@@ -670,7 +1335,14 @@ MICROSCOPIC: Chronic cholecystitis. No malignancy.
 
 DIAGNOSIS: Chronic cholecystitis with cholelithiasis.`;
 
-  return { docId, type: "Pathology Report", text, expectedPHI, expectedNonPHI: ["cholecystitis", "malignancy"], errorLevel };
+  return {
+    docId,
+    type: "Pathology Report",
+    text,
+    expectedPHI,
+    expectedNonPHI: ["cholecystitis", "malignancy"],
+    errorLevel,
+  };
 }
 
 // ============================================================================
@@ -685,12 +1357,27 @@ function generateEdgeCases() {
     type: "Edge Case - Apostrophe Name",
     text: `Patient: O'Brien, Mary\nDOB: 03/15/1980\nProvider: Dr. O'Connor`,
     expectedPHI: [
-      { type: "NAME", original: "O'Brien, Mary", value: "O'Brien, Mary", hasErrors: false },
-      { type: "NAME", original: "Dr. O'Connor", value: "Dr. O'Connor", hasErrors: false },
-      { type: "DATE", original: "03/15/1980", value: "03/15/1980", hasErrors: false }
+      {
+        type: "NAME",
+        original: "O'Brien, Mary",
+        value: "O'Brien, Mary",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "Dr. O'Connor",
+        value: "Dr. O'Connor",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "03/15/1980",
+        value: "03/15/1980",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 2: Name with hyphen
@@ -699,11 +1386,21 @@ function generateEdgeCases() {
     type: "Edge Case - Hyphenated Name",
     text: `Patient: Garcia-Martinez, Juan Carlos\nDOB: 07/22/1975`,
     expectedPHI: [
-      { type: "NAME", original: "Garcia-Martinez, Juan Carlos", value: "Garcia-Martinez, Juan Carlos", hasErrors: false },
-      { type: "DATE", original: "07/22/1975", value: "07/22/1975", hasErrors: false }
+      {
+        type: "NAME",
+        original: "Garcia-Martinez, Juan Carlos",
+        value: "Garcia-Martinez, Juan Carlos",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "07/22/1975",
+        value: "07/22/1975",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 3: Multiple credentials
@@ -712,11 +1409,21 @@ function generateEdgeCases() {
     type: "Edge Case - Multiple Credentials",
     text: `Attending: Dr. Sarah Johnson, MD, PhD, FACS\nConsultant: Prof. Michael Chen, DO, MPH`,
     expectedPHI: [
-      { type: "NAME", original: "Dr. Sarah Johnson, MD, PhD, FACS", value: "Dr. Sarah Johnson, MD, PhD, FACS", hasErrors: false },
-      { type: "NAME", original: "Prof. Michael Chen, DO, MPH", value: "Prof. Michael Chen, DO, MPH", hasErrors: false }
+      {
+        type: "NAME",
+        original: "Dr. Sarah Johnson, MD, PhD, FACS",
+        value: "Dr. Sarah Johnson, MD, PhD, FACS",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "Prof. Michael Chen, DO, MPH",
+        value: "Prof. Michael Chen, DO, MPH",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 4: International phone format
@@ -725,12 +1432,27 @@ function generateEdgeCases() {
     type: "Edge Case - International Phone",
     text: `Patient contact: +1 (555) 123-4567\nAlternate: +44 20 7946 0958\nEmergency: 1-800-555-0199`,
     expectedPHI: [
-      { type: "PHONE", original: "+1 (555) 123-4567", value: "+1 (555) 123-4567", hasErrors: false },
-      { type: "PHONE", original: "+44 20 7946 0958", value: "+44 20 7946 0958", hasErrors: false },
-      { type: "PHONE", original: "1-800-555-0199", value: "1-800-555-0199", hasErrors: false }
+      {
+        type: "PHONE",
+        original: "+1 (555) 123-4567",
+        value: "+1 (555) 123-4567",
+        hasErrors: false,
+      },
+      {
+        type: "PHONE",
+        original: "+44 20 7946 0958",
+        value: "+44 20 7946 0958",
+        hasErrors: false,
+      },
+      {
+        type: "PHONE",
+        original: "1-800-555-0199",
+        value: "1-800-555-0199",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 5: Various date formats
@@ -739,13 +1461,33 @@ function generateEdgeCases() {
     type: "Edge Case - Date Formats",
     text: `DOB: 03/15/1980\nAdmit: March 15, 2024\nDischarge: 15-Mar-2024\nFollow-up: 2024-03-22`,
     expectedPHI: [
-      { type: "DATE", original: "03/15/1980", value: "03/15/1980", hasErrors: false },
-      { type: "DATE", original: "March 15, 2024", value: "March 15, 2024", hasErrors: false },
-      { type: "DATE", original: "15-Mar-2024", value: "15-Mar-2024", hasErrors: false },
-      { type: "DATE", original: "2024-03-22", value: "2024-03-22", hasErrors: false }
+      {
+        type: "DATE",
+        original: "03/15/1980",
+        value: "03/15/1980",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "March 15, 2024",
+        value: "March 15, 2024",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "15-Mar-2024",
+        value: "15-Mar-2024",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "2024-03-22",
+        value: "2024-03-22",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 6: Email variations
@@ -754,12 +1496,27 @@ function generateEdgeCases() {
     type: "Edge Case - Email Formats",
     text: `Patient email: john.doe@gmail.com\nProvider: dr.smith@hospital.org\nContact: mary_jones123@yahoo.co.uk`,
     expectedPHI: [
-      { type: "EMAIL", original: "john.doe@gmail.com", value: "john.doe@gmail.com", hasErrors: false },
-      { type: "EMAIL", original: "dr.smith@hospital.org", value: "dr.smith@hospital.org", hasErrors: false },
-      { type: "EMAIL", original: "mary_jones123@yahoo.co.uk", value: "mary_jones123@yahoo.co.uk", hasErrors: false }
+      {
+        type: "EMAIL",
+        original: "john.doe@gmail.com",
+        value: "john.doe@gmail.com",
+        hasErrors: false,
+      },
+      {
+        type: "EMAIL",
+        original: "dr.smith@hospital.org",
+        value: "dr.smith@hospital.org",
+        hasErrors: false,
+      },
+      {
+        type: "EMAIL",
+        original: "mary_jones123@yahoo.co.uk",
+        value: "mary_jones123@yahoo.co.uk",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 7: PHI adjacent to structure words (the "PHILIP" problem)
@@ -768,12 +1525,27 @@ function generateEdgeCases() {
     type: "Edge Case - Philip Problem",
     text: `Patient: Philip Parker\nProvider: Dr. Philip Price\nNurse: Philip Phillips, RN`,
     expectedPHI: [
-      { type: "NAME", original: "Philip Parker", value: "Philip Parker", hasErrors: false },
-      { type: "NAME", original: "Dr. Philip Price", value: "Dr. Philip Price", hasErrors: false },
-      { type: "NAME", original: "Philip Phillips, RN", value: "Philip Phillips, RN", hasErrors: false }
+      {
+        type: "NAME",
+        original: "Philip Parker",
+        value: "Philip Parker",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "Dr. Philip Price",
+        value: "Dr. Philip Price",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "Philip Phillips, RN",
+        value: "Philip Phillips, RN",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 8: ALL CAPS document
@@ -782,12 +1554,27 @@ function generateEdgeCases() {
     type: "Edge Case - ALL CAPS",
     text: `PATIENT: JOHNSON, MARY ELIZABETH\nDOB: 04/22/1978\nPROVIDER: DR. ROBERT WILLIAMS`,
     expectedPHI: [
-      { type: "NAME", original: "JOHNSON, MARY ELIZABETH", value: "JOHNSON, MARY ELIZABETH", hasErrors: false },
-      { type: "DATE", original: "04/22/1978", value: "04/22/1978", hasErrors: false },
-      { type: "NAME", original: "DR. ROBERT WILLIAMS", value: "DR. ROBERT WILLIAMS", hasErrors: false }
+      {
+        type: "NAME",
+        original: "JOHNSON, MARY ELIZABETH",
+        value: "JOHNSON, MARY ELIZABETH",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "04/22/1978",
+        value: "04/22/1978",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "DR. ROBERT WILLIAMS",
+        value: "DR. ROBERT WILLIAMS",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 9: Basic usage example from docs
@@ -816,18 +1603,58 @@ Mild degenerative changes, age-appropriate.
 Dictated by: Sarah Chen, MD
 Contact: dr.chen@hospital.org | (555) 987-6543`,
     expectedPHI: [
-      { type: "NAME", original: "JOHNSON, MARY ELIZABETH", value: "JOHNSON, MARY ELIZABETH", hasErrors: false },
-      { type: "DATE", original: "04/22/1978", value: "04/22/1978", hasErrors: false },
+      {
+        type: "NAME",
+        original: "JOHNSON, MARY ELIZABETH",
+        value: "JOHNSON, MARY ELIZABETH",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "04/22/1978",
+        value: "04/22/1978",
+        hasErrors: false,
+      },
       { type: "MRN", original: "7834921", value: "7834921", hasErrors: false },
-      { type: "SSN", original: "456-78-9012", value: "456-78-9012", hasErrors: false },
-      { type: "NAME", original: "Dr. Robert Williams", value: "Dr. Robert Williams", hasErrors: false },
-      { type: "DATE", original: "11/15/2024", value: "11/15/2024", hasErrors: false },
-      { type: "NAME", original: "Sarah Chen, MD", value: "Sarah Chen, MD", hasErrors: false },
-      { type: "EMAIL", original: "dr.chen@hospital.org", value: "dr.chen@hospital.org", hasErrors: false },
-      { type: "PHONE", original: "(555) 987-6543", value: "(555) 987-6543", hasErrors: false }
+      {
+        type: "SSN",
+        original: "456-78-9012",
+        value: "456-78-9012",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "Dr. Robert Williams",
+        value: "Dr. Robert Williams",
+        hasErrors: false,
+      },
+      {
+        type: "DATE",
+        original: "11/15/2024",
+        value: "11/15/2024",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "Sarah Chen, MD",
+        value: "Sarah Chen, MD",
+        hasErrors: false,
+      },
+      {
+        type: "EMAIL",
+        original: "dr.chen@hospital.org",
+        value: "dr.chen@hospital.org",
+        hasErrors: false,
+      },
+      {
+        type: "PHONE",
+        original: "(555) 987-6543",
+        value: "(555) 987-6543",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: ["degenerative", "lumbar"],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   // Edge case 10: Lower case names
@@ -836,11 +1663,21 @@ Contact: dr.chen@hospital.org | (555) 987-6543`,
     type: "Edge Case - Lowercase Names",
     text: `patient: smith, john\nprovider: dr. jane doe`,
     expectedPHI: [
-      { type: "NAME", original: "smith, john", value: "smith, john", hasErrors: false },
-      { type: "NAME", original: "dr. jane doe", value: "dr. jane doe", hasErrors: false }
+      {
+        type: "NAME",
+        original: "smith, john",
+        value: "smith, john",
+        hasErrors: false,
+      },
+      {
+        type: "NAME",
+        original: "dr. jane doe",
+        value: "dr. jane doe",
+        hasErrors: false,
+      },
     ],
     expectedNonPHI: [],
-    errorLevel: "none"
+    errorLevel: "none",
   });
 
   return docs;
@@ -863,9 +1700,16 @@ async function runComprehensiveTest() {
   console.log("Generating clean documents (150)...");
   const errorLevelsClean = ["none"];
   const docTypesClean = [
-    generateProgressNote, generateLabReport, generateRadiologyReport,
-    generateDischargeSummary, generateEmergencyNote, generateOperativeReport,
-    generatePrescription, generateConsultNote, generateNursingAssessment, generatePathologyReport
+    generateProgressNote,
+    generateLabReport,
+    generateRadiologyReport,
+    generateDischargeSummary,
+    generateEmergencyNote,
+    generateOperativeReport,
+    generatePrescription,
+    generateConsultNote,
+    generateNursingAssessment,
+    generatePathologyReport,
   ];
 
   for (let i = 0; i < 150; i++) {
@@ -876,9 +1720,9 @@ async function runComprehensiveTest() {
   // Source 2: Realistic with errors (like vulpes-realistic-assessment.js) - 200 docs
   console.log("Generating realistic documents with errors (200)...");
   const errorLevelsDist = {
-    "low": 60,
-    "medium": 80,
-    "high": 60
+    low: 60,
+    medium: 80,
+    high: 60,
   };
 
   for (const [level, count] of Object.entries(errorLevelsDist)) {
@@ -891,11 +1735,11 @@ async function runComprehensiveTest() {
   // Source 3: Stress test extreme cases (like stress-test-200.js) - 150 docs
   console.log("Generating stress test documents (150)...");
   const stressLevels = {
-    "none": 20,
-    "low": 30,
-    "medium": 40,
-    "high": 40,
-    "extreme": 20
+    none: 20,
+    low: 30,
+    medium: 40,
+    high: 40,
+    extreme: 20,
   };
 
   for (const [level, count] of Object.entries(stressLevels)) {
@@ -924,7 +1768,9 @@ async function runComprehensiveTest() {
   }
 
   console.log("\nDocument Type Distribution:");
-  for (const [type, count] of Object.entries(typeCounts).sort((a, b) => b[1] - a[1])) {
+  for (const [type, count] of Object.entries(typeCounts).sort(
+    (a, b) => b[1] - a[1],
+  )) {
     console.log(`  ${type}: ${count}`);
   }
 
@@ -937,8 +1783,13 @@ async function runComprehensiveTest() {
   // Load engine
   console.log("Loading Vulpes Celare engine...");
   const { VulpesCelare } = require("../dist/VulpesCelare.js");
+  const { RadiologyLogger } = require("../dist/utils/RadiologyLogger.js");
+
+  // Enable logging to see PHI detections
+  RadiologyLogger.enable();
+
   const engine = new VulpesCelare();
-  console.log("Engine loaded\n");
+  console.log("Engine loaded (logging enabled)\n");
 
   // Process all documents
   console.log("Processing documents...");
@@ -961,7 +1812,9 @@ async function runComprehensiveTest() {
     // Check non-PHI preservation
     const nonPhiResults = [];
     for (const term of doc.expectedNonPHI) {
-      const wasPreserved = result.text.toLowerCase().includes(term.toLowerCase());
+      const wasPreserved = result.text
+        .toLowerCase()
+        .includes(term.toLowerCase());
       nonPhiResults.push({ term, preserved: wasPreserved });
     }
 
@@ -970,24 +1823,30 @@ async function runComprehensiveTest() {
       type: doc.type,
       errorLevel: doc.errorLevel,
       phiResults,
-      nonPhiResults
+      nonPhiResults,
     });
 
     processed++;
     if (processed % 50 === 0) {
-      console.log(`  Processed ${processed}/${shuffledDocs.length} documents...`);
+      console.log(
+        `  Processed ${processed}/${shuffledDocs.length} documents...`,
+      );
     }
   }
 
   const totalTime = Date.now() - startTime;
-  console.log(`  Processed ${processed}/${shuffledDocs.length} documents in ${(totalTime / 1000).toFixed(1)}s`);
+  console.log(
+    `  Processed ${processed}/${shuffledDocs.length} documents in ${(totalTime / 1000).toFixed(1)}s`,
+  );
   console.log();
 
   // ============================================================================
   // CALCULATE METRICS
   // ============================================================================
-  let totalPHI = 0, detectedPHI = 0;
-  let totalNonPHI = 0, preservedNonPHI = 0;
+  let totalPHI = 0,
+    detectedPHI = 0;
+  let totalNonPHI = 0,
+    preservedNonPHI = 0;
 
   const missedByType = {};
   const missedByLevel = {};
@@ -1018,7 +1877,8 @@ async function runComprehensiveTest() {
         detectedByLevel[result.errorLevel].detected++;
       } else {
         missedByType[phi.type] = (missedByType[phi.type] || 0) + 1;
-        missedByLevel[result.errorLevel] = (missedByLevel[result.errorLevel] || 0) + 1;
+        missedByLevel[result.errorLevel] =
+          (missedByLevel[result.errorLevel] || 0) + 1;
 
         if (failures.length < 100) {
           failures.push({
@@ -1028,7 +1888,7 @@ async function runComprehensiveTest() {
             phiType: phi.type,
             original: phi.original,
             value: phi.value,
-            hasErrors: phi.hasErrors
+            hasErrors: phi.hasErrors,
           });
         }
       }
@@ -1040,10 +1900,17 @@ async function runComprehensiveTest() {
     }
   }
 
-  const sensitivity = totalPHI > 0 ? (detectedPHI / totalPHI * 100) : 0;
-  const specificity = totalNonPHI > 0 ? (preservedNonPHI / totalNonPHI * 100) : 0;
-  const cleanRate = cleanDetected.total > 0 ? (cleanDetected.detected / cleanDetected.total * 100) : 0;
-  const erroredRate = erroredDetected.total > 0 ? (erroredDetected.detected / erroredDetected.total * 100) : 0;
+  const sensitivity = totalPHI > 0 ? (detectedPHI / totalPHI) * 100 : 0;
+  const specificity =
+    totalNonPHI > 0 ? (preservedNonPHI / totalNonPHI) * 100 : 0;
+  const cleanRate =
+    cleanDetected.total > 0
+      ? (cleanDetected.detected / cleanDetected.total) * 100
+      : 0;
+  const erroredRate =
+    erroredDetected.total > 0
+      ? (erroredDetected.detected / erroredDetected.total) * 100
+      : 0;
   const overallScore = Math.round(sensitivity * 0.9 + specificity * 0.1);
 
   let grade;
@@ -1068,7 +1935,9 @@ async function runComprehensiveTest() {
   console.log(`Documents Tested: ${shuffledDocs.length}`);
   console.log(`Total PHI Items: ${totalPHI}`);
   console.log(`Total Non-PHI Items: ${totalNonPHI}`);
-  console.log(`Processing Time: ${(totalTime / 1000).toFixed(1)}s (${(totalTime / shuffledDocs.length).toFixed(0)}ms/doc)`);
+  console.log(
+    `Processing Time: ${(totalTime / 1000).toFixed(1)}s (${(totalTime / shuffledDocs.length).toFixed(0)}ms/doc)`,
+  );
   console.log();
 
   console.log("SENSITIVITY (PHI Detection):");
@@ -1093,17 +1962,23 @@ async function runComprehensiveTest() {
   for (const level of levels) {
     const data = detectedByLevel[level];
     if (data) {
-      const rate = (data.detected / data.total * 100).toFixed(1);
+      const rate = ((data.detected / data.total) * 100).toFixed(1);
       const missed = missedByLevel[level] || 0;
-      console.log(`  ${level.toUpperCase().padEnd(8)}: ${data.detected}/${data.total} (${rate}%) - ${missed} missed`);
+      console.log(
+        `  ${level.toUpperCase().padEnd(8)}: ${data.detected}/${data.total} (${rate}%) - ${missed} missed`,
+      );
     }
   }
   console.log();
 
   console.log("CLEAN vs ERRORED ITEMS:");
   console.log("-".repeat(50));
-  console.log(`  Clean items:   ${cleanDetected.detected}/${cleanDetected.total} (${cleanRate.toFixed(1)}%)`);
-  console.log(`  Errored items: ${erroredDetected.detected}/${erroredDetected.total} (${erroredRate.toFixed(1)}%)`);
+  console.log(
+    `  Clean items:   ${cleanDetected.detected}/${cleanDetected.total} (${cleanRate.toFixed(1)}%)`,
+  );
+  console.log(
+    `  Errored items: ${erroredDetected.detected}/${erroredDetected.total} (${erroredRate.toFixed(1)}%)`,
+  );
   console.log();
 
   console.log("MISSED PHI BY TYPE:");
@@ -1131,7 +2006,7 @@ async function runComprehensiveTest() {
     dateFormat: { count: 0, examples: [] },
     phoneOCR: { count: 0, examples: [] },
     ssnOCR: { count: 0, examples: [] },
-    other: { count: 0, examples: [] }
+    other: { count: 0, examples: [] },
   };
 
   for (const f of failures) {
@@ -1139,33 +2014,46 @@ async function runComprehensiveTest() {
     const val = f.value || "";
 
     if (f.phiType === "NAME") {
-      if (val !== orig && (val === val.toLowerCase() || val === val.toUpperCase() || /[A-Z][a-z]+[A-Z]/.test(val))) {
+      if (
+        val !== orig &&
+        (val === val.toLowerCase() ||
+          val === val.toUpperCase() ||
+          /[A-Z][a-z]+[A-Z]/.test(val))
+      ) {
         issuePatterns.nameCase.count++;
-        if (issuePatterns.nameCase.examples.length < 5) issuePatterns.nameCase.examples.push({ orig, val });
+        if (issuePatterns.nameCase.examples.length < 5)
+          issuePatterns.nameCase.examples.push({ orig, val });
       } else if (val !== orig && /[^a-zA-Z\s,.'()-]/.test(val)) {
         issuePatterns.nameTypo.count++;
-        if (issuePatterns.nameTypo.examples.length < 5) issuePatterns.nameTypo.examples.push({ orig, val });
+        if (issuePatterns.nameTypo.examples.length < 5)
+          issuePatterns.nameTypo.examples.push({ orig, val });
       } else {
         issuePatterns.nameFormat.count++;
-        if (issuePatterns.nameFormat.examples.length < 5) issuePatterns.nameFormat.examples.push({ orig, val });
+        if (issuePatterns.nameFormat.examples.length < 5)
+          issuePatterns.nameFormat.examples.push({ orig, val });
       }
     } else if (f.phiType === "DATE") {
       if (val !== orig) {
         issuePatterns.dateOCR.count++;
-        if (issuePatterns.dateOCR.examples.length < 5) issuePatterns.dateOCR.examples.push({ orig, val });
+        if (issuePatterns.dateOCR.examples.length < 5)
+          issuePatterns.dateOCR.examples.push({ orig, val });
       } else {
         issuePatterns.dateFormat.count++;
-        if (issuePatterns.dateFormat.examples.length < 5) issuePatterns.dateFormat.examples.push({ orig, val });
+        if (issuePatterns.dateFormat.examples.length < 5)
+          issuePatterns.dateFormat.examples.push({ orig, val });
       }
     } else if (f.phiType === "PHONE") {
       issuePatterns.phoneOCR.count++;
-      if (issuePatterns.phoneOCR.examples.length < 5) issuePatterns.phoneOCR.examples.push({ orig, val });
+      if (issuePatterns.phoneOCR.examples.length < 5)
+        issuePatterns.phoneOCR.examples.push({ orig, val });
     } else if (f.phiType === "SSN") {
       issuePatterns.ssnOCR.count++;
-      if (issuePatterns.ssnOCR.examples.length < 5) issuePatterns.ssnOCR.examples.push({ orig, val });
+      if (issuePatterns.ssnOCR.examples.length < 5)
+        issuePatterns.ssnOCR.examples.push({ orig, val });
     } else {
       issuePatterns.other.count++;
-      if (issuePatterns.other.examples.length < 5) issuePatterns.other.examples.push({ orig, val, type: f.phiType });
+      if (issuePatterns.other.examples.length < 5)
+        issuePatterns.other.examples.push({ orig, val, type: f.phiType });
     }
   }
 
@@ -1184,7 +2072,7 @@ async function runComprehensiveTest() {
       dateFormat: "DATE - Format Issues",
       phoneOCR: "PHONE - OCR Corruption",
       ssnOCR: "SSN - OCR Corruption",
-      other: "OTHER - Misc Issues"
+      other: "OTHER - Misc Issues",
     };
 
     console.log(`ISSUE #${issueNum}: ${names[key]}`);
@@ -1206,29 +2094,42 @@ async function runComprehensiveTest() {
   if (!fs.existsSync(resultsDir)) fs.mkdirSync(resultsDir);
 
   const outputPath = path.join(resultsDir, "comprehensive-test.json");
-  fs.writeFileSync(outputPath, JSON.stringify({
-    timestamp: new Date().toISOString(),
-    summary: {
-      documentsAssessed: shuffledDocs.length,
-      totalPHI,
-      detectedPHI,
-      missedPHI: totalPHI - detectedPHI,
-      sensitivity: sensitivity.toFixed(2),
-      totalNonPHI,
-      preservedNonPHI,
-      specificity: specificity.toFixed(2),
-      overallScore,
-      grade,
-      cleanRate: cleanRate.toFixed(2),
-      erroredRate: erroredRate.toFixed(2),
-      processingTimeMs: totalTime
-    },
-    byErrorLevel: detectedByLevel,
-    missedByType,
-    missedByLevel,
-    topIssues: sortedIssues.slice(0, 3).map(([key, data]) => ({ issue: key, count: data.count, examples: data.examples })),
-    failures: failures.slice(0, 50)
-  }, null, 2));
+  fs.writeFileSync(
+    outputPath,
+    JSON.stringify(
+      {
+        timestamp: new Date().toISOString(),
+        summary: {
+          documentsAssessed: shuffledDocs.length,
+          totalPHI,
+          detectedPHI,
+          missedPHI: totalPHI - detectedPHI,
+          sensitivity: sensitivity.toFixed(2),
+          totalNonPHI,
+          preservedNonPHI,
+          specificity: specificity.toFixed(2),
+          overallScore,
+          grade,
+          cleanRate: cleanRate.toFixed(2),
+          erroredRate: erroredRate.toFixed(2),
+          processingTimeMs: totalTime,
+        },
+        byErrorLevel: detectedByLevel,
+        missedByType,
+        missedByLevel,
+        topIssues: sortedIssues
+          .slice(0, 3)
+          .map(([key, data]) => ({
+            issue: key,
+            count: data.count,
+            examples: data.examples,
+          })),
+        failures: failures.slice(0, 50),
+      },
+      null,
+      2,
+    ),
+  );
 
   console.log(`Detailed results saved to: ${outputPath}`);
   console.log("=".repeat(80));
