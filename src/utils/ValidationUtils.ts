@@ -6,7 +6,7 @@
  *
  * Categories:
  * - OCR normalization (character substitution for scan errors)
- * - Checksum algorithms (Luhn, DEA)
+ * - Checksum algorithms (Luhn)
  * - Phone number validation
  * - Numeric ID validation (length, digit requirements)
  * - IP address validation
@@ -153,33 +153,8 @@ export class ValidationUtils {
     return testPrefixes.some((prefix) => digits.startsWith(prefix));
   }
 
-  /**
-   * Validate DEA number checksum
-   * DEA format: 2 letters + 7 digits, with checksum on last digit
-   *
-   * @param dea - DEA number (e.g., "AB1234563")
-   * @returns true if valid DEA checksum
-   *
-   * Note: Currently returns true for HIPAA leniency (catch false positives)
-   */
-  static validateDEAChecksum(dea: string): boolean {
-    // Normalize OCR errors
-    const normalized = this.normalizeOCR(dea);
-
-    // Format: 2 letters + 7 digits
-    const match = normalized.match(/^[A-Za-z]{2}(\d{7})$/);
-    if (!match) return false;
-
-    const digits = match[1];
-
-    // DEA checksum: (sum of 1st, 3rd, 5th) + 2*(sum of 2nd, 4th, 6th) = last digit (mod 10)
-    const odd = parseInt(digits[0]) + parseInt(digits[2]) + parseInt(digits[4]);
-    const even =
-      2 * (parseInt(digits[1]) + parseInt(digits[3]) + parseInt(digits[5]));
-    const expectedLast = (odd + even) % 10;
-
-    return expectedLast === parseInt(digits[6]);
-  }
+  // NOTE: DEA validation is handled by DEAFilterSpan.isValidDEA()
+  // See src/filters/DEAFilterSpan.ts for the authoritative implementation
 
   // =========================================================================
   // PHONE NUMBER VALIDATION
@@ -470,27 +445,6 @@ export class ValidationUtils {
     if (latPrecision < 4 && lonPrecision < 4) return false;
 
     return true;
-  }
-
-  // =========================================================================
-  // DEA NUMBER VALIDATION
-  // =========================================================================
-
-  /**
-   * Validate a DEA number format (without checksum)
-   *
-   * @param dea - DEA number to validate
-   * @returns true if valid DEA format
-   */
-  static isValidDEAFormat(dea: string): boolean {
-    // Normalize OCR errors
-    const normalized = this.normalizeOCR(dea);
-
-    // Format: 2 letters + 7 digits
-    // First letter: registrant type (A-M, P-U, X for DEA)
-    // Second letter: must be alpha
-    const pattern = /^[ABCDEFGHJKLMPRSTUX][A-Z]\d{7}$/i;
-    return pattern.test(normalized);
   }
 
   // =========================================================================

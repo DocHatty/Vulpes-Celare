@@ -6,7 +6,7 @@ const { PhoneFilterSpan } = require("../dist/filters/PhoneFilterSpan");
 const { FormattedNameFilterSpan } = require("../dist/filters/FormattedNameFilterSpan");
 const { SmartNameFilterSpan } = require("../dist/filters/SmartNameFilterSpan");
 const { DeviceIdentifierFilterSpan } = require("../dist/filters/DeviceIdentifierFilterSpan");
-const { MedicalTermDictionary } = require("../dist/dictionaries/MedicalTermDictionary");
+const { DocumentVocabulary } = require("../dist/vocabulary/DocumentVocabulary");
 
 async function debug() {
     console.log("Debugging Filters...");

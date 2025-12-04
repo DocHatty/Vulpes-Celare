@@ -668,7 +668,7 @@ export class ParallelRedactionEngine {
       // Check full text first
       if (DocumentVocabulary.isMedicalTerm(text)) {
         console.log(
-          `[MedicalTermDictionary] Filtering NAME matching medical term: "${text}"`,
+          `[DocumentVocabulary] Filtering NAME matching medical term: "${text}"`,
         );
         return false;
       }

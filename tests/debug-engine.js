@@ -2,7 +2,7 @@
 const { ParallelRedactionEngine } = require("../dist/core/ParallelRedactionEngine");
 const { RedactionContext } = require("../dist/context/RedactionContext");
 const { FilterRegistry } = require("../dist/filters/FilterRegistry");
-const { MedicalTermDictionary } = require("../dist/dictionaries/MedicalTermDictionary");
+const { DocumentVocabulary } = require("../dist/vocabulary/DocumentVocabulary");
 
 async function debugEngine() {
     console.log("Debugging ParallelRedactionEngine...");
@@ -27,7 +27,7 @@ async function debugEngine() {
 
         // Check if medical terms are detected
         if (text.includes("Invasive")) {
-            console.log("Is 'Invasive Ductal Carcinoma' a medical term?", MedicalTermDictionary.isMedicalTerm("Invasive Ductal Carcinoma"));
+            console.log("Is 'Invasive Ductal Carcinoma' a medical term?", DocumentVocabulary.isMedicalTerm("Invasive Ductal Carcinoma"));
         }
     }
 }

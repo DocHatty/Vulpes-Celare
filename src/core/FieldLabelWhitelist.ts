@@ -484,30 +484,10 @@ export class FieldLabelWhitelist {
     "emergency medicine",
     "pediatric medicine",
 
-    // Medications and drugs (common ones that look like names)
-    "penicillin",
-    "amoxicillin",
-    "sertraline",
-    "lisinopril",
-    "metformin",
-    "atorvastatin",
-    "omeprazole",
-    "amlodipine",
-    "losartan",
-    "gabapentin",
-    "hydrochlorothiazide",
-    "metoprolol",
-    "levothyroxine",
-    "acetaminophen",
-    "ibuprofen",
-    "aspirin",
-    "warfarin",
-    "heparin",
-    "insulin",
-    "prednisone",
-    "azithromycin",
+    // NOTE: Medications are centralized in DocumentVocabulary.MEDICAL_TERMS
+    // Do not duplicate them here - see src/vocabulary/DocumentVocabulary.ts
 
-    // Vaccines and diseases
+    // Vaccines and diseases (NOT in DocumentVocabulary - keep here)
     "diphtheria",
     "tetanus",
     "pertussis",
