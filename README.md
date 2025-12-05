@@ -2,7 +2,7 @@
 
 # VULPES CELARE
 
-<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb" />
+<img alt="Vulpes Celare Logo" src="https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb" style="max-width: 400px; width: 100%;" />
 
 **An open, inspectable HIPAA PHI redaction engine for clinical text.**
 
@@ -24,7 +24,7 @@
 | Metric | Score | Notes |
 |:------:|:-----:|:------|
 | **Sensitivity** | 99.6% | PHI correctly identified |
-| **Specificity** | 96-100% |
+| **Specificity** | 96-100% | Non-PHI correctly preserved |
 | **Documents** | 7000+ | Synthetic adversarial documents |
 
 <sub>Tested on programmatically generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
