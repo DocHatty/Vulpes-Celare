@@ -45,7 +45,7 @@ flowchart TB
 
     subgraph CORE ["🦊 VULPES CELARE"]
         direction TB
-        Redact["✂️ REDACT<br/>John Smith<br/>742 Evergreen Terrace<br/>has stage 2 CKD, eGFR 58<br/>↓<br/>[NAME-1]<br/>[ADDRESS-1]<br/>has stage 2 CKD, eGFR 58"]
+        Redact["✂️ REDACT<br/>John Smith<br/>742 Evergreen Terrace<br/>eGFR 28, Cr 2.4 (was 1.8)<br/>↓<br/>[NAME-1]<br/>[ADDRESS-1]<br/>eGFR 28, Cr 2.4 (was 1.8)"]
         Map["🗺️ STORE MAP<br/>Kept locally"]
         Redact --> Map
     end
@@ -61,7 +61,7 @@ flowchart TB
 
     subgraph CORE2 ["🦊 VULPES CELARE"]
         direction TB
-        Restore["🔄 RESTORE<br/>[NAME-1]<br/>[ADDRESS-1]<br/>has stage 2 CKD, eGFR 58<br/>↓<br/>John Smith<br/>742 Evergreen Terrace<br/>has stage 2 CKD, eGFR 58"]
+        Restore["🔄 RESTORE<br/>[NAME-1], [ADDRESS-1]<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended.<br/>↓<br/>John Smith, 742 Evergreen Terrace<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended."]
         Audit["📝 AUDIT LOG"]
         Restore --> Audit
     end
