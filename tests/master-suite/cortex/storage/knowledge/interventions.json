@@ -1,0 +1,252 @@
+{
+  "interventions": [
+    {
+      "id": "INT-1764915414082-0fnnijvgr",
+      "timestamp": "2025-12-05T06:16:54.082Z",
+      "type": "FILTER_MODIFICATION",
+      "typeInfo": {
+        "name": "Filter Modification",
+        "riskLevel": "MEDIUM"
+      },
+      "description": "Added fuzzy matching to name filter",
+      "targetedPatterns": [
+        "NAME",
+        "DICTIONARY_MISS"
+      ],
+      "target": {
+        "file": "src/filters/name-filter.js",
+        "component": "SmartNameFilter",
+        "parameter": "fuzzyThreshold",
+        "scope": "unknown"
+      },
+      "change": {
+        "before": "exact match only",
+        "after": "fuzzy match with 0.8 threshold",
+        "diff": {
+          "type": "modification",
+          "beforeLength": 16,
+          "afterLength": 30,
+          "sizeDelta": 14
+        },
+        "hash": "aba0855199e9"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "manual",
+      "reason": "No reason provided",
+      "metricsBefore": {
+        "sensitivity": 95,
+        "specificity": 98
+      },
+      "metricsAfter": null,
+      "status": "APPLIED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T06:16:54.083Z",
+        "tested": null,
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": null
+    },
+    {
+      "id": "INT-1764915430595-tlahwo9t8",
+      "timestamp": "2025-12-05T06:17:10.595Z",
+      "type": "DICTIONARY_UPDATE",
+      "typeInfo": {
+        "name": "Dictionary Update",
+        "riskLevel": "LOW"
+      },
+      "description": "Added common name variations to dictionary",
+      "targetedPatterns": [
+        "NAME",
+        "DICTIONARY_MISS"
+      ],
+      "target": {
+        "file": "data/names.json",
+        "component": null,
+        "parameter": null,
+        "scope": "unknown"
+      },
+      "change": {
+        "before": "1000 names",
+        "after": "1500 names",
+        "diff": {
+          "type": "modification",
+          "beforeLength": 10,
+          "afterLength": 10,
+          "sizeDelta": 0
+        },
+        "hash": "4aa332f5e3b5"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "manual",
+      "reason": "No reason provided",
+      "metricsBefore": {
+        "sensitivity": 95,
+        "specificity": 98
+      },
+      "metricsAfter": {
+        "sensitivity": 97.5,
+        "specificity": 97.8
+      },
+      "status": "TESTED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T06:17:10.596Z",
+        "tested": "2025-12-05T06:17:10.598Z",
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": {
+        "deltas": {
+          "sensitivity": {
+            "before": 95,
+            "after": 97.5,
+            "delta": 2.5,
+            "percentChange": 2.631578947368421
+          },
+          "specificity": {
+            "before": 98,
+            "after": 97.8,
+            "delta": -0.20000000000000284,
+            "percentChange": -0.20408163265306412
+          }
+        },
+        "summary": [
+          "sensitivity increased by 2.50 (improved)",
+          "specificity decreased by 0.20 (worsened)"
+        ],
+        "classification": "SIGNIFICANT_IMPROVEMENT",
+        "overallScore": 0.9599999999999994
+      }
+    },
+    {
+      "id": "INT-1764915820319-0z0yzkcsb",
+      "timestamp": "2025-12-05T06:23:40.319Z",
+      "type": "DICTIONARY_UPDATE",
+      "typeInfo": {
+        "name": "Dictionary Update",
+        "riskLevel": "LOW"
+      },
+      "description": "Added 50 common name variations to dictionary",
+      "targetedPatterns": [],
+      "target": {
+        "file": "data/names-dictionary.json",
+        "component": null,
+        "parameter": null,
+        "scope": "unknown"
+      },
+      "change": {
+        "before": null,
+        "after": null,
+        "diff": {
+          "type": "value_change",
+          "beforeType": "undefined",
+          "afterType": "undefined"
+        },
+        "hash": "99914b932bd3"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "llm",
+      "reason": "No reason provided",
+      "metricsBefore": {
+        "sensitivity": 96.4,
+        "specificity": 93.9
+      },
+      "metricsAfter": {
+        "sensitivity": 97.1,
+        "specificity": 93.5
+      },
+      "status": "TESTED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T06:23:40.319Z",
+        "tested": "2025-12-05T06:23:40.321Z",
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": {
+        "deltas": {
+          "sensitivity": {
+            "before": 96.4,
+            "after": 97.1,
+            "delta": 0.6999999999999886,
+            "percentChange": 0.7261410788381624
+          },
+          "specificity": {
+            "before": 93.9,
+            "after": 93.5,
+            "delta": -0.4000000000000057,
+            "percentChange": -0.42598509052183775
+          }
+        },
+        "summary": [
+          "sensitivity increased by 0.70 (improved)",
+          "specificity decreased by 0.40 (worsened)"
+        ],
+        "classification": "IMPROVEMENT",
+        "overallScore": 0.19999999999999435
+      }
+    }
+  ],
+  "effects": [
+    {
+      "interventionId": "INT-1764915430595-tlahwo9t8",
+      "timestamp": "2025-12-05T06:17:10.598Z",
+      "deltas": {
+        "sensitivity": {
+          "before": 95,
+          "after": 97.5,
+          "delta": 2.5,
+          "percentChange": 2.631578947368421
+        },
+        "specificity": {
+          "before": 98,
+          "after": 97.8,
+          "delta": -0.20000000000000284,
+          "percentChange": -0.20408163265306412
+        }
+      },
+      "summary": [
+        "sensitivity increased by 2.50 (improved)",
+        "specificity decreased by 0.20 (worsened)"
+      ],
+      "classification": "SIGNIFICANT_IMPROVEMENT",
+      "overallScore": 0.9599999999999994
+    },
+    {
+      "interventionId": "INT-1764915820319-0z0yzkcsb",
+      "timestamp": "2025-12-05T06:23:40.322Z",
+      "deltas": {
+        "sensitivity": {
+          "before": 96.4,
+          "after": 97.1,
+          "delta": 0.6999999999999886,
+          "percentChange": 0.7261410788381624
+        },
+        "specificity": {
+          "before": 93.9,
+          "after": 93.5,
+          "delta": -0.4000000000000057,
+          "percentChange": -0.42598509052183775
+        }
+      },
+      "summary": [
+        "sensitivity increased by 0.70 (improved)",
+        "specificity decreased by 0.40 (worsened)"
+      ],
+      "classification": "IMPROVEMENT",
+      "overallScore": 0.19999999999999435
+    }
+  ],
+  "causalChains": [],
+  "stats": {
+    "totalInterventions": 3,
+    "successful": 1,
+    "neutral": 1,
+    "regressive": 0
+  }
+}

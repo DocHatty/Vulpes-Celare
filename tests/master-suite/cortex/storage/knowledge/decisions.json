@@ -1,0 +1,1334 @@
+{
+  "decisions": [
+    {
+      "id": "DEC-1764914827713-u0dr7a",
+      "type": "WHAT_TO_IMPROVE",
+      "timestamp": "2025-12-05T06:07:07.713Z",
+      "context": {
+        "currentMetrics": {
+          "confusionMatrix": {
+            "truePositives": 6332,
+            "falseNegatives": 238,
+            "trueNegatives": 1174,
+            "falsePositives": 76,
+            "totalPHI": 6570,
+            "totalNonPHI": 1250
+          },
+          "sensitivity": 96.3775,
+          "specificity": 93.92,
+          "precision": 98.814,
+          "recall": 96.3775,
+          "f1Score": 97.5805,
+          "rawScore": 96.13,
+          "penalties": -1038,
+          "finalScore": 0,
+          "grade": "F",
+          "gradeDescription": "CRITICAL FAILURE - Do not use",
+          "byPHIType": {
+            "NAME": {
+              "tp": 504,
+              "fn": 96,
+              "total": 600
+            },
+            "SSN": {
+              "tp": 381,
+              "fn": 19,
+              "total": 400
+            },
+            "DATE": {
+              "tp": 741,
+              "fn": 59,
+              "total": 800
+            },
+            "MRN": {
+              "tp": 196,
+              "fn": 4,
+              "total": 200
+            },
+            "ACCOUNT_NUMBER": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "ADDRESS": {
+              "tp": 184,
+              "fn": 16,
+              "total": 200
+            },
+            "ZIPCODE": {
+              "tp": 199,
+              "fn": 1,
+              "total": 200
+            },
+            "PHONE": {
+              "tp": 1190,
+              "fn": 10,
+              "total": 1200
+            },
+            "FAX": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "EMAIL": {
+              "tp": 293,
+              "fn": 0,
+              "total": 293
+            },
+            "HEALTH_PLAN_ID": {
+              "tp": 248,
+              "fn": 0,
+              "total": 248
+            },
+            "CREDIT_CARD": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "IP": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "URL": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "VIN": {
+              "tp": 199,
+              "fn": 1,
+              "total": 200
+            },
+            "LICENSE_PLATE": {
+              "tp": 192,
+              "fn": 8,
+              "total": 200
+            },
+            "NPI": {
+              "tp": 800,
+              "fn": 0,
+              "total": 800
+            },
+            "DEA": {
+              "tp": 181,
+              "fn": 19,
+              "total": 200
+            },
+            "AGE_90_PLUS": {
+              "tp": 24,
+              "fn": 5,
+              "total": 29
+            }
+          },
+          "byErrorLevel": {
+            "medium": {
+              "tp": 2723,
+              "fn": 96,
+              "tn": 498,
+              "fp": 39
+            },
+            "low": {
+              "tp": 1649,
+              "fn": 37,
+              "tn": 283,
+              "fp": 16
+            },
+            "high": {
+              "tp": 1310,
+              "fn": 69,
+              "tn": 265,
+              "fp": 15
+            },
+            "extreme": {
+              "tp": 426,
+              "fn": 31,
+              "tn": 86,
+              "fp": 5
+            },
+            "none": {
+              "tp": 224,
+              "fn": 5,
+              "tn": 42,
+              "fp": 1
+            }
+          },
+          "byTemplate": {
+            "History & Physical": {
+              "tp": 1058,
+              "fn": 55,
+              "tn": 393,
+              "fp": 11
+            },
+            "Operative Report": {
+              "tp": 1085,
+              "fn": 38,
+              "tn": 131,
+              "fp": 33
+            },
+            "Registration Form": {
+              "tp": 1004,
+              "fn": 78,
+              "tn": 129,
+              "fp": 1
+            },
+            "Referral Letter": {
+              "tp": 1051,
+              "fn": 25,
+              "tn": 221,
+              "fp": 19
+            },
+            "Pathology Report": {
+              "tp": 1069,
+              "fn": 22,
+              "tn": 153,
+              "fp": 4
+            },
+            "Insurance EOB": {
+              "tp": 1065,
+              "fn": 20,
+              "tn": 147,
+              "fp": 8
+            }
+          },
+          "testValidation": {
+            "totalExpectedNonPHI": 2771,
+            "skippedNonPHI": 1521,
+            "skippedPercentage": 54.9,
+            "skippedByType": {
+              "PROVIDER_NAME": {
+                "count": 500,
+                "examples": [
+                  {
+                    "value": "Dr. Kenneth Silverman, DNP",
+                    "template": "History & Physical"
+                  },
+                  {
+                    "value": "Prof. Bartholomew Williams, DPM",
+                    "template": "History & Physical"
+                  },
+                  {
+                    "value": "Dr. Kevin Chen-Wang",
+                    "template": "Operative Report"
+                  }
+                ]
+              },
+              "DIAGNOSIS": {
+                "count": 299,
+                "examples": [
+                  {
+                    "value": "Rectal Cancer",
+                    "template": "Operative Report"
+                  },
+                  {
+                    "value": "Substance Use Disorder",
+                    "template": "Operative Report"
+                  },
+                  {
+                    "value": "Hemothorax",
+                    "template": "Registration Form"
+                  }
+                ]
+              },
+              "MEDICATION": {
+                "count": 485,
+                "examples": [
+                  {
+                    "value": "Rasagiline",
+                    "template": "Operative Report"
+                  },
+                  {
+                    "value": "Azithromycin",
+                    "template": "Operative Report"
+                  },
+                  {
+                    "value": "Montelukast",
+                    "template": "Operative Report"
+                  }
+                ]
+              },
+              "INSURANCE_COMPANY": {
+                "count": 100,
+                "examples": [
+                  {
+                    "value": "Humana",
+                    "template": "Operative Report"
+                  },
+                  {
+                    "value": "Medicare",
+                    "template": "Referral Letter"
+                  },
+                  {
+                    "value": "Humana",
+                    "template": "Pathology Report"
+                  }
+                ]
+              },
+              "PROCEDURE": {
+                "count": 131,
+                "examples": [
+                  {
+                    "value": "Prostatectomy",
+                    "template": "Registration Form"
+                  },
+                  {
+                    "value": "Transthoracic Echo",
+                    "template": "Referral Letter"
+                  },
+                  {
+                    "value": "Excisional Biopsy",
+                    "template": "Pathology Report"
+                  }
+                ]
+              },
+              "AGE_UNDER_90": {
+                "count": 6,
+                "examples": [
+                  {
+                    "value": "28",
+                    "template": "Insurance EOB"
+                  },
+                  {
+                    "value": "34",
+                    "template": "Insurance EOB"
+                  },
+                  {
+                    "value": "44",
+                    "template": "Insurance EOB"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "phiType": "NAME"
+      },
+      "historyConsulted": true,
+      "codebaseStateChecked": true,
+      "historyAnalysis": {
+        "id": "CONSULT-1764914827713",
+        "timestamp": "2025-12-05T06:07:07.713Z",
+        "decisionType": "WHAT_TO_IMPROVE",
+        "context": {
+          "currentMetrics": {
+            "confusionMatrix": {
+              "truePositives": 6332,
+              "falseNegatives": 238,
+              "trueNegatives": 1174,
+              "falsePositives": 76,
+              "totalPHI": 6570,
+              "totalNonPHI": 1250
+            },
+            "sensitivity": 96.3775,
+            "specificity": 93.92,
+            "precision": 98.814,
+            "recall": 96.3775,
+            "f1Score": 97.5805,
+            "rawScore": 96.13,
+            "penalties": -1038,
+            "finalScore": 0,
+            "grade": "F",
+            "gradeDescription": "CRITICAL FAILURE - Do not use",
+            "byPHIType": {
+              "NAME": {
+                "tp": 504,
+                "fn": 96,
+                "total": 600
+              },
+              "SSN": {
+                "tp": 381,
+                "fn": 19,
+                "total": 400
+              },
+              "DATE": {
+                "tp": 741,
+                "fn": 59,
+                "total": 800
+              },
+              "MRN": {
+                "tp": 196,
+                "fn": 4,
+                "total": 200
+              },
+              "ACCOUNT_NUMBER": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "ADDRESS": {
+                "tp": 184,
+                "fn": 16,
+                "total": 200
+              },
+              "ZIPCODE": {
+                "tp": 199,
+                "fn": 1,
+                "total": 200
+              },
+              "PHONE": {
+                "tp": 1190,
+                "fn": 10,
+                "total": 1200
+              },
+              "FAX": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "EMAIL": {
+                "tp": 293,
+                "fn": 0,
+                "total": 293
+              },
+              "HEALTH_PLAN_ID": {
+                "tp": 248,
+                "fn": 0,
+                "total": 248
+              },
+              "CREDIT_CARD": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "IP": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "URL": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "VIN": {
+                "tp": 199,
+                "fn": 1,
+                "total": 200
+              },
+              "LICENSE_PLATE": {
+                "tp": 192,
+                "fn": 8,
+                "total": 200
+              },
+              "NPI": {
+                "tp": 800,
+                "fn": 0,
+                "total": 800
+              },
+              "DEA": {
+                "tp": 181,
+                "fn": 19,
+                "total": 200
+              },
+              "AGE_90_PLUS": {
+                "tp": 24,
+                "fn": 5,
+                "total": 29
+              }
+            },
+            "byErrorLevel": {
+              "medium": {
+                "tp": 2723,
+                "fn": 96,
+                "tn": 498,
+                "fp": 39
+              },
+              "low": {
+                "tp": 1649,
+                "fn": 37,
+                "tn": 283,
+                "fp": 16
+              },
+              "high": {
+                "tp": 1310,
+                "fn": 69,
+                "tn": 265,
+                "fp": 15
+              },
+              "extreme": {
+                "tp": 426,
+                "fn": 31,
+                "tn": 86,
+                "fp": 5
+              },
+              "none": {
+                "tp": 224,
+                "fn": 5,
+                "tn": 42,
+                "fp": 1
+              }
+            },
+            "byTemplate": {
+              "History & Physical": {
+                "tp": 1058,
+                "fn": 55,
+                "tn": 393,
+                "fp": 11
+              },
+              "Operative Report": {
+                "tp": 1085,
+                "fn": 38,
+                "tn": 131,
+                "fp": 33
+              },
+              "Registration Form": {
+                "tp": 1004,
+                "fn": 78,
+                "tn": 129,
+                "fp": 1
+              },
+              "Referral Letter": {
+                "tp": 1051,
+                "fn": 25,
+                "tn": 221,
+                "fp": 19
+              },
+              "Pathology Report": {
+                "tp": 1069,
+                "fn": 22,
+                "tn": 153,
+                "fp": 4
+              },
+              "Insurance EOB": {
+                "tp": 1065,
+                "fn": 20,
+                "tn": 147,
+                "fp": 8
+              }
+            },
+            "testValidation": {
+              "totalExpectedNonPHI": 2771,
+              "skippedNonPHI": 1521,
+              "skippedPercentage": 54.9,
+              "skippedByType": {
+                "PROVIDER_NAME": {
+                  "count": 500,
+                  "examples": [
+                    {
+                      "value": "Dr. Kenneth Silverman, DNP",
+                      "template": "History & Physical"
+                    },
+                    {
+                      "value": "Prof. Bartholomew Williams, DPM",
+                      "template": "History & Physical"
+                    },
+                    {
+                      "value": "Dr. Kevin Chen-Wang",
+                      "template": "Operative Report"
+                    }
+                  ]
+                },
+                "DIAGNOSIS": {
+                  "count": 299,
+                  "examples": [
+                    {
+                      "value": "Rectal Cancer",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Substance Use Disorder",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Hemothorax",
+                      "template": "Registration Form"
+                    }
+                  ]
+                },
+                "MEDICATION": {
+                  "count": 485,
+                  "examples": [
+                    {
+                      "value": "Rasagiline",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Azithromycin",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Montelukast",
+                      "template": "Operative Report"
+                    }
+                  ]
+                },
+                "INSURANCE_COMPANY": {
+                  "count": 100,
+                  "examples": [
+                    {
+                      "value": "Humana",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Medicare",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Humana",
+                      "template": "Pathology Report"
+                    }
+                  ]
+                },
+                "PROCEDURE": {
+                  "count": 131,
+                  "examples": [
+                    {
+                      "value": "Prostatectomy",
+                      "template": "Registration Form"
+                    },
+                    {
+                      "value": "Transthoracic Echo",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Excisional Biopsy",
+                      "template": "Pathology Report"
+                    }
+                  ]
+                },
+                "AGE_UNDER_90": {
+                  "count": 6,
+                  "examples": [
+                    {
+                      "value": "28",
+                      "template": "Insurance EOB"
+                    },
+                    {
+                      "value": "34",
+                      "template": "Insurance EOB"
+                    },
+                    {
+                      "value": "44",
+                      "template": "Insurance EOB"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "phiType": "NAME"
+        },
+        "exactMatches": [],
+        "similarAttempts": [],
+        "relatedSuccesses": [],
+        "relatedFailures": [],
+        "patterns": [
+          {
+            "category": "DICTIONARY_MISS",
+            "phiType": "NAME",
+            "count": 96,
+            "trend": "UNKNOWN"
+          },
+          {
+            "category": "PATTERN_EDGE_CASE",
+            "count": 59,
+            "examples": [
+              "unknown",
+              "unknown"
+            ]
+          },
+          {
+            "category": "FALSE_POSITIVE",
+            "count": 30,
+            "examples": [
+              "unknown",
+              "unknown"
+            ]
+          }
+        ],
+        "warnings": [
+          {
+            "level": "INFO",
+            "message": "Known recurring patterns in this area",
+            "details": [
+              "DICTIONARY_MISS: 96 occurrences",
+              "PATTERN_EDGE_CASE: 59 occurrences",
+              "FALSE_POSITIVE: 30 occurrences"
+            ]
+          }
+        ],
+        "recommendations": [
+          {
+            "priority": "MEDIUM",
+            "action": "Address DICTIONARY_MISS pattern first",
+            "reason": "96 occurrences identified"
+          }
+        ],
+        "summary": "No relevant historical data found for this context",
+        "confidence": 0.3,
+        "dataQuality": "NONE"
+      },
+      "codebaseState": {
+        "checked": true,
+        "timestamp": "2025-12-05T06:07:07.715Z",
+        "currentState": {
+          "filterCount": 29,
+          "dictionaryCount": 6,
+          "hash": "99df5b673db479a3"
+        },
+        "relevantFilters": [
+          "FamilyNameFilterSpan",
+          "FinalNameCleanupFilter",
+          "FormattedNameFilterSpan",
+          "SmartNameFilterSpan",
+          "TitledNameFilterSpan"
+        ],
+        "relevantDictionaries": [],
+        "capabilities": [
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING"
+        ],
+        "gaps": [
+          "IP",
+          "PHOTO"
+        ]
+      },
+      "synthesis": {
+        "timestamp": "2025-12-05T06:07:07.715Z",
+        "inputs": {
+          "history": "No relevant historical data found for this context",
+          "codebase": {
+            "filterCount": 29,
+            "dictionaryCount": 6,
+            "hash": "99df5b673db479a3"
+          },
+          "patterns": {
+            "total": 1,
+            "topFailure": "DICTIONARY_MISS"
+          },
+          "insights": [
+            {
+              "type": "OPPORTUNITY",
+              "title": "Recurring DICTIONARY_MISS Issues",
+              "priority": "HIGH"
+            }
+          ],
+          "metrics": {
+            "confusionMatrix": {
+              "truePositives": 6332,
+              "falseNegatives": 238,
+              "trueNegatives": 1174,
+              "falsePositives": 76,
+              "totalPHI": 6570,
+              "totalNonPHI": 1250
+            },
+            "sensitivity": 96.3775,
+            "specificity": 93.92,
+            "precision": 98.814,
+            "recall": 96.3775,
+            "f1Score": 97.5805,
+            "rawScore": 96.13,
+            "penalties": -1038,
+            "finalScore": 0,
+            "grade": "F",
+            "gradeDescription": "CRITICAL FAILURE - Do not use",
+            "byPHIType": {
+              "NAME": {
+                "tp": 504,
+                "fn": 96,
+                "total": 600
+              },
+              "SSN": {
+                "tp": 381,
+                "fn": 19,
+                "total": 400
+              },
+              "DATE": {
+                "tp": 741,
+                "fn": 59,
+                "total": 800
+              },
+              "MRN": {
+                "tp": 196,
+                "fn": 4,
+                "total": 200
+              },
+              "ACCOUNT_NUMBER": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "ADDRESS": {
+                "tp": 184,
+                "fn": 16,
+                "total": 200
+              },
+              "ZIPCODE": {
+                "tp": 199,
+                "fn": 1,
+                "total": 200
+              },
+              "PHONE": {
+                "tp": 1190,
+                "fn": 10,
+                "total": 1200
+              },
+              "FAX": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "EMAIL": {
+                "tp": 293,
+                "fn": 0,
+                "total": 293
+              },
+              "HEALTH_PLAN_ID": {
+                "tp": 248,
+                "fn": 0,
+                "total": 248
+              },
+              "CREDIT_CARD": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "IP": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "URL": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "VIN": {
+                "tp": 199,
+                "fn": 1,
+                "total": 200
+              },
+              "LICENSE_PLATE": {
+                "tp": 192,
+                "fn": 8,
+                "total": 200
+              },
+              "NPI": {
+                "tp": 800,
+                "fn": 0,
+                "total": 800
+              },
+              "DEA": {
+                "tp": 181,
+                "fn": 19,
+                "total": 200
+              },
+              "AGE_90_PLUS": {
+                "tp": 24,
+                "fn": 5,
+                "total": 29
+              }
+            },
+            "byErrorLevel": {
+              "medium": {
+                "tp": 2723,
+                "fn": 96,
+                "tn": 498,
+                "fp": 39
+              },
+              "low": {
+                "tp": 1649,
+                "fn": 37,
+                "tn": 283,
+                "fp": 16
+              },
+              "high": {
+                "tp": 1310,
+                "fn": 69,
+                "tn": 265,
+                "fp": 15
+              },
+              "extreme": {
+                "tp": 426,
+                "fn": 31,
+                "tn": 86,
+                "fp": 5
+              },
+              "none": {
+                "tp": 224,
+                "fn": 5,
+                "tn": 42,
+                "fp": 1
+              }
+            },
+            "byTemplate": {
+              "History & Physical": {
+                "tp": 1058,
+                "fn": 55,
+                "tn": 393,
+                "fp": 11
+              },
+              "Operative Report": {
+                "tp": 1085,
+                "fn": 38,
+                "tn": 131,
+                "fp": 33
+              },
+              "Registration Form": {
+                "tp": 1004,
+                "fn": 78,
+                "tn": 129,
+                "fp": 1
+              },
+              "Referral Letter": {
+                "tp": 1051,
+                "fn": 25,
+                "tn": 221,
+                "fp": 19
+              },
+              "Pathology Report": {
+                "tp": 1069,
+                "fn": 22,
+                "tn": 153,
+                "fp": 4
+              },
+              "Insurance EOB": {
+                "tp": 1065,
+                "fn": 20,
+                "tn": 147,
+                "fp": 8
+              }
+            },
+            "testValidation": {
+              "totalExpectedNonPHI": 2771,
+              "skippedNonPHI": 1521,
+              "skippedPercentage": 54.9,
+              "skippedByType": {
+                "PROVIDER_NAME": {
+                  "count": 500,
+                  "examples": [
+                    {
+                      "value": "Dr. Kenneth Silverman, DNP",
+                      "template": "History & Physical"
+                    },
+                    {
+                      "value": "Prof. Bartholomew Williams, DPM",
+                      "template": "History & Physical"
+                    },
+                    {
+                      "value": "Dr. Kevin Chen-Wang",
+                      "template": "Operative Report"
+                    }
+                  ]
+                },
+                "DIAGNOSIS": {
+                  "count": 299,
+                  "examples": [
+                    {
+                      "value": "Rectal Cancer",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Substance Use Disorder",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Hemothorax",
+                      "template": "Registration Form"
+                    }
+                  ]
+                },
+                "MEDICATION": {
+                  "count": 485,
+                  "examples": [
+                    {
+                      "value": "Rasagiline",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Azithromycin",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Montelukast",
+                      "template": "Operative Report"
+                    }
+                  ]
+                },
+                "INSURANCE_COMPANY": {
+                  "count": 100,
+                  "examples": [
+                    {
+                      "value": "Humana",
+                      "template": "Operative Report"
+                    },
+                    {
+                      "value": "Medicare",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Humana",
+                      "template": "Pathology Report"
+                    }
+                  ]
+                },
+                "PROCEDURE": {
+                  "count": 131,
+                  "examples": [
+                    {
+                      "value": "Prostatectomy",
+                      "template": "Registration Form"
+                    },
+                    {
+                      "value": "Transthoracic Echo",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Excisional Biopsy",
+                      "template": "Pathology Report"
+                    }
+                  ]
+                },
+                "AGE_UNDER_90": {
+                  "count": 6,
+                  "examples": [
+                    {
+                      "value": "28",
+                      "template": "Insurance EOB"
+                    },
+                    {
+                      "value": "34",
+                      "template": "Insurance EOB"
+                    },
+                    {
+                      "value": "44",
+                      "template": "Insurance EOB"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "factors": [
+          {
+            "name": "Filter Coverage",
+            "value": "EXISTS",
+            "direction": "POSITIVE",
+            "weight": 0.2,
+            "explanation": "Filter exists for NAME"
+          },
+          {
+            "name": "Known Pattern Count",
+            "value": 1,
+            "direction": "NEGATIVE",
+            "weight": 0.15,
+            "explanation": "Few patterns - may need more data"
+          },
+          {
+            "name": "Active Insights",
+            "value": 1,
+            "direction": "POSITIVE",
+            "weight": 0.15,
+            "explanation": "1 relevant insights including high priority"
+          },
+          {
+            "name": "Current Sensitivity",
+            "value": "96.4%",
+            "direction": "NEUTRAL",
+            "weight": 0.2,
+            "explanation": "Good but room for improvement"
+          }
+        ],
+        "overallAssessment": "NEUTRAL - Mixed signals, careful testing recommended"
+      },
+      "recommendation": {
+        "type": "FOCUS_AREA",
+        "summary": "HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues",
+        "details": [
+          "Recurring DICTIONARY_MISS Issues",
+          "Recurring PATTERN_EDGE_CASE Issues",
+          "Recurring FALSE_POSITIVE Issues"
+        ],
+        "priority": "HIGH"
+      },
+      "alternatives": [],
+      "confidence": 0.75,
+      "risks": []
+    },
+    {
+      "id": "DEC-1764915508691-4mik3h",
+      "type": "WHAT_TO_IMPROVE",
+      "timestamp": "2025-12-05T06:18:28.691Z",
+      "context": {},
+      "historyConsulted": true,
+      "codebaseStateChecked": true,
+      "historyAnalysis": {
+        "id": "CONSULT-1764915508691",
+        "timestamp": "2025-12-05T06:18:28.691Z",
+        "decisionType": "WHAT_TO_IMPROVE",
+        "context": {},
+        "exactMatches": [],
+        "similarAttempts": [],
+        "relatedSuccesses": [],
+        "relatedFailures": [],
+        "patterns": [
+          {
+            "category": "DICTIONARY_MISS",
+            "count": 96,
+            "examples": [
+              "unknown",
+              "unknown"
+            ]
+          },
+          {
+            "category": "PATTERN_EDGE_CASE",
+            "count": 59,
+            "examples": [
+              "unknown",
+              "unknown"
+            ]
+          },
+          {
+            "category": "FALSE_POSITIVE",
+            "count": 30,
+            "examples": [
+              "unknown",
+              "unknown"
+            ]
+          }
+        ],
+        "warnings": [
+          {
+            "level": "INFO",
+            "message": "Known recurring patterns in this area",
+            "details": [
+              "DICTIONARY_MISS: 96 occurrences",
+              "PATTERN_EDGE_CASE: 59 occurrences",
+              "FALSE_POSITIVE: 30 occurrences"
+            ]
+          }
+        ],
+        "recommendations": [
+          {
+            "priority": "MEDIUM",
+            "action": "Address DICTIONARY_MISS pattern first",
+            "reason": "96 occurrences identified"
+          }
+        ],
+        "summary": "No relevant historical data found for this context",
+        "confidence": 0.3,
+        "dataQuality": "NONE"
+      },
+      "codebaseState": {
+        "checked": true,
+        "timestamp": "2025-12-05T06:18:28.693Z",
+        "currentState": {
+          "filterCount": 29,
+          "dictionaryCount": 6,
+          "hash": "99df5b673db479a3"
+        },
+        "relevantFilters": [],
+        "relevantDictionaries": [],
+        "capabilities": [
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING"
+        ],
+        "gaps": [
+          "IP",
+          "PHOTO"
+        ]
+      },
+      "synthesis": {
+        "timestamp": "2025-12-05T06:18:28.693Z",
+        "inputs": {
+          "history": "No relevant historical data found for this context",
+          "codebase": {
+            "filterCount": 29,
+            "dictionaryCount": 6,
+            "hash": "99df5b673db479a3"
+          },
+          "patterns": null,
+          "insights": [
+            {
+              "type": "OPPORTUNITY",
+              "title": "Recurring DICTIONARY_MISS Issues",
+              "priority": "HIGH"
+            },
+            {
+              "type": "OPPORTUNITY",
+              "title": "Recurring PATTERN_EDGE_CASE Issues",
+              "priority": "HIGH"
+            },
+            {
+              "type": "OPPORTUNITY",
+              "title": "Recurring FALSE_POSITIVE Issues",
+              "priority": "HIGH"
+            }
+          ],
+          "metrics": null
+        },
+        "factors": [
+          {
+            "name": "Filter Coverage",
+            "value": "MISSING",
+            "direction": "NEGATIVE",
+            "weight": 0.2,
+            "explanation": "No dedicated filter for undefined"
+          },
+          {
+            "name": "Active Insights",
+            "value": 3,
+            "direction": "POSITIVE",
+            "weight": 0.15,
+            "explanation": "3 relevant insights including high priority"
+          }
+        ],
+        "overallAssessment": "NEUTRAL - Mixed signals, careful testing recommended"
+      },
+      "recommendation": {
+        "type": "FOCUS_AREA",
+        "summary": "HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues",
+        "details": [
+          "Recurring DICTIONARY_MISS Issues",
+          "Recurring PATTERN_EDGE_CASE Issues",
+          "Recurring FALSE_POSITIVE Issues"
+        ],
+        "priority": "HIGH"
+      },
+      "alternatives": [],
+      "confidence": 0.75,
+      "risks": []
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "byType": {
+      "WHAT_TO_IMPROVE": 2
+    },
+    "followed": 0,
+    "ignored": 0
+  }
+}

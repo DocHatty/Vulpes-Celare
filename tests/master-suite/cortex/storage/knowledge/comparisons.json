@@ -1,0 +1,190 @@
+{
+  "comparisons": [
+    {
+      "id": "CMP-1764915310410",
+      "timestamp": "2025-12-05T06:15:10.410Z",
+      "options": {
+        "experimentId": "EXP-1764915310408-aqcfte658"
+      },
+      "summary": {
+        "direction": "NEUTRAL",
+        "verdict": "No significant change",
+        "keyChanges": {
+          "sensitivity": {
+            "delta": 0
+          },
+          "specificity": {
+            "delta": 0
+          },
+          "f1": {
+            "delta": 0
+          }
+        },
+        "documentsCounted": {
+          "before": 0,
+          "after": 0
+        }
+      },
+      "metrics": {},
+      "documents": {
+        "improved": [],
+        "regressed": [],
+        "unchanged": [],
+        "onlyInBefore": [],
+        "onlyInAfter": [],
+        "stats": {
+          "improved": 0,
+          "regressed": 0,
+          "unchanged": 0
+        }
+      },
+      "phiTypes": {},
+      "errors": {
+        "fixed": [],
+        "introduced": [],
+        "persistent": [],
+        "stats": {
+          "totalBefore": 0,
+          "totalAfter": 0,
+          "fixed": 0,
+          "introduced": 0,
+          "persistent": 0
+        }
+      },
+      "significance": {
+        "sensitivitySignificant": false,
+        "specificitySignificant": false,
+        "f1Significant": false,
+        "overallSignificant": false,
+        "threshold": 5,
+        "sampleSize": 1,
+        "confidence": "LOW"
+      },
+      "recommendations": [
+        {
+          "priority": "LOW",
+          "action": "GATHER_MORE_DATA",
+          "reason": "Changes not statistically significant - need more test data",
+          "confidence": 0.6
+        }
+      ]
+    },
+    {
+      "id": "CMP-1764915333400",
+      "timestamp": "2025-12-05T06:15:33.400Z",
+      "options": {},
+      "summary": {
+        "direction": "REGRESSED",
+        "verdict": "Overall balance worsened",
+        "keyChanges": {
+          "sensitivity": {
+            "before": 95,
+            "after": 98,
+            "delta": 3
+          },
+          "specificity": {
+            "before": 98.9011,
+            "after": 98.3516,
+            "delta": -0.5494999999999948
+          },
+          "f1": {
+            "before": 92.6829,
+            "after": 92.0188,
+            "delta": -0.6641000000000048
+          }
+        },
+        "documentsCounted": {
+          "before": 0,
+          "after": 0
+        }
+      },
+      "metrics": {
+        "sensitivity": {
+          "before": 95,
+          "after": 98,
+          "delta": 3,
+          "percentChange": 3.1578947368421053,
+          "improved": true,
+          "significant": true
+        },
+        "specificity": {
+          "before": 98.9011,
+          "after": 98.3516,
+          "delta": -0.5494999999999948,
+          "percentChange": -0.5556055493821553,
+          "improved": false,
+          "significant": true
+        },
+        "precision": {
+          "before": 90.4762,
+          "after": 86.7257,
+          "delta": -3.7505000000000024,
+          "percentChange": -4.1452890373379985,
+          "improved": false,
+          "significant": true
+        },
+        "f1Score": {
+          "before": 92.6829,
+          "after": 92.0188,
+          "delta": -0.6641000000000048,
+          "percentChange": -0.7165291547847605,
+          "improved": false,
+          "significant": true
+        },
+        "mcc": {
+          "before": 0.9189,
+          "after": 0.9129,
+          "delta": -0.006000000000000005,
+          "percentChange": -0.6529546196539346,
+          "improved": false,
+          "significant": false
+        }
+      },
+      "documents": {
+        "improved": [],
+        "regressed": [],
+        "unchanged": [],
+        "onlyInBefore": [],
+        "onlyInAfter": [],
+        "stats": {
+          "improved": 0,
+          "regressed": 0,
+          "unchanged": 0
+        }
+      },
+      "phiTypes": {},
+      "errors": {
+        "fixed": [],
+        "introduced": [],
+        "persistent": [],
+        "stats": {
+          "totalBefore": 0,
+          "totalAfter": 0,
+          "fixed": 0,
+          "introduced": 0,
+          "persistent": 0
+        }
+      },
+      "significance": {
+        "sensitivitySignificant": false,
+        "specificitySignificant": false,
+        "f1Significant": false,
+        "overallSignificant": false,
+        "threshold": 5,
+        "sampleSize": 1,
+        "confidence": "LOW"
+      },
+      "recommendations": [
+        {
+          "priority": "LOW",
+          "action": "GATHER_MORE_DATA",
+          "reason": "Changes not statistically significant - need more test data",
+          "confidence": 0.6
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "total": 2
+  }
+}

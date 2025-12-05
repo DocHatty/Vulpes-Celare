@@ -1,0 +1,51 @@
+{
+  "consultations": [
+    {
+      "id": "CONSULT-1764914827713",
+      "timestamp": "2025-12-05T06:07:07.713Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764914970240",
+      "timestamp": "2025-12-05T06:09:30.240Z",
+      "decisionType": "GENERAL",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915508691",
+      "timestamp": "2025-12-05T06:18:28.691Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915789588",
+      "timestamp": "2025-12-05T06:23:09.588Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915820307",
+      "timestamp": "2025-12-05T06:23:40.307Z",
+      "decisionType": "GENERAL",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915820309",
+      "timestamp": "2025-12-05T06:23:40.309Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915820330",
+      "timestamp": "2025-12-05T06:23:40.330Z",
+      "decisionType": "DICTIONARY_UPDATE",
+      "foundHistory": true
+    }
+  ],
+  "stats": {
+    "total": 7,
+    "foundRelevantHistory": 1,
+    "noHistoryFound": 6
+  }
+}

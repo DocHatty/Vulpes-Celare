@@ -1,0 +1,90 @@
+{
+  "snapshots": [
+    {
+      "id": "SNAP-DOC-1764915310397",
+      "type": "DOCUMENT_SET",
+      "timestamp": "2025-12-05T06:15:10.397Z",
+      "metadata": {
+        "description": "Test snapshot for experiment",
+        "experimentId": null
+      },
+      "documents": [
+        {
+          "id": "doc1",
+          "contentHash": "04b10fa7359f4c56",
+          "length": 35,
+          "annotations": {
+            "phi": [
+              "John Smith",
+              "123-45-6789"
+            ]
+          }
+        },
+        {
+          "id": "doc2",
+          "contentHash": "ae6a7daa5a08cff5",
+          "length": 34,
+          "annotations": {
+            "phi": [
+              "Jane Doe"
+            ]
+          }
+        }
+      ],
+      "stats": {
+        "documentCount": 2,
+        "totalLength": 69,
+        "totalAnnotations": null
+      },
+      "hash": "909d9b03844cbd26",
+      "contentPath": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\tests\\master-suite\\cortex\\storage\\snapshots\\SNAP-DOC-1764915310397-content.json"
+    }
+  ],
+  "index": {
+    "SNAP-DOC-1764915310397": {
+      "id": "SNAP-DOC-1764915310397",
+      "type": "DOCUMENT_SET",
+      "timestamp": "2025-12-05T06:15:10.397Z",
+      "metadata": {
+        "description": "Test snapshot for experiment",
+        "experimentId": null
+      },
+      "documents": [
+        {
+          "id": "doc1",
+          "contentHash": "04b10fa7359f4c56",
+          "length": 35,
+          "annotations": {
+            "phi": [
+              "John Smith",
+              "123-45-6789"
+            ]
+          }
+        },
+        {
+          "id": "doc2",
+          "contentHash": "ae6a7daa5a08cff5",
+          "length": 34,
+          "annotations": {
+            "phi": [
+              "Jane Doe"
+            ]
+          }
+        }
+      ],
+      "stats": {
+        "documentCount": 2,
+        "totalLength": 69,
+        "totalAnnotations": null
+      },
+      "hash": "909d9b03844cbd26",
+      "contentPath": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\tests\\master-suite\\cortex\\storage\\snapshots\\SNAP-DOC-1764915310397-content.json"
+    }
+  },
+  "stats": {
+    "total": 1,
+    "byType": {
+      "DOCUMENT_SET": 1
+    }
+  }
+}

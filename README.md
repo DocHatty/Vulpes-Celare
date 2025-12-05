@@ -277,6 +277,153 @@ Vulpes Celare occupies a specific niche: **local-first, TypeScript-native, healt
 
 ---
 
+## Vulpes Cortex: Self-Learning Test Intelligence
+
+<div align="center">
+
+*The engine learns. The tests remember. Every run makes the system smarter.*
+
+</div>
+
+Traditional testing tells you what failed. Vulpes Cortex tells you **why it failed, whether you've seen it before, and what actually worked last time**.
+
+### The Problem with Traditional PHI Testing
+
+Most test suites are stateless. Run 1,000 tests, get results, make changes, run again. But:
+
+- Did that regex change actually help, or did it break something else?
+- We fixed NAME detection last month—why is it failing the same way again?
+- Which patterns keep recurring across hundreds of runs?
+
+You end up making the same mistakes, trying the same fixes, and losing institutional knowledge every time someone new touches the code.
+
+### How Cortex Changes This
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         VULPES CORTEX ARCHITECTURE                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐                  │
+│   │  Run Tests  │────▶│   Analyze   │────▶│   Record    │                  │
+│   │  (200 docs) │     │  Patterns   │     │  to History │                  │
+│   └─────────────┘     └─────────────┘     └──────┬──────┘                  │
+│                                                  │                          │
+│   ┌─────────────┐     ┌─────────────┐           │                          │
+│   │   Consult   │◀────│    Learn    │◀──────────┘                          │
+│   │   History   │     │  Over Time  │                                      │
+│   └──────┬──────┘     └─────────────┘                                      │
+│          │                                                                  │
+│          ▼                                                                  │
+│   ┌─────────────────────────────────────────────────────────────┐          │
+│   │  "Last time we tried fuzzy matching for NAME, sensitivity   │          │
+│   │   improved 2.3% but specificity dropped. The DICTIONARY_    │          │
+│   │   MISS pattern has appeared 96 times across 12 runs."       │          │
+│   └─────────────────────────────────────────────────────────────┘          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Every test run feeds the knowledge base:**
+
+| What Gets Recorded | Why It Matters |
+|:-------------------|:---------------|
+| Failure patterns | Know *why* things fail, not just *that* they failed |
+| Intervention history | Never repeat a failed experiment |
+| Metric trends | Catch regressions before they compound |
+| Codebase state | Correlate filter changes with outcomes |
+
+### Real Intelligence, Not Buzzwords
+
+Cortex doesn't use machine learning to guess. It uses **bi-temporal tracking** to know exactly what was true at any point in time:
+
+```
+When did this pattern first appear?  →  t_occurred
+When did we learn about it?          →  t_recorded  
+When was this knowledge valid?       →  t_valid
+```
+
+This means you can ask: *"What did we know about NAME detection failures on March 15th, and what have we learned since?"*
+
+### Industry-Standard Metrics
+
+We measure what matters for PHI detection:
+
+| Metric | What It Tells You |
+|:------:|:------------------|
+| **Sensitivity** | Did we catch all the PHI? (Miss rate = HIPAA risk) |
+| **Specificity** | Did we avoid over-redacting? (False positives = unusable documents) |
+| **MCC** | Single best metric for imbalanced classification |
+| **F1 Score** | Harmonic balance of precision and recall |
+
+Every run calculates all of these, tracks trends, and alerts on regressions.
+
+### MCP Integration: Plug Into Any LLM
+
+Cortex exposes itself via the **Model Context Protocol (MCP)**—the emerging standard for AI tool integration:
+
+```bash
+# Start the MCP server
+node tests/master-suite/cortex/mcp/server.js
+
+# Cortex provides:
+# - 16 tools (analyze, compare, record, rollback...)
+# - 8 prompts (debug failures, plan experiments, status reports...)
+# - Auto-handshake with any MCP-compatible client
+```
+
+**The key insight:** The MCP server provides **data and context**. The LLM provides **reasoning and decisions**. Cortex doesn't pretend to think—it remembers, correlates, and serves up exactly what the LLM needs to make informed recommendations.
+
+### A/B Experiments with Auto-Rollback
+
+Test changes safely:
+
+```javascript
+// Snapshot current documents
+const snapshot = cortex.createSnapshot(documents);
+
+// Make your filter change
+// ...
+
+// Compare before/after on IDENTICAL documents
+const comparison = cortex.compare(baselineResults, treatmentResults);
+
+// Automatic rollback if sensitivity drops >1%
+if (comparison.verdict === 'MAJOR_REGRESSION') {
+  cortex.rollback(snapshot.id);
+}
+```
+
+No more "I think this helped" uncertainty. Measure. Compare. Know.
+
+### Running the Test Suite
+
+```bash
+# Basic run with Cortex analysis
+node tests/master-suite/run.js --count 200 --cortex
+
+# Full report with insights
+node tests/master-suite/run.js --count 200 --cortex --cortex-report
+
+# What you'll see:
+# ✓ Sensitivity: 96.4%
+# ✓ Top failure pattern: DICTIONARY_MISS (96 occurrences)
+# ✓ Trend: IMPROVING over last 5 runs
+# ✓ Recommendation: Focus on NAME dictionary coverage
+```
+
+### What Makes This Different
+
+| Traditional Testing | Vulpes Cortex |
+|:-------------------:|:-------------:|
+| Stateless | Remembers everything |
+| "Test passed/failed" | "Why, and have we seen this before?" |
+| Manual analysis | Pattern recognition built-in |
+| Hope changes helped | Measure changes with A/B experiments |
+| Knowledge in people's heads | Knowledge in the system |
+
+---
+
 ## Validation and Testing
 
 We encourage independent validation. To help test:
@@ -287,6 +434,9 @@ cd vulpes-celare
 npm install
 npm run build
 npm test  # Runs comprehensive synthetic test suite
+
+# Run with Cortex intelligence
+node tests/master-suite/run.js --count 200 --cortex
 ```
 
 **We especially welcome:**

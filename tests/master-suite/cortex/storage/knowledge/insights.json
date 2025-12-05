@@ -1,0 +1,128 @@
+{
+  "insights": [
+    {
+      "type": "OPPORTUNITY",
+      "priority": "HIGH",
+      "title": "Recurring DICTIONARY_MISS Issues",
+      "description": "96 failures due to dictionary miss in NAME detection",
+      "details": {
+        "category": "DICTIONARY_MISS",
+        "phiType": "NAME",
+        "count": 96,
+        "examples": [
+          "unknown",
+          "unknown",
+          "unknown",
+          "unknown",
+          "unknown"
+        ]
+      },
+      "action": "Expand dictionaries with missing entries or enable fuzzy matching",
+      "confidence": 0.95,
+      "id": "INS-1764914827711-ul540k",
+      "timestamp": "2025-12-05T06:07:07.709Z",
+      "status": "NEW"
+    },
+    {
+      "type": "OPPORTUNITY",
+      "priority": "HIGH",
+      "title": "Recurring PATTERN_EDGE_CASE Issues",
+      "description": "59 failures due to pattern edge case in DATE detection",
+      "details": {
+        "category": "PATTERN_EDGE_CASE",
+        "phiType": "DATE",
+        "count": 59,
+        "examples": [
+          "unknown",
+          "unknown",
+          "unknown",
+          "unknown",
+          "unknown"
+        ]
+      },
+      "action": "Review and address pattern coverage",
+      "confidence": 0.95,
+      "id": "INS-1764914827711-xjs5jg",
+      "timestamp": "2025-12-05T06:07:07.709Z",
+      "status": "NEW"
+    },
+    {
+      "type": "OPPORTUNITY",
+      "priority": "HIGH",
+      "title": "Recurring FALSE_POSITIVE Issues",
+      "description": "30 failures due to false positive in AGE_UNDER_90 detection",
+      "details": {
+        "category": "FALSE_POSITIVE",
+        "phiType": "AGE_UNDER_90",
+        "count": 30,
+        "examples": [
+          "unknown",
+          "unknown",
+          "unknown",
+          "unknown",
+          "unknown"
+        ]
+      },
+      "action": "Add exclusion rules to reduce over-matching",
+      "confidence": 0.95,
+      "id": "INS-1764914827711-k994wg",
+      "timestamp": "2025-12-05T06:07:07.709Z",
+      "status": "NEW"
+    },
+    {
+      "type": "WARNING",
+      "priority": "HIGH",
+      "title": "Increasing DICTIONARY_MISS Failures",
+      "description": "DICTIONARY_MISS failures have increased +2957% recently",
+      "details": {
+        "category": "DICTIONARY_MISS",
+        "recentCount": 96,
+        "trend": "INCREASING"
+      },
+      "action": "Investigate and address dictionary miss issues immediately",
+      "confidence": 0.8,
+      "id": "INS-1764914827711-2qm2fi",
+      "timestamp": "2025-12-05T06:07:07.709Z",
+      "status": "NEW"
+    },
+    {
+      "type": "WARNING",
+      "priority": "HIGH",
+      "title": "Increasing PATTERN_EDGE_CASE Failures",
+      "description": "PATTERN_EDGE_CASE failures have increased +4422% recently",
+      "details": {
+        "category": "PATTERN_EDGE_CASE",
+        "recentCount": 142,
+        "trend": "INCREASING"
+      },
+      "action": "Investigate and address pattern edge case issues immediately",
+      "confidence": 0.8,
+      "id": "INS-1764914827711-iy9aoi",
+      "timestamp": "2025-12-05T06:07:07.709Z",
+      "status": "NEW"
+    },
+    {
+      "type": "WARNING",
+      "priority": "HIGH",
+      "title": "Increasing FALSE_POSITIVE Failures",
+      "description": "FALSE_POSITIVE failures have increased +2320% recently",
+      "details": {
+        "category": "FALSE_POSITIVE",
+        "recentCount": 76,
+        "trend": "INCREASING"
+      },
+      "action": "Investigate and address false positive issues immediately",
+      "confidence": 0.8,
+      "id": "INS-1764914827711-owwqgs",
+      "timestamp": "2025-12-05T06:07:07.709Z",
+      "status": "NEW"
+    }
+  ],
+  "dismissed": [],
+  "acted": [],
+  "stats": {
+    "generated": 6,
+    "acted": 0,
+    "dismissed": 0
+  }
+}

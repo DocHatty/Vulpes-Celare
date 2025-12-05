@@ -1,0 +1,43 @@
+{
+  "experiments": [
+    {
+      "id": "EXP-1764915310408-aqcfte658",
+      "name": "Test Name Filter Improvement",
+      "type": "BEFORE_AFTER",
+      "hypothesisId": null,
+      "config": {
+        "documentIds": null,
+        "rollbackOnRegression": true
+      },
+      "treatment": {
+        "runs": [],
+        "aggregatedMetrics": null,
+        "timestamp": null
+      },
+      "status": "CREATED",
+      "baseline": {
+        "runs": [],
+        "aggregatedMetrics": null,
+        "timestamp": null
+      },
+      "analysis": null,
+      "conclusion": null,
+      "timeline": {
+        "created": "2025-12-05T06:15:10.408Z",
+        "baselineStarted": null,
+        "baselineCompleted": null,
+        "treatmentStarted": null,
+        "treatmentCompleted": null,
+        "analyzed": null,
+        "completed": null
+      },
+      "errors": []
+    }
+  ],
+  "stats": {
+    "total": 1,
+    "completed": 0,
+    "successful": 0,
+    "failed": 0
+  }
+}

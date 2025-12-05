@@ -1,0 +1,311 @@
+{
+  "TestRun": {
+    "run_1764914553530_xct69lgcw": {
+      "id": "run_1764914553530_xct69lgcw",
+      "timestamp": "2025-12-05T06:02:33.530Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.3294,
+        "specificity": 92.8341,
+        "precision": 98.618,
+        "f1Score": 97.4603,
+        "mcc": 0.8513
+      },
+      "confusionMatrix": {
+        "tp": 6351,
+        "tn": 1153,
+        "fp": 89,
+        "fn": 242,
+        "total": 7835,
+        "actualPositive": 6593,
+        "actualNegative": 1242
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.3% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:02:33.530Z",
+        "t_occurred": "2025-12-05T06:02:33.530Z",
+        "t_valid_from": "2025-12-05T06:02:33.530Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764914690179_d851bw206": {
+      "id": "run_1764914690179_d851bw206",
+      "timestamp": "2025-12-05T06:04:50.179Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7208,
+        "specificity": 92.9712,
+        "precision": 98.6376,
+        "f1Score": 97.6698,
+        "mcc": 0.8627
+      },
+      "confusionMatrix": {
+        "tp": 6371,
+        "tn": 1164,
+        "fp": 88,
+        "fn": 216,
+        "total": 7839,
+        "actualPositive": 6587,
+        "actualNegative": 1252
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.7% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.7%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:04:50.179Z",
+        "t_occurred": "2025-12-05T06:04:50.179Z",
+        "t_valid_from": "2025-12-05T06:04:50.179Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764914827705_9hgdcetcy": {
+      "id": "run_1764914827705_9hgdcetcy",
+      "timestamp": "2025-12-05T06:07:07.705Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.3775,
+        "specificity": 93.92,
+        "precision": 98.814,
+        "f1Score": 97.5805,
+        "mcc": 0.8603
+      },
+      "confusionMatrix": {
+        "tp": 6332,
+        "tn": 1174,
+        "fp": 76,
+        "fn": 238,
+        "total": 7820,
+        "actualPositive": 6570,
+        "actualNegative": 1250
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.4% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:07:07.705Z",
+        "t_occurred": "2025-12-05T06:07:07.705Z",
+        "t_valid_from": "2025-12-05T06:07:07.705Z",
+        "t_valid_until": null
+      }
+    }
+  },
+  "Intervention": {
+    "INT-1764915414082-0fnnijvgr": {
+      "id": "INT-1764915414082-0fnnijvgr",
+      "timestamp": "2025-12-05T06:16:54.082Z",
+      "type": "FILTER_MODIFICATION",
+      "typeInfo": {
+        "name": "Filter Modification",
+        "riskLevel": "MEDIUM"
+      },
+      "description": "Added fuzzy matching to name filter",
+      "targetedPatterns": [
+        "NAME",
+        "DICTIONARY_MISS"
+      ],
+      "target": {
+        "file": "src/filters/name-filter.js",
+        "component": "SmartNameFilter",
+        "parameter": "fuzzyThreshold",
+        "scope": "unknown"
+      },
+      "change": {
+        "before": "exact match only",
+        "after": "fuzzy match with 0.8 threshold",
+        "diff": {
+          "type": "modification",
+          "beforeLength": 16,
+          "afterLength": 30,
+          "sizeDelta": 14
+        },
+        "hash": "aba0855199e9"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "manual",
+      "reason": "No reason provided",
+      "metricsBefore": {
+        "sensitivity": 95,
+        "specificity": 98
+      },
+      "metricsAfter": null,
+      "status": "APPLIED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T06:16:54.083Z",
+        "tested": null,
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": null,
+      "_type": "Intervention",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:16:54.083Z",
+        "t_occurred": "2025-12-05T06:16:54.082Z",
+        "t_valid_from": "2025-12-05T06:16:54.083Z",
+        "t_valid_until": null
+      }
+    },
+    "INT-1764915430595-tlahwo9t8": {
+      "id": "INT-1764915430595-tlahwo9t8",
+      "timestamp": "2025-12-05T06:17:10.595Z",
+      "type": "DICTIONARY_UPDATE",
+      "typeInfo": {
+        "name": "Dictionary Update",
+        "riskLevel": "LOW"
+      },
+      "description": "Added common name variations to dictionary",
+      "targetedPatterns": [
+        "NAME",
+        "DICTIONARY_MISS"
+      ],
+      "target": {
+        "file": "data/names.json",
+        "component": null,
+        "parameter": null,
+        "scope": "unknown"
+      },
+      "change": {
+        "before": "1000 names",
+        "after": "1500 names",
+        "diff": {
+          "type": "modification",
+          "beforeLength": 10,
+          "afterLength": 10,
+          "sizeDelta": 0
+        },
+        "hash": "4aa332f5e3b5"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "manual",
+      "reason": "No reason provided",
+      "metricsBefore": {
+        "sensitivity": 95,
+        "specificity": 98
+      },
+      "metricsAfter": null,
+      "status": "APPLIED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T06:17:10.596Z",
+        "tested": null,
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": null,
+      "_type": "Intervention",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:17:10.596Z",
+        "t_occurred": "2025-12-05T06:17:10.595Z",
+        "t_valid_from": "2025-12-05T06:17:10.596Z",
+        "t_valid_until": null
+      }
+    },
+    "INT-1764915820319-0z0yzkcsb": {
+      "id": "INT-1764915820319-0z0yzkcsb",
+      "timestamp": "2025-12-05T06:23:40.319Z",
+      "type": "DICTIONARY_UPDATE",
+      "typeInfo": {
+        "name": "Dictionary Update",
+        "riskLevel": "LOW"
+      },
+      "description": "Added 50 common name variations to dictionary",
+      "targetedPatterns": [],
+      "target": {
+        "file": "data/names-dictionary.json",
+        "component": null,
+        "parameter": null,
+        "scope": "unknown"
+      },
+      "change": {
+        "before": null,
+        "after": null,
+        "diff": {
+          "type": "value_change",
+          "beforeType": "undefined",
+          "afterType": "undefined"
+        },
+        "hash": "99914b932bd3"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "llm",
+      "reason": "No reason provided",
+      "metricsBefore": {
+        "sensitivity": 96.4,
+        "specificity": 93.9
+      },
+      "metricsAfter": null,
+      "status": "APPLIED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T06:23:40.319Z",
+        "tested": null,
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": null,
+      "_type": "Intervention",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:23:40.319Z",
+        "t_occurred": "2025-12-05T06:23:40.319Z",
+        "t_valid_from": "2025-12-05T06:23:40.319Z",
+        "t_valid_until": null
+      }
+    }
+  }
+}
