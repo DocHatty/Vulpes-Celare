@@ -346,13 +346,40 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 ## 📜 License
 
-**Source Available** — See [LICENSE](LICENSE)
+**AGPL-3.0 with Commercial Exception** — See [LICENSE](LICENSE)
 
-| Use Case                | Status                     |
-|:------------------------|:--------------------------:|
-| Personal and Educational | ✅ Permitted               |
-| Research and Academic    | ✅ Permitted               |
-| Commercial               | Requires written permission |
+| Use Case | Status |
+|:---------|:-------|
+| **Personal & Educational** | ✅ Free under AGPL-3.0 |
+| **Research & Academic** | ✅ Free under AGPL-3.0 |
+| **Non-Profit Healthcare** | ✅ Free under AGPL-3.0 |
+| **Small Organizations** (< $1M revenue) | ✅ Free under AGPL-3.0 |
+| **Open Source Projects** | ✅ Free under AGPL-3.0 (GPL-compatible) |
+| **Large Organizations** (> $1M revenue) | 💼 [Commercial license available](COMMERCIAL_LICENSE.md) |
+| **Proprietary SaaS** | 💼 [Commercial license required](COMMERCIAL_LICENSE.md) |
+| **Closed-Source Products** | 💼 [Commercial license required](COMMERCIAL_LICENSE.md) |
+
+### What This Means
+
+**You can freely use Vulpes Celare if:**
+- You're an individual, researcher, or educator
+- You're a non-profit hospital or clinic (any size)
+- Your company makes less than $1M/year
+- You're building an open source project
+- You're using it internally (not offering as a service)
+
+**You need a commercial license if:**
+- Your company makes > $1M/year AND
+- You want to keep your modifications private, OR
+- You're offering Vulpes Celare as a managed service
+
+**The AGPL ensures:**
+- ✅ Code is always auditable (critical for HIPAA compliance)
+- ✅ Improvements are shared back with the community
+- ✅ Large companies can't take without contributing
+- ✅ Small organizations and researchers use it freely
+
+For commercial licensing: See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)
 
 ---
 

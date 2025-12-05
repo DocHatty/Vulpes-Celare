@@ -26,13 +26,13 @@
     "nlp",
     "text-processing"
   ],
-  "author": "Hatkoff",
-  "license": "SEE LICENSE IN LICENSE",
+  "author": "DocHatty",
+  "license": "AGPL-3.0-only",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hatkoff/vulpes-celare.git"
+    "url": "https://github.com/DocHatty/Vulpes-Celare.git"
   },
-  "homepage": "https://github.com/hatkoff/vulpes-celare#readme",
+  "homepage": "https://github.com/DocHatty/Vulpes-Celare#readme",
   "engines": {
     "node": ">=16.0.0"
   },

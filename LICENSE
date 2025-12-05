@@ -1,67 +1,89 @@
-VULPES CELARE - Source Available License
-Copyright (c) 2024 Hatkoff
+# GNU Affero General Public License v3.0 (AGPL-3.0)
 
-                        TERMS AND CONDITIONS
+Copyright (C) 2024-2025 DocHatty
 
-1. DEFINITIONS
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   "Software" means the Vulpes Celare redaction engine, including all 
-   source code, documentation, and associated files in this repository.
-   
-   "Personal Use" means use by an individual for non-commercial purposes,
-   including learning, research, experimentation, and personal projects.
-   
-   "Commercial Use" means any use intended for or directed toward 
-   commercial advantage or monetary compensation.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
 
-2. GRANT OF RIGHTS
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-   Permission is hereby granted, free of charge, to any person obtaining
-   a copy of this Software, to use, copy, and modify the Software for 
-   Personal Use, subject to the following conditions:
-
-   a) This license notice shall be included in all copies or substantial 
-      portions of the Software.
-   
-   b) Attribution to "Vulpes Celare - Hatkoff Redaction Engine" must be 
-      maintained in any derivative works.
-
-3. COMMERCIAL USE RESTRICTION
-
-   Commercial Use of this Software requires explicit written permission
-   from the copyright holder. To obtain a commercial license, please 
-   open an issue on GitHub or contact the maintainer directly.
-
-   Examples of Commercial Use requiring permission:
-   - Integration into commercial products or services
-   - Use in SaaS platforms
-   - Use by for-profit healthcare organizations in production
-   - Redistribution as part of a commercial offering
-
-4. CONTRIBUTIONS
-
-   Contributions to this project are welcome and will be licensed under
-   the same terms. By submitting a contribution, you agree to grant the
-   copyright holder a perpetual, worldwide, non-exclusive license to use
-   your contribution.
-
-5. DISCLAIMER
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-   
-   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
-   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
-   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
-   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-6. TERMINATION
-
-   This license automatically terminates if you violate any of its terms.
-   Upon termination, you must destroy all copies of the Software in your
-   possession.
+The full text of the AGPL-3.0 license can be found at:
+https://www.gnu.org/licenses/agpl-3.0.html
 
 ---
 
-For licensing inquiries: Open an issue on GitHub
+## Commercial License Exception
+
+Organizations with annual revenue exceeding $1,000,000 USD that wish to use 
+Vulpes Celare in ways not permitted by AGPL-3.0 may obtain a commercial license.
+
+Commercial licensing is required for:
+- Integration into proprietary/closed-source products
+- Offering Vulpes Celare as a managed service without open-sourcing the service
+- Using Vulpes Celare in applications where AGPL compliance is not feasible
+- Redistributing Vulpes Celare without AGPL obligations
+
+For commercial licensing inquiries, contact: github.com/DocHatty/Vulpes-Celare
+
+---
+
+## Free Use Under AGPL-3.0
+
+The following uses are always permitted under AGPL-3.0 without commercial license:
+- Personal projects and individual use
+- Academic research and educational purposes
+- Non-profit healthcare organizations (any size)
+- Government healthcare facilities
+- Open source projects (GPL-compatible)
+- Organizations with annual revenue under $1,000,000 USD
+- Internal use within organizations (not offering as a service to others)
+
+---
+
+## Additional Terms
+
+### Network Use Provision
+If you run a modified version of Vulpes Celare on a server and let others 
+interact with it there, you must provide them access to the source code of 
+your modified version. This is the key difference from regular GPL.
+
+### Patent Grant
+Each contributor grants you a non-exclusive, worldwide, royalty-free patent 
+license under the contributor's essential patent claims, to make, use, sell, 
+offer for sale, import and otherwise run, modify and propagate the contents 
+of its contributor version.
+
+### No Warranty
+This software is provided "as is" without warranty of any kind, either 
+expressed or implied, including, but not limited to, the implied warranties 
+of merchantability and fitness for a particular purpose. The entire risk as 
+to the quality and performance of the software is with you.
+
+---
+
+## Compliance
+
+To comply with AGPL-3.0 when using or distributing Vulpes Celare:
+
+1. **If you modify and distribute the software:**
+   - Include this LICENSE file
+   - Make your source code available
+   - License your modifications under AGPL-3.0
+
+2. **If you run it as a network service:**
+   - Provide a way for users to download the complete source code
+   - Include any modifications you've made
+   - This applies even if you don't distribute the software
+
+3. **If you're unsure:**
+   - Read the full AGPL-3.0 text at https://www.gnu.org/licenses/agpl-3.0.html
+   - Consult with legal counsel
+   - Contact us for clarification or commercial licensing options

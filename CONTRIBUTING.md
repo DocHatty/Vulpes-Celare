@@ -1,6 +1,25 @@
 # Contributing to Vulpes Celare
 
-Thank you for your interest in contributing. This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing! This document provides guidelines for contributing to the project.
+
+---
+
+## Contributor License Agreement (CLA)
+
+**Before contributing code**, please read the [Contributor License Agreement](CONTRIBUTING_CLA.md).
+
+**TL;DR:**
+- You keep copyright to your contributions
+- Your contributions are AGPL-3.0 for the community
+- Project can include them in commercial licenses (for sustainability)
+- Add `Signed-off-by: Your Name <email>` to commits
+
+This ensures the project can:
+- Remain open source for researchers and small organizations
+- Offer commercial licenses to large enterprises
+- Fund ongoing development and maintenance
+
+For details, see [CONTRIBUTING_CLA.md](CONTRIBUTING_CLA.md).
 
 ---
 

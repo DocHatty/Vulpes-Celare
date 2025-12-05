@@ -2,7 +2,7 @@
 
 **READ THIS FIRST** before helping with Vulpes Celare testing or improvements.
 
-This document provides CRITICAL context so you don't fumble around or waste the user's time.
+This document provides essential context for working efficiently with this codebase.
 
 ---
 

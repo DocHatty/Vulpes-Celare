@@ -159,7 +159,7 @@ Explains when to use:
 ✅ Can follow instructions literally
 ✅ Clear setup steps for MCP integration
 ✅ Works on Windows, Mac, Linux
-✅ AI agents don't fumble around
+✅ AI agents work efficiently
 
 ### For the Project:
 ✅ Professional, portable documentation
@@ -210,7 +210,7 @@ User: "Help me test Vulpes Celare"
 LLM: [tries C:\Users\docto\..., fails]
 LLM: [guesses ~/vulpes-celare/, fails]
 LLM: [confused, asks multiple questions]
-User: [frustrated, has to hand-hold]
+User: [frustrated, needs to provide guidance]
 ```
 
 ### After:
@@ -261,7 +261,7 @@ Expected behavior:
 ✅ **Multi-OS support** - Windows, Mac, Linux
 ✅ **Clear examples** - both template and concrete
 
-**Result**: AI agents can effectively help ANY user improve their PHI detection system without fumbling around or requiring hand-holding.
+**Result**: AI agents can effectively help ANY user improve their PHI detection system efficiently and autonomously.
 
 ---
 
