@@ -9,25 +9,25 @@
 [![License](https://img.shields.io/badge/License-Source%20Available-4B32C3?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Experimental-orange?style=for-the-badge)](#validation)
 
-|  | Metric | Score |
-|:---:|:------:|:-----:|
-| 🎯 | **Sensitivity** | **99.6%** |
-| 🛡️ | **Specificity** | **96-100%** |
-| 📄 | **Documents Tested** | **7,000+** |
-| ⚡ | **Speed** | **2-3ms** |
+|     | Metric                | Score         |
+|:---:|:---------------------:|:-------------:|
+| 🎯  | **Sensitivity**       | **99.6%**     |
+| 🛡️  | **Specificity**       | **96–100%**   |
+| 📄  | **Documents Tested**  | **7,000+**    |
+| ⚡  | **Speed**             | **2–3 ms**    |
 
 ---
 
 ## Why Vulpes Celare?
 
-Clinical documentation drives medical education, research, and innovation. But safely sharing it remains a persistent challenge.
+Clinical documentation drives medical education, research, and innovation—but safely sharing it remains a persistent challenge.
 
 | ❌ The Problem | ✅ Our Solution |
-|:---------------|:----------------|
-| **Opaque** — Black-box SaaS where you can't inspect what happens | **Fully inspectable** — Open source, every decision traceable |
-| **Generic** — Not tuned for medical vocabulary | **Healthcare-native** — Built for US medical formats from day one |
-| **Heavyweight** — Don't fit modern workflows | **Sub-millisecond** — 2-3ms processing, stateless, scales linearly |
-| **Cloud-dependent** — PHI leaves your network | **Privacy-first** — Zero-trust, data never leaves your infrastructure |
+|:--------------|:----------------|
+| **Opaque** — Black-box SaaS where you cannot inspect what happens | **Fully Inspectable** — Open source, every decision traceable |
+| **Generic** — Not tuned for medical vocabulary | **Healthcare-Native** — Built for US medical formats from day one |
+| **Heavyweight** — Does not fit modern workflows | **Sub-Millisecond** — 2–3 ms processing, stateless, scales linearly |
+| **Cloud-Dependent** — PHI leaves your network | **Privacy-First** — Zero-trust design, data never leaves your infrastructure |
 
 ---
 
@@ -160,19 +160,20 @@ const redacted = await VulpesCelare.redact(clinicalNote);
 // With metrics
 const engine = new VulpesCelare();
 const result = await engine.process(clinicalNote);
+
 console.log(result.text);            // Redacted document
 console.log(result.redactionCount);  // PHI elements found
-console.log(result.executionTimeMs); // ~2-3ms
+console.log(result.executionTimeMs); // Processing time (~2–3 ms)
 ```
 
 ---
 
 ## 🔌 Integration Examples
 
-Works as a **universal preprocessing filter** for any LLM, agent, or AI system. Add one line to your existing pipeline:
+Vulpes Celare works as a **universal preprocessing filter** for any LLM, agent, or AI system. Add one line to your existing pipeline:
 
 ```typescript
-const safeNote = await VulpesCelare.redact(clinicalNote);  // Add this
+const safeNote = await VulpesCelare.redact(clinicalNote);  // ← Add this line
 const response = await yourLLM.complete(safeNote);
 ```
 
@@ -234,42 +235,46 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 
 ## 🔧 Architecture
 
-26 specialized filters running in parallel, each tuned for specific PHI types:
+Twenty-six specialized filters run in parallel, each tuned for specific PHI types:
 
-| Category | Filters | Examples |
-|:---------|:--------|:---------|
-| **Names** | Titled, formatted, credentialed, family context | `Dr. Smith`, `SMITH, JOHN`, `John Doe, MD` |
-| **IDs** | SSN, MRN, NPI, Medicare/Medicaid | `123-45-6789`, `MRN: 7834921`, `NPI: 1234567890` |
-| **Contact** | Phone, email, addresses, ZIP codes | `(555) 123-4567`, `patient@email.com` |
-| **Temporal** | All date formats, ages 90+ (HIPAA) | `03/15/1980`, `March 15, 2024`, `92-year-old` |
-| **Financial** | Credit cards (Luhn validated) | `4111-1111-1111-1111` |
+| Category      | Filters                                         | Examples                                      |
+|:--------------|:------------------------------------------------|:----------------------------------------------|
+| **Names**     | Titled, formatted, credentialed, family context | `Dr. Smith`, `SMITH, JOHN`, `John Doe, MD`    |
+| **IDs**       | SSN, MRN, NPI, Medicare/Medicaid                | `123-45-6789`, `MRN: 7834921`, `NPI: 1234567890` |
+| **Contact**   | Phone, email, address, ZIP code                 | `(555) 123-4567`, `patient@email.com`         |
+| **Temporal**  | All date formats, ages 90+ (HIPAA requirement)  | `03/15/1980`, `March 15, 2024`, `92-year-old` |
+| **Financial** | Credit cards (Luhn-validated)                   | `4111-1111-1111-1111`                         |
 
 ### Key Capabilities
 
-- **Context-aware detection** — Knows "Dr. Wilson" is a person but "Wilson's disease" is a medical condition
-- **OCR error resilience** — Catches PHI even when scanners mess up characters (`0`↔`O`, `1`↔`l`, `5`↔`S`)
-- **Smart overlap handling** — When multiple filters match, picks the best redaction
-- **Zero external calls** — Works completely offline, air-gapped deployment ready
+| Feature                     | Description                                                                 |
+|:----------------------------|:----------------------------------------------------------------------------|
+| **Context-Aware Detection** | Knows "Dr. Wilson" is a person but "Wilson's disease" is a medical condition |
+| **OCR Error Resilience**    | Catches PHI even when scanners corrupt characters (`0`↔`O`, `1`↔`l`, `5`↔`S`) |
+| **Smart Overlap Handling**  | When multiple filters match the same text, picks the optimal redaction      |
+| **Zero External Calls**     | Works completely offline—air-gapped deployment ready                        |
 
 ### OCR Error Handling
 
-| What You Typed | What Scanner Saw | Caught? |
-|:--------------:|:----------------:|:-------:|
-| `03/15/1980` | `O3/l5/198O` | ✅ |
-| `123-45-6789` | `l23-45-67B9` | ✅ |
-| `(555) 123-4567` | `(5S5) l23-4567` | ✅ |
+Scanners make predictable mistakes. Vulpes Celare catches PHI even when it is garbled:
+
+| Original        | Scanner Output   | Caught? |
+|:---------------:|:----------------:|:-------:|
+| `03/15/1980`    | `O3/l5/198O`     | ✅       |
+| `123-45-6789`   | `l23-45-67B9`    | ✅       |
+| `(555) 123-4567`| `(5S5) l23-4567` | ✅       |
 
 ---
 
 ## 📈 Performance by Document Quality
 
-| Quality | Detection Rate | Example |
-|:-------:|:--------------:|:--------|
-| ✨ Perfect | 99.9% | Clean digital text |
-| 📝 Minor errors | 99.8% | Typos, extra spaces |
-| 📠 Scanned | 99.7% | Light scanner artifacts |
-| 📋 Bad scans | 98.5% | Faded, skewed documents |
-| 🔥 Worst case | 97.2% | Barely legible copies |
+| Quality           | Detection Rate | Example                   |
+|:-----------------:|:--------------:|:--------------------------|
+| ✨ Perfect        | 99.9%          | Clean digital text        |
+| 📝 Minor Errors   | 99.8%          | Typos, extra spaces       |
+| 📠 Scanned        | 99.7%          | Light scanner artifacts   |
+| 📋 Bad Scans      | 98.5%          | Faded, skewed documents   |
+| 🔥 Worst Case     | 97.2%          | Barely legible copies     |
 
 > Even the worst scans still catch 97%+ of PHI. Performance degrades gracefully, not catastrophically.
 
@@ -281,16 +286,16 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 
 Traditional testing forgets everything between runs. Cortex remembers:
 
-| What | Why It Matters |
-|:-----|:---------------|
-| **Failure patterns** | "This type of name keeps slipping through—here's why" |
-| **Fix history** | "We tried this before. It didn't work. Here's what did." |
-| **Trends over time** | "Detection got worse after Tuesday's commit" |
-| **Cause & effect** | "That change broke phone detection but fixed dates" |
+| What                  | Why It Matters                                            |
+|:----------------------|:----------------------------------------------------------|
+| **Failure Patterns**  | "This type of name keeps slipping through—here's why."   |
+| **Fix History**       | "We tried this before. It did not work. Here's what did." |
+| **Trends Over Time**  | "Detection worsened after Tuesday's commit."              |
+| **Cause and Effect**  | "That change broke phone detection but fixed dates."      |
 
-**Bi-temporal intelligence:** Tracks both when bugs actually existed and when you discovered them—so "new" bugs can be traced to old regressions.
+**Bi-Temporal Intelligence:** Tracks both when bugs actually existed and when you discovered them—so "new" bugs can be traced to old regressions.
 
-**Industry-standard metrics:** Sensitivity, Specificity, MCC, F1, PPV—tracked over time with automatic regression alerts.
+**Industry-Standard Metrics:** Sensitivity, Specificity, MCC, F1, and PPV—tracked over time with automatic regression alerts.
 
 ```bash
 # Run with Cortex
@@ -299,14 +304,30 @@ node tests/master-suite/run.js --count 200 --cortex --cortex-report
 
 ---
 
+## 🤖 AI Agent Integration
+
+Vulpes Celare includes **Vulpes Cortex** - an MCP (Model Context Protocol) server that enables AI agents to autonomously improve the system.
+
+**For AI agents (Claude, ChatGPT, etc.):** Read [`INSTRUCTIONS_FOR_AI_AGENTS.md`](./INSTRUCTIONS_FOR_AI_AGENTS.md) for comprehensive setup and usage instructions.
+
+**For humans:** The MCP integration allows AI assistants to:
+- Run tests and analyze results automatically
+- Consult historical data before making recommendations
+- Execute the fix-test-verify loop autonomously
+- Learn from every change and never forget what worked
+
+See [`tests/master-suite/cortex/README.md`](./tests/master-suite/cortex/README.md) for full Cortex documentation.
+
+---
+
 ## 🆚 Comparison
 
-| Tool | Approach | Trade-offs |
-|:-----|:---------|:-----------|
-| **Vulpes Celare** | Proprietary rules engine | Sub-ms, air-gapped capable, zero data exfiltration, OCR-resilient. US-focused. |
-| Microsoft Presidio | Rules + ML | Mature, multi-language. Heavier setup, less medical-specific. |
-| AWS Comprehend Medical | Cloud ML | High accuracy, maintained. Requires BAA, PHI leaves perimeter. |
-| Google Cloud DLP | Cloud ML | Broad coverage. Cost, cloud dependency, data exposure. |
+| Tool                      | Approach                | Trade-offs                                                    |
+|:--------------------------|:------------------------|:--------------------------------------------------------------|
+| **Vulpes Celare**         | Proprietary rules engine | Sub-ms, air-gapped, zero data exfiltration, OCR-resilient. US-focused. |
+| Microsoft Presidio        | Rules + ML              | Mature, multi-language. Heavier setup, less medical-specific. |
+| AWS Comprehend Medical    | Cloud ML                | High accuracy, maintained. Requires BAA, PHI leaves perimeter. |
+| Google Cloud DLP          | Cloud ML                | Broad coverage. Cost, cloud dependency, data exposure.        |
 
 ---
 
@@ -327,11 +348,11 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 **Source Available** — See [LICENSE](LICENSE)
 
-| Use Case | Status |
-|:---------|:------:|
-| Personal & Educational | ✅ Permitted |
-| Research & Academic | ✅ Permitted |
-| Commercial | Requires written permission |
+| Use Case                | Status                     |
+|:------------------------|:--------------------------:|
+| Personal and Educational | ✅ Permitted               |
+| Research and Academic    | ✅ Permitted               |
+| Commercial               | Requires written permission |
 
 ---
 

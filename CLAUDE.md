@@ -1,87 +1,118 @@
 # VULPES CELARE - LLM OPERATOR INSTRUCTIONS
 
-## When User Says "Test the System" or "Run the Suite"
+**👉 IMPORTANT: For comprehensive AI agent instructions, read [`INSTRUCTIONS_FOR_AI_AGENTS.md`](./INSTRUCTIONS_FOR_AI_AGENTS.md) in the project root first!**
 
-Execute this sequence **IN ORDER** - do NOT skip steps:
+This file contains a quick workflow summary. The comprehensive instructions explain:
+- How to locate files without hard-coded paths
+- Complete MCP setup for any user
+- Available tools and how to use them
+- Common mistakes and troubleshooting
+- Detailed examples and best practices
 
-### 1. Start MCP Server in Visible Window
-```bash
-node tests/master-suite/cortex --server-window
+---
+
+## Quick Workflow Summary
+
+### Step 0: Locate Project Root
+
+**NEVER hard-code paths!** Ask the user:
 ```
-This opens a **visible CMD window** showing MCP server activity on port 3100.
-The user can see exactly what the server is doing.
+"What's the full path to your Vulpes-Celare project directory?"
+```
 
-### 2. MANDATORY: Verify Server is Running
+Once you know `<PROJECT_ROOT>`, use relative paths:
+- Filters: `<PROJECT_ROOT>/src/redaction/filters/*.ts`
+- Dictionaries: `<PROJECT_ROOT>/src/redaction/dictionaries/*.json`
+- MCP Server: `<PROJECT_ROOT>/tests/master-suite/cortex/index.js`
+- Test Runner: `<PROJECT_ROOT>/tests/master-suite/run.js`
+
+### Step 1: Start MCP Server (If Not Already Running)
+
+Check if you have MCP access:
+
+**If you're Claude Desktop with MCP enabled:**
+- Look for "vulpes-cortex" in connected servers
+- Skip to Step 2
+
+**If you need to start manually:**
+```bash
+cd <PROJECT_ROOT>
+node tests/master-suite/cortex/index.js --server-window
+```
+
+This opens a **visible terminal window** showing server activity on port 3100.
+
+### Step 2: Verify Server Health (MANDATORY)
+
 ```bash
 curl http://localhost:3100/health
 ```
+
 **YOU MUST SEE `"status": "running"` BEFORE PROCEEDING.**
 
-Alternative verification:
+Alternative:
 ```bash
-node tests/master-suite/cortex --check
+cd <PROJECT_ROOT>
+node tests/master-suite/cortex/index.js --check
 ```
 
-If you see "NOT RUNNING" or connection refused, the server failed. Debug before continuing.
+### Step 3: Run Tests via MCP
 
-### 3. Run Tests VIA THE MCP SERVER (NOT directly!)
-```bash
-curl -X POST "http://localhost:3100/tool/run_tests" -H "Content-Type: application/json" -d "{\"quick\": true}"
+**If you have MCP tools:**
+```
+[Call vulpes-cortex tool: run_tests with {quick: true, profile: "HIPAA_STRICT"}]
 ```
 
-For a full assessment (200 documents):
+**If running manually:**
 ```bash
-curl -X POST "http://localhost:3100/tool/run_tests" -H "Content-Type: application/json" -d "{}"
+# Quick test (50 documents, ~10-15 seconds)
+curl -X POST "http://localhost:3100/tool/run_tests" \
+  -H "Content-Type: application/json" \
+  -d "{\"quick\": true, \"profile\": \"HIPAA_STRICT\"}"
+
+# Full test (200 documents, ~60 seconds)
+curl -X POST "http://localhost:3100/tool/run_tests" \
+  -H "Content-Type: application/json" \
+  -d "{\"profile\": \"HIPAA_STRICT\"}"
 ```
 
-**CRITICAL: Tests run INSIDE the MCP server. You will see activity in the CMD window.**
-**DO NOT run tests directly via `node tests/master-suite/run.js` - that bypasses the MCP!**
+**CRITICAL: DO NOT run tests directly via `node tests/master-suite/run.js` - that bypasses the MCP intelligence system!**
 
-### 4. Read the Response
-The MCP server returns JSON with:
-- `metrics`: sensitivity, specificity, F1, F2, grade
-- `confusionMatrix`: TP, TN, FP, FN counts
-- `topFailure`: The most common failure type with examples and file to edit
-- `action`: A one-liner describing what to fix
-- `allFailures`: Breakdown by PHI type
-- `insights`: Historical patterns and recommendations
+### Step 4: Interpret Results
 
-### 5. Execute the Closed Loop
-You ARE the execution engine. Follow this loop:
+The MCP response includes:
+- **`metrics.sensitivity`** - % of PHI caught (MUST BE >= 99%)
+- **`topFailure`** - Most common failure type with examples
+- **`fileToEdit`** - Which file to modify
+- **`action`** - Specific recommendation (based on history!)
+- **`historicalContext`** - What was tried before
 
-1. **See the failure** - MCP response shows exactly what was missed (e.g., "0RIYO SANCHEZ")
-2. **Read the filter** - Open the file from `topFailure.fileToEdit`
-3. **Edit the file** - Add the pattern/entry to catch the missed PHI
-4. **Run test again** - Call `run_tests` tool via MCP
-5. **Compare metrics** - Did sensitivity improve?
-   - Better: Keep the change
-   - Worse: `git checkout <file>` to revert
-6. **Repeat** until sensitivity >= 99%
+**Focus on sensitivity** - it's the most critical metric for HIPAA compliance.
 
-## MCP Server Architecture
+### Step 5: Execute the Closed Loop
 
-The MCP server is the **brain** - it:
-- Runs tests INTERNALLY (no external process spawning)
-- Tracks historical patterns across sessions
-- Provides intelligent recommendations
-- Records what worked and what didn't
+```
+1. Read topFailure from test results
+   ↓
+2. Open the file from topFailure.fileToEdit (use <PROJECT_ROOT> + path)
+   ↓
+3. Make ONE targeted change
+   ↓
+4. Recompile if TypeScript: cd <PROJECT_ROOT> && npm run build
+   ↓
+5. Run tests again (Step 3)
+   ↓
+6. Compare sensitivity before/after
+   ↓
+7. If better → Keep change
+   If worse → git checkout <file>
+   ↓
+8. Repeat until sensitivity >= 99%
+```
 
-The LLM:
-- Reads compact JSON results from MCP
-- Writes actual code fixes
-- Executes the fix-test-verify loop
+---
 
-## MCP Server Commands Reference
-
-| Command | Description |
-|---------|-------------|
-| `node tests/master-suite/cortex --server-window` | Start server in visible CMD window |
-| `node tests/master-suite/cortex --server` | Start server (background daemon) |
-| `node tests/master-suite/cortex --check` | Verify server is running |
-| `curl http://localhost:3100/health` | Check server health |
-| `curl -X POST http://localhost:3100/tool/run_tests` | Run tests via MCP |
-
-## Key Locations
+## Key Locations (Relative to Project Root)
 
 | What | Where |
 |------|-------|
@@ -89,24 +120,102 @@ The LLM:
 | Dictionaries | `src/redaction/dictionaries/*.json` |
 | Config | `src/redaction/config/` |
 | Test Results | `tests/results/` |
-| MCP Server | `tests/master-suite/cortex/` |
-| Master Test Runner | `tests/master-suite/run.js` (internal to MCP) |
+| MCP Server | `tests/master-suite/cortex/index.js` |
+| Test Runner (internal) | `tests/master-suite/run.js` |
+
+---
+
+## MCP Server Commands Reference
+
+All commands from `<PROJECT_ROOT>`:
+
+| Command | Description |
+|---------|-------------|
+| `node tests/master-suite/cortex/index.js --server-window` | Start server in visible window |
+| `node tests/master-suite/cortex/index.js --server` | Start server (daemon) |
+| `node tests/master-suite/cortex/index.js --check` | Verify server running |
+| `curl http://localhost:3100/health` | Check server health |
+| `curl -X POST http://localhost:3100/tool/run_tests -d '{}'` | Run tests via MCP |
+
+---
 
 ## Critical Rules
 
-1. **ALWAYS start MCP server with --server-window so user can see activity**
-2. **ALWAYS verify MCP server is running before tests** - Use health check
-3. **ALWAYS run tests via MCP server** - Never bypass it
-4. Make ONE change at a time, test, then decide keep/revert
-5. Prioritize sensitivity (catching PHI) over specificity (avoiding false positives)
-6. Target: Sensitivity >= 99%, Grade A under HIPAA_STRICT profile
+1. **NEVER hard-code file paths** - Always ask for project root first
+2. **ALWAYS verify server is running** before running tests (health check mandatory)
+3. **ALWAYS run tests via MCP server** - Never bypass it with direct run.js calls
+4. **Make ONE change at a time** - Test, then decide keep/revert
+5. **Prioritize sensitivity** (catching PHI) over specificity (avoiding false positives)
+6. **Target: Sensitivity >= 99%, Grade A** under HIPAA_STRICT profile
+7. **Consult history first** - Don't repeat past failures (use get_recommendation or consult_history tools)
+
+---
 
 ## You Have Full Power
 
-- READ any file
-- EDIT any file
-- RUN tests (via MCP)
-- COMPARE metrics
-- ROLLBACK with git checkout
+- **READ** any file (ask for project root path first)
+- **EDIT** any file
+- **RUN** tests (via MCP)
+- **COMPARE** metrics
+- **ROLLBACK** with git checkout
 
-DO NOT just analyze and report. EXECUTE THE FIXES.
+**DO NOT just analyze and report. EXECUTE THE FIXES.**
+
+---
+
+## Available Grading Profiles
+
+Use the `profile` parameter to control test grading:
+
+- **`HIPAA_STRICT`** (default): Zero tolerance - production validation
+- **`DEVELOPMENT`**: Diminishing penalties - good for iteration
+- **`RESEARCH`**: Minimal penalties - focus on patterns
+- **`OCR_TOLERANT`**: Accounts for scanner artifacts
+
+Example:
+```bash
+curl -X POST "http://localhost:3100/tool/run_tests" \
+  -d "{\"quick\": true, \"profile\": \"DEVELOPMENT\"}"
+```
+
+---
+
+## Example Fix Pattern
+
+**Test shows**: NAME filter missed "O'Brien", "McDonald", "Van Der Berg"
+
+**File**: `<PROJECT_ROOT>/src/redaction/filters/NameFilter.ts`
+
+**Fix**: Add pattern for prefixed surnames:
+```typescript
+const namePatterns = [
+  /\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/,  // First Last
+  /\b[A-Z][a-z]+\s+(?:O'|Mc|Mac|Van\s+(?:der\s+)?)[A-Z][a-z]+\b/,  // NEW: Compound surnames
+  // ... other patterns
+];
+```
+
+**Recompile**:
+```bash
+cd <PROJECT_ROOT>
+npm run build
+```
+
+**Test again** and compare sensitivity before/after.
+
+---
+
+## Remember
+
+The MCP server is the **brain** - it:
+- Runs tests internally (no external spawning)
+- Tracks historical patterns
+- Consults what worked before
+- Makes evidence-based recommendations
+
+You are the **execution engine** - you:
+- Read the results
+- Write the actual fixes
+- Execute the test-verify loop
+
+Work together efficiently. Read [`INSTRUCTIONS_FOR_AI_AGENTS.md`](./INSTRUCTIONS_FOR_AI_AGENTS.md) for comprehensive guidance.

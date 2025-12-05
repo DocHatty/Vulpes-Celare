@@ -107,27 +107,76 @@ const intervention = await cortex.recordIntervention({
 await cortex.recordEffect(intervention.id, afterMetrics);
 ```
 
-### As MCP Server (for Claude Code, Cursor, etc.)
+### As MCP Server (for Claude Desktop, Claude Code, Cursor, etc.)
 
+#### Quick Start (Manual)
+
+From your project root:
 ```bash
-# Start MCP server
-node cortex --server
+# Start MCP server in visible window (recommended)
+node tests/master-suite/cortex/index.js --server-window
 
-# Or via npm
-npm run server
+# OR: Start as background daemon
+node tests/master-suite/cortex/index.js --server
+
+# OR: Via npm script
+cd tests/master-suite/cortex && npm run server
 ```
 
-Configure in your IDE's MCP settings:
+**Verify it's running:**
+```bash
+curl http://localhost:3100/health
+# Should see: {"status":"running",...}
+```
+
+#### Claude Desktop Integration
+
+Configure in your Claude Desktop settings:
+
+**Location**: 
+- Mac/Linux: `~/.config/claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**Configuration** (replace `<PROJECT_ROOT>` with your actual path):
 ```json
 {
   "mcpServers": {
     "vulpes-cortex": {
       "command": "node",
-      "args": ["tests/master-suite/cortex/index.js", "--server"]
+      "args": [
+        "<PROJECT_ROOT>/tests/master-suite/cortex/index.js",
+        "--server"
+      ]
     }
   }
 }
 ```
+
+**Example** (if your project is at `/home/alice/vulpes-celare`):
+```json
+{
+  "mcpServers": {
+    "vulpes-cortex": {
+      "command": "node",
+      "args": [
+        "/home/alice/vulpes-celare/tests/master-suite/cortex/index.js",
+        "--server"
+      ]
+    }
+  }
+}
+```
+
+After editing config:
+1. Save the file
+2. Completely close Claude Desktop
+3. Reopen Claude Desktop
+4. Ask Claude: "What MCP servers are connected?"
+5. You should see `vulpes-cortex` listed
+
+#### Other IDE Integration (Cursor, Zed, etc.)
+
+Most MCP-compatible tools use similar config formats. Check your tool's documentation for the config file location, then use the same structure as Claude Desktop.
 
 ### Via CLI
 
