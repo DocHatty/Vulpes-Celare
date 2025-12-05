@@ -488,6 +488,19 @@ const cortex = new VulpesCortex();
 // ============================================================================
 
 async function runCLI() {
+  // CRITICAL: Catch ALL uncaught errors to prevent silent crashes
+  process.on('uncaughtException', (error) => {
+    console.error('[Vulpes Cortex] UNCAUGHT EXCEPTION:', error);
+    console.error('[Vulpes Cortex] Stack:', error.stack);
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('[Vulpes Cortex] UNHANDLED REJECTION at:', promise);
+    console.error('[Vulpes Cortex] Reason:', reason);
+    process.exit(1);
+  });
+
   const args = process.argv.slice(2);
 
   if (args.includes("--server-window") || args.includes("-w")) {
@@ -563,7 +576,7 @@ async function runCLI() {
   }
 
   if (args.includes("--server") || args.includes("-s")) {
-    // Start MCP server in daemon mode (stays running)
+    // Start MCP server
     const { VulpesCortexServer } = require("./mcp/server");
     const server = new VulpesCortexServer();
 
@@ -578,8 +591,13 @@ async function runCLI() {
       port = parseInt(portArg.split("=")[1]) || 3100;
     }
 
-    // Always start as daemon when using --server flag
-    await server.start({ daemon: true, port });
+    // Check if we should run in daemon (HTTP) mode or stdio mode
+    // - Use daemon mode if --daemon flag passed OR --port specified
+    // - Use stdio mode by default (this is what Claude Desktop expects)
+    const useDaemon = args.includes("--daemon") || args.includes("-d") || portArg;
+    
+    await server.start({ daemon: useDaemon, port });
+    // Server will stay alive until shutdown signal or client disconnect
   } else if (args.includes("--check") || args.includes("-c")) {
     // Check if server is running
     const http = require("http");
@@ -669,16 +687,21 @@ USAGE:
   node index.js [options]
 
 OPTIONS:
-  --server, -s    Start MCP server as daemon (REQUIRED before running tests)
-  --check, -c     Check if MCP server is running
-  --port=N        Set port for server (default: 3100)
+  --server, -s    Start MCP server (stdio mode for Claude Desktop)
+  --daemon, -d    Start as HTTP daemon (for manual/debugging use)
+  --check, -c     Check if HTTP daemon is running
+  --port=N        Set port for daemon (default: 3100, implies --daemon)
   --status        Show current system status
   --help, -h      Show this help message
 
-WORKFLOW:
-  1. Start server:  node tests/master-suite/cortex --server
-  2. Verify:        node tests/master-suite/cortex --check
-  3. Run tests:     node tests/master-suite/run.js --log-file --profile=HIPAA_STRICT
+MCP (CLAUDE DESKTOP):
+  Just restart Claude Desktop - it auto-launches in stdio mode.
+  Config file: %APPDATA%\Claude\claude_desktop_config.json
+
+MANUAL/DEBUG MODE:
+  1. Start daemon: node tests/master-suite/cortex --server --daemon
+  2. Verify:       node tests/master-suite/cortex --check
+  3. Run tests:    node tests/master-suite/run.js --log-file --profile=HIPAA_STRICT
 
 PROGRAMMATIC USAGE:
   const cortex = require('./cortex');

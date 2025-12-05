@@ -178,7 +178,7 @@ class VulpesCortexServer {
   createServer() {
     this.server = new Server(
       {
-        name: MCP_CONFIG.serverName,
+        name: MCP_CONFIG.name,
         version: MCP_CONFIG.version,
       },
       {
@@ -393,6 +393,9 @@ class VulpesCortexServer {
       console.error(
         `[Vulpes Cortex] Server: ${MCP_CONFIG.name} v${MCP_CONFIG.version}`,
       );
+
+      // Keep process alive - the SDK handles the message loop
+      await new Promise(() => {}); // Never resolves
     }
   }
 
