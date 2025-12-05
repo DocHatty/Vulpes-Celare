@@ -697,24 +697,42 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    */
   private detectOcrLastFirstNames(text: string, spans: Span[]): void {
     const patterns = [
-      // Lowercase: "elena sanchez" or "nilsson, elena ann"
+      // ULTRA-PERMISSIVE: ANY case mix, hyphens, apostrophes, dots, spaces
+      // Catches: "aNDREA bUI", "arjun al-fasri", "Ka rer Kim-Pqrk", "vladimir p. wrighf"
       {
-        regex: /\b([a-z]{2,20}),?\s+([a-z]{2,}(?:\s+[a-z]{2,})?)\b/g,
-        confidence: 0.85,
-        note: "lowercase"
+        regex: /\b([a-zA-Z][a-zA-Z\s.'-]{1,40})\s+([a-zA-Z][a-zA-Z\s.'-]{1,40})\b/g,
+        confidence: 0.80,
+        note: "ultra-permissive mixed case"
       },
+      
+      // Space before comma: "Le , Sanjay"
+      {
+        regex: /\b([A-Z][a-z]+)\s+,\s+([A-Z][a-z]+)\b/g,
+        confidence: 0.88,
+        note: "space before comma"
+      },
+      
+      // Last, First with optional spaces around comma: "Torres , Wilferd"
+      {
+        regex: /\b([A-Za-z][A-Za-z\s.'-]{1,30})\s*,\s*([A-Za-z][A-Za-z\s.'-]{1,30})\b/g,
+        confidence: 0.87,
+        note: "Last, First with spaces"
+      },
+      
       // OCR comma in wrong place: "Wals,h Ali" or "Hajid,R aj"
       {
         regex: /\b([A-Z][a-z]{1,10}),([a-z]{1,10})\s+([A-Z][a-z]+(?:\s+[A-Z]\.?)?)\b/g,
         confidence: 0.88,
         note: "comma misplaced"
       },
-      // OCR digits in names: "J0nse", "ZHAN6"
+      
+      // OCR digits in names: "J0nse", "ZHAN6", "Wilferd" (f→d)
       {
         regex: /\b([A-Z][a-z0-9]{2,20}),\s*([A-Z][a-z0-9\s]{2,})\b/gi,
         confidence: 0.90,
         note: "digits in name"
       },
+      
       // ALL CAPS with OCR digits: "ZHAN6, SUSAN"
       {
         regex: /\b([A-Z0-9]{2,20}),\s+([A-Z][A-Z\s]+)\b/g,
@@ -884,7 +902,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    */
   private detectLabeledOcrNames(text: string, spans: Span[]): void {
     const labeledPattern =
-      /\b(?:patient(?:\s+name)?|pt(?:\s*name)?|emergency\s+contact|next\s+of\s+kin|contact|guardian|spouse|mother|father|daughter|son|caregiver)[\s:;#-]*([A-Z0-9][A-Za-z0-9'`'.-]{1,40}(?:\s+[A-Z0-9][A-Za-z0-9'`'.-]{1,40}){0,2})/gi;
+      /\b(?:patient(?:\s+name)?|pt(?:\s*name)?|emergency\s+contact|next\s+of\s+kin|contact|guardian|spouse|mother|father|daughter|son|caregiver)[\s:;#-]*([A-Z0-9][A-Za-z0-9'`’.-]{1,40}(?:\s+[A-Z0-9][A-Za-z0-9'`’.-]{1,40}){0,2})/gi;
 
     labeledPattern.lastIndex = 0;
     let match;
@@ -975,7 +993,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     if (pieces.length === 0) return false;
 
     const allLookLikeNames = pieces.every((piece) =>
-      /^[A-Z][a-z'`'.-]{1,}$/.test(piece),
+      /^[A-Z][a-z'`’.-]{1,}$/.test(piece),
     );
 
     return allLookLikeNames && this.isLikelyPersonName(name);
