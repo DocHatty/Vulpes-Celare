@@ -34,9 +34,9 @@ Clinical documentation drives medical education, research, and innovation—but 
 ## How It Works
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph YN1 [" "]
-        direction LR
+        direction TB
         Data["📋 Clinical Data<br/>PACS · EMR · Labs"]
         Ask["🤖 Ask AI"]
         Data --> Ask
