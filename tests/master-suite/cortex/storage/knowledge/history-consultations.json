@@ -53,11 +53,262 @@
       "timestamp": "2025-12-05T06:33:50.106Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764924714269",
+      "timestamp": "2025-12-05T08:51:54.269Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764924965948",
+      "timestamp": "2025-12-05T08:56:05.948Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925265573",
+      "timestamp": "2025-12-05T09:01:05.573Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925311159",
+      "timestamp": "2025-12-05T09:01:51.159Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925355386",
+      "timestamp": "2025-12-05T09:02:35.386Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925380077",
+      "timestamp": "2025-12-05T09:03:00.077Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925574674",
+      "timestamp": "2025-12-05T09:06:14.674Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925669072",
+      "timestamp": "2025-12-05T09:07:49.072Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925705773",
+      "timestamp": "2025-12-05T09:08:25.773Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925895655",
+      "timestamp": "2025-12-05T09:11:35.655Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764926474520",
+      "timestamp": "2025-12-05T09:21:14.521Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764926654413",
+      "timestamp": "2025-12-05T09:24:14.413Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764926803166",
+      "timestamp": "2025-12-05T09:26:43.166Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764927001232",
+      "timestamp": "2025-12-05T09:30:01.232Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764928839896",
+      "timestamp": "2025-12-05T10:00:39.896Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764929804592",
+      "timestamp": "2025-12-05T10:16:44.592Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764929830406",
+      "timestamp": "2025-12-05T10:17:10.406Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764929863080",
+      "timestamp": "2025-12-05T10:17:43.080Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764930036772",
+      "timestamp": "2025-12-05T10:20:36.772Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764930287127",
+      "timestamp": "2025-12-05T10:24:47.127Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764931970836",
+      "timestamp": "2025-12-05T10:52:50.836Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932141166",
+      "timestamp": "2025-12-05T10:55:41.166Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932458042",
+      "timestamp": "2025-12-05T11:00:58.042Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932690114",
+      "timestamp": "2025-12-05T11:04:50.114Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932797221",
+      "timestamp": "2025-12-05T11:06:37.221Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932832179",
+      "timestamp": "2025-12-05T11:07:12.179Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932905228",
+      "timestamp": "2025-12-05T11:08:25.228Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932931585",
+      "timestamp": "2025-12-05T11:08:51.585Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932986717",
+      "timestamp": "2025-12-05T11:09:46.717Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933070847",
+      "timestamp": "2025-12-05T11:11:10.847Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933121062",
+      "timestamp": "2025-12-05T11:12:01.062Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933343002",
+      "timestamp": "2025-12-05T11:15:43.002Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933491338",
+      "timestamp": "2025-12-05T11:18:11.338Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933702662",
+      "timestamp": "2025-12-05T11:21:42.662Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933935333",
+      "timestamp": "2025-12-05T11:25:35.333Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934034993",
+      "timestamp": "2025-12-05T11:27:14.993Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934109368",
+      "timestamp": "2025-12-05T11:28:29.368Z",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934580247",
+      "timestamp": "2025-12-05T11:36:20.247Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934999278",
+      "timestamp": "2025-12-05T11:43:19.278Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764935200715",
+      "timestamp": "2025-12-05T11:46:40.715Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764935326846",
+      "timestamp": "2025-12-05T11:48:46.846Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764936151771",
+      "timestamp": "2025-12-05T12:02:31.771Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 9,
+    "total": 51,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 8
+    "noHistoryFound": 50
   }
 }

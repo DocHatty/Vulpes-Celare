@@ -490,9 +490,173 @@ const cortex = new VulpesCortex();
 async function runCLI() {
   const args = process.argv.slice(2);
 
+  if (args.includes("--server-window") || args.includes("-w")) {
+    // Launch server in a NEW VISIBLE WINDOW so user can see activity
+    const { spawn } = require("child_process");
+    const path = require("path");
+
+    let port = 3100;
+    const portArg = args.find((a) => a.startsWith("--port="));
+    if (portArg) {
+      port = parseInt(portArg.split("=")[1]) || 3100;
+    }
+
+    const scriptPath = path.join(__dirname, "index.js");
+
+    // Windows: use 'start' with quoted title to open new cmd window
+    // The title MUST be in quotes for 'start' command
+    const { exec } = require("child_process");
+    exec(
+      `start "VULPES CORTEX MCP" cmd /k node "${scriptPath}" --server --port=${port}`,
+    );
+
+    console.log(
+      "╔══════════════════════════════════════════════════════════════════════════════╗",
+    );
+    console.log(
+      "║  VULPES CORTEX - LAUNCHING IN NEW WINDOW                                     ║",
+    );
+    console.log(
+      "╠══════════════════════════════════════════════════════════════════════════════╣",
+    );
+    console.log(
+      "║  A new CMD window should open showing the MCP server activity.               ║",
+    );
+    console.log(
+      `║  Port: ${port}                                                                    ║`,
+    );
+    console.log(
+      "║                                                                              ║",
+    );
+    console.log(
+      "║  If it doesn't open, run manually:                                           ║",
+    );
+    console.log(
+      "║    node tests/master-suite/cortex --server                                   ║",
+    );
+    console.log(
+      "╚══════════════════════════════════════════════════════════════════════════════╝",
+    );
+
+    // Wait then verify it started
+    await new Promise((r) => setTimeout(r, 2000));
+
+    const http = require("http");
+    const req = http.get(`http://localhost:${port}/health`, () => {
+      console.log(
+        "\n  ✓ Server is running! You can see activity in the new window.\n",
+      );
+      process.exit(0);
+    });
+    req.on("error", () => {
+      console.log(
+        "\n  ✗ Server may not have started. Check the new window for errors.\n",
+      );
+      process.exit(1);
+    });
+    req.setTimeout(3000, () => {
+      req.destroy();
+      console.log("\n  ✗ Server startup timed out.\n");
+      process.exit(1);
+    });
+    return;
+  }
+
   if (args.includes("--server") || args.includes("-s")) {
-    // Start MCP server
-    await startMcpServer();
+    // Start MCP server in daemon mode (stays running)
+    const { VulpesCortexServer } = require("./mcp/server");
+    const server = new VulpesCortexServer();
+
+    // Handle shutdown signals
+    process.on("SIGINT", () => server.shutdown());
+    process.on("SIGTERM", () => server.shutdown());
+
+    // Parse port
+    let port = 3100;
+    const portArg = args.find((a) => a.startsWith("--port="));
+    if (portArg) {
+      port = parseInt(portArg.split("=")[1]) || 3100;
+    }
+
+    // Always start as daemon when using --server flag
+    await server.start({ daemon: true, port });
+  } else if (args.includes("--check") || args.includes("-c")) {
+    // Check if server is running
+    const http = require("http");
+    let port = 3100;
+    const portArg = args.find((a) => a.startsWith("--port="));
+    if (portArg) {
+      port = parseInt(portArg.split("=")[1]) || 3100;
+    }
+
+    const req = http.get(`http://localhost:${port}/health`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => (data += chunk));
+      res.on("end", () => {
+        try {
+          const status = JSON.parse(data);
+          console.log(
+            "╔══════════════════════════════════════════════════════════════════════════════╗",
+          );
+          console.log(
+            "║  VULPES CORTEX - SERVER STATUS                                               ║",
+          );
+          console.log(
+            "╠══════════════════════════════════════════════════════════════════════════════╣",
+          );
+          console.log(
+            `║  Status:   ✓ RUNNING                                                         ║`,
+          );
+          console.log(`║  Server:   ${status.server.padEnd(67)}║`);
+          console.log(`║  Version:  ${status.version.padEnd(67)}║`);
+          console.log(
+            `║  Uptime:   ${(status.uptime.toFixed(1) + " seconds").padEnd(67)}║`,
+          );
+          console.log(
+            `║  Modules:  ${(status.modules + " loaded").padEnd(67)}║`,
+          );
+          console.log(`║  PID:      ${String(status.pid).padEnd(67)}║`);
+          console.log(
+            "╚══════════════════════════════════════════════════════════════════════════════╝",
+          );
+          process.exit(0);
+        } catch (e) {
+          console.error("Server responded but returned invalid data");
+          process.exit(1);
+        }
+      });
+    });
+
+    req.on("error", () => {
+      console.log(
+        "╔══════════════════════════════════════════════════════════════════════════════╗",
+      );
+      console.log(
+        "║  VULPES CORTEX - SERVER STATUS                                               ║",
+      );
+      console.log(
+        "╠══════════════════════════════════════════════════════════════════════════════╣",
+      );
+      console.log(
+        "║  Status:   ✗ NOT RUNNING                                                     ║",
+      );
+      console.log(
+        "║                                                                              ║",
+      );
+      console.log(
+        "║  Start with: node tests/master-suite/cortex --server                         ║",
+      );
+      console.log(
+        "╚══════════════════════════════════════════════════════════════════════════════╝",
+      );
+      process.exit(1);
+    });
+
+    req.setTimeout(2000, () => {
+      req.destroy();
+      console.error("Server check timed out - server not responding");
+      process.exit(1);
+    });
   } else if (args.includes("--status")) {
     // Show status
     await cortex.initialize();
@@ -505,9 +669,16 @@ USAGE:
   node index.js [options]
 
 OPTIONS:
-  --server, -s    Start MCP server for LLM integration
+  --server, -s    Start MCP server as daemon (REQUIRED before running tests)
+  --check, -c     Check if MCP server is running
+  --port=N        Set port for server (default: 3100)
   --status        Show current system status
   --help, -h      Show this help message
+
+WORKFLOW:
+  1. Start server:  node tests/master-suite/cortex --server
+  2. Verify:        node tests/master-suite/cortex --check
+  3. Run tests:     node tests/master-suite/run.js --log-file --profile=HIPAA_STRICT
 
 PROGRAMMATIC USAGE:
   const cortex = require('./cortex');

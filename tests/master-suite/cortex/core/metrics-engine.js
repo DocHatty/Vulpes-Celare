@@ -158,11 +158,11 @@ class MetricsEngine {
    */
   validateConfusionMatrix(cm) {
     return cm &&
-           typeof cm.tp === 'number' &&
-           typeof cm.tn === 'number' &&
-           typeof cm.fp === 'number' &&
-           typeof cm.fn === 'number' &&
-           cm.tp >= 0 && cm.tn >= 0 && cm.fp >= 0 && cm.fn >= 0;
+      typeof cm.tp === 'number' &&
+      typeof cm.tn === 'number' &&
+      typeof cm.fp === 'number' &&
+      typeof cm.fn === 'number' &&
+      cm.tp >= 0 && cm.tn >= 0 && cm.fp >= 0 && cm.fn >= 0;
   }
 
   toPercent(value) {
@@ -447,6 +447,35 @@ class MetricsEngine {
     if (mcc >= 0.95) return { grade: 'A+', description: 'Excellent - Clinical grade' };
     if (mcc >= 0.9) return { grade: 'A', description: 'Excellent - Production ready' };
     return { grade: 'A-', description: 'Very Good - Production ready' };
+  }
+
+  /**
+   * Export LLM-friendly summary of the metrics engine capabilities
+   */
+  exportForLLM() {
+    return {
+      name: 'MetricsEngine',
+      description: 'Industry-standard metrics calculator for PHI redaction evaluation',
+      primaryMetrics: ['sensitivity', 'specificity', 'precision', 'f1Score', 'mcc'],
+      secondaryMetrics: ['npv', 'accuracy', 'balancedAccuracy', 'fpr', 'fnr', 'cohensKappa'],
+      gradeScale: {
+        'A+': 'Excellent - Clinical grade (sens >= 99%, mcc >= 0.95)',
+        'A': 'Excellent - Production ready (sens >= 99%, mcc >= 0.9)',
+        'A-': 'Very Good - Production ready with monitoring',
+        'B+': 'Good - Minor improvements recommended',
+        'B': 'Acceptable - Improvements recommended',
+        'C': 'Below Standard - Significant improvement needed',
+        'D': 'Failing - Major PHI leakage risk',
+        'F': 'Critical Failure - Unsafe for PHI'
+      },
+      capabilities: [
+        'Calculate all standard binary classification metrics',
+        'Matthews Correlation Coefficient (best for imbalanced data)',
+        'Compare before/after metric sets with significance detection',
+        'Grade performance on clinical safety scale',
+        'Generate metric interpretations and recommendations'
+      ]
+    };
   }
 }
 

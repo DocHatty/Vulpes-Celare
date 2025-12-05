@@ -20,7 +20,6 @@ desktop.ini
 
 # Logs
 logs/
-*.log
 npm-debug.log*
 
 # Environment
@@ -31,7 +30,6 @@ npm-debug.log*
 # Test artifacts
 coverage/
 .nyc_output/
-tests/results/
 
 # Temporary
 tmp/

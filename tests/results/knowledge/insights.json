@@ -1,0 +1,172 @@
+{
+  "learnings": [
+    {
+      "runId": "RUN-1764910710704",
+      "timestamp": "2025-12-05T04:58:30.707Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 54,
+          "learning": "OCR_CONFUSION pattern accounts for 54 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "CASE_VARIATION",
+          "count": 7,
+          "learning": "CASE_VARIATION pattern accounts for 7 failures. Mixed case or unusual casing not recognized"
+        }
+      ]
+    },
+    {
+      "runId": "RUN-1764910754378",
+      "timestamp": "2025-12-05T04:59:14.381Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 38,
+          "learning": "OCR_CONFUSION pattern accounts for 38 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "CASE_VARIATION",
+          "count": 8,
+          "learning": "CASE_VARIATION pattern accounts for 8 failures. Mixed case or unusual casing not recognized"
+        },
+        {
+          "type": "IMPROVEMENT",
+          "learning": "Improved detection for: NAME, MRN, ZIPCODE, FAX, LICENSE_PLATE, DEA"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: AGE_90_PLUS, ADDRESS. Review recent changes."
+        }
+      ]
+    },
+    {
+      "runId": "RUN-1764931385697",
+      "timestamp": "2025-12-05T10:43:05.701Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "CASE_VARIATION",
+          "count": 6,
+          "learning": "CASE_VARIATION pattern accounts for 6 failures. Mixed case or unusual casing not recognized"
+        },
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 25,
+          "learning": "OCR_CONFUSION pattern accounts for 25 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "IMPROVEMENT",
+          "learning": "Improved detection for: SSN, DATE, MRN, ADDRESS, DEVICE_ID, VIN, LICENSE_PLATE"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: NAME, DEA. Review recent changes."
+        }
+      ]
+    },
+    {
+      "runId": "RUN-1764931414058",
+      "timestamp": "2025-12-05T10:43:34.063Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 58,
+          "learning": "OCR_CONFUSION pattern accounts for 58 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "CASE_VARIATION",
+          "count": 7,
+          "learning": "CASE_VARIATION pattern accounts for 7 failures. Mixed case or unusual casing not recognized"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: NAME, DATE, MRN, ADDRESS, VIN, LICENSE_PLATE, DEA, AGE_90_PLUS. Review recent changes."
+        }
+      ]
+    },
+    {
+      "runId": "RUN-1764931731441",
+      "timestamp": "2025-12-05T10:48:51.446Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 52,
+          "learning": "OCR_CONFUSION pattern accounts for 52 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "CASE_VARIATION",
+          "count": 11,
+          "learning": "CASE_VARIATION pattern accounts for 11 failures. Mixed case or unusual casing not recognized"
+        },
+        {
+          "type": "IMPROVEMENT",
+          "learning": "Improved detection for: MRN, LICENSE_PLATE, DEA"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: NAME, SSN, ADDRESS, AGE_90_PLUS. Review recent changes."
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "action": "Add character substitution patterns",
+      "reasoning": "Identified 52 failures matching OCR_CONFUSION pattern.",
+      "expectedImpact": "Could fix 52 failures",
+      "confidence": 0.5668269230769232,
+      "previouslyWorked": false
+    },
+    {
+      "priority": "HIGH",
+      "action": "Implement fuzzy matching",
+      "reasoning": "Identified 52 failures matching OCR_CONFUSION pattern.",
+      "expectedImpact": "Could fix 52 failures",
+      "confidence": 0.5668269230769232,
+      "previouslyWorked": false
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Add case-insensitive matching",
+      "reasoning": "Identified 11 failures matching CASE_VARIATION pattern.",
+      "expectedImpact": "Could fix 11 failures",
+      "confidence": 0.6,
+      "previouslyWorked": false
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Normalize before matching",
+      "reasoning": "Identified 11 failures matching CASE_VARIATION pattern.",
+      "expectedImpact": "Could fix 11 failures",
+      "confidence": 0.6,
+      "previouslyWorked": false
+    },
+    {
+      "priority": "HIGH",
+      "action": "Focus on NAME detection - persistent issue",
+      "reasoning": "NAME has failed in 61 of last 5 runs",
+      "expectedImpact": "Address recurring problem",
+      "confidence": 0.8,
+      "isPersistent": true
+    },
+    {
+      "priority": "HIGH",
+      "action": "Focus on DEA detection - persistent issue",
+      "reasoning": "DEA has failed in 30 of last 5 runs",
+      "expectedImpact": "Address recurring problem",
+      "confidence": 0.8,
+      "isPersistent": true
+    }
+  ]
+}

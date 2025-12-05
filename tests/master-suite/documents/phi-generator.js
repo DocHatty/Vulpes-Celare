@@ -446,6 +446,7 @@ function generateCompletePHIDataset(errorLevel = "medium") {
       // Technical
       { type: "IP", value: ipAddress, source: "ip_address" },
       { type: "URL", value: portalUrl, source: "portal_url" },
+      { type: "DEVICE_ID", value: deviceId, source: "device_identifier" }, // HIPAA #13
 
       // Vehicle
       { type: "VIN", value: vin, source: "vin" },
@@ -463,60 +464,55 @@ function generateCompletePHIDataset(errorLevel = "medium") {
 
     // ========================================
     // GROUND TRUTH - Items that should NOT be redacted
+    // Keyed by field name to match template.usesNonPHI declarations
+    // Assessment filters this based on what each template actually uses
     // ========================================
-    _groundTruthNonPHI: [
-      // Hospital names
-      { type: "HOSPITAL", value: hospital, source: "hospital_name" },
+    _groundTruthNonPHI: {
+      // Hospital name - organizational, not PHI
+      hospital: { type: "HOSPITAL", value: hospital },
 
-      // Provider names (in professional capacity)
-      {
+      // Provider names - professional capacity, not PHI
+      // (Note: Some systems redact these too for extra privacy, which is acceptable)
+      attendingName: {
         type: "PROVIDER_NAME",
         value: attendingNameData.formatted,
-        source: "attending_name",
       },
-      {
-        type: "PROVIDER_NAME",
-        value: pcpNameData.formatted,
-        source: "pcp_name",
-      },
-      {
-        type: "PROVIDER_NAME",
-        value: surgeonNameData.formatted,
-        source: "surgeon_name",
-      },
-      {
+      pcpName: { type: "PROVIDER_NAME", value: pcpNameData.formatted },
+      surgeonName: { type: "PROVIDER_NAME", value: surgeonNameData.formatted },
+      pathologistName: {
         type: "PROVIDER_NAME",
         value: pathologistNameData.formatted,
-        source: "pathologist_name",
+      },
+      assistantName: {
+        type: "PROVIDER_NAME",
+        value: assistantNameData.formatted,
+      },
+      anesthesiologistName: {
+        type: "PROVIDER_NAME",
+        value: anesthesiologistNameData.formatted,
       },
 
-      // Medical terms
-      { type: "DIAGNOSIS", value: diagnosis1, source: "diagnosis1" },
-      { type: "DIAGNOSIS", value: diagnosis2, source: "diagnosis2" },
-      { type: "DIAGNOSIS", value: diagnosis3, source: "diagnosis3" },
-      { type: "PROCEDURE", value: procedure1, source: "procedure" },
-      { type: "MEDICATION", value: medication1, source: "medication1" },
-      { type: "MEDICATION", value: medication2, source: "medication2" },
-      { type: "MEDICATION", value: medication3, source: "medication3" },
+      // Medical diagnoses - clinical terms, not PHI
+      diagnosis1: { type: "DIAGNOSIS", value: diagnosis1 },
+      diagnosis2: { type: "DIAGNOSIS", value: diagnosis2 },
+      diagnosis3: { type: "DIAGNOSIS", value: diagnosis3 },
 
-      // Age under 90
-      ...(!ageData.needsRedaction
-        ? [
-            {
-              type: "AGE_UNDER_90",
-              value: String(ageData.age),
-              source: "age_under_90",
-            },
-          ]
-        : []),
+      // Procedures - clinical terms, not PHI
+      procedure1: { type: "PROCEDURE", value: procedure1 },
 
-      // Insurance company name
-      {
-        type: "INSURANCE_COMPANY",
-        value: insuranceName,
-        source: "insurance_name",
-      },
-    ],
+      // Medications - drug names, not PHI
+      medication1: { type: "MEDICATION", value: medication1 },
+      medication2: { type: "MEDICATION", value: medication2 },
+      medication3: { type: "MEDICATION", value: medication3 },
+
+      // Insurance company name - organizational, not PHI
+      insuranceName: { type: "INSURANCE_COMPANY", value: insuranceName },
+
+      // Age under 90 - not PHI per HIPAA Safe Harbor (only 90+ is PHI)
+      ...(ageData.needsRedaction
+        ? {}
+        : { age: { type: "AGE_UNDER_90", value: String(ageData.age) } }),
+    },
 
     // Error level for tracking
     _errorLevel: errorLevel,

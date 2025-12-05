@@ -234,6 +234,1512 @@
         "t_valid_from": "2025-12-05T06:33:50.096Z",
         "t_valid_until": null
       }
+    },
+    "run_1764924714258_kmhegfve5": {
+      "id": "run_1764924714258_kmhegfve5",
+      "timestamp": "2025-12-05T08:51:54.258Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.5271,
+        "specificity": 91.9936,
+        "precision": 98.4532,
+        "f1Score": 97.4807,
+        "mcc": 0.8511
+      },
+      "confusionMatrix": {
+        "tp": 6365,
+        "tn": 1149,
+        "fp": 100,
+        "fn": 229,
+        "total": 7843,
+        "actualPositive": 6594,
+        "actualNegative": 1249
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.5% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T08:51:54.258Z",
+        "t_occurred": "2025-12-05T08:51:54.258Z",
+        "t_valid_from": "2025-12-05T08:51:54.258Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764924965937_cza3a1ouo": {
+      "id": "run_1764924965937_cza3a1ouo",
+      "timestamp": "2025-12-05T08:56:05.937Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.428,
+        "specificity": 92.4679,
+        "precision": 98.546,
+        "f1Score": 97.4755,
+        "mcc": 0.8515
+      },
+      "confusionMatrix": {
+        "tp": 6371,
+        "tn": 1154,
+        "fp": 94,
+        "fn": 236,
+        "total": 7855,
+        "actualPositive": 6607,
+        "actualNegative": 1248
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.4% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T08:56:05.937Z",
+        "t_occurred": "2025-12-05T08:56:05.937Z",
+        "t_valid_from": "2025-12-05T08:56:05.937Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764925265563_ris9inzpk": {
+      "id": "run_1764925265563_ris9inzpk",
+      "timestamp": "2025-12-05T09:01:05.563Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7352,
+        "specificity": 93.3333,
+        "precision": 98.7045,
+        "f1Score": 97.7099,
+        "mcc": 0.8656
+      },
+      "confusionMatrix": {
+        "tp": 1600,
+        "tn": 294,
+        "fp": 21,
+        "fn": 54,
+        "total": 1969,
+        "actualPositive": 1654,
+        "actualNegative": 315
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.7% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.7%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:01:05.563Z",
+        "t_occurred": "2025-12-05T09:01:05.563Z",
+        "t_valid_from": "2025-12-05T09:01:05.563Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764925311150_2u653i0bs": {
+      "id": "run_1764925311150_2u653i0bs",
+      "timestamp": "2025-12-05T09:01:51.150Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8466,
+        "specificity": 94.6541,
+        "precision": 98.9467,
+        "f1Score": 97.8854,
+        "mcc": 0.8778
+      },
+      "confusionMatrix": {
+        "tp": 1597,
+        "tn": 301,
+        "fp": 17,
+        "fn": 52,
+        "total": 1967,
+        "actualPositive": 1649,
+        "actualNegative": 318
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.8% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.9%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:01:51.150Z",
+        "t_occurred": "2025-12-05T09:01:51.150Z",
+        "t_valid_from": "2025-12-05T09:01:51.150Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764925355377_twlf5w7we": {
+      "id": "run_1764925355377_twlf5w7we",
+      "timestamp": "2025-12-05T09:02:35.377Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7113,
+        "specificity": 91.195,
+        "precision": 98.2673,
+        "f1Score": 97.4831,
+        "mcc": 0.852
+      },
+      "confusionMatrix": {
+        "tp": 1588,
+        "tn": 290,
+        "fp": 28,
+        "fn": 54,
+        "total": 1960,
+        "actualPositive": 1642,
+        "actualNegative": 318
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.7% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:02:35.377Z",
+        "t_occurred": "2025-12-05T09:02:35.377Z",
+        "t_valid_from": "2025-12-05T09:02:35.377Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764925380066_dz2qpbgie": {
+      "id": "run_1764925380066_dz2qpbgie",
+      "timestamp": "2025-12-05T09:03:00.066Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.6606,
+        "specificity": 91.6933,
+        "precision": 98.3931,
+        "f1Score": 97.5191,
+        "mcc": 0.8528
+      },
+      "confusionMatrix": {
+        "tp": 1592,
+        "tn": 287,
+        "fp": 26,
+        "fn": 55,
+        "total": 1960,
+        "actualPositive": 1647,
+        "actualNegative": 313
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.7% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:03:00.066Z",
+        "t_occurred": "2025-12-05T09:03:00.066Z",
+        "t_valid_from": "2025-12-05T09:03:00.066Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764925574662_0h8lqtat7": {
+      "id": "run_1764925574662_0h8lqtat7",
+      "timestamp": "2025-12-05T09:06:14.662Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.6576,
+        "specificity": 94.0895,
+        "precision": 98.8502,
+        "f1Score": 97.7416,
+        "mcc": 0.8685
+      },
+      "confusionMatrix": {
+        "tp": 6362,
+        "tn": 1178,
+        "fp": 74,
+        "fn": 220,
+        "total": 7834,
+        "actualPositive": 6582,
+        "actualNegative": 1252
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.7% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.7%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:06:14.662Z",
+        "t_occurred": "2025-12-05T09:06:14.662Z",
+        "t_valid_from": "2025-12-05T09:06:14.662Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764925669061_0mtd4fe0d": {
+      "id": "run_1764925669061_0mtd4fe0d",
+      "timestamp": "2025-12-05T09:07:49.061Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8817,
+        "specificity": 93.4713,
+        "precision": 98.7289,
+        "f1Score": 97.7965,
+        "mcc": 0.8705
+      },
+      "confusionMatrix": {
+        "tp": 6369,
+        "tn": 1174,
+        "fp": 82,
+        "fn": 205,
+        "total": 7830,
+        "actualPositive": 6574,
+        "actualNegative": 1256
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.9% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.8%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:07:49.061Z",
+        "t_occurred": "2025-12-05T09:07:49.061Z",
+        "t_valid_from": "2025-12-05T09:07:49.061Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764925895645_ug0i2tdqo": {
+      "id": "run_1764925895645_ug0i2tdqo",
+      "timestamp": "2025-12-05T09:11:35.645Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7859,
+        "specificity": 91.36,
+        "precision": 98.3364,
+        "f1Score": 97.555,
+        "mcc": 0.8537
+      },
+      "confusionMatrix": {
+        "tp": 3192,
+        "tn": 571,
+        "fp": 54,
+        "fn": 106,
+        "total": 3923,
+        "actualPositive": 3298,
+        "actualNegative": 625
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.8% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:11:35.645Z",
+        "t_occurred": "2025-12-05T09:11:35.645Z",
+        "t_valid_from": "2025-12-05T09:11:35.645Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764926474511_jpcsvfksk": {
+      "id": "run_1764926474511_jpcsvfksk",
+      "timestamp": "2025-12-05T09:21:14.511Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.4075,
+        "specificity": 92.1384,
+        "precision": 98.4958,
+        "f1Score": 97.4405,
+        "mcc": 0.8483
+      },
+      "confusionMatrix": {
+        "tp": 1637,
+        "tn": 293,
+        "fp": 25,
+        "fn": 61,
+        "total": 2016,
+        "actualPositive": 1698,
+        "actualNegative": 318
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.4% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.4%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:21:14.511Z",
+        "t_occurred": "2025-12-05T09:21:14.511Z",
+        "t_valid_from": "2025-12-05T09:21:14.511Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764926654402_jv3imut0b": {
+      "id": "run_1764926654402_jv3imut0b",
+      "timestamp": "2025-12-05T09:24:14.402Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8156,
+        "specificity": 92.5,
+        "precision": 98.6036,
+        "f1Score": 97.7014,
+        "mcc": 0.8597
+      },
+      "confusionMatrix": {
+        "tp": 6567,
+        "tn": 1147,
+        "fp": 93,
+        "fn": 216,
+        "total": 8023,
+        "actualPositive": 6783,
+        "actualNegative": 1240
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.8% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.7%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:24:14.402Z",
+        "t_occurred": "2025-12-05T09:24:14.402Z",
+        "t_valid_from": "2025-12-05T09:24:14.402Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764926803154_8htefh6ic": {
+      "id": "run_1764926803154_8htefh6ic",
+      "timestamp": "2025-12-05T09:26:43.154Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.4928,
+        "specificity": 93.5663,
+        "precision": 98.7781,
+        "f1Score": 97.6221,
+        "mcc": 0.8592
+      },
+      "confusionMatrix": {
+        "tp": 6548,
+        "tn": 1178,
+        "fp": 81,
+        "fn": 238,
+        "total": 8045,
+        "actualPositive": 6786,
+        "actualNegative": 1259
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.5% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:26:43.154Z",
+        "t_occurred": "2025-12-05T09:26:43.154Z",
+        "t_valid_from": "2025-12-05T09:26:43.154Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764927001220_b1ukgeeca": {
+      "id": "run_1764927001220_b1ukgeeca",
+      "timestamp": "2025-12-05T09:30:01.220Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.9634,
+        "specificity": 93.2367,
+        "precision": 98.7391,
+        "f1Score": 97.8432,
+        "mcc": 0.8686
+      },
+      "confusionMatrix": {
+        "tp": 6578,
+        "tn": 1158,
+        "fp": 84,
+        "fn": 206,
+        "total": 8026,
+        "actualPositive": 6784,
+        "actualNegative": 1242
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 97.0% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.8%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T09:30:01.220Z",
+        "t_occurred": "2025-12-05T09:30:01.220Z",
+        "t_valid_from": "2025-12-05T09:30:01.220Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764928839885_4omo58noy": {
+      "id": "run_1764928839885_4omo58noy",
+      "timestamp": "2025-12-05T10:00:39.885Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.6252,
+        "specificity": 91.4557,
+        "precision": 98.3725,
+        "f1Score": 97.491,
+        "mcc": 0.8493
+      },
+      "confusionMatrix": {
+        "tp": 1632,
+        "tn": 289,
+        "fp": 27,
+        "fn": 57,
+        "total": 2005,
+        "actualPositive": 1689,
+        "actualNegative": 316
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.6% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:00:39.885Z",
+        "t_occurred": "2025-12-05T10:00:39.885Z",
+        "t_valid_from": "2025-12-05T10:00:39.885Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764929804582_kbaq7r1ia": {
+      "id": "run_1764929804582_kbaq7r1ia",
+      "timestamp": "2025-12-05T10:16:44.582Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.5221,
+        "specificity": 91.6933,
+        "precision": 98.4515,
+        "f1Score": 97.9846,
+        "mcc": 0.8743
+      },
+      "confusionMatrix": {
+        "tp": 1653,
+        "tn": 287,
+        "fp": 26,
+        "fn": 42,
+        "total": 2008,
+        "actualPositive": 1695,
+        "actualNegative": 313
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 97.5% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.0%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:16:44.582Z",
+        "t_occurred": "2025-12-05T10:16:44.582Z",
+        "t_valid_from": "2025-12-05T10:16:44.582Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764929830396_5ic7lss7x": {
+      "id": "run_1764929830396_5ic7lss7x",
+      "timestamp": "2025-12-05T10:17:10.396Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.1493,
+        "specificity": 94.0063,
+        "precision": 98.8429,
+        "f1Score": 97.4775,
+        "mcc": 0.8542
+      },
+      "confusionMatrix": {
+        "tp": 1623,
+        "tn": 298,
+        "fp": 19,
+        "fn": 65,
+        "total": 2005,
+        "actualPositive": 1688,
+        "actualNegative": 317
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.1% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:17:10.396Z",
+        "t_occurred": "2025-12-05T10:17:10.396Z",
+        "t_valid_from": "2025-12-05T10:17:10.396Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764929863070_csrgaxu66": {
+      "id": "run_1764929863070_csrgaxu66",
+      "timestamp": "2025-12-05T10:17:43.070Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7552,
+        "specificity": 94.2675,
+        "precision": 98.9144,
+        "f1Score": 97.8228,
+        "mcc": 0.8705
+      },
+      "confusionMatrix": {
+        "tp": 1640,
+        "tn": 296,
+        "fp": 18,
+        "fn": 55,
+        "total": 2009,
+        "actualPositive": 1695,
+        "actualNegative": 314
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.8% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.8%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:17:43.071Z",
+        "t_occurred": "2025-12-05T10:17:43.070Z",
+        "t_valid_from": "2025-12-05T10:17:43.071Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764930036762_k2dsu21ky": {
+      "id": "run_1764930036762_k2dsu21ky",
+      "timestamp": "2025-12-05T10:20:36.762Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.4054,
+        "specificity": 93.2258,
+        "precision": 98.7326,
+        "f1Score": 97.5552,
+        "mcc": 0.8537
+      },
+      "confusionMatrix": {
+        "tp": 1636,
+        "tn": 289,
+        "fp": 21,
+        "fn": 61,
+        "total": 2007,
+        "actualPositive": 1697,
+        "actualNegative": 310
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.4% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:20:36.762Z",
+        "t_occurred": "2025-12-05T10:20:36.762Z",
+        "t_valid_from": "2025-12-05T10:20:36.762Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764930287114_ecl4emno8": {
+      "id": "run_1764930287114_ecl4emno8",
+      "timestamp": "2025-12-05T10:24:47.114Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.4118,
+        "specificity": 92.9712,
+        "precision": 98.6755,
+        "f1Score": 97.5305,
+        "mcc": 0.8527
+      },
+      "confusionMatrix": {
+        "tp": 1639,
+        "tn": 291,
+        "fp": 22,
+        "fn": 61,
+        "total": 2013,
+        "actualPositive": 1700,
+        "actualNegative": 313
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.4% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:24:47.114Z",
+        "t_occurred": "2025-12-05T10:24:47.114Z",
+        "t_valid_from": "2025-12-05T10:24:47.114Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764931970841_enq45yylb": {
+      "id": "run_1764931970841_enq45yylb",
+      "timestamp": "2025-12-05T10:52:50.841Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.1176,
+        "specificity": 92.926,
+        "precision": 98.685,
+        "f1Score": 97.895,
+        "mcc": 0.8707
+      },
+      "confusionMatrix": {
+        "tp": 1651,
+        "tn": 289,
+        "fp": 22,
+        "fn": 49,
+        "total": 2011,
+        "actualPositive": 1700,
+        "actualNegative": 311
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 97.1% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.9%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:52:50.841Z",
+        "t_occurred": "2025-12-05T10:52:50.841Z",
+        "t_valid_from": "2025-12-05T10:52:50.841Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932141171_nd4xx8iov": {
+      "id": "run_1764932141171_nd4xx8iov",
+      "timestamp": "2025-12-05T10:55:41.171Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8824,
+        "specificity": 95.5128,
+        "precision": 99.1571,
+        "f1Score": 98.0065
+      },
+      "confusionMatrix": {
+        "truePositives": 1647,
+        "falseNegatives": 53,
+        "trueNegatives": 298,
+        "falsePositives": 14,
+        "totalPHI": 1700,
+        "totalNonPHI": 312
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T10:55:41.171Z",
+        "t_occurred": "2025-12-05T10:55:41.171Z",
+        "t_valid_from": "2025-12-05T10:55:41.171Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932458047_f9glycanx": {
+      "id": "run_1764932458047_f9glycanx",
+      "timestamp": "2025-12-05T11:00:58.047Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8583,
+        "specificity": 94.2492,
+        "precision": 98.9104,
+        "f1Score": 97.8736
+      },
+      "confusionMatrix": {
+        "truePositives": 1634,
+        "falseNegatives": 53,
+        "trueNegatives": 295,
+        "falsePositives": 18,
+        "totalPHI": 1687,
+        "totalNonPHI": 313
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:00:58.047Z",
+        "t_occurred": "2025-12-05T11:00:58.047Z",
+        "t_valid_from": "2025-12-05T11:00:58.047Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932690116_2qd2w0r84": {
+      "id": "run_1764932690116_2qd2w0r84",
+      "timestamp": "2025-12-05T11:04:50.116Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7078,
+        "specificity": 94.3038,
+        "precision": 98.9176,
+        "f1Score": 97.8002
+      },
+      "confusionMatrix": {
+        "truePositives": 1645,
+        "falseNegatives": 56,
+        "trueNegatives": 298,
+        "falsePositives": 18,
+        "totalPHI": 1701,
+        "totalNonPHI": 316
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:04:50.116Z",
+        "t_occurred": "2025-12-05T11:04:50.116Z",
+        "t_valid_from": "2025-12-05T11:04:50.116Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932797224_x1c2urn8r": {
+      "id": "run_1764932797224_x1c2urn8r",
+      "timestamp": "2025-12-05T11:06:37.224Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 95.9483,
+        "specificity": 94.2122,
+        "precision": 98.9104,
+        "f1Score": 97.4069
+      },
+      "confusionMatrix": {
+        "truePositives": 1634,
+        "falseNegatives": 69,
+        "trueNegatives": 293,
+        "falsePositives": 18,
+        "totalPHI": 1703,
+        "totalNonPHI": 311
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:06:37.224Z",
+        "t_occurred": "2025-12-05T11:06:37.224Z",
+        "t_valid_from": "2025-12-05T11:06:37.224Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932832181_5mhgj9yt3": {
+      "id": "run_1764932832181_5mhgj9yt3",
+      "timestamp": "2025-12-05T11:07:12.181Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.4809,
+        "specificity": 93.2476,
+        "precision": 98.7395,
+        "f1Score": 97.5972
+      },
+      "confusionMatrix": {
+        "truePositives": 1645,
+        "falseNegatives": 60,
+        "trueNegatives": 290,
+        "falsePositives": 21,
+        "totalPHI": 1705,
+        "totalNonPHI": 311
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:07:12.181Z",
+        "t_occurred": "2025-12-05T11:07:12.181Z",
+        "t_valid_from": "2025-12-05T11:07:12.181Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932905230_6jerqfatq": {
+      "id": "run_1764932905230_6jerqfatq",
+      "timestamp": "2025-12-05T11:08:25.230Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 95.6856,
+        "specificity": 92.7445,
+        "precision": 98.5993,
+        "f1Score": 97.1206
+      },
+      "confusionMatrix": {
+        "truePositives": 1619,
+        "falseNegatives": 73,
+        "trueNegatives": 294,
+        "falsePositives": 23,
+        "totalPHI": 1692,
+        "totalNonPHI": 317
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:08:25.230Z",
+        "t_occurred": "2025-12-05T11:08:25.230Z",
+        "t_valid_from": "2025-12-05T11:08:25.230Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932931587_5jlgu42jp": {
+      "id": "run_1764932931587_5jlgu42jp",
+      "timestamp": "2025-12-05T11:08:51.587Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8805,
+        "specificity": 90.3537,
+        "precision": 98.21,
+        "f1Score": 97.5407
+      },
+      "confusionMatrix": {
+        "truePositives": 1646,
+        "falseNegatives": 53,
+        "trueNegatives": 281,
+        "falsePositives": 30,
+        "totalPHI": 1699,
+        "totalNonPHI": 311
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:08:51.587Z",
+        "t_occurred": "2025-12-05T11:08:51.587Z",
+        "t_valid_from": "2025-12-05T11:08:51.587Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764932986719_3aouxhu7b": {
+      "id": "run_1764932986719_3aouxhu7b",
+      "timestamp": "2025-12-05T11:09:46.719Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8787,
+        "specificity": 92.1384,
+        "precision": 98.503,
+        "f1Score": 97.6841
+      },
+      "confusionMatrix": {
+        "truePositives": 1645,
+        "falseNegatives": 53,
+        "trueNegatives": 293,
+        "falsePositives": 25,
+        "totalPHI": 1698,
+        "totalNonPHI": 318
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:09:46.719Z",
+        "t_occurred": "2025-12-05T11:09:46.719Z",
+        "t_valid_from": "2025-12-05T11:09:46.719Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764933070850_v8w4y9vpp": {
+      "id": "run_1764933070850_v8w4y9vpp",
+      "timestamp": "2025-12-05T11:11:10.850Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.4685,
+        "specificity": 92.9712,
+        "precision": 98.6755,
+        "f1Score": 97.5595
+      },
+      "confusionMatrix": {
+        "truePositives": 1639,
+        "falseNegatives": 60,
+        "trueNegatives": 291,
+        "falsePositives": 22,
+        "totalPHI": 1699,
+        "totalNonPHI": 313
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:11:10.850Z",
+        "t_occurred": "2025-12-05T11:11:10.850Z",
+        "t_valid_from": "2025-12-05T11:11:10.850Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764933121064_z0ndmxatn": {
+      "id": "run_1764933121064_z0ndmxatn",
+      "timestamp": "2025-12-05T11:12:01.064Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7251,
+        "specificity": 91.0256,
+        "precision": 98.3353,
+        "f1Score": 97.5236
+      },
+      "confusionMatrix": {
+        "truePositives": 1654,
+        "falseNegatives": 56,
+        "trueNegatives": 284,
+        "falsePositives": 28,
+        "totalPHI": 1710,
+        "totalNonPHI": 312
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:12:01.064Z",
+        "t_occurred": "2025-12-05T11:12:01.064Z",
+        "t_valid_from": "2025-12-05T11:12:01.064Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764933342988_jd12mlx48": {
+      "id": "run_1764933342988_jd12mlx48",
+      "timestamp": "2025-12-05T11:15:42.988Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.5355,
+        "specificity": 93.2506,
+        "precision": 98.6888,
+        "f1Score": 97.6002,
+        "mcc": 0.8598
+      },
+      "confusionMatrix": {
+        "tp": 6548,
+        "tn": 1202,
+        "fp": 87,
+        "fn": 235,
+        "total": 8072,
+        "actualPositive": 6783,
+        "actualNegative": 1289
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.5% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:15:42.988Z",
+        "t_occurred": "2025-12-05T11:15:42.988Z",
+        "t_valid_from": "2025-12-05T11:15:42.988Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764933491328_8gezv0fa7": {
+      "id": "run_1764933491328_8gezv0fa7",
+      "timestamp": "2025-12-05T11:18:11.328Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.5862,
+        "specificity": 92.6242,
+        "precision": 98.5734,
+        "f1Score": 97.5697,
+        "mcc": 0.8568
+      },
+      "confusionMatrix": {
+        "tp": 6564,
+        "tn": 1193,
+        "fp": 95,
+        "fn": 232,
+        "total": 8084,
+        "actualPositive": 6796,
+        "actualNegative": 1288
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.6% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:18:11.328Z",
+        "t_occurred": "2025-12-05T11:18:11.328Z",
+        "t_valid_from": "2025-12-05T11:18:11.328Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764933702666_f0ws5dbao": {
+      "id": "run_1764933702666_f0ws5dbao",
+      "timestamp": "2025-12-05T11:21:42.666Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.6309,
+        "specificity": 93.2099,
+        "precision": 98.6779,
+        "f1Score": 97.6436
+      },
+      "confusionMatrix": {
+        "truePositives": 6568,
+        "falseNegatives": 229,
+        "trueNegatives": 1208,
+        "falsePositives": 88,
+        "totalPHI": 6797,
+        "totalNonPHI": 1296
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:21:42.667Z",
+        "t_occurred": "2025-12-05T11:21:42.666Z",
+        "t_valid_from": "2025-12-05T11:21:42.667Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764933935338_6cnndw4bf": {
+      "id": "run_1764933935338_6cnndw4bf",
+      "timestamp": "2025-12-05T11:25:35.338Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.3388,
+        "specificity": 93.3025,
+        "precision": 98.6896,
+        "f1Score": 97.5
+      },
+      "confusionMatrix": {
+        "truePositives": 6552,
+        "falseNegatives": 249,
+        "trueNegatives": 1212,
+        "falsePositives": 87,
+        "totalPHI": 6801,
+        "totalNonPHI": 1299
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:25:35.338Z",
+        "t_occurred": "2025-12-05T11:25:35.338Z",
+        "t_valid_from": "2025-12-05T11:25:35.338Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764934034995_8do175gsu": {
+      "id": "run_1764934034995_8do175gsu",
+      "timestamp": "2025-12-05T11:27:14.995Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.6926,
+        "specificity": 93.2506,
+        "precision": 98.6947,
+        "f1Score": 97.6834
+      },
+      "confusionMatrix": {
+        "truePositives": 6578,
+        "falseNegatives": 225,
+        "trueNegatives": 1202,
+        "falsePositives": 87,
+        "totalPHI": 6803,
+        "totalNonPHI": 1289
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:27:14.995Z",
+        "t_occurred": "2025-12-05T11:27:14.995Z",
+        "t_valid_from": "2025-12-05T11:27:14.995Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764934580251_0y1n5nu9g": {
+      "id": "run_1764934580251_0y1n5nu9g",
+      "timestamp": "2025-12-05T11:36:20.251Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.8093,
+        "specificity": 93.6037,
+        "precision": 98.7699,
+        "f1Score": 97.7798
+      },
+      "confusionMatrix": {
+        "truePositives": 6584,
+        "falseNegatives": 217,
+        "trueNegatives": 1200,
+        "falsePositives": 82,
+        "totalPHI": 6801,
+        "totalNonPHI": 1282
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:36:20.251Z",
+        "t_occurred": "2025-12-05T11:36:20.251Z",
+        "t_valid_from": "2025-12-05T11:36:20.251Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764934999280_kpap2nsyx": {
+      "id": "run_1764934999280_kpap2nsyx",
+      "timestamp": "2025-12-05T11:43:19.280Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.9106,
+        "specificity": 93.0716,
+        "precision": 98.6458,
+        "f1Score": 97.7705,
+        "mcc": 0.8689
+      },
+      "confusionMatrix": {
+        "truePositives": 6556,
+        "falseNegatives": 209,
+        "trueNegatives": 1209,
+        "falsePositives": 90,
+        "totalPHI": 6765,
+        "totalNonPHI": 1299
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:43:19.280Z",
+        "t_occurred": "2025-12-05T11:43:19.280Z",
+        "t_valid_from": "2025-12-05T11:43:19.280Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764935200718_0ppb272fh": {
+      "id": "run_1764935200718_0ppb272fh",
+      "timestamp": "2025-12-05T11:46:40.718Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7211,
+        "specificity": 94.0171,
+        "precision": 98.843,
+        "f1Score": 97.7705,
+        "mcc": 0.8693
+      },
+      "confusionMatrix": {
+        "truePositives": 6578,
+        "falseNegatives": 223,
+        "trueNegatives": 1210,
+        "falsePositives": 77,
+        "totalPHI": 6801,
+        "totalNonPHI": 1287
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:46:40.718Z",
+        "t_occurred": "2025-12-05T11:46:40.718Z",
+        "t_valid_from": "2025-12-05T11:46:40.718Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764935326853_ig6xfgo0e": {
+      "id": "run_1764935326853_ig6xfgo0e",
+      "timestamp": "2025-12-05T11:48:46.853Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7319,
+        "specificity": 94.1589,
+        "precision": 98.8715,
+        "f1Score": 97.79,
+        "mcc": 0.8704
+      },
+      "confusionMatrix": {
+        "truePositives": 6571,
+        "falseNegatives": 222,
+        "trueNegatives": 1209,
+        "falsePositives": 75,
+        "totalPHI": 6793,
+        "totalNonPHI": 1284
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T11:48:46.853Z",
+        "t_occurred": "2025-12-05T11:48:46.853Z",
+        "t_valid_from": "2025-12-05T11:48:46.853Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764936151773_tzboz9raf": {
+      "id": "run_1764936151773_tzboz9raf",
+      "timestamp": "2025-12-05T12:02:31.773Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.7666,
+        "specificity": 88.4848,
+        "precision": 97.7435,
+        "f1Score": 97.2526,
+        "mcc": 0.8356
+      },
+      "confusionMatrix": {
+        "truePositives": 1646,
+        "falseNegatives": 55,
+        "trueNegatives": 292,
+        "falsePositives": 38,
+        "totalPHI": 1701,
+        "totalNonPHI": 330
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T12:02:31.773Z",
+        "t_occurred": "2025-12-05T12:02:31.773Z",
+        "t_valid_from": "2025-12-05T12:02:31.773Z",
+        "t_valid_until": null
+      }
     }
   },
   "Intervention": {

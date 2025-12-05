@@ -798,20 +798,43 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Normalize common OCR substitutions in names
+   * Handles: digit-for-letter (1→l, 0→O, 7→u), case issues, extra spaces
    */
   private normalizeOcrName(name: string): string {
+    // Extended OCR substitution map for names
     const cleaned = name
-      .replace(/[0O]/g, "o")
-      .replace(/[1Il|]/g, "l")
-      .replace(/[5Ss]/g, "s")
-      .replace(/[8B]/g, "b")
-      .replace(/[6G]/g, "g");
+      .replace(/0/g, "o") // 0 → o
+      .replace(/1/g, "l") // 1 → l
+      .replace(/\|/g, "l") // | → l
+      .replace(/7/g, "u") // 7 → u (common in scans: La7rent → Laurent)
+      .replace(/4/g, "a") // 4 → a
+      .replace(/5/g, "s") // 5 → s
+      .replace(/8/g, "b") // 8 → b
+      .replace(/6/g, "g") // 6 → g
+      .replace(/9/g, "g") // 9 → g
+      .replace(/3/g, "e") // 3 → e
+      .replace(/2/g, "z") // 2 → z
+      .replace(/\$/g, "s") // $ → s
+      .replace(/@/g, "a") // @ → a
+      .replace(/!/g, "i"); // ! → i
 
+    // Collapse multiple spaces and normalize
     return cleaned
       .split(/\s+/)
       .filter((part) => part.length > 0)
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
       .join(" ");
+  }
+
+  /**
+   * Check if a string contains OCR-style digit substitutions that look like name corruption
+   */
+  private hasOcrDigitSubstitution(text: string): boolean {
+    // Check for digits that commonly substitute for letters in OCR
+    // Must be surrounded by letters to be likely OCR error (not a real number)
+    return (
+      /[a-zA-Z][0-9][a-zA-Z]/.test(text) || /[a-zA-Z][|$@!][a-zA-Z]/.test(text)
+    );
   }
 
   /**

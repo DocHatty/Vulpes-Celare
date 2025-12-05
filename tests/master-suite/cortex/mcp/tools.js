@@ -19,7 +19,54 @@
 // TOOL DEFINITIONS
 // ============================================================================
 
+const { spawn } = require("child_process");
+const path = require("path");
+
 const TOOLS = [
+  // ─────────────────────────────────────────────────────────────────────────
+  // TEST EXECUTION - THE MAIN TOOL
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    name: "run_tests",
+    description: `Execute the full PHI detection test suite and return comprehensive analyzed results. This is the PRIMARY tool for the improvement loop.
+
+Returns:
+- metrics: sensitivity, specificity, F1, F2, MCC, grade
+- top_failure: type, count, examples, file to edit, historical context
+- action: specific instruction for what to fix
+- all_failures: grouped by type with counts
+- insights: warnings and opportunities
+- history_consulted: what worked/failed before for similar issues
+
+After receiving results, the LLM should:
+1. Read the recommended file
+2. Make the fix
+3. Call run_tests again to verify improvement`,
+    inputSchema: {
+      type: "object",
+      properties: {
+        profile: {
+          type: "string",
+          enum: ["HIPAA_STRICT", "DEVELOPMENT", "RESEARCH", "OCR_TOLERANT"],
+          description: "Grading profile (default: HIPAA_STRICT)",
+        },
+        documentCount: {
+          type: "number",
+          description: "Number of test documents (default: 200)",
+        },
+        quick: {
+          type: "boolean",
+          description: "Quick test with 50 documents",
+        },
+        focusPhiType: {
+          type: "string",
+          description:
+            "Focus analysis on specific PHI type (NAME, SSN, DATE, etc.)",
+        },
+      },
+    },
+  },
+
   // ─────────────────────────────────────────────────────────────────────────
   // ANALYSIS TOOLS
   // ─────────────────────────────────────────────────────────────────────────
@@ -389,6 +436,10 @@ const TOOLS = [
 
 async function executeTool(name, args, modules) {
   switch (name) {
+    // TEST EXECUTION - PRIMARY TOOL
+    case "run_tests":
+      return runTests(args, modules);
+
     // ANALYSIS TOOLS
     case "analyze_test_results":
       return analyzeTestResults(args, modules);
@@ -450,6 +501,483 @@ async function executeTool(name, args, modules) {
 // ============================================================================
 // TOOL IMPLEMENTATIONS
 // ============================================================================
+
+// ─────────────────────────────────────────────────────────────────────────────
+// run_tests - THE PRIMARY TOOL
+// Executes tests and returns fully analyzed, actionable results
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function runTests(args, modules) {
+  const {
+    profile = "HIPAA_STRICT",
+    documentCount = 200,
+    quick = false,
+    focusPhiType = null,
+  } = args || {};
+
+  const count = quick ? 50 : documentCount;
+
+  console.error(`[Cortex] Running tests: ${count} docs, profile=${profile}`);
+
+  // STEP 1: Execute the test suite
+  const testResults = await executeTestSuite(count, profile);
+
+  if (testResults.error) {
+    return {
+      success: false,
+      error: testResults.error,
+      action: "Fix the error and try again",
+    };
+  }
+
+  console.error(`[Cortex] Tests complete. Analyzing results...`);
+
+  // STEP 2: Use metrics from RigorousAssessment (already calculated)
+  // testResults.metrics contains sensitivity, specificity, precision, etc.
+  const metrics = testResults.metrics || {};
+
+  // Get grade from the assessment results
+  const gradeInfo = {
+    grade: metrics.grade || testResults.grade || "?",
+    score: metrics.finalScore || 0,
+  };
+
+  // STEP 3: Analyze failure patterns
+  let patterns = { failurePatterns: [], stats: {} };
+  if (modules.patternRecognizer) {
+    patterns = modules.patternRecognizer.analyzeTestResult({
+      falseNegatives: testResults.failures,
+      falsePositives: testResults.overRedactions,
+    });
+  }
+
+  // STEP 4: Group failures by type
+  const failuresByType = groupFailuresByType(testResults.failures || []);
+  const sortedFailures = Object.entries(failuresByType)
+    .map(([type, items]) => ({ type, count: items.length, items }))
+    .sort((a, b) => b.count - a.count);
+
+  // STEP 5: Identify top failure and get historical context
+  const topFailure = sortedFailures[0] || null;
+  let historyContext = null;
+  let fileToEdit = null;
+
+  if (topFailure && modules.historyConsultant) {
+    console.error(`[Cortex] Consulting history for ${topFailure.type}...`);
+    historyContext = await modules.historyConsultant.consult("HOW_TO_FIX", {
+      phiType: topFailure.type,
+      issueType: "FALSE_NEGATIVE",
+    });
+  }
+
+  // STEP 6: Determine which file to edit
+  if (topFailure) {
+    fileToEdit = getFileForPhiType(topFailure.type, modules);
+  }
+
+  // STEP 7: Generate insights
+  let insights = { critical: [], high: [], opportunities: [] };
+  if (modules.insightGenerator) {
+    // Feed current data to insight generator
+    modules.insightGenerator.generateInsights();
+    const allInsights = modules.insightGenerator.getActiveInsights();
+    insights = {
+      critical: allInsights
+        .filter((i) => i.priority === "CRITICAL")
+        .slice(0, 3),
+      high: allInsights.filter((i) => i.priority === "HIGH").slice(0, 3),
+      opportunities: allInsights
+        .filter((i) => i.type === "OPPORTUNITY")
+        .slice(0, 3),
+    };
+  }
+
+  // STEP 8: Record this test run to temporal index
+  if (modules.temporalIndex) {
+    modules.temporalIndex.recordMetrics({
+      ...metrics,
+      timestamp: new Date().toISOString(),
+      documentCount: count,
+      profile,
+    });
+  }
+
+  // STEP 9: Build the action recommendation
+  const action = buildActionRecommendation(
+    topFailure,
+    fileToEdit,
+    historyContext,
+    metrics,
+  );
+
+  // STEP 10: Assemble final response
+  const response = {
+    success: true,
+    timestamp: new Date().toISOString(),
+
+    // Core metrics
+    metrics: {
+      sensitivity: round(metrics.sensitivity, 2),
+      specificity: round(metrics.specificity, 2),
+      precision: round(metrics.precision, 2),
+      f1Score: round(metrics.f1Score, 2),
+      f2Score: round(metrics.f2Score, 2),
+      mcc: round(metrics.mcc, 3),
+      grade: gradeInfo.grade,
+      score: round(gradeInfo.score, 1),
+    },
+
+    // Confusion matrix (use metrics source for consistency)
+    confusionMatrix: {
+      truePositives: metrics.confusionMatrix?.truePositives ?? testResults.confusionMatrix?.tp ?? 0,
+      trueNegatives: metrics.confusionMatrix?.trueNegatives ?? testResults.confusionMatrix?.tn ?? 0,
+      falsePositives: metrics.confusionMatrix?.falsePositives ?? testResults.confusionMatrix?.fp ?? 0,
+      falseNegatives: metrics.confusionMatrix?.falseNegatives ?? testResults.confusionMatrix?.fn ?? 0,
+      totalPHI: metrics.confusionMatrix?.totalPHI ?? 0,
+      totalNonPHI: metrics.confusionMatrix?.totalNonPHI ?? 0,
+      // Integrity check: TP + FN should equal totalPHI
+      integrityPassed: metrics.integrityCheck?.passed ?? true,
+    },
+
+    // Top failure with full context
+    topFailure: topFailure
+      ? {
+        type: topFailure.type,
+        count: topFailure.count,
+        examples: topFailure.items.slice(0, 5).map((f) => ({
+          value: f.value,
+          context: f.context?.substring(0, 100),
+          errorLevel: f.errorLevel,
+        })),
+        fileToEdit: fileToEdit?.path || null,
+        lineHint: fileToEdit?.lineHint || null,
+        historicalContext: historyContext
+          ? {
+            summary: historyContext.summary,
+            previousSuccesses: historyContext.relatedSuccesses?.length || 0,
+            previousFailures: historyContext.relatedFailures?.length || 0,
+            warnings: historyContext.warnings?.map((w) => w.message) || [],
+            suggestedApproach: historyContext.suggestedApproach || null,
+          }
+          : null,
+      }
+      : null,
+
+    // Action instruction for LLM
+    action,
+
+    // All failures grouped
+    allFailures: sortedFailures.map((f) => ({
+      type: f.type,
+      count: f.count,
+    })),
+
+    // Insights
+    insights: {
+      critical: insights.critical.map((i) => i.title || i.content),
+      high: insights.high.map((i) => i.title || i.content),
+      opportunities: insights.opportunities.map((i) => i.title || i.content),
+    },
+
+    // Test metadata
+    testInfo: {
+      documentCount: count,
+      profile,
+      totalPhi: testResults.totalPhi || 0,
+      totalNonPhi: testResults.totalNonPhi || 0,
+    },
+
+    // Test validation warnings (CRITICAL - indicates test bugs)
+    testValidation: testResults.testValidation || null,
+  };
+
+  // Focus on specific PHI type if requested
+  if (focusPhiType) {
+    const focusedFailure = sortedFailures.find(
+      (f) => f.type.toUpperCase() === focusPhiType.toUpperCase(),
+    );
+    if (focusedFailure) {
+      response.focusedAnalysis = {
+        type: focusedFailure.type,
+        count: focusedFailure.count,
+        examples: focusedFailure.items.slice(0, 10).map((f) => ({
+          value: f.value,
+          context: f.context,
+          errorLevel: f.errorLevel,
+        })),
+        fileToEdit: getFileForPhiType(focusedFailure.type, modules),
+      };
+    }
+  }
+
+  console.error(
+    `[Cortex] Analysis complete. Grade: ${gradeInfo.grade}, Sensitivity: ${round(metrics.sensitivity, 2)}%`,
+  );
+
+  return response;
+}
+
+// Execute the actual test suite INTERNALLY (no external process spawning)
+// The MCP server runs tests directly using RigorousAssessment
+async function executeTestSuite(documentCount, profile) {
+  console.error(
+    `[Cortex] ════════════════════════════════════════════════════`,
+  );
+  console.error(`[Cortex] RUNNING ASSESSMENT INTERNALLY`);
+  console.error(`[Cortex]   Documents: ${documentCount}`);
+  console.error(`[Cortex]   Profile: ${profile}`);
+  console.error(
+    `[Cortex] ════════════════════════════════════════════════════`,
+  );
+
+  try {
+    // Import the RigorousAssessment class directly - NO external process!
+    // Clear require cache for entire test suite to ensure fresh code
+    const basePath = path.join(__dirname, "..", "..");
+    Object.keys(require.cache).forEach((key) => {
+      if (key.startsWith(basePath) && !key.includes("node_modules")) {
+        delete require.cache[key];
+      }
+    });
+
+    const {
+      RigorousAssessment,
+    } = require("../../assessment/rigorous-assessment");
+
+    // Create assessment instance with grading profile
+    const assessment = new RigorousAssessment({
+      documentCount: documentCount,
+      verbose: false,
+      profile: profile, // Pass grading profile (HIPAA_STRICT, DEVELOPMENT, etc.)
+    });
+
+    console.error(`[Cortex] Phase 1: Running full test suite...`);
+    await assessment.runFullSuite();
+
+    console.error(`[Cortex] Phase 2: Calculating metrics...`);
+    assessment.calculateMetrics();
+
+    console.error(`[Cortex] Phase 3: Investigating failures...`);
+    assessment.investigateFailures();
+
+    // Extract results
+    const results = assessment.results;
+    const cm = results.metrics?.confusionMatrix || {};
+
+    const confusionMatrix = {
+      tp: cm.truePositives ?? 0,
+      tn: cm.trueNegatives ?? 0,
+      fp: cm.falsePositives ?? 0,
+      fn: cm.falseNegatives ?? 0,
+    };
+
+    console.error(
+      `[Cortex] ════════════════════════════════════════════════════`,
+    );
+    console.error(`[Cortex] ASSESSMENT COMPLETE`);
+    console.error(`[Cortex]   Grade: ${results.metrics?.grade}`);
+    console.error(
+      `[Cortex]   Sensitivity: ${results.metrics?.sensitivity?.toFixed(2)}%`,
+    );
+    console.error(
+      `[Cortex]   Specificity: ${results.metrics?.specificity?.toFixed(2)}%`,
+    );
+    console.error(`[Cortex]   Failures: ${results.failures?.length || 0}`);
+    console.error(
+      `[Cortex] ════════════════════════════════════════════════════`,
+    );
+
+    // Check for test validation warnings
+    const validation = results.metrics?.testValidation || {};
+    const hasValidationWarning = validation.skippedPercentage > 50;
+
+    if (hasValidationWarning) {
+      console.error(
+        `[Cortex] ⚠️ TEST VALIDATION WARNING: ${validation.skippedPercentage}% of non-PHI items not found in documents!`,
+      );
+    }
+
+    return {
+      metrics: results.metrics,
+      confusionMatrix,
+      failures: results.failures || [],
+      overRedactions: results.overRedactions || [],
+      investigation: results.investigation || {},
+      grade: results.metrics?.grade,
+      totalPhi: confusionMatrix.tp + confusionMatrix.fn,
+      totalNonPhi: confusionMatrix.tn + confusionMatrix.fp,
+      // Include validation info so LLM knows about test issues
+      testValidation: {
+        skippedNonPHI: validation.skippedNonPHI || 0,
+        skippedPercentage: validation.skippedPercentage || 0,
+        skippedByType: validation.skippedByType || {},
+        hasCriticalWarning: hasValidationWarning,
+      },
+    };
+  } catch (err) {
+    console.error(`[Cortex] ❌ ASSESSMENT FAILED: ${err.message}`);
+    console.error(`[Cortex] Stack: ${err.stack}`);
+    return {
+      error: `Assessment failed: ${err.message}`,
+      stack: err.stack,
+    };
+  }
+}
+
+// Group failures by PHI type
+function groupFailuresByType(failures) {
+  const groups = {};
+  for (const failure of failures) {
+    const type = failure.phiType || failure.type || "UNKNOWN";
+    if (!groups[type]) {
+      groups[type] = [];
+    }
+    groups[type].push(failure);
+  }
+  return groups;
+}
+
+// Get the file that handles a specific PHI type
+function getFileForPhiType(phiType, modules) {
+  // Map PHI types to filter files
+  const fileMap = {
+    NAME: {
+      path: "src/redaction/filters/NameFilter.ts",
+      lineHint: null,
+      description: "Name detection filter",
+    },
+    SSN: {
+      path: "src/redaction/filters/SSNFilter.ts",
+      lineHint: null,
+      description: "Social Security Number filter",
+    },
+    DOB: {
+      path: "src/redaction/filters/DateFilter.ts",
+      lineHint: null,
+      description: "Date of Birth filter",
+    },
+    DATE: {
+      path: "src/redaction/filters/DateFilter.ts",
+      lineHint: null,
+      description: "Date filter",
+    },
+    PHONE: {
+      path: "src/redaction/filters/PhoneFilter.ts",
+      lineHint: null,
+      description: "Phone number filter",
+    },
+    EMAIL: {
+      path: "src/redaction/filters/EmailFilter.ts",
+      lineHint: null,
+      description: "Email filter",
+    },
+    ADDRESS: {
+      path: "src/redaction/filters/AddressFilter.ts",
+      lineHint: null,
+      description: "Address filter",
+    },
+    MRN: {
+      path: "src/redaction/filters/MRNFilter.ts",
+      lineHint: null,
+      description: "Medical Record Number filter",
+    },
+    MEDICATION: {
+      path: "src/redaction/dictionaries/medications.json",
+      lineHint: null,
+      description: "Medications dictionary",
+    },
+    DIAGNOSIS: {
+      path: "src/redaction/dictionaries/diagnoses.json",
+      lineHint: null,
+      description: "Diagnoses dictionary",
+    },
+  };
+
+  const upperType = phiType?.toUpperCase() || "";
+
+  // Direct match
+  if (fileMap[upperType]) {
+    return fileMap[upperType];
+  }
+
+  // Try to find via codebase analyzer
+  if (modules.codebaseAnalyzer) {
+    const state = modules.codebaseAnalyzer.exportForLLM();
+    const filter = state.filterCapabilities?.find(
+      (f) =>
+        f.phiTypes?.includes(upperType) ||
+        f.name?.toUpperCase().includes(upperType),
+    );
+    if (filter) {
+      return {
+        path: filter.file || `src/redaction/filters/${filter.name}.ts`,
+        lineHint: null,
+        description: `Filter for ${upperType}`,
+      };
+    }
+  }
+
+  // Default fallback
+  return {
+    path: "src/redaction/filters/",
+    lineHint: null,
+    description: `Look for filter handling ${phiType}`,
+  };
+}
+
+// Build action recommendation
+function buildActionRecommendation(
+  topFailure,
+  fileToEdit,
+  historyContext,
+  metrics,
+) {
+  if (!topFailure) {
+    if (metrics.sensitivity >= 99) {
+      return "Excellent! Sensitivity is at 99%+. Focus on reducing false positives if needed.";
+    }
+    return "No specific failures identified. Review test output for details.";
+  }
+
+  const parts = [];
+
+  // What to do
+  parts.push(`Fix ${topFailure.type} detection (${topFailure.count} missed).`);
+
+  // Where to do it
+  if (fileToEdit?.path) {
+    parts.push(`Edit: ${fileToEdit.path}`);
+  }
+
+  // Examples
+  const exampleValues = topFailure.items
+    .slice(0, 3)
+    .map((f) => `"${f.value}"`)
+    .join(", ");
+  parts.push(`Examples: ${exampleValues}`);
+
+  // Historical guidance
+  if (historyContext?.suggestedApproach) {
+    parts.push(`Suggested: ${historyContext.suggestedApproach}`);
+  } else if (historyContext?.relatedSuccesses?.length > 0) {
+    parts.push(
+      `Note: Similar fixes succeeded ${historyContext.relatedSuccesses.length} times before.`,
+    );
+  }
+
+  // Warnings
+  if (historyContext?.warnings?.length > 0) {
+    parts.push(`Warning: ${historyContext.warnings[0].message}`);
+  }
+
+  return parts.join(" ");
+}
+
+// Round helper
+function round(num, decimals) {
+  if (typeof num !== "number" || isNaN(num)) return 0;
+  return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+}
 
 async function analyzeTestResults(args, modules) {
   const { results, options = {} } = args;

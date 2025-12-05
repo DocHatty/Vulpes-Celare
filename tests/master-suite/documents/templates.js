@@ -951,36 +951,91 @@ module.exports = {
   generateInsuranceDocument,
 
   // Template list for random selection
+  // Each template declares which non-PHI fields it uses for accurate ground truth validation
   TEMPLATES: [
     {
       name: "History & Physical",
       generator: generateHistoryAndPhysical,
       complexity: "high",
+      // Non-PHI fields this template uses (for ground truth validation)
+      usesNonPHI: {
+        hospital: true,
+        attendingName: true,
+        pcpName: true,
+        diagnosis1: true,
+        diagnosis2: true,
+        diagnosis3: true,
+        procedure1: true,
+        medication1: true,
+        medication2: true,
+        medication3: true,
+        insuranceName: true,
+        age: true,
+      },
     },
     {
       name: "Operative Report",
       generator: generateOperativeReport,
       complexity: "high",
+      usesNonPHI: {
+        hospital: true,
+        surgeonName: true,
+        assistantName: true,
+        anesthesiologistName: true,
+        diagnosis1: true,
+        procedure1: true,
+        age: true,
+      },
     },
     {
       name: "Registration Form",
       generator: generateRegistrationForm,
       complexity: "extreme",
+      usesNonPHI: {
+        hospital: true,
+        pcpName: true,
+        insuranceName: true,
+        age: true,
+      },
     },
     {
       name: "Referral Letter",
       generator: generateReferralLetter,
       complexity: "medium",
+      usesNonPHI: {
+        hospital: true,
+        attendingName: true,
+        pcpName: true,
+        diagnosis1: true,
+        diagnosis2: true,
+        diagnosis3: true,
+        medication1: true,
+        age: true,
+      },
     },
     {
       name: "Pathology Report",
       generator: generatePathologyReport,
       complexity: "high",
+      usesNonPHI: {
+        hospital: true,
+        surgeonName: true,
+        pathologistName: true,
+        diagnosis1: true,
+        age: true,
+      },
     },
     {
       name: "Insurance EOB",
       generator: generateInsuranceDocument,
       complexity: "high",
+      usesNonPHI: {
+        hospital: true,
+        attendingName: true,
+        diagnosis1: true,
+        insuranceName: true,
+        // Note: age is NOT in Insurance EOB template
+      },
     },
   ],
 };

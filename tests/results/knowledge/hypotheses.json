@@ -1,0 +1,114 @@
+{
+  "active": [
+    {
+      "id": "HYP-1764931731445-0hgp14en9",
+      "pattern": "OCR_CONFUSION",
+      "affectedCount": 52,
+      "hypothesis": "Add character substitution patterns",
+      "confidence": 0.5668269230769232,
+      "reasoning": "Identified 52 failures matching OCR_CONFUSION pattern.",
+      "priority": "HIGH",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "xxx-xx-6o75",
+          "type": "SSN",
+          "evidence": "5↔S confusion possible"
+        },
+        {
+          "value": "0/92 7/23",
+          "type": "DATE",
+          "evidence": "0↔O confusion possible; 2↔Z confusion possible"
+        },
+        {
+          "value": "8991 Eighth Pike",
+          "type": "ADDRESS",
+          "evidence": "1↔l↔I confusion possible; 8↔B confusion possible"
+        }
+      ]
+    },
+    {
+      "id": "HYP-1764931731445-qqexd2z14",
+      "pattern": "OCR_CONFUSION",
+      "affectedCount": 52,
+      "hypothesis": "Implement fuzzy matching",
+      "confidence": 0.5668269230769232,
+      "reasoning": "Identified 52 failures matching OCR_CONFUSION pattern.",
+      "priority": "HIGH",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "xxx-xx-6o75",
+          "type": "SSN",
+          "evidence": "5↔S confusion possible"
+        },
+        {
+          "value": "0/92 7/23",
+          "type": "DATE",
+          "evidence": "0↔O confusion possible; 2↔Z confusion possible"
+        },
+        {
+          "value": "8991 Eighth Pike",
+          "type": "ADDRESS",
+          "evidence": "1↔l↔I confusion possible; 8↔B confusion possible"
+        }
+      ]
+    },
+    {
+      "id": "HYP-1764931731445-scl6rvorf",
+      "pattern": "CASE_VARIATION",
+      "affectedCount": 11,
+      "hypothesis": "Add case-insensitive matching",
+      "confidence": 0.6,
+      "reasoning": "Identified 11 failures matching CASE_VARIATION pattern.",
+      "priority": "MEDIUM",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "ISahelLA GonzaleZ",
+          "type": "NAME",
+          "evidence": "Mixed case pattern: \"ISahelLA GonzaleZ\""
+        },
+        {
+          "value": "PaUl SHAH",
+          "type": "NAME",
+          "evidence": "Mixed case pattern: \"PaUl SHAH\""
+        },
+        {
+          "value": "kTAYA MOORe",
+          "type": "NAME",
+          "evidence": "Mixed case pattern: \"kTAYA MOORe\""
+        }
+      ]
+    },
+    {
+      "id": "HYP-1764931731445-ur2kxzgan",
+      "pattern": "CASE_VARIATION",
+      "affectedCount": 11,
+      "hypothesis": "Normalize before matching",
+      "confidence": 0.6,
+      "reasoning": "Identified 11 failures matching CASE_VARIATION pattern.",
+      "priority": "MEDIUM",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "ISahelLA GonzaleZ",
+          "type": "NAME",
+          "evidence": "Mixed case pattern: \"ISahelLA GonzaleZ\""
+        },
+        {
+          "value": "PaUl SHAH",
+          "type": "NAME",
+          "evidence": "Mixed case pattern: \"PaUl SHAH\""
+        },
+        {
+          "value": "kTAYA MOORe",
+          "type": "NAME",
+          "evidence": "Mixed case pattern: \"kTAYA MOORe\""
+        }
+      ]
+    }
+  ],
+  "validated": [],
+  "invalidated": []
+}

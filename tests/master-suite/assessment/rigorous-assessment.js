@@ -136,6 +136,8 @@ class RigorousAssessment {
       verbose: options.verbose || false,
       outputDir:
         options.outputDir || path.join(__dirname, "..", "..", "results"),
+      // Grading profile: HIPAA_STRICT (default), DEVELOPMENT, RESEARCH, OCR_TOLERANT
+      profile: options.profile || "HIPAA_STRICT",
       ...options,
     };
 
@@ -156,7 +158,13 @@ class RigorousAssessment {
   async runFullSuite() {
     const startTime = Date.now();
 
-    // Import required modules
+    // Clear require cache for test documents to pick up any changes
+    const phiGenPath = require.resolve("../documents/phi-generator");
+    const templatesPath = require.resolve("../documents/templates");
+    delete require.cache[phiGenPath];
+    delete require.cache[templatesPath];
+
+    // Import required modules (fresh after cache clear)
     const {
       generateCompletePHIDataset,
     } = require("../documents/phi-generator");
@@ -196,16 +204,27 @@ class RigorousAssessment {
 
     const errorLevels = this.selectErrorLevels(this.options.documentCount);
 
-    for (let i = 0; i < this.options.documentCount; i++) {
-      // Progress update every 25 documents
-      if ((i + 1) % 25 === 0 || i === 0) {
-        process.stdout.write(
-          `  Progress: ${i + 1}/${this.options.documentCount} documents\r`,
-        );
-      }
+    // ========================================================================
+    // PARALLEL DOCUMENT PROCESSING
+    // Process documents concurrently for significant speed improvement
+    // ========================================================================
+    const CONCURRENCY = this.options.concurrency || 8; // Default 8 parallel workers
+    const totalDocs = this.options.documentCount;
+    let completed = 0;
 
-      const errorLevel = errorLevels[i];
-      const template = TEMPLATES[i % TEMPLATES.length];
+    // Prepare all document tasks
+    const documentTasks = [];
+    for (let i = 0; i < totalDocs; i++) {
+      documentTasks.push({
+        index: i,
+        errorLevel: errorLevels[i],
+        template: TEMPLATES[i % TEMPLATES.length],
+      });
+    }
+
+    // Process a single document
+    const processDocument = async (task) => {
+      const { index, errorLevel, template } = task;
 
       // Generate PHI data
       const phiData = generateCompletePHIDataset(errorLevel);
@@ -213,24 +232,55 @@ class RigorousAssessment {
       // Generate document
       const documentContent = template.generator(phiData);
 
-      // Process through engine (test as real use case)
+      // Process through engine
       const processStart = Date.now();
       const result = await engine.process(documentContent);
       const processTime = Date.now() - processStart;
 
-      // Store result with ground truth
-      this.results.documents.push({
-        id: i + 1,
+      // Filter non-PHI ground truth based on what THIS template actually uses
+      const templateUsesNonPHI = template.usesNonPHI || {};
+      const groundTruthNonPHI = phiData._groundTruthNonPHI || {};
+
+      const filteredNonPHI = Object.entries(groundTruthNonPHI)
+        .filter(([fieldName]) => templateUsesNonPHI[fieldName] === true)
+        .map(([fieldName, data]) => ({
+          type: data.type,
+          value: data.value,
+          source: fieldName,
+        }));
+
+      // Update progress counter
+      completed++;
+      if (completed % 25 === 0 || completed === totalDocs) {
+        process.stdout.write(
+          `  Progress: ${completed}/${totalDocs} documents (${CONCURRENCY}x parallel)\r`,
+        );
+      }
+
+      return {
+        id: index + 1,
         templateName: template.name,
         errorLevel,
         processTimeMs: processTime,
         originalContent: documentContent,
         redactedContent: result.text,
         expectedPHI: phiData._groundTruthPHI,
-        expectedNonPHI: phiData._groundTruthNonPHI,
+        expectedNonPHI: filteredNonPHI,
         engineReport: result.report,
-      });
+      };
+    };
+
+    // Execute with concurrency pool (batched Promise.all)
+    const results = [];
+    for (let i = 0; i < documentTasks.length; i += CONCURRENCY) {
+      const batch = documentTasks.slice(i, i + CONCURRENCY);
+      const batchResults = await Promise.all(batch.map(processDocument));
+      results.push(...batchResults);
     }
+
+    // Sort by ID to maintain order and add to results
+    results.sort((a, b) => a.id - b.id);
+    this.results.documents.push(...results);
 
     this.results.timing.processingMs = Date.now() - startTime;
     console.log(
@@ -375,6 +425,34 @@ class RigorousAssessment {
     const totalPHI = totalTruePositives + totalFalseNegatives;
     const totalNonPHI = totalTrueNegatives + totalFalsePositives;
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // METRIC INTEGRITY CHECKS - Guardrails against hallucination/false reporting
+    // ═══════════════════════════════════════════════════════════════════════════
+    const expectedTotalPHI = this.results.documents.reduce(
+      (sum, doc) => sum + doc.expectedPHI.length,
+      0,
+    );
+
+    if (totalPHI !== expectedTotalPHI) {
+      console.error(
+        `\n  ❌ INTEGRITY ERROR: Counted PHI (${totalPHI}) != Expected PHI (${expectedTotalPHI})`,
+      );
+      console.error(
+        `     This indicates a bug in the test system, not the engine!`,
+      );
+    }
+
+    // Verify confusion matrix integrity: TP + FN must equal total PHI items tested
+    const confusionMatrixSum = totalTruePositives + totalFalseNegatives;
+    if (confusionMatrixSum !== totalPHI) {
+      console.error(
+        `\n  ❌ INTEGRITY ERROR: TP + FN (${confusionMatrixSum}) != Total PHI (${totalPHI})`,
+      );
+      console.error(
+        `     Confusion matrix is corrupted - results are unreliable!`,
+      );
+    }
+
     const sensitivity =
       totalPHI > 0 ? (totalTruePositives / totalPHI) * 100 : 0;
     const specificity =
@@ -382,7 +460,7 @@ class RigorousAssessment {
     const precision =
       totalTruePositives + totalFalsePositives > 0
         ? (totalTruePositives / (totalTruePositives + totalFalsePositives)) *
-          100
+        100
         : 0;
     const recall = sensitivity;
     const f1Score =
@@ -390,13 +468,32 @@ class RigorousAssessment {
         ? (2 * (precision * recall)) / (precision + recall)
         : 0;
 
+    // F2-Score: Recall-weighted metric (beta=2) - HIPAA gold standard for de-identification
+    // F2 weights recall 4x more than precision because missing PHI is worse than over-redaction
+    const f2Score =
+      precision + recall > 0
+        ? (5 * (precision * recall)) / (4 * precision + recall)
+        : 0;
+
+    // MCC (Matthews Correlation Coefficient): Best single metric for imbalanced binary classification
+    // Range: -1 (total disagreement) to +1 (perfect prediction), 0 = random guessing
+    // Formula: (TP*TN - FP*FN) / sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN))
+    const mccNumerator = (totalTruePositives * totalTrueNegatives) - (totalFalsePositives * totalFalseNegatives);
+    const mccDenominator = Math.sqrt(
+      (totalTruePositives + totalFalsePositives) *
+      (totalTruePositives + totalFalseNegatives) *
+      (totalTrueNegatives + totalFalsePositives) *
+      (totalTrueNegatives + totalFalseNegatives)
+    );
+    const mcc = mccDenominator === 0 ? 0 : mccNumerator / mccDenominator;
+
     // Calculate overall score with weights
     let rawScore =
       sensitivity * GRADING_SCHEMA.weights.sensitivity +
       specificity * GRADING_SCHEMA.weights.specificity +
       precision * GRADING_SCHEMA.weights.precision;
 
-    // Apply penalties for critical failures
+    // Apply penalties for critical failures (profile-aware)
     let penalties = 0;
     const missedSSNs = this.results.failures.filter(
       (f) => f.phiType === "SSN",
@@ -408,11 +505,37 @@ class RigorousAssessment {
       (f) => f.phiType === "DATE" && f.source === "dob",
     ).length;
 
-    penalties += missedSSNs * GRADING_SCHEMA.penalties.missedSSN;
-    penalties += missedNames * GRADING_SCHEMA.penalties.missedPatientName;
-    penalties += missedDOBs * GRADING_SCHEMA.penalties.missedDOB;
+    // Penalty calculation based on profile
+    const profile = this.options.profile || "HIPAA_STRICT";
 
-    // Apply bonuses for perfect categories
+    if (profile === "DEVELOPMENT") {
+      // DEVELOPMENT: Diminishing penalties - useful for iterative improvement
+      // Uses log scale so early fixes have more impact on score
+      const diminishingPenalty = (count, basePenalty) => {
+        if (count === 0) return 0;
+        // First few misses hurt more, then diminishing returns
+        return -Math.min(Math.log2(count + 1) * Math.abs(basePenalty), 30);
+      };
+      penalties += diminishingPenalty(missedSSNs, GRADING_SCHEMA.penalties.missedSSN);
+      penalties += diminishingPenalty(missedNames, GRADING_SCHEMA.penalties.missedPatientName);
+      penalties += diminishingPenalty(missedDOBs, GRADING_SCHEMA.penalties.missedDOB);
+      // Cap total penalties in development
+      penalties = Math.max(penalties, -50);
+    } else if (profile === "RESEARCH") {
+      // RESEARCH: Minimal penalties - focus on understanding
+      const capped = Math.min(
+        missedSSNs * 2 + missedNames * 1 + missedDOBs * 1,
+        20
+      );
+      penalties = -capped;
+    } else {
+      // HIPAA_STRICT (default): Full linear penalties - production validation
+      penalties += missedSSNs * GRADING_SCHEMA.penalties.missedSSN;
+      penalties += missedNames * GRADING_SCHEMA.penalties.missedPatientName;
+      penalties += missedDOBs * GRADING_SCHEMA.penalties.missedDOB;
+    }
+
+    // Apply bonuses for perfect categories (all profiles)
     if (byPHIType["SSN"] && byPHIType["SSN"].fn === 0) {
       penalties += GRADING_SCHEMA.penalties.perfectSSN;
     }
@@ -514,6 +637,15 @@ class RigorousAssessment {
       precision: parseFloat(precision.toFixed(4)),
       recall: parseFloat(recall.toFixed(4)),
       f1Score: parseFloat(f1Score.toFixed(4)),
+      f2Score: parseFloat(f2Score.toFixed(4)), // Recall-weighted (HIPAA gold standard)
+      mcc: parseFloat(mcc.toFixed(4)), // Matthews Correlation Coefficient - gold standard for imbalanced data
+
+      // Integrity verification
+      integrityCheck: {
+        expectedPHI: expectedTotalPHI,
+        countedPHI: totalPHI,
+        passed: totalPHI === expectedTotalPHI,
+      },
 
       // Scoring
       rawScore: parseFloat(rawScore.toFixed(2)),
@@ -521,6 +653,7 @@ class RigorousAssessment {
       finalScore,
       grade,
       gradeDescription: GRADING_SCHEMA.descriptions[grade],
+      profile: profile, // Grading profile used (HIPAA_STRICT, DEVELOPMENT, etc.)
 
       // Breakdowns
       byPHIType,
@@ -898,10 +1031,21 @@ class RigorousAssessment {
 
   /**
    * Generate comprehensive report
+   * @param {Object} options - Optional settings
+   * @param {Object} options.smartGrade - Smart grading results to use instead of raw grade
    */
-  generateReport() {
+  generateReport(options = {}) {
     const m = this.results.metrics;
     const cm = m.confusionMatrix;
+
+    // Use smart grade if provided, otherwise fall back to raw metrics
+    const displayGrade = options.smartGrade?.grade || m.grade;
+    const displayScore = options.smartGrade?.finalScore ?? m.finalScore;
+    const displayDescription =
+      options.smartGrade?.gradeDescription || m.gradeDescription;
+    const displayProfile = options.smartGrade
+      ? ` (${options.profile || "DEVELOPMENT"} profile)`
+      : " (HIPAA_STRICT profile)";
 
     let report = `
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -922,15 +1066,15 @@ TEST CONFIGURATION
   Avg per Doc:     ${(this.results.timing.processingMs / this.results.documents.length).toFixed(1)}ms
 
 ══════════════════════════════════════════════════════════════════════════════
-                              FINAL GRADE
+                              FINAL GRADE${displayProfile}
 ══════════════════════════════════════════════════════════════════════════════
 
                          ╔═══════════════╗
-                         ║    ${m.grade.padStart(3)}        ║
-                         ║   ${m.finalScore}/100     ║
+                         ║    ${displayGrade.padStart(3)}        ║
+                         ║   ${displayScore}/100     ║
                          ╚═══════════════╝
 
-  ${m.gradeDescription}
+  ${displayDescription}
 
 ══════════════════════════════════════════════════════════════════════════════
 
@@ -949,6 +1093,14 @@ PRIMARY METRICS
   SPECIFICITY:            ${m.specificity.toFixed(2)}%  ← Non-PHI correctly preserved
   PRECISION (PPV):        ${m.precision.toFixed(2)}%  ← Redaction accuracy
   F1 SCORE:               ${m.f1Score.toFixed(2)}
+  F2 SCORE:               ${m.f2Score.toFixed(2)}    ← Recall-weighted (HIPAA gold standard)
+  MCC:                    ${(m.mcc || 0).toFixed(4)}  ← Gold standard for imbalanced data (-1 to +1)
+
+INTEGRITY CHECK
+────────────────────────────────────────────────────────────────────────────────
+  Expected PHI Items:     ${m.integrityCheck.expectedPHI}
+  Counted PHI Items:      ${m.integrityCheck.countedPHI}
+  Integrity Status:       ${m.integrityCheck.passed ? "✓ PASSED" : "❌ FAILED - Results may be unreliable!"}
 
 SCORE BREAKDOWN
 ────────────────────────────────────────────────────────────────────────────────
@@ -1063,8 +1215,9 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
 
   /**
    * Save results to file
+   * @param {Object} reportOptions - Options to pass to generateReport (e.g., smartGrade)
    */
-  saveResults() {
+  saveResults(reportOptions = {}) {
     // Ensure output directory exists
     if (!fs.existsSync(this.options.outputDir)) {
       fs.mkdirSync(this.options.outputDir, { recursive: true });
@@ -1089,15 +1242,23 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
       failures: this.results.failures,
       overRedactions: this.results.overRedactions,
       investigation: this.results.investigation,
+      // Include smart grade info if provided
+      smartGrade: reportOptions.smartGrade
+        ? {
+          profile: reportOptions.profile,
+          grade: reportOptions.smartGrade.grade,
+          score: reportOptions.smartGrade.finalScore,
+        }
+        : null,
     };
     fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
 
-    // Save text report
+    // Save text report (with smart grade if provided)
     const reportPath = path.join(
       this.options.outputDir,
       `rigorous-assessment-${timestamp}.txt`,
     );
-    fs.writeFileSync(reportPath, this.generateReport());
+    fs.writeFileSync(reportPath, this.generateReport(reportOptions));
 
     console.log(`\nResults saved:`);
     console.log(`  JSON: ${jsonPath}`);
