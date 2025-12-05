@@ -1,0 +1,42 @@
+{
+    "env": {
+        "node": true,
+        "es2021": true
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "no-console": [
+            "error",
+            {
+                "allow": [
+                    "error",
+                    "warn"
+                ]
+            }
+        ],
+        "no-restricted-syntax": [
+            "error",
+            {
+                "selector": "CallExpression[callee.object.object.name='process'][callee.object.property.name='stdout'][callee.property.name='write']",
+                "message": "FORBIDDEN: process.stdout.write breaks MCP protocol! Use process.stderr.write or console.error instead."
+            },
+            {
+                "selector": "CallExpression[callee.object.name='console'][callee.property.name='log']",
+                "message": "FORBIDDEN: console.log breaks MCP protocol! Use console.error for debug output."
+            }
+        ]
+    },
+    "overrides": [
+        {
+            "files": [
+                "cortex/mcp/server.js"
+            ],
+            "rules": {
+                "no-console": "off",
+                "no-restricted-syntax": "off"
+            }
+        }
+    ]
+}

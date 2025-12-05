@@ -318,33 +318,15 @@
       "foundHistory": false
     },
     {
-      "id": "CONSULT-1764964555781",
-      "timestamp": "2025-12-05T19:55:55.781Z",
-      "decisionType": "WHAT_TO_IMPROVE",
-      "foundHistory": false
-    },
-    {
-      "id": "CONSULT-1764966011316",
-      "timestamp": "2025-12-05T20:20:11.316Z",
-      "decisionType": "WHAT_TO_IMPROVE",
-      "foundHistory": false
-    },
-    {
-      "id": "CONSULT-1764966549543",
-      "timestamp": "2025-12-05T20:29:09.543Z",
-      "decisionType": "WHAT_TO_IMPROVE",
-      "foundHistory": false
-    },
-    {
-      "id": "CONSULT-1764968394271",
-      "timestamp": "2025-12-05T20:59:54.271Z",
-      "decisionType": "WHAT_TO_IMPROVE",
+      "id": "CONSULT-1764968669667",
+      "timestamp": "2025-12-05T21:04:29.667Z",
+      "decisionType": "HOW_TO_FIX",
       "foundHistory": false
     }
   ],
   "stats": {
-    "total": 57,
+    "total": 54,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 56
+    "noHistoryFound": 53
   }
 }

@@ -15,7 +15,8 @@ This workflow provides quick steps. The comprehensive instructions explain every
 ## Step 0: Locate Project Root
 
 **ASK THE USER:**
-```
+
+```text
 "What's the full path to your Vulpes-Celare project directory?"
 ```
 
@@ -27,21 +28,23 @@ Once you know `<PROJECT_ROOT>`, use it in all commands below.
 
 ## Step 1: Start MCP Server
 
-### If You Have MCP Access (Claude Desktop with vulpes-cortex configured):
+### If You Have MCP Access (Claude Desktop with vulpes-cortex configured)
+
 - Check if "vulpes-cortex" is in your connected MCP servers
 - If yes, skip to Step 3
 
-### If Starting Manually:
+### If Starting Manually
 
 ```bash
 cd <PROJECT_ROOT>
 node tests/master-suite/cortex/index.js --server-window
 ```
 
-This opens a **visible terminal window** on port 3100. 
+This opens a **visible terminal window** on port 3100.
 
 **Wait for startup message:**
-```
+
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║  VULPES CORTEX MCP SERVER - RUNNING                          ║
 ║  Port:        3100                                            ║
@@ -57,6 +60,7 @@ curl http://localhost:3100/health
 ```
 
 **Expected response:**
+
 ```json
 {
   "status": "running",
@@ -70,12 +74,14 @@ curl http://localhost:3100/health
 **YOU MUST SEE `"status": "running"` BEFORE PROCEEDING.**
 
 Alternative verification:
+
 ```bash
 cd <PROJECT_ROOT>
 node tests/master-suite/cortex/index.js --check
 ```
 
 **If server isn't running:**
+
 1. Check Node.js version: `node --version` (need >= 18)
 2. Install dependencies: `cd <PROJECT_ROOT>/tests/master-suite/cortex && npm install`
 3. Look for errors in server window
@@ -84,9 +90,9 @@ node tests/master-suite/cortex/index.js --check
 
 ## Step 3: Run Tests
 
-### If You Have MCP Tools (Claude Desktop):
+### If You Have MCP Tools (Claude Desktop)
 
-```
+```text
 [Call vulpes-cortex MCP tool: run_tests with parameters:
 {
   "quick": true,
@@ -94,9 +100,10 @@ node tests/master-suite/cortex/index.js --check
 }]
 ```
 
-### If Running Manually (HTTP API):
+### If Running Manually (HTTP API)
 
 **Quick test** (50 documents, ~10-15 seconds):
+
 ```bash
 curl -X POST "http://localhost:3100/tool/run_tests" \
   -H "Content-Type: application/json" \
@@ -104,6 +111,7 @@ curl -X POST "http://localhost:3100/tool/run_tests" \
 ```
 
 **Full test** (200 documents, ~60 seconds):
+
 ```bash
 curl -X POST "http://localhost:3100/tool/run_tests" \
   -H "Content-Type: application/json" \
@@ -111,6 +119,7 @@ curl -X POST "http://localhost:3100/tool/run_tests" \
 ```
 
 **Custom test**:
+
 ```bash
 curl -X POST "http://localhost:3100/tool/run_tests" \
   -H "Content-Type: application/json" \
@@ -152,6 +161,7 @@ The MCP server returns JSON with:
 ```
 
 **Key fields:**
+
 - **`metrics.sensitivity`** - MOST IMPORTANT - must be >= 99%
 - **`topFailure`** - What to fix first
 - **`fileToEdit.path`** - Which file to edit (use `<PROJECT_ROOT>` + this path)
@@ -161,9 +171,9 @@ The MCP server returns JSON with:
 
 ## Step 5: Execute Fixes (If Improving)
 
-### The Closed Loop:
+### The Closed Loop
 
-```
+```text
 1. Identify failure from test results
    ↓
 2. Read the file: <PROJECT_ROOT>/<topFailure.fileToEdit.path>
@@ -183,13 +193,14 @@ The MCP server returns JSON with:
 8. Repeat until sensitivity >= 99%
 ```
 
-### Example Fix:
+### Example Fix
 
 **Problem**: NAME filter missed "O'Brien", "McDonald"
 
 **File**: `<PROJECT_ROOT>/src/redaction/filters/NameFilter.ts`
 
 **Fix**: Add compound surname pattern
+
 ```typescript
 const namePatterns = [
   /\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/,  // Existing
@@ -198,6 +209,7 @@ const namePatterns = [
 ```
 
 **Recompile**:
+
 ```bash
 cd <PROJECT_ROOT>
 npm run build
@@ -219,6 +231,7 @@ Control test harshness with `profile` parameter:
 | **OCR_TOLERANT** | Scanner artifacts | Accounts for OCR errors |
 
 Example:
+
 ```bash
 curl -X POST "http://localhost:3100/tool/run_tests" \
   -d "{\"quick\": true, \"profile\": \"DEVELOPMENT\"}"
@@ -253,16 +266,37 @@ curl -X POST "http://localhost:3100/tool/run_tests" \
 ## Troubleshooting
 
 ### "Server won't start"
+
 1. Check Node.js: `node --version` (need >= 18)
 2. Install deps: `cd <PROJECT_ROOT>/tests/master-suite/cortex && npm install`
 3. Check port: Is 3100 already in use?
 
 ### "Tests fail immediately"
+
 1. Compile code: `cd <PROJECT_ROOT> && npm run build`
 2. Check for TypeScript errors
 3. Verify filter files are valid
 
+### "MCP errors: Unexpected token 'X'" (CRITICAL)
+
+This means something wrote to stdout instead of stderr!
+
+**Fix immediately:**
+
+```bash
+cd <PROJECT_ROOT>/tests/master-suite
+node scripts/check-stdout-safety.js
+```
+
+**Common causes:**
+
+- `console.log()` → Replace with `console.error()`
+- `process.stdout.write()` → Replace with `process.stderr.write()`
+
+MCP uses stdout for JSON-RPC. ANY non-JSON breaks the protocol.
+
 ### "Can't find files"
+
 - Did you ask for `<PROJECT_ROOT>`?
 - Are you using relative paths?
 - Double-check the path exists: `ls <PROJECT_ROOT>/src/redaction/filters/`

@@ -68,10 +68,31 @@ const { getTools, executeTool } = require("./tools");
 const { getPrompts, getPrompt } = require("./prompts");
 
 // ============================================================================
-// MCP PROTOCOL SAFETY - CRITICAL
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  ⚠️  MCP PROTOCOL SAFETY - READ THIS BEFORE EDITING ANY CODE! ⚠️          ║
+// ╠══════════════════════════════════════════════════════════════════════════╣
+// ║                                                                          ║
+// ║  MCP uses JSON-RPC 2.0 over STDIO:                                       ║
+// ║    • stdin  = incoming JSON-RPC requests                                 ║
+// ║    • stdout = outgoing JSON-RPC responses (ONLY!)                        ║
+// ║    • stderr = debug/log output (safe for any text)                       ║
+// ║                                                                          ║
+// ║  ANY non-JSON output to stdout BREAKS THE PROTOCOL!                      ║
+// ║  This causes "Unexpected token" errors in the MCP client.                ║
+// ║                                                                          ║
+// ║  ❌ FORBIDDEN:                                                            ║
+// ║    • console.log()           - outputs to stdout                         ║
+// ║    • process.stdout.write()  - outputs to stdout                         ║
+// ║                                                                          ║
+// ║  ✅ SAFE ALTERNATIVES:                                                    ║
+// ║    • console.error()         - outputs to stderr                         ║
+// ║    • process.stderr.write()  - outputs to stderr                         ║
+// ║    • log(), debug(), warn()  - helper functions below                    ║
+// ║                                                                          ║
+// ║  Run safety check: node scripts/check-stdout-safety.js                   ║
+// ║                                                                          ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
 // ============================================================================
-// MCP uses JSON-RPC over stdio. ANY non-JSON output to stdout breaks the protocol.
-// We MUST ensure stdout is NEVER polluted with debug output.
 
 /**
  * DEBUG MODE: Set to true for verbose logging (to stderr only!)
@@ -106,12 +127,14 @@ function error(...args) {
  * This is a safety net for any imported modules that might use console.log
  */
 const originalConsoleLog = console.log;
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 let stdoutProtectionEnabled = false;
 
 function enableStdoutProtection() {
   if (stdoutProtectionEnabled) return;
   stdoutProtectionEnabled = true;
 
+  // Intercept console.log
   console.log = (...args) => {
     // Check if this looks like JSON-RPC (legit MCP output)
     if (args.length === 1 && typeof args[0] === "string") {
@@ -130,11 +153,38 @@ function enableStdoutProtection() {
     console.error("[INTERCEPTED console.log]", ...args);
   };
 
-  debug("Stdout protection ENABLED - console.log redirected to stderr");
+  // CRITICAL: Also intercept process.stdout.write
+  // This catches direct stdout writes that bypass console.log
+  process.stdout.write = (chunk, encoding, callback) => {
+    const str = typeof chunk === "string" ? chunk : chunk.toString();
+
+    // Check if this looks like JSON-RPC (legit MCP output)
+    try {
+      // MCP messages are single-line JSON objects
+      const trimmed = str.trim();
+      if (trimmed.startsWith("{") && trimmed.includes('"jsonrpc"')) {
+        const parsed = JSON.parse(trimmed);
+        if (parsed.jsonrpc === "2.0") {
+          // This is legitimate MCP output, allow it
+          return originalStdoutWrite(chunk, encoding, callback);
+        }
+      }
+    } catch {
+      // Not valid JSON-RPC, redirect to stderr
+    }
+
+    // Redirect non-MCP output to stderr
+    process.stderr.write(`[INTERCEPTED stdout.write] ${str}`);
+    if (typeof callback === "function") callback();
+    return true;
+  };
+
+  debug("Stdout protection ENABLED - console.log AND stdout.write redirected to stderr");
 }
 
 function disableStdoutProtection() {
   console.log = originalConsoleLog;
+  process.stdout.write = originalStdoutWrite;
   stdoutProtectionEnabled = false;
 }
 

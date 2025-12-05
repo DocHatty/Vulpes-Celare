@@ -252,7 +252,9 @@ class RigorousAssessment {
       // Update progress counter
       completed++;
       if (completed % 25 === 0 || completed === totalDocs) {
-        process.stdout.write(
+        // CRITICAL: Use stderr, not stdout! MCP uses stdout for JSON-RPC communication.
+        // Writing to stdout corrupts the protocol and causes "Unexpected token" errors.
+        process.stderr.write(
           `  Progress: ${completed}/${totalDocs} documents (${CONCURRENCY}x parallel)\r`,
         );
       }

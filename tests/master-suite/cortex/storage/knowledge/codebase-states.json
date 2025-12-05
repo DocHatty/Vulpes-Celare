@@ -55,11 +55,18 @@
       "filterCount": 29,
       "dictionaryCount": 6,
       "hash": "87e71fb645a39fe1"
+    },
+    {
+      "id": "STATE-1764969375685",
+      "timestamp": "2025-12-05T21:16:15.685Z",
+      "filterCount": 29,
+      "dictionaryCount": 6,
+      "hash": "11ca8d1d6526ba0d"
     }
   ],
   "current": {
-    "id": "STATE-1764961963460",
-    "timestamp": "2025-12-05T19:12:43.460Z",
+    "id": "STATE-1764969375685",
+    "timestamp": "2025-12-05T21:16:15.685Z",
     "filters": {
       "count": 29,
       "filters": [
@@ -435,14 +442,14 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 219,
+            "lines": 233,
             "conditionals": 0,
             "loops": 2,
             "functions": 0
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 9676,
-          "hash": "cf103f4cfd2f"
+          "lastModified": "2025-12-05T20:02:12.941Z",
+          "size": 10085,
+          "hash": "5a4613943e58"
         },
         {
           "name": "DEAFilterSpan",
@@ -1415,14 +1422,14 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 1243,
-            "conditionals": 58,
-            "loops": 24,
-            "functions": 9
+            "lines": 1413,
+            "conditionals": 67,
+            "loops": 28,
+            "functions": 10
           },
-          "lastModified": "2025-12-05T09:13:37.300Z",
-          "size": 42146,
-          "hash": "2e930d8ba86f"
+          "lastModified": "2025-12-05T20:53:43.954Z",
+          "size": 47767,
+          "hash": "79eaefb5ff1c"
         },
         {
           "name": "SSNFilterSpan",
@@ -1479,14 +1486,14 @@
           "configOptions": [],
           "complexity": {
             "level": "MEDIUM",
-            "lines": 137,
+            "lines": 144,
             "conditionals": 4,
             "loops": 2,
             "functions": 0
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 4974,
-          "hash": "e701b6aff444"
+          "lastModified": "2025-12-05T19:58:56.293Z",
+          "size": 5186,
+          "hash": "9b68cd06a0c0"
         },
         {
           "name": "TitledNameFilterSpan",
@@ -2153,7 +2160,7 @@
       "filters\\AgeFilterSpan.ts": "8d8615e1b909",
       "filters\\BiometricContextFilterSpan.ts": "215ded9c1f6f",
       "filters\\CreditCardFilterSpan.ts": "332f82395e0f",
-      "filters\\DateFilterSpan.ts": "cf103f4cfd2f",
+      "filters\\DateFilterSpan.ts": "5a4613943e58",
       "filters\\DEAFilterSpan.ts": "80449a009b0d",
       "filters\\DeviceIdentifierFilterSpan.ts": "88a8d13b99a7",
       "filters\\EmailFilterSpan.ts": "9c899316d50d",
@@ -2170,8 +2177,8 @@
       "filters\\NPIFilterSpan.ts": "b612e683921b",
       "filters\\PassportNumberFilterSpan.ts": "88eb679f5d95",
       "filters\\PhoneFilterSpan.ts": "eb16c64b3177",
-      "filters\\SmartNameFilterSpan.ts": "2e930d8ba86f",
-      "filters\\SSNFilterSpan.ts": "e701b6aff444",
+      "filters\\SmartNameFilterSpan.ts": "79eaefb5ff1c",
+      "filters\\SSNFilterSpan.ts": "9b68cd06a0c0",
       "filters\\TitledNameFilterSpan.ts": "cfd2ef5da898",
       "filters\\UniqueIdentifierFilterSpan.ts": "03d162985667",
       "filters\\URLFilterSpan.ts": "0ef58b7d2a8d",
@@ -2198,7 +2205,7 @@
       "VulpesCelare.ts": "2510e1722ac5"
     },
     "summary": {
-      "timestamp": "2025-12-05T19:12:43.460Z",
+      "timestamp": "2025-12-05T21:16:15.685Z",
       "filters": {
         "total": 29,
         "byType": 23,
@@ -2228,7 +2235,7 @@
         "stages": 6,
         "services": 5
       },
-      "codebaseHash": "87e71fb645a39fe1"
+      "codebaseHash": "11ca8d1d6526ba0d"
     }
   }
 }
