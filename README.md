@@ -795,8 +795,6 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 <div align="center">
 
-**Privacy-first healthcare AI. Enterprise-ready. Open for partnerships.**
-
-*Interested in pilots, validation partnerships, or enterprise licensing? [Get in touch.](mailto:contact@example.com)*
+**Built with transparency. Validated through collaboration.**
 
 </div>
