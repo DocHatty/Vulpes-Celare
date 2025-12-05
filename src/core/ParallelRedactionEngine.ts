@@ -19,6 +19,7 @@ import { FieldContextDetector, FieldContext } from "./FieldContextDetector";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
 import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
 import { PostFilterService } from "./filters/PostFilterService";
+import { SpanEnhancer } from "./SpanEnhancer";
 
 /**
  * Filter execution result with detailed diagnostics
@@ -335,6 +336,22 @@ export class ParallelRedactionEngine {
     RadiologyLogger.pipelineStage(
       "CONFIDENCE",
       "Confidence modifiers applied based on context",
+      allSpans.length,
+    );
+
+    // STEP 2.6: ENSEMBLE ENHANCEMENT - Multi-signal scoring (RESEARCH-BACKED)
+    // Applies ensemble voting with dictionary, structure, label, and chaos signals
+    const beforeEnsemble = allSpans.length;
+    const spanEnhancer = new SpanEnhancer({ minConfidence: 0.50, modifySpans: true });
+    const enhancementAnalysis = spanEnhancer.analyzeSpans(allSpans, text);
+    
+    // Filter out low-confidence spans based on ensemble voting
+    allSpans = allSpans.filter(span => span.confidence >= 0.50);
+    const ensembleRemoved = beforeEnsemble - allSpans.length;
+    
+    RadiologyLogger.pipelineStage(
+      "ENSEMBLE",
+      `Multi-signal enhancement: ${ensembleRemoved} low-confidence removed, avg change: ${(enhancementAnalysis.averageConfidenceChange * 100).toFixed(1)}%`,
       allSpans.length,
     );
 

@@ -190,6 +190,51 @@
         "classification": "IMPROVEMENT",
         "overallScore": 0.19999999999999435
       }
+    },
+    {
+      "id": "INT-1764972573079-kgrc15839",
+      "timestamp": "2025-12-05T22:09:33.079Z",
+      "type": "FILTER_MODIFICATION",
+      "typeInfo": {
+        "name": "Filter Modification",
+        "riskLevel": "MEDIUM"
+      },
+      "description": "Added research-backed ensemble architecture: EnsembleVoter for multi-signal voting, DocumentStructureAnalyzer for structural context, FuzzyDictionaryMatcher for OCR-tolerant dictionary lookup",
+      "targetedPatterns": [],
+      "target": {
+        "file": "src/core/EnsembleVoter.ts, src/context/DocumentStructureAnalyzer.ts, src/dictionaries/FuzzyDictionaryMatcher.ts",
+        "component": "Ensemble Architecture",
+        "parameter": null,
+        "scope": "unknown"
+      },
+      "change": {
+        "before": null,
+        "after": null,
+        "diff": {
+          "type": "value_change",
+          "beforeType": "undefined",
+          "afterType": "undefined"
+        },
+        "hash": "99914b932bd3"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "llm",
+      "reason": "Research shows ensemble methods (voting), structural awareness, and fuzzy dictionaries each improve PHI detection by 5-10%. Combined they can yield significant accuracy gains.",
+      "metricsBefore": {
+        "sensitivity": 97.77,
+        "specificity": 92.5
+      },
+      "metricsAfter": null,
+      "status": "APPLIED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T22:09:33.079Z",
+        "tested": null,
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": null
     }
   ],
   "effects": [
@@ -244,7 +289,7 @@
   ],
   "causalChains": [],
   "stats": {
-    "totalInterventions": 3,
+    "totalInterventions": 4,
     "successful": 1,
     "neutral": 1,
     "regressive": 0

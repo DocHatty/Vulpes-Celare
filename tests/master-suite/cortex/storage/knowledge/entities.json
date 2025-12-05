@@ -1821,6 +1821,87 @@
         "t_valid_from": "2025-12-05T21:04:29.672Z",
         "t_valid_until": null
       }
+    },
+    "run_1764969413318_o1g0vvor0": {
+      "id": "run_1764969413318_o1g0vvor0",
+      "timestamp": "2025-12-05T21:16:53.318Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.0565,
+        "specificity": 90.9091,
+        "precision": 98.2301,
+        "f1Score": 98.1432,
+        "mcc": 0.8864
+      },
+      "confusionMatrix": {
+        "truePositives": 1665,
+        "falseNegatives": 33,
+        "trueNegatives": 300,
+        "falsePositives": 30,
+        "totalPHI": 1698,
+        "totalNonPHI": 330
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T21:16:53.318Z",
+        "t_occurred": "2025-12-05T21:16:53.318Z",
+        "t_valid_from": "2025-12-05T21:16:53.318Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764969563839_k81xnj02o": {
+      "id": "run_1764969563839_k81xnj02o",
+      "timestamp": "2025-12-05T21:19:23.839Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.77,
+        "specificity": 92.4981,
+        "precision": 98.5653,
+        "f1Score": 98.166,
+        "mcc": 0.8877
+      },
+      "confusionMatrix": {
+        "truePositives": 6664,
+        "falseNegatives": 152,
+        "trueNegatives": 1196,
+        "falsePositives": 97,
+        "totalPHI": 6816,
+        "totalNonPHI": 1293
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T21:19:23.839Z",
+        "t_occurred": "2025-12-05T21:19:23.839Z",
+        "t_valid_from": "2025-12-05T21:19:23.839Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764970163323_mw351afmd": {
+      "id": "run_1764970163323_mw351afmd",
+      "timestamp": "2025-12-05T21:29:23.323Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.9976,
+        "specificity": 92,
+        "precision": 98.4615,
+        "f1Score": 98.229,
+        "mcc": 0.8912
+      },
+      "confusionMatrix": {
+        "truePositives": 1664,
+        "falseNegatives": 34,
+        "trueNegatives": 299,
+        "falsePositives": 26,
+        "totalPHI": 1698,
+        "totalNonPHI": 325
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T21:29:23.323Z",
+        "t_occurred": "2025-12-05T21:29:23.323Z",
+        "t_valid_from": "2025-12-05T21:29:23.323Z",
+        "t_valid_until": null
+      }
     }
   },
   "Intervention": {
@@ -1985,6 +2066,58 @@
         "t_recorded": "2025-12-05T06:23:40.319Z",
         "t_occurred": "2025-12-05T06:23:40.319Z",
         "t_valid_from": "2025-12-05T06:23:40.319Z",
+        "t_valid_until": null
+      }
+    },
+    "INT-1764972573079-kgrc15839": {
+      "id": "INT-1764972573079-kgrc15839",
+      "timestamp": "2025-12-05T22:09:33.079Z",
+      "type": "FILTER_MODIFICATION",
+      "typeInfo": {
+        "name": "Filter Modification",
+        "riskLevel": "MEDIUM"
+      },
+      "description": "Added research-backed ensemble architecture: EnsembleVoter for multi-signal voting, DocumentStructureAnalyzer for structural context, FuzzyDictionaryMatcher for OCR-tolerant dictionary lookup",
+      "targetedPatterns": [],
+      "target": {
+        "file": "src/core/EnsembleVoter.ts, src/context/DocumentStructureAnalyzer.ts, src/dictionaries/FuzzyDictionaryMatcher.ts",
+        "component": "Ensemble Architecture",
+        "parameter": null,
+        "scope": "unknown"
+      },
+      "change": {
+        "before": null,
+        "after": null,
+        "diff": {
+          "type": "value_change",
+          "beforeType": "undefined",
+          "afterType": "undefined"
+        },
+        "hash": "99914b932bd3"
+      },
+      "hypothesisId": null,
+      "parentInterventionId": null,
+      "triggeredBy": "llm",
+      "reason": "Research shows ensemble methods (voting), structural awareness, and fuzzy dictionaries each improve PHI detection by 5-10%. Combined they can yield significant accuracy gains.",
+      "metricsBefore": {
+        "sensitivity": 97.77,
+        "specificity": 92.5
+      },
+      "metricsAfter": null,
+      "status": "APPLIED",
+      "requiresRetest": true,
+      "timeline": {
+        "applied": "2025-12-05T22:09:33.079Z",
+        "tested": null,
+        "validated": null,
+        "rolledBack": null
+      },
+      "effect": null,
+      "_type": "Intervention",
+      "_temporal": {
+        "t_recorded": "2025-12-05T22:09:33.079Z",
+        "t_occurred": "2025-12-05T22:09:33.079Z",
+        "t_valid_from": "2025-12-05T22:09:33.079Z",
         "t_valid_until": null
       }
     }

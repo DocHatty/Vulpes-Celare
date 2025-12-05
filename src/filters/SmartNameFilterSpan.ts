@@ -31,6 +31,7 @@ import {
   PROVIDER_TITLE_PREFIXES,
   PROVIDER_CREDENTIALS,
 } from "../utils/NameDetectionUtils";
+import { OcrChaosDetector } from "../utils/OcrChaosDetector";
 
 export class SmartNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -94,6 +95,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
     // Pattern 14: Team member list names (- Jessica Weber, Oncology)
     this.detectTeamMemberNames(text, spans);
+
+    // Pattern 15: CHAOS-AWARE labeled names with adaptive confidence
+    // Catches chaotic OCR like "pATriCIA L. jOHNsOn" when preceded by labels
+    this.detectChaosAwareLabeledNames(text, spans);
 
     return spans;
   }
@@ -1351,6 +1356,148 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       });
       spans.push(span);
     }
+  }
+
+  /**
+   * Pattern 15: Chaos-Aware Labeled Name Detection
+   *
+   * DESIGN: When we see a label like "Patient Name:", "Member Name:", etc.,
+   * we can be much more aggressive about capturing whatever follows as a name,
+   * even if it has chaotic capitalization like "pATriCIA L. jOHNsOn".
+   *
+   * The chaos detector analyzes the document quality and adjusts confidence
+   * accordingly - if the doc is chaotic, we EXPECT weird patterns.
+   *
+   * Examples caught:
+   * - "Patient Name:           5antiaqo U. oNwak"
+   * - "Member Name:             Nguyen , 4icrdo"
+   * - "Name:                   kevin louise liu"
+   * - "Legal Name (Last, First Middle):     pATriCIA L. jOHNsOn"
+   */
+  private detectChaosAwareLabeledNames(text: string, spans: Span[]): void {
+    // Analyze document for chaos level
+    const chaosAnalysis = OcrChaosDetector.analyze(text);
+    
+    // Comprehensive label patterns that indicate a name follows
+    // These are HIGH CONFIDENCE contextual markers
+    const labelPatterns = [
+      // Direct name labels
+      /(?:Patient\s+Name|Member\s+Name|Client\s+Name|Subject\s+Name)[:\s]+/gi,
+      /(?:Legal\s+Name)[^:]*:[:\s]+/gi,
+      /\bName\s*:[\s]+/gi,
+      
+      // Structured labels with colons
+      /(?:First\s+Name|Last\s+Name|Middle\s+Name|Full\s+Name)\s*:[\s]+/gi,
+      
+      // Contact/relationship labels
+      /(?:Emergency\s+Contact|Next\s+of\s+Kin|Guarantor|Responsible\s+Party)\s*:[\s]+/gi,
+      
+      // RE: Patient: format (common in medical letters)
+      /RE:\s*Patient:\s*/gi,
+      
+      // Standalone Patient: or Pt: followed by content (catches OCR chaos)
+      /\b(?:Patient|Pt|Subject|Client)\s*:\s+/gi,
+      
+      // CONTACT #N: Name: patterns
+      /CONTACT\s+#?\d*:?\s*Name:\s*/gi,
+    ];
+
+    // Track already-detected positions to avoid duplicates
+    const detectedPositions = new Set(
+      spans.map(s => `${s.characterStart}-${s.characterEnd}`)
+    );
+
+    for (const labelPattern of labelPatterns) {
+      labelPattern.lastIndex = 0;
+      let match;
+
+      while ((match = labelPattern.exec(text)) !== null) {
+        const labelEnd = match.index + match[0].length;
+        
+        // Capture whatever follows the label - be VERY permissive
+        // Allow: letters, numbers (OCR), apostrophes, hyphens, periods, commas, spaces
+        const afterLabel = text.substring(labelEnd);
+        
+        // Match 1-4 "words" that could be name parts
+        // Ultra permissive: [a-zA-Z0-9] captures OCR digit substitutions
+        const nameMatch = afterLabel.match(
+          /^([a-zA-Z0-9][a-zA-Z0-9'`'.-]{1,25}(?:[\s,]+[a-zA-Z0-9][a-zA-Z0-9'`'.-]{1,25}){0,3})/
+        );
+
+        if (!nameMatch) continue;
+
+        const capturedName = nameMatch[1].trim();
+        const nameStart = labelEnd;
+        const nameEnd = labelEnd + capturedName.length;
+        const posKey = `${nameStart}-${nameEnd}`;
+
+        // Skip if already detected
+        if (detectedPositions.has(posKey)) continue;
+
+        // Skip if too short
+        if (capturedName.replace(/[\s,.'-]/g, '').length < 3) continue;
+
+        // Calculate confidence based on chaos level and case pattern
+        const confidence = OcrChaosDetector.calculateNameConfidence(
+          capturedName,
+          chaosAnalysis.score,
+          true  // hasLabel = true - big boost
+        );
+
+        // Skip if confidence too low (even with label boost)
+        if (confidence < 0.55) continue;
+
+        // Additional validation: skip obvious non-names
+        const normalized = capturedName.toLowerCase();
+        if (this.isObviousNonName(normalized)) continue;
+
+        const span = new Span({
+          text: capturedName,
+          originalValue: capturedName,
+          characterStart: nameStart,
+          characterEnd: nameEnd,
+          filterType: FilterType.NAME,
+          confidence: confidence,
+          priority: 160,  // High priority - label context is strong signal
+          context: this.getContext(text, match.index, match[0].length + capturedName.length),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: `Chaos-aware labeled (quality: ${chaosAnalysis.quality})`,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+
+        spans.push(span);
+        detectedPositions.add(posKey);
+      }
+    }
+  }
+
+  /**
+   * Quick check for obvious non-name patterns that should never be captured
+   */
+  private isObviousNonName(text: string): boolean {
+    const lower = text.toLowerCase();
+    
+    // Medical/clinical terms
+    if (/\b(diagnosis|medication|procedure|treatment|assessment|plan|history)\b/.test(lower)) {
+      return true;
+    }
+    
+    // Document structure
+    if (/\b(section|page|form|date|time|signed|undefined|null|n\/a)\b/.test(lower)) {
+      return true;
+    }
+    
+    // Numbers without letters (pure dates, IDs)
+    if (/^[\d\s\-\/.:]+$/.test(text)) {
+      return true;
+    }
+    
+    return false;
   }
 
   /**
