@@ -45,7 +45,7 @@ flowchart TB
 
     subgraph CORE ["🦊 VULPES CELARE"]
         direction TB
-        Redact["✂️ REDACT<br/>John Smith → [NAME-1]"]
+        Redact["✂️ REDACT<br/>John Smith of 742 Evergreen Terrace has stage 2 CKD, eGFR 58<br/>→ [NAME-1] of [ADDRESS-1] has stage 2 CKD, eGFR 58"]
         Map["🗺️ STORE MAP<br/>Kept locally"]
         Redact --> Map
     end
