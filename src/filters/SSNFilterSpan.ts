@@ -40,10 +40,17 @@ export class SSNFilterSpan extends SpanBasedFilter {
     // OCR Substitution Errors (B->8, S->5, O->0, Z->2, I->1, g->9, |->1, o->0)
     // e.g. "5B2-13-2951", "g70-l7-8981", "717-44-2|006", "6I2-12-118", "2o7-16-7B3l"
     /\b[0-9BOSZIlGg|o]{3}-[0-9BOSZIlGg|o]{2}-[0-9BOSZIlGg|o]{3,4}\b/g,
+    // Multiple OCR O's: "32 06OO 8685" - double OO instead of 00
+    /\b\d{2}\s*\d{2}[O0]{2}\s*\d{4}\b/gi,
+    /\b\d{3}[-\s]*[O0]{2}[-\s]*\d{4}\b/gi,
 
     // ===== MASKED SSN WITH EXTRA SPACES (OCR artifacts) =====
     // "XXX-X X-1172" - space in middle group
     /[\*Xx]{3}-[\*Xx]\s+[\*Xx]-\d{4}\b/g,
+    // "***-* *-8673" - space in middle of masked middle group
+    /[\*Xx]{3}-[\*Xx]\s*[\*Xx]-\d{4}\b/g,
+    // "***-***-3210" - three asterisks in middle group
+    /[\*Xx]{3}-[\*Xx]{3}-\d{4}\b/g,
     // "***-**--6477" - double dash before last group
     /[\*Xx]{3}-[\*Xx]{2}--\d{4}\b/g,
     // "***-**-67b" - OCR error in last 4 (truncated)

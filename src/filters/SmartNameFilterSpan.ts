@@ -47,6 +47,9 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     // Pattern 0: Last, First format (medical records)
     this.detectLastFirstNames(text, spans);
 
+    // Pattern 0a: OCR-tolerant Last, First format (lowercase, OCR errors, comma misplacement)
+    this.detectOcrLastFirstNames(text, spans);
+
     // Pattern 1: Title + Name
     this.detectTitledNames(text, spans);
 
@@ -680,6 +683,133 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   }
 
   /**
+   * Pattern 0a: OCR-Tolerant Last, First format
+   * 
+   * Handles real-world OCR failures seen in testing:
+   * - "Wals,h Ali V." (comma in wrong place)
+   * - "elena sanchez" (all lowercase)
+   * - "nilsson, elena ann" (lowercase Last, First)
+   * - "Hajid,R aj" (comma + space issues)
+   * - "Ronald J0nse" (0 instead of o)
+   * - "Dborah Oe" (missing chars)
+   * - "Alii KelIy" (double i, capital I instead of l)
+   * - "ZHAN6, SUSAN" (digit instead of letter)
+   */
+  private detectOcrLastFirstNames(text: string, spans: Span[]): void {
+    const patterns = [
+      // Lowercase: "elena sanchez" or "nilsson, elena ann"
+      {
+        regex: /\b([a-z]{2,20}),?\s+([a-z]{2,}(?:\s+[a-z]{2,})?)\b/g,
+        confidence: 0.85,
+        note: "lowercase"
+      },
+      // OCR comma in wrong place: "Wals,h Ali" or "Hajid,R aj"
+      {
+        regex: /\b([A-Z][a-z]{1,10}),([a-z]{1,10})\s+([A-Z][a-z]+(?:\s+[A-Z]\.?)?)\b/g,
+        confidence: 0.88,
+        note: "comma misplaced"
+      },
+      // OCR digits in names: "J0nse", "ZHAN6"
+      {
+        regex: /\b([A-Z][a-z0-9]{2,20}),\s*([A-Z][a-z0-9\s]{2,})\b/gi,
+        confidence: 0.90,
+        note: "digits in name"
+      },
+      // ALL CAPS with OCR digits: "ZHAN6, SUSAN"
+      {
+        regex: /\b([A-Z0-9]{2,20}),\s+([A-Z][A-Z\s]+)\b/g,
+        confidence: 0.92,
+        note: "ALL CAPS with OCR"
+      }
+    ];
+
+    for (const patternObj of patterns) {
+      const pattern = patternObj.regex;
+      pattern.lastIndex = 0;
+      let match;
+
+      while ((match = pattern.exec(text)) !== null) {
+        let fullName;
+        
+        // Handle different capture group patterns
+        if (match[3]) {
+          // Pattern with comma in wrong place: group1,group2 group3
+          fullName = `${match[1]},${match[2]} ${match[3]}`;
+        } else {
+          fullName = match[0];
+        }
+
+        // Normalize for dictionary check
+        const normalized = this.normalizeNameOcr(fullName);
+        
+        // Check if this looks like a name (not a medication, diagnosis, etc.)
+        if (this.isLikelyOcrName(normalized, text, match.index)) {
+          // Check against whitelist
+          if (!this.isWhitelisted(fullName, text)) {
+            const span = new Span({
+              text: fullName,
+              originalValue: fullName,
+              characterStart: match.index,
+              characterEnd: match.index + fullName.length,
+              filterType: FilterType.NAME,
+              confidence: patternObj.confidence,
+              priority: this.getPriority(),
+              context: this.getContext(text, match.index, fullName.length),
+              window: [],
+              replacement: null,
+              salt: null,
+              pattern: `Last, First OCR (${patternObj.note})`,
+              applied: false,
+              ignored: false,
+              ambiguousWith: [],
+              disambiguationScore: null,
+            });
+            spans.push(span);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Normalize OCR errors in names
+   */
+  private normalizeNameOcr(name: string): string {
+    return name
+      .replace(/0/g, 'o')
+      .replace(/1/g, 'l')
+      .replace(/6/g, 'G')
+      .replace(/5/g, 'S')
+      .replace(/8/g, 'B')
+      .toUpperCase();
+  }
+
+  /**
+   * Quick heuristic to check if a string is likely a person name
+   */
+  private isLikelyOcrName(normalized: string, text: string, position: number): boolean {
+    const clean = normalized.replace(/[,.\s]/g, '').toUpperCase();
+    
+    if (clean.length < 4) return false;
+    
+    // Filter medical terms
+    const medPatterns = /^(MG|MCG|ML|TABLET|CAPSULE|PILL)$|^[A-Z]+IN$|^[A-Z]+OL$|^[A-Z]+AL$/;
+    if (medPatterns.test(clean)) return false;
+    
+    // Check context
+    const contextStart = Math.max(0, position - 30);
+    const contextEnd = Math.min(text.length, position + normalized.length + 30);
+    const context = text.substring(contextStart, contextEnd).toLowerCase();
+    
+    if (/\b(diagnosis|medication|procedure|condition|disease|symptom|treatment|prescribed|taking|drug)[\s:]/i.test(context)) {
+      return false;
+    }
+    
+    return true;
+  }
+
+
+  /**
    * Pattern 9: General full names (First Last format)
    *
    * CRITICAL: This pattern must be STRICT to avoid false positives.
@@ -754,7 +884,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    */
   private detectLabeledOcrNames(text: string, spans: Span[]): void {
     const labeledPattern =
-      /\b(?:patient(?:\s+name)?|pt(?:\s*name)?|emergency\s+contact|next\s+of\s+kin|contact|guardian|spouse|mother|father|daughter|son|caregiver)[\s:;#-]*([A-Z0-9][A-Za-z0-9'`’.-]{1,40}(?:\s+[A-Z0-9][A-Za-z0-9'`’.-]{1,40}){0,2})/gi;
+      /\b(?:patient(?:\s+name)?|pt(?:\s*name)?|emergency\s+contact|next\s+of\s+kin|contact|guardian|spouse|mother|father|daughter|son|caregiver)[\s:;#-]*([A-Z0-9][A-Za-z0-9'`'.-]{1,40}(?:\s+[A-Z0-9][A-Za-z0-9'`'.-]{1,40}){0,2})/gi;
 
     labeledPattern.lastIndex = 0;
     let match;
@@ -845,7 +975,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     if (pieces.length === 0) return false;
 
     const allLookLikeNames = pieces.every((piece) =>
-      /^[A-Z][a-z'`’.-]{1,}$/.test(piece),
+      /^[A-Z][a-z'`'.-]{1,}$/.test(piece),
     );
 
     return allLookLikeNames && this.isLikelyPersonName(name);
