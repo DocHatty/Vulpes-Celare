@@ -34,75 +34,48 @@ Clinical documentation drives medical education, research, and innovation—but 
 ## How It Works
 
 ```mermaid
-flowchart TB
-    subgraph network ["🏥 YOUR NETWORK"]
-        subgraph sources ["Data Sources"]
-            PACS["🖼️ PACS<br/>(DICOM)"]
-            EMR["📋 EMR<br/>(FHIR)"]
-            Labs["🧪 Labs<br/>(HL7)"]
-            Files["📁 Files<br/>(PDFs)"]
-        end
-        
-        subgraph access ["Access Points"]
-            Viewer["PACS Viewer<br/>🤖 Ask AI"]
-            Epic["Epic Sidebar<br/>🤖 Ask AI"]
-            Web["Web Browser<br/>🤖 Ask AI"]
-            Mobile["Mobile App<br/>🤖 Ask AI"]
-        end
-        
-        subgraph core ["🦊 VULPES CELARE CORE"]
-            direction TB
-            R1["1️⃣ RECEIVE<br/>Data + Question"]
-            R2["2️⃣ REDACT<br/>John Smith → [NAME-1]<br/>MRN 12345 → [MRN-1]"]
-            R3["3️⃣ STORE MAP<br/>Local only, never leaves"]
-            R4["4️⃣ SEND<br/>Clean data to LLM"]
-            
-            R1 --> R2 --> R3 --> R4
-        end
-        
-        sources --> access
-        access --> core
+flowchart LR
+    subgraph YN1 [" "]
+        direction LR
+        Data["📋 Clinical Data<br/>PACS · EMR · Labs"]
+        Ask["🤖 Ask AI"]
+        Data --> Ask
     end
-    
-    subgraph boundary ["🚧 NETWORK BOUNDARY — PHI STOPS HERE"]
-        style boundary fill:#ff6b6b,color:#fff
-    end
-    
-    subgraph external ["☁️ EXTERNAL LLM PROVIDERS (Only sees redacted data)"]
-        Claude["Anthropic<br/>(Claude)"]
-        GPT["OpenAI<br/>(GPT-4)"]
-        Gemini["Google<br/>(Gemini)"]
-        Local["Local<br/>(Ollama)"]
-    end
-    
-    subgraph return ["🏥 BACK TO YOUR NETWORK"]
-        subgraph core2 ["🦊 VULPES CELARE CORE"]
-            R5["5️⃣ RECEIVE RESPONSE<br/>[NAME-1] shows findings..."]
-            R6["6️⃣ RESTORE<br/>John Smith shows findings..."]
-            R7["7️⃣ LOG AUDIT<br/>HIPAA compliance record"]
-            
-            R5 --> R6 --> R7
-        end
-        
-        Result["✨ YOU SEE<br/><i>John Smith shows findings consistent with...</i><br/>(Real names restored, as if AI knew them all along)"]
-        
-        core2 --> Result
-    end
-    
-    core --> boundary
-    boundary --> external
-    external --> boundary
-    boundary --> return
 
-    style network fill:#e8f4f8,stroke:#0077b6
-    style sources fill:#caf0f8,stroke:#0077b6
-    style access fill:#caf0f8,stroke:#0077b6
-    style core fill:#ff8c00,stroke:#cc5500,color:#fff
-    style core2 fill:#ff8c00,stroke:#cc5500,color:#fff
-    style external fill:#f8f9fa,stroke:#6c757d
-    style return fill:#e8f4f8,stroke:#0077b6
-    style Result fill:#d4edda,stroke:#28a745
+    subgraph CORE ["🦊 VULPES CELARE"]
+        direction TB
+        Redact["✂️ REDACT<br/>John Smith → [NAME-1]"]
+        Map["🗺️ STORE MAP<br/>Kept locally"]
+        Redact --> Map
+    end
+
+    Ask --> Redact
+
+    subgraph EXT ["☁️ LLM"]
+        LLM["Claude / GPT-4 / Gemini<br/>Only sees: [NAME-1]"]
+    end
+
+    Map -->|"Clean data"| LLM
+
+    subgraph CORE2 ["🦊 VULPES CELARE"]
+        direction TB
+        Restore["🔄 RESTORE<br/>[NAME-1] → John Smith"]
+        Audit["📝 AUDIT LOG"]
+        Restore --> Audit
+    end
+
+    LLM -->|"Response"| Restore
+
+    Result["✅ You see real names<br/>AI never knew them"]
+    Audit --> Result
+
+    style CORE fill:#ff6b35,stroke:#d63000,color:#fff
+    style CORE2 fill:#ff6b35,stroke:#d63000,color:#fff
+    style EXT fill:#e8e8e8,stroke:#999
+    style Result fill:#c8e6c9,stroke:#2e7d32
 ```
+
+> **The key insight:** PHI never crosses the network boundary. The LLM only ever sees tokenized placeholders.
 
 **PHI never leaves your network. Ever.**
 
