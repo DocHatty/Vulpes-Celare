@@ -33,112 +33,75 @@ Clinical documentation drives medical education, research, and innovation—but 
 
 ## How It Works
 
-```text
-+-----------------------------------------------------------------------------+
-|                               YOUR NETWORK                                  |
-|                                                                             |
-|  +-----------------------------------------------------------------------+  |
-|  |                          DATA SOURCES                                 |  |
-|  |                    (Where patient data lives)                         |  |
-|  |                                                                       |  |
-|  |   +-----------+  +-----------+  +-----------+  +-----------+          |  |
-|  |   |   PACS    |  |    EMR    |  |   Labs    |  |   Files   |          |  |
-|  |   |  (DICOM)  |  |   (FHIR)  |  |   (HL7)   |  |   (PDFs)  |          |  |
-|  |   +-----+-----+  +-----+-----+  +-----+-----+  +-----+-----+          |  |
-|  |         |              |              |              |                |  |
-|  |         +--------------+--------------+--------------+                |  |
-|  |                               |                                       |  |
-|  +-------------------------------|---------------------------------------+  |
-|                                  |                                          |
-|                                  v                                          |
-|  +-----------------------------------------------------------------------+  |
-|  |                         ACCESS POINTS                                 |  |
-|  |               (Where you interact with the data)                      |  |
-|  |                                                                       |  |
-|  |   +-----------+  +-----------+  +-----------+  +-----------+          |  |
-|  |   |   PACS    |  |   Epic    |  |    Web    |  |  Mobile   |          |  |
-|  |   |  Viewer   |  |  Sidebar  |  |  Browser  |  |    App    |          |  |
-|  |   |           |  |           |  |           |  |           |          |  |
-|  |   | [Ask AI]  |  | [Ask AI]  |  | [Ask AI]  |  | [Ask AI]  |          |  |
-|  |   +-----+-----+  +-----+-----+  +-----+-----+  +-----+-----+          |  |
-|  |         |              |              |              |                |  |
-|  |         +--------------+--------------+--------------+                |  |
-|  |                               |                                       |  |
-|  +-------------------------------|---------------------------------------+  |
-|                                  |                                          |
-|                                  v                                          |
-|  +-----------------------------------------------------------------------+  |
-|  |                       VULPES CELARE CORE                              |  |
-|  |                                                                       |  |
-|  |   +---------------------------------------------------------------+   |  |
-|  |   |                                                               |   |  |
-|  |   |  1. RECEIVE       Data + Question from any access point       |   |  |
-|  |   |                                  |                            |   |  |
-|  |   |                                  v                            |   |  |
-|  |   |  <span style="color: #0066cc"><strong>2. REDACT</strong>        PHI stripped, tokens created</span>                |   |  |
-|  |   |                   "John Smith" --> [NAME-1]                   |   |  |
-|  |   |                   "MRN 12345" --> [MRN-1]                     |   |  |
-|  |   |                                  |                            |   |  |
-|  |   |                                  v                            |   |  |
-|  |   |  <span style="color: #0066cc"><strong>3. STORE MAP</strong>     Local only, never leaves network</span>            |   |  |
-|  |   |                   [NAME-1] = "John Smith"                     |   |  |
-|  |   |                                  |                            |   |  |
-|  |   |                                  v                            |   |  |
-|  |   |  4. SEND          Clean data sent to LLM provider             |   |  |
-|  |   |                                  |                            |   |  |
-|  |   +----------------------------------|----------------------------+   |  |
-|  |                                      |                                |  |
-|  +--------------------------------------|--------------------------------+  |
-|                                         |                                   |
-+=========================================|===================================+
-                                          |
-                    ======================+======================
-                       NETWORK BOUNDARY - PHI STOPS HERE
-                    ======================+======================
-                                          |
-                                          v
-+-----------------------------------------------------------------------------+
-|                          EXTERNAL LLM PROVIDERS                             |
-|                         (Only sees redacted data)                           |
-|                                                                             |
-|   +-----------+  +-----------+  +-----------+  +-----------+                |
-|   | Anthropic |  |  OpenAI   |  |  Google   |  |   Local   |                |
-|   | (Claude)  |  |  (GPT-4)  |  | (Gemini)  |  | (Ollama)  |                |
-|   +-----+-----+  +-----------+  +-----------+  +-----------+                |
-|         |                                                                   |
-|         |  Receives: "Summarize [NAME-1]'s CT from [DATE-1]"                |
-|         |  Responds: "[NAME-1] shows findings consistent with..."           |
-|         |                                                                   |
-+---------|-------------------------------------------------------------------+
-          |
-          v
-+-----------------------------------------------------------------------------+
-|                            BACK TO YOUR NETWORK                             |
-|                                                                             |
-|  +-----------------------------------------------------------------------+  |
-|  |                       VULPES CELARE CORE                              |  |
-|  |                                                                       |  |
-|  |   <span style="color: #0066cc"><strong>5. RECEIVE RESPONSE</strong>   "[NAME-1] shows findings..."</span>                  |  |
-|  |                                  |                                    |  |
-|  |                                  v                                    |  |
-|  |   <span style="color: #0066cc"><strong>6. RESTORE</strong>            "John Smith shows findings..."</span>                |  |
-|  |                                  |                                    |  |
-|  |                                  v                                    |  |
-|  |   7. LOG AUDIT          Record what happened (HIPAA compliance)       |  |
-|  |                                  |                                    |  |
-|  +----------------------------------|------------------------------------+  |
-|                                     |                                       |
-|                                     v                                       |
-|  +-----------------------------------------------------------------------+  |
-|  |                             YOU SEE                                   |  |
-|  |                                                                       |  |
-|  |   "John Smith shows findings consistent with..."                      |  |
-|  |                                                                       |  |
-|  |   (Real names restored, as if AI knew them all along)                 |  |
-|  |                                                                       |  |
-|  +-----------------------------------------------------------------------+  |
-|                                                                             |
-+-----------------------------------------------------------------------------+
+```mermaid
+flowchart TB
+    subgraph network ["🏥 YOUR NETWORK"]
+        subgraph sources ["Data Sources"]
+            PACS["🖼️ PACS<br/>(DICOM)"]
+            EMR["📋 EMR<br/>(FHIR)"]
+            Labs["🧪 Labs<br/>(HL7)"]
+            Files["📁 Files<br/>(PDFs)"]
+        end
+        
+        subgraph access ["Access Points"]
+            Viewer["PACS Viewer<br/>🤖 Ask AI"]
+            Epic["Epic Sidebar<br/>🤖 Ask AI"]
+            Web["Web Browser<br/>🤖 Ask AI"]
+            Mobile["Mobile App<br/>🤖 Ask AI"]
+        end
+        
+        subgraph core ["🦊 VULPES CELARE CORE"]
+            direction TB
+            R1["1️⃣ RECEIVE<br/>Data + Question"]
+            R2["2️⃣ REDACT<br/>John Smith → [NAME-1]<br/>MRN 12345 → [MRN-1]"]
+            R3["3️⃣ STORE MAP<br/>Local only, never leaves"]
+            R4["4️⃣ SEND<br/>Clean data to LLM"]
+            
+            R1 --> R2 --> R3 --> R4
+        end
+        
+        sources --> access
+        access --> core
+    end
+    
+    subgraph boundary ["🚧 NETWORK BOUNDARY — PHI STOPS HERE"]
+        style boundary fill:#ff6b6b,color:#fff
+    end
+    
+    subgraph external ["☁️ EXTERNAL LLM PROVIDERS (Only sees redacted data)"]
+        Claude["Anthropic<br/>(Claude)"]
+        GPT["OpenAI<br/>(GPT-4)"]
+        Gemini["Google<br/>(Gemini)"]
+        Local["Local<br/>(Ollama)"]
+    end
+    
+    subgraph return ["🏥 BACK TO YOUR NETWORK"]
+        subgraph core2 ["🦊 VULPES CELARE CORE"]
+            R5["5️⃣ RECEIVE RESPONSE<br/>[NAME-1] shows findings..."]
+            R6["6️⃣ RESTORE<br/>John Smith shows findings..."]
+            R7["7️⃣ LOG AUDIT<br/>HIPAA compliance record"]
+            
+            R5 --> R6 --> R7
+        end
+        
+        Result["✨ YOU SEE<br/><i>John Smith shows findings consistent with...</i><br/>(Real names restored, as if AI knew them all along)"]
+        
+        core2 --> Result
+    end
+    
+    core --> boundary
+    boundary --> external
+    external --> boundary
+    boundary --> return
+
+    style network fill:#e8f4f8,stroke:#0077b6
+    style sources fill:#caf0f8,stroke:#0077b6
+    style access fill:#caf0f8,stroke:#0077b6
+    style core fill:#ff8c00,stroke:#cc5500,color:#fff
+    style core2 fill:#ff8c00,stroke:#cc5500,color:#fff
+    style external fill:#f8f9fa,stroke:#6c757d
+    style return fill:#e8f4f8,stroke:#0077b6
+    style Result fill:#d4edda,stroke:#28a745
 ```
 
 **PHI never leaves your network. Ever.**
