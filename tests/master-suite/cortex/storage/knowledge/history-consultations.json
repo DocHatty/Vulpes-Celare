@@ -334,11 +334,17 @@
       "timestamp": "2025-12-05T20:29:09.543Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764968394271",
+      "timestamp": "2025-12-05T20:59:54.271Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 56,
+    "total": 57,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 55
+    "noHistoryFound": 56
   }
 }

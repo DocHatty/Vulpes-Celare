@@ -1,0 +1,261 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    VULPES CELARE - ASSESSMENT REPORT                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+ENGINE INFORMATION
+────────────────────────────────────────────────────────────────────────────────
+  Name:            Vulpes Celare
+  Version:         1.0.0
+  Variant:         Hatkoff Redaction Engine
+  Active Filters:  25
+
+TEST CONFIGURATION
+────────────────────────────────────────────────────────────────────────────────
+  Documents:       200
+  Processing Time: 141.44s
+  Avg per Doc:     707.2ms
+
+══════════════════════════════════════════════════════════════════════════════
+                              FINAL GRADE (HIPAA_STRICT profile)
+══════════════════════════════════════════════════════════════════════════════
+
+                         ╔═══════════════╗
+                         ║      F        ║
+                         ║   0/100     ║
+                         ╚═══════════════╝
+
+  CRITICAL FAILURE - Do not use
+
+══════════════════════════════════════════════════════════════════════════════
+
+CONFUSION MATRIX
+────────────────────────────────────────────────────────────────────────────────
+                          │ Actual PHI │ Actual Non-PHI │
+  ────────────────────────┼────────────┼────────────────┤
+  Predicted PHI (Redacted)│     6602   │         87     │
+  Predicted Non-PHI       │      178   │       1207     │
+  ────────────────────────┼────────────┼────────────────┤
+  Total                   │     6780   │       1294     │
+
+PRIMARY METRICS
+────────────────────────────────────────────────────────────────────────────────
+  SENSITIVITY (Recall):   97.37%  ← PHI correctly redacted
+  SPECIFICITY:            93.28%  ← Non-PHI correctly preserved
+  PRECISION (PPV):        98.70%  ← Redaction accuracy
+  F1 SCORE:               98.03
+  F2 SCORE:               97.64    ← Recall-weighted (HIPAA gold standard)
+  MCC:                    0.8822  ← Gold standard for imbalanced data (-1 to +1)
+
+INTEGRITY CHECK
+────────────────────────────────────────────────────────────────────────────────
+  Expected PHI Items:     6780
+  Counted PHI Items:      6780
+  Integrity Status:       ✓ PASSED
+
+SCORE BREAKDOWN
+────────────────────────────────────────────────────────────────────────────────
+  Raw Score:              96.69
+  Penalties/Bonuses:      -581
+  Final Score:            0
+
+PERFORMANCE BY PHI TYPE
+────────────────────────────────────────────────────────────────────────────────
+  ✗ PHONE              1188/1200 (99.0%) - 12 MISSED
+  ✗ DATE               746/800 (93.3%) - 54 MISSED
+  ✓ NPI                800/800 (100.0%)
+  ✗ NAME               548/600 (91.3%) - 52 MISSED
+  ✗ SSN                392/400 (98.0%) - 8 MISSED
+  ✓ EMAIL              288/288 (100.0%)
+  ✓ HEALTH_PLAN_ID     261/261 (100.0%)
+  ✗ MRN                194/200 (97.0%) - 6 MISSED
+  ✓ ACCOUNT_NUMBER     200/200 (100.0%)
+  ✗ ADDRESS            196/200 (98.0%) - 4 MISSED
+  ✗ ZIPCODE            199/200 (99.5%) - 1 MISSED
+  ✓ FAX                200/200 (100.0%)
+  ✓ CREDIT_CARD        200/200 (100.0%)
+  ✓ IP                 200/200 (100.0%)
+  ✓ URL                200/200 (100.0%)
+  ✓ DEVICE_ID          200/200 (100.0%)
+  ✗ VIN                196/200 (98.0%) - 4 MISSED
+  ✗ LICENSE_PLATE      197/200 (98.5%) - 3 MISSED
+  ✗ DEA                174/200 (87.0%) - 26 MISSED
+  ✗ AGE_90_PLUS        23/31 (74.2%) - 8 MISSED
+
+PERFORMANCE BY ERROR LEVEL
+────────────────────────────────────────────────────────────────────────────────
+  NONE       229/231 (99.1%) - 2 missed
+  LOW        1502/1524 (98.6%) - 22 missed
+  MEDIUM     2645/2717 (97.4%) - 72 missed
+  HIGH       1900/1968 (96.5%) - 68 missed
+  EXTREME    326/340 (95.9%) - 14 missed
+
+MISSED PHI SAMPLES (178 total, showing first 20)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 2 (Operative Report/medium):
+    DEA: "WP4604472"
+    Source: surgeon_dea
+  Doc 4 (Referral Letter/low):
+    NAME: "Jessica Watanabe"
+    Source: patient
+  Doc 5 (Pathology Report/high):
+    DATE: "20Z4-04-27"
+    Source: admit_date
+  Doc 5 (Pathology Report/high):
+    DATE: "2o22-02-03"
+    Source: surgery_date_1
+  Doc 6 (Insurance EOB/medium):
+    NAME: "Moor4, Natasha"
+    Source: patient
+  Doc 7 (History & Physical/high):
+    NAME: "ReginaldCharles Allen"
+    Source: patient
+  Doc 7 (History & Physical/high):
+    SSN: "***-* *-8841"
+    Source: patient_ssn
+  Doc 9 (Registration Form/high):
+    DATE: "88/8/ l937"
+    Source: dob
+  Doc 10 (Referral Letter/low):
+    NAME: "Irina Louise Wright"
+    Source: patient
+  Doc 13 (History & Physical/medium):
+    DATE: "3/2!/2024"
+    Source: admit_date
+  Doc 13 (History & Physical/medium):
+    AGE_90_PLUS: "94"
+    Source: age
+  Doc 14 (Operative Report/high):
+    DATE: "2/1W/21"
+    Source: surgery_date_1
+  Doc 14 (Operative Report/high):
+    DEA: "UT6068842"
+    Source: surgeon_dea
+  Doc 15 (Registration Form/medium):
+    NAME: "Sara Weiss"
+    Source: emergency_contact_1
+  Doc 15 (Registration Form/medium):
+    DATE: "2023- o5-22"
+    Source: admit_date
+  Doc 15 (Registration Form/medium):
+    PHONE: "(868) Z42-9636"
+    Source: emergency_phone
+  Doc 16 (Referral Letter/medium):
+    NAME: "Zhang,Hort4nse A."
+    Source: patient
+  Doc 16 (Referral Letter/medium):
+    DATE: "2202303-13"
+    Source: admit_date
+  Doc 16 (Referral Letter/medium):
+    PHONE: "1-41b-7z7-5402"
+    Source: phone
+  Doc 20 (Operative Report/medium):
+    DEA: "UH1125884"
+    Source: surgeon_dea
+
+OVER-REDACTIONS (87 total, showing first 10)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 1: PROCEDURE = "Mechanical Ventilation"
+  Doc 1: MEDICATION = "Levodopa-Carbidopa"
+  Doc 2: AGE_UNDER_90 = "71"
+  Doc 4: DIAGNOSIS = "Irritable Bowel Syndrome"
+  Doc 4: DIAGNOSIS = "Gastritis"
+  Doc 8: AGE_UNDER_90 = "81"
+  Doc 12: HOSPITAL = "UT Southwestern"
+  Doc 13: DIAGNOSIS = "Schizoaffective Disorder"
+  Doc 17: DIAGNOSIS = "Hepatitis A"
+  Doc 19: MEDICATION = "Amoxicillin-Clavulanate"
+
+═══════════════════════════════════════════════════════════════════════════════
+                           CRITICAL FINDINGS
+═══════════════════════════════════════════════════════════════════════════════
+
+  [CRITICAL] 8 Social Security Numbers were NOT redacted
+  Impact: HIPAA violation - SSN is a direct identifier
+  Samples: ***-* *-8841, 16 3A 8676, 407 34 6OB3
+
+  [CRITICAL] 52 patient names were NOT redacted
+  Impact: HIPAA violation - Names are direct identifiers
+  Samples: Jessica Watanabe, Moor4, Natasha, ReginaldCharles Allen
+
+  [HIGH] 17 dates of birth were NOT redacted
+  Impact: HIPAA violation - DOB is a key identifier
+  Samples: 88/8/ l937, 12-0I -1955, 9/1 7/91
+
+═══════════════════════════════════════════════════════════════════════════════
+                           RECOMMENDATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+  [HIGH] DEA Detection
+  Issue: 26 DEA items missed
+  Suggestions:
+    • Review DEA detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [HIGH] PHONE Detection
+  Issue: 12 PHONE items missed
+  Suggestions:
+    • Expand phone number format support
+    • Add international phone number patterns
+    • Support extensions and additional notations
+
+  [HIGH] ADDRESS Detection
+  Issue: 4 ADDRESS items missed
+  Suggestions:
+    • Review address detection regex
+    • Add support for apartment/unit variations
+    • Consider multi-line address detection
+
+  [HIGH] MRN Detection
+  Issue: 6 MRN items missed
+  Suggestions:
+    • Review MRN detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [HIGH] OCR Tolerance
+  Issue: OCR-corrupted values not being detected
+  Suggestions:
+    • Add character substitution patterns to all filters
+    • Implement fuzzy matching with edit distance
+    • Create OCR normalization preprocessing step
+
+  [MEDIUM] AGE_90_PLUS Detection
+  Issue: 8 AGE_90_PLUS items missed
+  Suggestions:
+    • Review AGE_90_PLUS detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] LICENSE_PLATE Detection
+  Issue: 3 LICENSE_PLATE items missed
+  Suggestions:
+    • Review LICENSE_PLATE detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] VIN Detection
+  Issue: 4 VIN items missed
+  Suggestions:
+    • Review VIN detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] ZIPCODE Detection
+  Issue: 1 ZIPCODE items missed
+  Suggestions:
+    • Review ZIPCODE detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [CRITICAL] NAME Detection
+  Issue: 52 NAME items missed
+  Suggestions:
+    • Review name pattern regex for edge cases
+    • Add support for additional name formats (hyphenated, apostrophes)
+    • Consider fuzzy matching for OCR-corrupted names
+
+══════════════════════════════════════════════════════════════════════════════
+                              END OF REPORT
+══════════════════════════════════════════════════════════════════════════════

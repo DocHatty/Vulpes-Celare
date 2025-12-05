@@ -29852,12 +29852,891 @@
       "alternatives": [],
       "confidence": 0.75,
       "risks": []
+    },
+    {
+      "id": "DEC-1764968394271-mty0fo",
+      "type": "WHAT_TO_IMPROVE",
+      "timestamp": "2025-12-05T20:59:54.271Z",
+      "context": {
+        "currentMetrics": {
+          "confusionMatrix": {
+            "truePositives": 6602,
+            "falseNegatives": 178,
+            "trueNegatives": 1207,
+            "falsePositives": 87,
+            "totalPHI": 6780,
+            "totalNonPHI": 1294
+          },
+          "sensitivity": 97.3746,
+          "specificity": 93.2767,
+          "precision": 98.6994,
+          "recall": 97.3746,
+          "f1Score": 98.0325,
+          "f2Score": 97.6367,
+          "mcc": 0.8822,
+          "integrityCheck": {
+            "expectedPHI": 6780,
+            "countedPHI": 6780,
+            "passed": true
+          },
+          "rawScore": 96.69,
+          "penalties": -581,
+          "finalScore": 0,
+          "grade": "F",
+          "gradeDescription": "CRITICAL FAILURE - Do not use",
+          "profile": "HIPAA_STRICT",
+          "byPHIType": {
+            "NAME": {
+              "tp": 548,
+              "fn": 52,
+              "total": 600
+            },
+            "SSN": {
+              "tp": 392,
+              "fn": 8,
+              "total": 400
+            },
+            "DATE": {
+              "tp": 746,
+              "fn": 54,
+              "total": 800
+            },
+            "MRN": {
+              "tp": 194,
+              "fn": 6,
+              "total": 200
+            },
+            "ACCOUNT_NUMBER": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "ADDRESS": {
+              "tp": 196,
+              "fn": 4,
+              "total": 200
+            },
+            "ZIPCODE": {
+              "tp": 199,
+              "fn": 1,
+              "total": 200
+            },
+            "PHONE": {
+              "tp": 1188,
+              "fn": 12,
+              "total": 1200
+            },
+            "FAX": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "EMAIL": {
+              "tp": 288,
+              "fn": 0,
+              "total": 288
+            },
+            "HEALTH_PLAN_ID": {
+              "tp": 261,
+              "fn": 0,
+              "total": 261
+            },
+            "CREDIT_CARD": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "IP": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "URL": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "DEVICE_ID": {
+              "tp": 200,
+              "fn": 0,
+              "total": 200
+            },
+            "VIN": {
+              "tp": 196,
+              "fn": 4,
+              "total": 200
+            },
+            "LICENSE_PLATE": {
+              "tp": 197,
+              "fn": 3,
+              "total": 200
+            },
+            "NPI": {
+              "tp": 800,
+              "fn": 0,
+              "total": 800
+            },
+            "DEA": {
+              "tp": 174,
+              "fn": 26,
+              "total": 200
+            },
+            "AGE_90_PLUS": {
+              "tp": 23,
+              "fn": 8,
+              "total": 31
+            }
+          },
+          "byErrorLevel": {
+            "medium": {
+              "tp": 2645,
+              "fn": 72,
+              "tn": 496,
+              "fp": 32
+            },
+            "high": {
+              "tp": 1900,
+              "fn": 68,
+              "tn": 335,
+              "fp": 24
+            },
+            "low": {
+              "tp": 1502,
+              "fn": 22,
+              "tn": 276,
+              "fp": 19
+            },
+            "none": {
+              "tp": 229,
+              "fn": 2,
+              "tn": 37,
+              "fp": 4
+            },
+            "extreme": {
+              "tp": 326,
+              "fn": 14,
+              "tn": 63,
+              "fp": 8
+            }
+          },
+          "byTemplate": {
+            "History & Physical": {
+              "tp": 1123,
+              "fn": 33,
+              "tn": 374,
+              "fp": 23
+            },
+            "Operative Report": {
+              "tp": 1106,
+              "fn": 47,
+              "tn": 215,
+              "fp": 20
+            },
+            "Registration Form": {
+              "tp": 1082,
+              "fn": 34,
+              "tn": 124,
+              "fp": 4
+            },
+            "Referral Letter": {
+              "tp": 1096,
+              "fn": 23,
+              "tn": 219,
+              "fp": 24
+            },
+            "Pathology Report": {
+              "tp": 1099,
+              "fn": 21,
+              "tn": 152,
+              "fp": 7
+            },
+            "Insurance EOB": {
+              "tp": 1096,
+              "fn": 20,
+              "tn": 123,
+              "fp": 9
+            }
+          },
+          "testValidation": {
+            "totalExpectedNonPHI": 1313,
+            "skippedNonPHI": 19,
+            "skippedPercentage": 1.4,
+            "skippedByType": {
+              "MEDICATION": {
+                "count": 19,
+                "examples": [
+                  {
+                    "value": "Prednisone",
+                    "template": "Referral Letter"
+                  },
+                  {
+                    "value": "Morphine",
+                    "template": "Referral Letter"
+                  },
+                  {
+                    "value": "Docusate",
+                    "template": "Referral Letter"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "phiType": "DEA"
+      },
+      "historyConsulted": true,
+      "codebaseStateChecked": true,
+      "historyAnalysis": {
+        "id": "CONSULT-1764968394271",
+        "timestamp": "2025-12-05T20:59:54.271Z",
+        "decisionType": "WHAT_TO_IMPROVE",
+        "context": {
+          "currentMetrics": {
+            "confusionMatrix": {
+              "truePositives": 6602,
+              "falseNegatives": 178,
+              "trueNegatives": 1207,
+              "falsePositives": 87,
+              "totalPHI": 6780,
+              "totalNonPHI": 1294
+            },
+            "sensitivity": 97.3746,
+            "specificity": 93.2767,
+            "precision": 98.6994,
+            "recall": 97.3746,
+            "f1Score": 98.0325,
+            "f2Score": 97.6367,
+            "mcc": 0.8822,
+            "integrityCheck": {
+              "expectedPHI": 6780,
+              "countedPHI": 6780,
+              "passed": true
+            },
+            "rawScore": 96.69,
+            "penalties": -581,
+            "finalScore": 0,
+            "grade": "F",
+            "gradeDescription": "CRITICAL FAILURE - Do not use",
+            "profile": "HIPAA_STRICT",
+            "byPHIType": {
+              "NAME": {
+                "tp": 548,
+                "fn": 52,
+                "total": 600
+              },
+              "SSN": {
+                "tp": 392,
+                "fn": 8,
+                "total": 400
+              },
+              "DATE": {
+                "tp": 746,
+                "fn": 54,
+                "total": 800
+              },
+              "MRN": {
+                "tp": 194,
+                "fn": 6,
+                "total": 200
+              },
+              "ACCOUNT_NUMBER": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "ADDRESS": {
+                "tp": 196,
+                "fn": 4,
+                "total": 200
+              },
+              "ZIPCODE": {
+                "tp": 199,
+                "fn": 1,
+                "total": 200
+              },
+              "PHONE": {
+                "tp": 1188,
+                "fn": 12,
+                "total": 1200
+              },
+              "FAX": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "EMAIL": {
+                "tp": 288,
+                "fn": 0,
+                "total": 288
+              },
+              "HEALTH_PLAN_ID": {
+                "tp": 261,
+                "fn": 0,
+                "total": 261
+              },
+              "CREDIT_CARD": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "IP": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "URL": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "DEVICE_ID": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "VIN": {
+                "tp": 196,
+                "fn": 4,
+                "total": 200
+              },
+              "LICENSE_PLATE": {
+                "tp": 197,
+                "fn": 3,
+                "total": 200
+              },
+              "NPI": {
+                "tp": 800,
+                "fn": 0,
+                "total": 800
+              },
+              "DEA": {
+                "tp": 174,
+                "fn": 26,
+                "total": 200
+              },
+              "AGE_90_PLUS": {
+                "tp": 23,
+                "fn": 8,
+                "total": 31
+              }
+            },
+            "byErrorLevel": {
+              "medium": {
+                "tp": 2645,
+                "fn": 72,
+                "tn": 496,
+                "fp": 32
+              },
+              "high": {
+                "tp": 1900,
+                "fn": 68,
+                "tn": 335,
+                "fp": 24
+              },
+              "low": {
+                "tp": 1502,
+                "fn": 22,
+                "tn": 276,
+                "fp": 19
+              },
+              "none": {
+                "tp": 229,
+                "fn": 2,
+                "tn": 37,
+                "fp": 4
+              },
+              "extreme": {
+                "tp": 326,
+                "fn": 14,
+                "tn": 63,
+                "fp": 8
+              }
+            },
+            "byTemplate": {
+              "History & Physical": {
+                "tp": 1123,
+                "fn": 33,
+                "tn": 374,
+                "fp": 23
+              },
+              "Operative Report": {
+                "tp": 1106,
+                "fn": 47,
+                "tn": 215,
+                "fp": 20
+              },
+              "Registration Form": {
+                "tp": 1082,
+                "fn": 34,
+                "tn": 124,
+                "fp": 4
+              },
+              "Referral Letter": {
+                "tp": 1096,
+                "fn": 23,
+                "tn": 219,
+                "fp": 24
+              },
+              "Pathology Report": {
+                "tp": 1099,
+                "fn": 21,
+                "tn": 152,
+                "fp": 7
+              },
+              "Insurance EOB": {
+                "tp": 1096,
+                "fn": 20,
+                "tn": 123,
+                "fp": 9
+              }
+            },
+            "testValidation": {
+              "totalExpectedNonPHI": 1313,
+              "skippedNonPHI": 19,
+              "skippedPercentage": 1.4,
+              "skippedByType": {
+                "MEDICATION": {
+                  "count": 19,
+                  "examples": [
+                    {
+                      "value": "Prednisone",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Morphine",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Docusate",
+                      "template": "Referral Letter"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "phiType": "DEA"
+        },
+        "exactMatches": [],
+        "similarAttempts": [],
+        "relatedSuccesses": [],
+        "relatedFailures": [],
+        "patterns": [
+          {
+            "category": "PATTERN_EDGE_CASE",
+            "phiType": "DEA",
+            "count": 709,
+            "trend": "UNKNOWN"
+          },
+          {
+            "category": "DICTIONARY_MISS",
+            "count": 2668,
+            "examples": [
+              "unknown",
+              "unknown"
+            ]
+          },
+          {
+            "category": "FALSE_POSITIVE",
+            "count": 1067,
+            "examples": [
+              "unknown",
+              "unknown"
+            ]
+          }
+        ],
+        "warnings": [
+          {
+            "level": "INFO",
+            "message": "Known recurring patterns in this area",
+            "details": [
+              "PATTERN_EDGE_CASE: 709 occurrences",
+              "DICTIONARY_MISS: 2668 occurrences",
+              "FALSE_POSITIVE: 1067 occurrences"
+            ]
+          }
+        ],
+        "recommendations": [
+          {
+            "priority": "MEDIUM",
+            "action": "Address PATTERN_EDGE_CASE pattern first",
+            "reason": "709 occurrences identified"
+          }
+        ],
+        "summary": "No relevant historical data found for this context",
+        "confidence": 0.3,
+        "dataQuality": "NONE"
+      },
+      "codebaseState": {
+        "checked": true,
+        "timestamp": "2025-12-05T20:59:54.272Z",
+        "currentState": {
+          "filterCount": 29,
+          "dictionaryCount": 6,
+          "hash": "87e71fb645a39fe1"
+        },
+        "relevantFilters": [
+          "DEAFilterSpan"
+        ],
+        "relevantDictionaries": [],
+        "capabilities": [
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING"
+        ],
+        "gaps": [
+          "IP",
+          "PHOTO"
+        ]
+      },
+      "synthesis": {
+        "timestamp": "2025-12-05T20:59:54.272Z",
+        "inputs": {
+          "history": "No relevant historical data found for this context",
+          "codebase": {
+            "filterCount": 29,
+            "dictionaryCount": 6,
+            "hash": "87e71fb645a39fe1"
+          },
+          "patterns": {
+            "total": 1,
+            "topFailure": "PATTERN_EDGE_CASE"
+          },
+          "insights": [],
+          "metrics": {
+            "confusionMatrix": {
+              "truePositives": 6602,
+              "falseNegatives": 178,
+              "trueNegatives": 1207,
+              "falsePositives": 87,
+              "totalPHI": 6780,
+              "totalNonPHI": 1294
+            },
+            "sensitivity": 97.3746,
+            "specificity": 93.2767,
+            "precision": 98.6994,
+            "recall": 97.3746,
+            "f1Score": 98.0325,
+            "f2Score": 97.6367,
+            "mcc": 0.8822,
+            "integrityCheck": {
+              "expectedPHI": 6780,
+              "countedPHI": 6780,
+              "passed": true
+            },
+            "rawScore": 96.69,
+            "penalties": -581,
+            "finalScore": 0,
+            "grade": "F",
+            "gradeDescription": "CRITICAL FAILURE - Do not use",
+            "profile": "HIPAA_STRICT",
+            "byPHIType": {
+              "NAME": {
+                "tp": 548,
+                "fn": 52,
+                "total": 600
+              },
+              "SSN": {
+                "tp": 392,
+                "fn": 8,
+                "total": 400
+              },
+              "DATE": {
+                "tp": 746,
+                "fn": 54,
+                "total": 800
+              },
+              "MRN": {
+                "tp": 194,
+                "fn": 6,
+                "total": 200
+              },
+              "ACCOUNT_NUMBER": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "ADDRESS": {
+                "tp": 196,
+                "fn": 4,
+                "total": 200
+              },
+              "ZIPCODE": {
+                "tp": 199,
+                "fn": 1,
+                "total": 200
+              },
+              "PHONE": {
+                "tp": 1188,
+                "fn": 12,
+                "total": 1200
+              },
+              "FAX": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "EMAIL": {
+                "tp": 288,
+                "fn": 0,
+                "total": 288
+              },
+              "HEALTH_PLAN_ID": {
+                "tp": 261,
+                "fn": 0,
+                "total": 261
+              },
+              "CREDIT_CARD": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "IP": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "URL": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "DEVICE_ID": {
+                "tp": 200,
+                "fn": 0,
+                "total": 200
+              },
+              "VIN": {
+                "tp": 196,
+                "fn": 4,
+                "total": 200
+              },
+              "LICENSE_PLATE": {
+                "tp": 197,
+                "fn": 3,
+                "total": 200
+              },
+              "NPI": {
+                "tp": 800,
+                "fn": 0,
+                "total": 800
+              },
+              "DEA": {
+                "tp": 174,
+                "fn": 26,
+                "total": 200
+              },
+              "AGE_90_PLUS": {
+                "tp": 23,
+                "fn": 8,
+                "total": 31
+              }
+            },
+            "byErrorLevel": {
+              "medium": {
+                "tp": 2645,
+                "fn": 72,
+                "tn": 496,
+                "fp": 32
+              },
+              "high": {
+                "tp": 1900,
+                "fn": 68,
+                "tn": 335,
+                "fp": 24
+              },
+              "low": {
+                "tp": 1502,
+                "fn": 22,
+                "tn": 276,
+                "fp": 19
+              },
+              "none": {
+                "tp": 229,
+                "fn": 2,
+                "tn": 37,
+                "fp": 4
+              },
+              "extreme": {
+                "tp": 326,
+                "fn": 14,
+                "tn": 63,
+                "fp": 8
+              }
+            },
+            "byTemplate": {
+              "History & Physical": {
+                "tp": 1123,
+                "fn": 33,
+                "tn": 374,
+                "fp": 23
+              },
+              "Operative Report": {
+                "tp": 1106,
+                "fn": 47,
+                "tn": 215,
+                "fp": 20
+              },
+              "Registration Form": {
+                "tp": 1082,
+                "fn": 34,
+                "tn": 124,
+                "fp": 4
+              },
+              "Referral Letter": {
+                "tp": 1096,
+                "fn": 23,
+                "tn": 219,
+                "fp": 24
+              },
+              "Pathology Report": {
+                "tp": 1099,
+                "fn": 21,
+                "tn": 152,
+                "fp": 7
+              },
+              "Insurance EOB": {
+                "tp": 1096,
+                "fn": 20,
+                "tn": 123,
+                "fp": 9
+              }
+            },
+            "testValidation": {
+              "totalExpectedNonPHI": 1313,
+              "skippedNonPHI": 19,
+              "skippedPercentage": 1.4,
+              "skippedByType": {
+                "MEDICATION": {
+                  "count": 19,
+                  "examples": [
+                    {
+                      "value": "Prednisone",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Morphine",
+                      "template": "Referral Letter"
+                    },
+                    {
+                      "value": "Docusate",
+                      "template": "Referral Letter"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "factors": [
+          {
+            "name": "Filter Coverage",
+            "value": "EXISTS",
+            "direction": "POSITIVE",
+            "weight": 0.2,
+            "explanation": "Filter exists for DEA"
+          },
+          {
+            "name": "Known Pattern Count",
+            "value": 1,
+            "direction": "NEGATIVE",
+            "weight": 0.15,
+            "explanation": "Few patterns - may need more data"
+          },
+          {
+            "name": "Current Sensitivity",
+            "value": "97.4%",
+            "direction": "NEUTRAL",
+            "weight": 0.2,
+            "explanation": "Good but room for improvement"
+          }
+        ],
+        "overallAssessment": "NEUTRAL - Mixed signals, careful testing recommended"
+      },
+      "recommendation": {
+        "type": "FOCUS_AREA",
+        "summary": "HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues",
+        "details": [
+          "Recurring DICTIONARY_MISS Issues",
+          "Recurring PATTERN_EDGE_CASE Issues",
+          "Recurring FALSE_POSITIVE Issues"
+        ],
+        "priority": "HIGH"
+      },
+      "alternatives": [],
+      "confidence": 0.75,
+      "risks": []
     }
   ],
   "stats": {
-    "total": 29,
+    "total": 30,
     "byType": {
-      "WHAT_TO_IMPROVE": 29
+      "WHAT_TO_IMPROVE": 30
     },
     "followed": 0,
     "ignored": 0
