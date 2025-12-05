@@ -15,21 +15,15 @@
 
 <br/>
 
-[**Get Started**](#-quick-start) · [**How It Works**](#-how-it-works) · [**Cortex AI**](#-vulpes-cortex-adaptive-neural-testing-engine) · [**Contributing**](#-contributing)
+[**Get Started**](#-quick-start) · [**Plug-and-Play**](#-plug-and-play-stack-with-any-llm-or-agent) · [**How It Works**](#-how-it-works) · [**Cortex AI**](#-vulpes-cortex-adaptive-neural-testing-engine) · [**Contributing**](#-contributing)
 
 </div>
 
-<br/>
-
 ---
-
-<br/>
 
 <div align="center">
 
 ## 📊 Performance at a Glance
-
-<br/>
 
 |  | Metric | Score | |
 |:---:|:------:|:-----:|:---|
@@ -40,15 +34,11 @@
 
 <br/>
 
-<sub>📋 Tested on programmatically generated documents with varying OCR corruption levels.<br/>Real-world performance requires independent validation.</sub>
+<sub>Tested on programmatically generated documents with varying OCR corruption levels. Real-world performance requires independent validation.</sub>
 
 </div>
 
-<br/>
-
 ---
-
-<br/>
 
 ## 🎯 Why Vulpes Celare?
 
@@ -58,11 +48,7 @@
 
 </div>
 
-<br/>
-
-Clinical documentation—reports, consult notes, care coordination messages—drives medical education, research, and innovation. But safely sharing it remains a persistent challenge.
-
-<br/>
+Clinical documentation - reports, consult notes, care coordination messages - drives medical education, research, and innovation. But safely sharing it remains a persistent challenge.
 
 <table>
 <tr>
@@ -72,9 +58,9 @@ Clinical documentation—reports, consult notes, care coordination messages—dr
 
 Existing de-identification solutions are:
 
-- **🔒 Opaque** — Black-box SaaS where you can't inspect what happens to your data
-- **🌍 Generic** — Not tuned for medical vocabulary and patterns
-- **⚙️ Heavyweight** — Don't fit modern development workflows
+- **Opaque** - Black-box SaaS where you can't inspect what happens to your data
+- **Generic** - Not tuned for medical vocabulary and patterns
+- **Heavyweight** - Don't fit modern development workflows
 
 </td>
 <td width="50%">
@@ -83,25 +69,19 @@ Existing de-identification solutions are:
 
 Vulpes Celare is different:
 
-- **🔒 Privacy-First Architecture** — Zero-trust design, your data never leaves your infrastructure
-- **⚡ Sub-Millisecond Latency** — Proprietary detection engine processes documents in 2-3ms
-- **🔍 Fully Inspectable** — Open source, every decision traceable and auditable
-- **🏥 Healthcare-Native** — Built for US medical formats from day one
-- **📈 Horizontally Scalable** — Stateless processing, scales linearly with your infrastructure
+- **Privacy-first** - Zero-trust design, your data never leaves your infrastructure
+- **Sub-millisecond** - Proprietary detection engine processes documents in 2-3ms
+- **Fully inspectable** - Open source, every decision traceable and auditable
+- **Healthcare-native** - Built for US medical formats from day one
+- **Horizontally scalable** - Stateless processing, scales linearly with your infrastructure
 
 </td>
 </tr>
 </table>
 
-<br/>
-
 ---
 
-<br/>
-
 ## ⚖️ Responsible AI Development
-
-<br/>
 
 <table>
 <tr>
@@ -109,34 +89,28 @@ Vulpes Celare is different:
 
 ### ✅ Current Capabilities
 
-- 🔬 High-performance pre-screening layer for clinical pipelines
-- 🛠️ Enterprise-ready API for medical document workflows
-- 📖 Fully auditable codebase for compliance teams
-- 🚀 Production-grade performance with human-in-the-loop design
+- High-performance pre-screening layer for clinical pipelines
+- Enterprise-ready API for medical document workflows
+- Fully auditable codebase for compliance teams
+- Production-grade performance with human-in-the-loop design
 
 </td>
 <td width="50%" valign="top">
 
 ### 🛡️ By Design
 
-- 📜 Designed to augment—not replace—compliance workflows
-- 🤖 Human review integration for high-stakes scenarios
-- 🔄 Continuous validation roadmap with community partnership
-- ✅ Synthetic-first testing methodology (real-world pilots welcome)
+- Designed to augment - not replace - compliance workflows
+- Human review integration for high-stakes scenarios
+- Continuous validation roadmap with community partnership
+- Synthetic-first testing methodology (real-world pilots welcome)
 
 </td>
 </tr>
 </table>
 
-<br/>
-
-> **🏥 Healthcare Best Practice:** We recommend human-in-the-loop workflows for production deployments. 99.6% sensitivity is exceptional, but responsible AI means defense in depth.
-
-<br/>
+> **Healthcare Best Practice:** We recommend human-in-the-loop workflows for production deployments. 99.6% sensitivity is exceptional, but responsible AI means defense in depth.
 
 ---
-
-<br/>
 
 ## 🚀 Quick Start
 
@@ -150,16 +124,161 @@ const redacted = await VulpesCelare.redact(clinicalNote);
 const engine = new VulpesCelare();
 const result = await engine.process(clinicalNote);
 
-console.log(result.text);            // 📄 Redacted document
-console.log(result.redactionCount);  // 🔢 PHI elements found
-console.log(result.executionTimeMs); // ⏱️  Processing time (~2-3ms)
+console.log(result.text);            // Redacted document
+console.log(result.redactionCount);  // PHI elements found
+console.log(result.executionTimeMs); // Processing time (~2-3ms)
 ```
-
-<br/>
 
 ---
 
-<br/>
+## 🔌 Plug-and-Play: Stack with Any LLM or Agent
+
+<div align="center">
+
+*Vulpes Celare is a preprocessing layer. Add it to any AI pipeline in minutes.*
+
+</div>
+
+Vulpes Celare works as a **universal preprocessing filter** that sits in front of any LLM, AI agent, or automated system. No modifications to your existing AI stack required - just add Vulpes as a preprocessing step.
+
+### Why Preprocess?
+
+When you send clinical text to any AI system (ChatGPT, Claude, Llama, custom agents), that text may contain PHI. Vulpes Celare redacts the PHI *before* it ever reaches the AI, ensuring:
+
+- PHI never leaves your infrastructure
+- Your AI sees only de-identified text
+- Responses can be used without PHI exposure risk
+
+### Quick Integration Guide
+
+**Step 1: Install**
+
+```bash
+npm install vulpes-celare
+```
+
+**Step 2: Add to your pipeline**
+
+```typescript
+import { VulpesCelare } from 'vulpes-celare';
+
+async function processWithAI(clinicalNote: string) {
+  const safeText = await VulpesCelare.redact(clinicalNote);  // Add this line
+  const response = await yourLLM.complete(safeText);
+  return response;
+}
+```
+
+**Step 3: That's it.**
+
+### Integration Examples
+
+<details>
+<summary><b>OpenAI / ChatGPT</b></summary>
+
+```typescript
+import { VulpesCelare } from 'vulpes-celare';
+import OpenAI from 'openai';
+
+const openai = new OpenAI();
+
+async function analyzeNote(clinicalNote: string) {
+  const safeNote = await VulpesCelare.redact(clinicalNote);
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: safeNote }]
+  });
+  return response.choices[0].message.content;
+}
+```
+</details>
+
+<details>
+<summary><b>Anthropic / Claude</b></summary>
+
+```typescript
+import { VulpesCelare } from 'vulpes-celare';
+import Anthropic from '@anthropic-ai/sdk';
+
+const anthropic = new Anthropic();
+
+async function analyzeNote(clinicalNote: string) {
+  const safeNote = await VulpesCelare.redact(clinicalNote);
+  const response = await anthropic.messages.create({
+    model: 'claude-3-opus-20240229',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: safeNote }]
+  });
+  return response.content[0].text;
+}
+```
+</details>
+
+<details>
+<summary><b>LangChain</b></summary>
+
+```typescript
+import { VulpesCelare } from 'vulpes-celare';
+
+const redactPHI = async (input: { text: string }) => {
+  return { text: await VulpesCelare.redact(input.text) };
+};
+
+const chain = RunnableSequence.from([
+  redactPHI,
+  yourExistingChain
+]);
+```
+</details>
+
+<details>
+<summary><b>REST API Middleware</b></summary>
+
+```typescript
+import { VulpesCelare } from 'vulpes-celare';
+
+async function phiRedactionMiddleware(req, res, next) {
+  if (req.body.text) req.body.text = await VulpesCelare.redact(req.body.text);
+  if (req.body.message) req.body.message = await VulpesCelare.redact(req.body.message);
+  next();
+}
+
+app.use('/api/ai/*', phiRedactionMiddleware);
+```
+</details>
+
+<details>
+<summary><b>Python (via subprocess)</b></summary>
+
+```python
+import subprocess
+import json
+
+def redact_phi(text: str) -> str:
+    result = subprocess.run(
+        ['node', '-e', f'''
+          const {{ VulpesCelare }} = require("vulpes-celare");
+          VulpesCelare.redact({json.dumps(text)}).then(r => console.log(r));
+        '''],
+        capture_output=True, text=True
+    )
+    return result.stdout.strip()
+
+safe_text = redact_phi(clinical_note)
+response = your_llm.generate(safe_text)
+```
+</details>
+
+### Key Points
+
+| | Point | Details |
+|:---:|:------|:--------|
+| 1 | **Zero config** | Works out of the box, no tuning needed |
+| 2 | **2-3ms latency** | Negligible overhead for any pipeline |
+| 3 | **Stateless** | No database, no external calls, just import and use |
+| 4 | **Drop-in** | One line of code to add to existing systems |
+
+---
 
 ## 🔧 How It Works
 
@@ -168,8 +287,6 @@ console.log(result.executionTimeMs); // ⏱️  Processing time (~2-3ms)
 *26 specialized filters working in parallel, each an expert in its domain.*
 
 </div>
-
-<br/>
 
 ```
                               ┌─────────────────────────┐
@@ -203,59 +320,38 @@ console.log(result.executionTimeMs); // ⏱️  Processing time (~2-3ms)
                              └─────────────────────────┘
 ```
 
-<br/>
+### Key Architecture Decisions
 
-### 🏗️ Key Architecture Decisions
-
-| | Decision | Why It Matters |
-|:---:|:---------|:---------------|
-| 🎯 | **26 Specialized Filters** | Proprietary multi-layer detection—each PHI type has dedicated optimized logic |
-| 🧠 | **Context-Aware NLP** | Distinguishes "Dr. Wilson" (person) from "Wilson's disease" (condition) via 10,000+ medical terms |
-| 👁️ | **OCR-Resilient Processing** | Handles scan errors: `O`↔`0`, `l`↔`1`, `S`↔`5`, `B`↔`8`—critical for real-world documents |
-| ⚖️ | **Intelligent Span Resolution** | When filters overlap, priority algorithms determine optimal redaction |
-| 🔒 | **Zero-Trust by Design** | No external calls, no cloud dependency, no data exfiltration vectors. Air-gap ready. |
-
-<br/>
+| What We Built | Why It Matters |
+|:--------------|:---------------|
+| **26 specialized filters** | Each type of PHI (names, SSNs, dates, etc.) has its own dedicated detector - no one-size-fits-all |
+| **Context-aware detection** | Knows "Dr. Wilson" is a person but "Wilson's disease" is a medical condition |
+| **OCR error handling** | Catches PHI even when scanners mess up characters (`0` vs `O`, `1` vs `l`) |
+| **Smart overlap handling** | When multiple filters find the same text, picks the best redaction |
+| **Zero external calls** | Your data never leaves your machine. Ever. Works completely offline. |
 
 ---
-
-<br/>
 
 ## 📈 Performance by Data Quality
 
-<div align="center">
+Real-world documents aren't perfect. They have typos, scanner errors, and smudges. We test against all of it.
 
-*Real documents have errors. We test against them.*
+| Document Quality | Detection Rate | Example |
+|:----------------:|:--------------:|:--------|
+| ✨ **Perfect** | 99.9% | Clean digital text |
+| 📝 **Minor errors** | 99.8% | Typos, extra spaces |
+| 📠 **Scanned** | 99.7% | Light scanner artifacts |
+| 📋 **Bad scans** | 98.5% | Faded, skewed documents |
+| 🔥 **Worst case** | 97.2% | Barely legible copies |
 
-</div>
-
-<br/>
-
-| Quality Level | Sensitivity | What It Simulates |
-|:-------------:|:-----------:|:------------------|
-| ✨ **Clean** | 99.9% | Perfect digital text |
-| 📝 **Low Noise** | 99.8% | Minor typos and spacing |
-| 📠 **Medium OCR** | 99.7% | Light scan artifacts |
-| 📋 **High OCR** | 98.5% | Heavy corruption |
-| 🔥 **Extreme** | 97.2% | Worst-case scan quality |
-
-<br/>
-
-> **🎯 Key Insight:** Performance degrades *gracefully*. Even worst-case scans maintain 97%+ detection.
-
-<br/>
+> Even the worst scans still catch 97%+ of PHI. Performance degrades gracefully, not catastrophically.
 
 ---
 
-<br/>
-
 ## 🔍 Filter Coverage
 
-<br/>
-
 <details>
-<summary><b>👤 Identity & Names</b></summary>
-<br/>
+<summary><b>Identity & Names</b></summary>
 
 | Filter | Handles | Examples |
 |--------|---------|----------|
@@ -263,12 +359,10 @@ console.log(result.executionTimeMs); // ⏱️  Processing time (~2-3ms)
 | `FormattedNameFilter` | Standard formats | `SMITH, JOHN`, `Smith, John Ann` |
 | `CredentialNameFilter` | Professional suffixes | `Robert Williams, MD, PhD` |
 | `FamilyNameFilter` | Relationship contexts | `Daughter: Emma`, `Emergency Contact: Mary` |
-
 </details>
 
 <details>
-<summary><b>🪪 Government & Medical IDs</b></summary>
-<br/>
+<summary><b>Government & Medical IDs</b></summary>
 
 | Filter | Handles | Examples |
 |--------|---------|----------|
@@ -276,12 +370,10 @@ console.log(result.executionTimeMs); // ⏱️  Processing time (~2-3ms)
 | `MRNFilter` | Medical Record Numbers | `MRN: 7834921`, `Chart #12345` |
 | `NPIFilter` | Provider NPIs | `NPI: 1234567890` |
 | `MedicareFilter` | Medicare/Medicaid IDs | `1EG4-TE5-MK72` |
-
 </details>
 
 <details>
-<summary><b>📞 Contact Information</b></summary>
-<br/>
+<summary><b>Contact Information</b></summary>
 
 | Filter | Handles | Examples |
 |--------|---------|----------|
@@ -289,154 +381,61 @@ console.log(result.executionTimeMs); // ⏱️  Processing time (~2-3ms)
 | `EmailFilter` | Email addresses | `patient@email.com` |
 | `AddressFilter` | Street addresses | `123 Main St, Boston, MA` |
 | `ZipCodeFilter` | ZIP codes | `02101`, `02101-1234` |
-
 </details>
 
 <details>
-<summary><b>📅 Dates & Financial</b></summary>
-<br/>
+<summary><b>Dates & Financial</b></summary>
 
 | Filter | Handles | Examples |
 |--------|---------|----------|
 | `DateFilter` | All date formats | `03/15/1980`, `March 15, 2024` |
 | `AgeOver89Filter` | Ages 90+ (HIPAA) | `92-year-old`, `age: 95` |
 | `CreditCardFilter` | Credit cards (Luhn) | `4111-1111-1111-1111` |
-
 </details>
 
-<br/>
-
 ---
-
-<br/>
 
 ## 👁️ OCR Error Handling
 
-<div align="center">
+Scanners make predictable mistakes - mixing up `0` and `O`, `1` and `l`, etc. We catch PHI even when it's garbled:
 
-*Scanned documents introduce predictable errors. We catch them.*
-
-</div>
-
-<br/>
-
-| Original | Corrupted | Status |
-|:--------:|:---------:|:------:|
-| `03/15/1980` | `O3/l5/198O` | ✅ Detected |
-| `123-45-6789` | `l23-45-67B9` | ✅ Detected |
-| `(555) 123-4567` | `(5S5) l23-4567` | ✅ Detected |
-| `Smith, John` | `Smith, J0hn` | ✅ Detected |
-| `William` | `WiIlliam` | ✅ Detected |
-| `Elizabeth` | `EIiz@beth` | ✅ Detected |
-
-<br/>
-
-**Substitution Matrix:** `O`↔`0` · `l`↔`1`↔`I`↔`|` · `S`↔`5` · `B`↔`8` · `g`↔`9` · plus spacing variations
-
-<br/>
+| What You Typed | What the Scanner Saw | Caught? |
+|:--------------:|:--------------------:|:-------:|
+| `03/15/1980` | `O3/l5/198O` | ✅ Yes |
+| `123-45-6789` | `l23-45-67B9` | ✅ Yes |
+| `(555) 123-4567` | `(5S5) l23-4567` | ✅ Yes |
+| `Smith, John` | `Smith, J0hn` | ✅ Yes |
 
 ---
-
-<br/>
-
-## 🔌 Integration Examples
-
-<br/>
-
-<details>
-<summary><b>🌐 Express Middleware</b></summary>
-
-```typescript
-import { VulpesCelare } from 'vulpes-celare';
-
-app.use('/api/notes', async (req, res, next) => {
-  if (req.body.clinicalNote) {
-    req.body.clinicalNote = await VulpesCelare.redact(req.body.clinicalNote);
-  }
-  next();
-});
-```
-
-</details>
-
-<details>
-<summary><b>📦 Batch Processing</b></summary>
-
-```typescript
-const engine = new VulpesCelare();
-const results = await engine.processBatch(documents);
-// ⚡ Average: 2-3ms per document
-```
-
-</details>
-
-<details>
-<summary><b>👁️ Human Review Workflow</b></summary>
-
-```typescript
-const engine = new VulpesCelare();
-const result = await engine.process(document);
-
-if (result.redactionCount > 0) {
-  await queueForReview({
-    original: document,
-    redacted: result.text,
-    phiCount: result.redactionCount,
-    breakdown: result.breakdown
-  });
-}
-```
-
-</details>
-
-<br/>
-
----
-
-<br/>
 
 ## 🆚 Comparison to Alternatives
 
-<br/>
-
 | Tool | Approach | Strengths | Trade-offs |
 |:-----|:---------|:----------|:-----------|
-| **🦊 Vulpes Celare** | Proprietary Rules Engine | Sub-ms latency, air-gapped capable, zero data exfiltration, OCR-resilient | US-focused (international roadmap planned) |
+| **Vulpes Celare** | Proprietary rules engine | Sub-ms latency, air-gapped capable, zero data exfiltration, OCR-resilient | US-focused (international roadmap planned) |
 | Microsoft Presidio | Rules + ML | Mature, multi-language | Heavier setup, less medical-specific |
 | AWS Comprehend Medical | Cloud ML | High accuracy, maintained | Requires BAA, PHI leaves your perimeter |
 | Google Cloud DLP | Cloud ML | Broad coverage | Cost, cloud dependency, data exposure |
 
-<br/>
-
-> **🎯 Our Position:** Privacy-first · Zero-trust · On-premise capable · Air-gapped deployment ready · Full audit trail
-
-<br/>
+> **Our position:** Privacy-first · Zero-trust · On-premise capable · Air-gapped deployment ready · Full audit trail
 
 ---
-
-<br/>
 
 <div align="center">
 
 # 🧠 VULPES CORTEX
 ## Adaptive Neural Testing Engine
 
-<br/>
-
 ```
-   ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗
-  ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝
-  ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝
-  ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗
-  ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗
-   ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗
+██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝
+██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝
+██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗
+╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 ```
 
-<br/>
-
-### *The System That Learns From Every Test Run*
-
-<br/>
+### *The system that learns from every test run*
 
 [![Neural](https://img.shields.io/badge/Neural-Pattern_Recognition-FF6B6B?style=for-the-badge)]()
 [![Temporal](https://img.shields.io/badge/Temporal-Bi--Temporal_Memory-4ECDC4?style=for-the-badge)]()
@@ -444,354 +443,204 @@ if (result.redactionCount > 0) {
 
 </div>
 
-<br/>
-
 ---
-
-<br/>
 
 <div align="center">
 
-*Traditional testing tells you what failed.*
-
-*Cortex tells you **why**, **when you've seen it before**, and **what actually worked**.*
+*Traditional testing tells you what failed. Cortex tells you **why**, **when you've seen it before**, and **what actually worked**.*
 
 </div>
 
-<br/>
+### The Problem with Traditional PHI Testing
 
-### 🧩 The Problem with Traditional PHI Testing
+Most test suites forget everything between runs. You make a change, run tests, see results - but you have no idea if you're repeating a mistake from three months ago or if that "fix" actually made things worse somewhere else.
 
-Most test suites are **stateless amnesiacs**. Run 1,000 tests, get results, make changes, run again. But critical questions go unanswered:
-
-- 🔄 Did that regex change *actually* help, or did it break something else?
-- 🔁 We fixed NAME detection last month—why is it failing *the same way* again?
-- 📊 Which patterns keep recurring across hundreds of runs?
-
-**The result?** Teams make the same mistakes, try the same failed fixes, and lose institutional knowledge every time someone new touches the code.
-
-<br/>
+**The result?** Teams keep trying the same failed fixes, losing hard-won knowledge every time someone new touches the code.
 
 ---
 
-<br/>
-
-### 🧠 How Cortex Changes Everything
-
-<br/>
+### How Cortex Changes Everything
 
 ```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                      VULPES CORTEX NEURAL ARCHITECTURE                        │
-├───────────────────────────────────────────────────────────────────────────────┤
-│                                                                               │
-│    ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐     │
-│    │   TEST LAYER    │      │   NEURAL CORE   │      │   MEMORY BANK   │     │
-│    │                 │      │                 │      │                 │     │
-│    │   Run 7000+     │─────>│ Pattern Match   │─────>│  Bi-Temporal    │     │
-│    │   Documents     │      │ Failure Cluster │      │  Knowledge Base │     │
-│    │                 │      │ Trend Analysis  │      │                 │     │
-│    └─────────────────┘      └────────┬────────┘      └────────┬────────┘     │
-│                                      │                        │              │
-│                                      v                        v              │
-│    ┌─────────────────────────────────────────────────────────────────────┐   │
-│    │                       PREDICTIVE INSIGHTS                            │   │
-│    │                                                                      │   │
-│    │  "NAME filter regression detected. Pattern DICTIONARY_MISS seen     │   │
-│    │   96 times across 12 runs. Last successful intervention: expanded   │   │
-│    │   surname dictionary (+2.3% sensitivity). Recommended action:       │   │
-│    │   review recent dictionary changes."                                 │   │
-│    │                                                                      │   │
-│    └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                               │
-└───────────────────────────────────────────────────────────────────────────────┘
++-----------------------------------------------------------------------+
+|                  VULPES CORTEX NEURAL ARCHITECTURE                    |
++-----------------------------------------------------------------------+
+|                                                                       |
+|  +---------------+   +----------------+   +-----------------+         |
+|  | TEST LAYER    |   | NEURAL CORE    |   | MEMORY BANK     |         |
+|  |               |   |                |   |                 |         |
+|  | Run 7000+     |-->| Pattern Match  |-->| Bi-Temporal     |         |
+|  | Documents     |   | Failure Cluster|   | Knowledge Base  |         |
+|  |               |   | Trend Analysis |   |                 |         |
+|  +---------------+   +-------+--------+   +--------+--------+         |
+|                              |                     |                  |
+|                              v                     v                  |
+|  +----------------------------------------------------------------+   |
+|  |                    PREDICTIVE INSIGHTS                         |   |
+|  |                                                                |   |
+|  | "NAME filter regression detected. Pattern DICTIONARY_MISS      |   |
+|  |  seen 96 times across 12 runs. Last successful intervention:   |   |
+|  |  expanded surname dictionary (+2.3% sensitivity).              |   |
+|  |  Recommended action: review recent dictionary changes."        |   |
+|  |                                                                |   |
+|  +----------------------------------------------------------------+   |
+|                                                                       |
++-----------------------------------------------------------------------+
 ```
 
-<br/>
+### What Gets Recorded
 
-### 📊 What Gets Recorded
+Every test run teaches Cortex something new. It remembers:
 
-Every test run feeds the neural knowledge base:
-
-| Data Layer | What It Captures | Why It Matters |
-|:-----------|:-----------------|:---------------|
-| 🔴 **Failure Patterns** | Categorized failure signatures | Know *why* things fail, not just *that* they failed |
-| 🔧 **Intervention History** | Every fix attempt and outcome | Never repeat a failed experiment |
-| 📈 **Metric Trends** | Sensitivity/specificity over time | Catch regressions before they compound |
-| 💻 **Codebase State** | Filter versions at each run | Correlate code changes with outcomes |
-| 🔗 **Causal Links** | Change → Effect relationships | Understand the *impact* of every modification |
-
-<br/>
+| What | Plain English |
+|:-----|:--------------|
+| **Failure patterns** | "This type of name keeps slipping through - here's why" |
+| **Fix history** | "We tried this before. It didn't work. Here's what did." |
+| **Trends over time** | "Detection got worse after Tuesday's commit" |
+| **Code snapshots** | "Here's exactly what the filters looked like when things worked" |
+| **Cause and effect** | "That change broke phone detection but fixed dates" |
 
 ---
 
-<br/>
+### Bi-Temporal Intelligence
 
-### ⏱️ Bi-Temporal Intelligence
+Cortex tracks *when things actually happened* vs *when we found out about them*. 
 
-Cortex doesn't just store data—it understands **time** in two dimensions:
+**Why this matters:** Say a bug existed since March 1st but you only discovered it on March 15th. Cortex knows both dates - so when you ask "what was broken two weeks ago?" it gives you the real answer, not just what you knew at the time.
 
-```
-┌────────────────────────────────────────────────────────────────────┐
-│                    BI-TEMPORAL KNOWLEDGE MODEL                      │
-├────────────────────────────────────────────────────────────────────┤
-│                                                                    │
-│   t_occurred    When did this pattern first appear in reality?     │
-│        │                                                           │
-│        ▼                                                           │
-│   ════════════════════════════════════════════════════════════     │
-│   │ Mar 1 │ Mar 8 │ Mar 15 │ Mar 22 │ Mar 29 │ Apr 5  │            │
-│   ════════════════════════════════════════════════════════════     │
-│        ▲                                                           │
-│        │                                                           │
-│   t_recorded    When did Cortex learn about it?                    │
-│                                                                    │
-│   t_valid       When was this knowledge true/applicable?           │
-│                                                                    │
-└────────────────────────────────────────────────────────────────────┘
-```
-
-<br/>
-
-> **🔮 Query Example:** *"What did we know about NAME detection failures on March 15th, and what have we learned since?"*
-
-This temporal awareness lets Cortex provide historically-accurate insights and track how understanding evolves over time.
-
-<br/>
+This lets you:
+- See if a "new" bug is actually an old one resurfacing
+- Understand which fixes actually worked vs which just moved the problem
+- Track how your understanding of issues evolved over time
 
 ---
 
-<br/>
+### Industry-Standard Metrics
 
-### 📏 Industry-Standard Metrics
+Every test run measures what actually matters:
 
-Cortex tracks every metric that matters for PHI detection:
+| Metric | What It Really Means |
+|:------:|:---------------------|
+| **Sensitivity** | Did we catch the PHI? (Miss it = HIPAA violation) |
+| **Specificity** | Did we leave the safe stuff alone? (Over-redact = unusable docs) |
+| **MCC** | The one number that tells you if your system is actually good |
+| **F1 Score** | Balance between catching too much and missing too much |
+| **PPV** | When we say "this is PHI," how often are we right? |
 
-<br/>
-
-| Metric | Icon | What It Measures | Risk if Wrong |
-|:------:|:----:|:-----------------|:--------------|
-| **Sensitivity** | 🎯 | PHI correctly caught | Missed PHI = HIPAA violation |
-| **Specificity** | 🛡️ | Non-PHI correctly preserved | Over-redaction = unusable docs |
-| **MCC** | ⚖️ | Matthews Correlation Coefficient | Best single metric for imbalanced data |
-| **F1 Score** | 🎼 | Harmonic precision/recall balance | Overall detection quality |
-| **PPV** | 📊 | Positive Predictive Value | Confidence in redaction decisions |
-
-<br/>
-
-Every run calculates all metrics, tracks trends, and **alerts on regressions automatically**.
-
-<br/>
+Cortex tracks all of these over time and **alerts you when things get worse**.
 
 ---
 
-<br/>
+### MCP Integration: Plug into Any LLM
 
-### 🤖 MCP Integration: Plug Into Any LLM
-
-Cortex speaks **Model Context Protocol (MCP)**—the emerging standard for AI tool integration:
+Cortex connects to AI assistants (Claude, GPT, etc.) through the Model Context Protocol. This means you can ask an AI to help debug your test failures, and it will have access to your full testing history - what's been tried, what worked, what didn't.
 
 ```bash
-# 🚀 Launch the Cortex MCP Server
+# Launch the Cortex MCP server
 node tests/master-suite/cortex/mcp/server.js
-
-# What Cortex exposes:
-# ├── 16 Tools    → analyze, compare, record, rollback, snapshot...
-# ├── 8 Prompts   → debug failures, plan experiments, status reports...
-# └── Auto-handshake with any MCP-compatible AI client
 ```
 
-<br/>
-
-```
-┌──────────────────────┐          ┌──────────────────────┐
-│      Your LLM        │<────────>│     Cortex MCP       │
-│  (Claude, GPT, etc)  │   MCP    │                      │
-│                      │ Protocol │  - Historical data   │
-│  Reasoning &         │          │  - Pattern analysis  │
-│  Decisions           │          │  - Metric trends     │
-│                      │          │  - Recommendations   │
-└──────────────────────┘          └──────────────────────┘
-```
-
-**The key insight:** Cortex provides **data and context**. The LLM provides **reasoning and decisions**. Together, they form a complete intelligent testing system.
-
-<br/>
+**The key insight:** Cortex has the data. The AI has the reasoning. Together, they solve problems faster than either could alone.
 
 ---
 
-<br/>
+### A/B Experiments with Auto-Rollback
 
-### 🧪 A/B Experiments with Auto-Rollback
-
-Test changes with confidence:
+Try a change. If it makes things worse, Cortex automatically rolls it back. No more "I think this helped?" - you'll know for sure.
 
 ```javascript
-// 📸 Snapshot current state
 const snapshot = cortex.createSnapshot(documents);
-
-// 🔧 Make your filter change
 nameFilter.addPattern(/NEW_PATTERN/);
-
-// ⚖️ Compare before/after on IDENTICAL documents
 const comparison = cortex.compare(baselineResults, treatmentResults);
 
-// 🔄 Automatic rollback if sensitivity drops >1%
 if (comparison.verdict === 'MAJOR_REGRESSION') {
-  cortex.rollback(snapshot.id);
-  console.log('⚠️ Change reverted - sensitivity regression detected');
+  cortex.rollback(snapshot.id);  // Automatic undo
 }
 ```
 
-<br/>
-
-> **🎯 No more guessing.** Measure. Compare. *Know.*
-
-<br/>
-
 ---
 
-<br/>
-
-### 🏃 Running with Cortex
+### Running with Cortex
 
 ```bash
-# 🧪 Basic run with Cortex analysis
+# Basic run with Cortex analysis
 node tests/master-suite/run.js --count 200 --cortex
 
-# 📊 Full report with neural insights
+# Full report with neural insights
 node tests/master-suite/run.js --count 200 --cortex --cortex-report
-
-# What you'll see:
-# ┌──────────────────────────────────────────────────┐
-# │ ✓ Sensitivity: 99.6%                             │
-# │ ✓ Top failure pattern: DICTIONARY_MISS (12x)     │
-# │ ✓ Trend: IMPROVING over last 5 runs              │
-# │ ✓ Recommendation: Focus on NAME edge cases       │
-# │ ✓ Confidence: HIGH (based on 7000+ samples)      │
-# └──────────────────────────────────────────────────┘
 ```
 
-<br/>
-
 ---
 
-<br/>
+### Traditional Testing vs. Cortex
 
-### 🔄 Traditional Testing vs. Cortex
-
-<br/>
-
-| | Traditional | Vulpes Cortex |
-|:---:|:-----------:|:-------------:|
-| **Memory** | ❌ Stateless | ✅ Remembers everything |
-| **Insight** | "Test failed" | "Why, and have we seen this before?" |
-| **Analysis** | Manual | Pattern recognition built-in |
-| **Experiments** | Hope it helped | Measured A/B with auto-rollback |
-| **Knowledge** | In people's heads | In the system, forever |
-| **Learning** | None | Improves with every run |
-
-<br/>
+| | Traditional | Cortex |
+|:---|:-----------:|:------:|
+| **Memory** | Forgets everything | Remembers everything |
+| **When tests fail** | "Something broke" | "Here's why, and we've seen this before" |
+| **After a fix** | "Hope that worked" | "Here's exactly what changed" |
+| **Knowledge** | Lives in people's heads | Lives in the system |
 
 ---
-
-<br/>
 
 ## 🧪 Validation & Testing
 
 ```bash
-# Clone and setup
 git clone https://github.com/anthropics/vulpes-celare
 cd vulpes-celare
 npm install
 npm run build
-
-# 🧪 Run comprehensive test suite
 npm test
 
-# 🧠 Run with Cortex intelligence
+# Run with Cortex intelligence
 node tests/master-suite/run.js --count 200 --cortex
 ```
 
-<br/>
+### We Welcome
 
-### 🤝 We Welcome
-
-- 📄 Testing on new document types
-- 🐛 False positive/negative reports (with de-identified examples)
-- 📊 Performance benchmarks on larger datasets
-- 🌍 International format contributions
-
-<br/>
+- Testing on new document types
+- False positive/negative reports (with de-identified examples)
+- Performance benchmarks on larger datasets
+- International format contributions
 
 ---
-
-<br/>
 
 ## 📋 Deployment Considerations
 
-<br/>
+> **Validation Status:** Performance metrics (99.6% sensitivity, 96-100% specificity) are derived from rigorous testing on 7,000+ adversarial synthetic documents. We actively welcome **independent validation partnerships** and real-world pilot programs.
 
-> **🔬 Validation Status**
->
-> Performance metrics (99.6% sensitivity, 96-100% specificity) are derived from rigorous testing on 7,000+ adversarial synthetic documents. We actively welcome **independent validation partnerships** and real-world pilot programs to expand our evidence base.
+> **Integration Guidance:** HIPAA compliance is organizational, not purely technical. Vulpes Celare is designed as a **high-performance layer** within broader compliance workflows - we recommend pairing with human review processes for production healthcare deployments.
 
-<br/>
-
-> **🏥 Integration Guidance**
->
-> HIPAA compliance is organizational, not purely technical. Vulpes Celare is designed as a **high-performance layer** within broader compliance workflows—we recommend pairing with human review processes and organizational policies for production healthcare deployments.
-
-<br/>
-
-> **🔒 Data Integrity**
->
-> Zero real patient data was used in development. All test documents are **programmatically generated synthetic data**, ensuring no PHI exposure during the development lifecycle.
-
-<br/>
+> **Data Integrity:** Zero real patient data was used in development. All test documents are **programmatically generated synthetic data**, ensuring no PHI exposure during the development lifecycle.
 
 ---
-
-<br/>
 
 ## 📜 License
 
-**Source Available License** — See [LICENSE](LICENSE) for details.
+**Source Available License** - See [LICENSE](LICENSE) for details.
 
 | Use Case | Status |
 |:---------|:------:|
-| 👤 Personal & Educational | ✅ Permitted |
-| 🎓 Research & Academic | ✅ Permitted |
-| 💼 Commercial | 📝 Requires written permission |
-
-<br/>
+| Personal & Educational | ✅ Permitted |
+| Research & Academic | ✅ Permitted |
+| Commercial | Requires written permission |
 
 ---
-
-<br/>
 
 ## 🤝 Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-<br/>
-
 ---
-
-<br/>
 
 ## 📚 Community Standards
 
-- 📖 Read the [Code of Conduct](CODE_OF_CONDUCT.md) before participating
-- 🔐 Report vulnerabilities via [Security Policy](SECURITY.md)—never share real PHI
-- 🐛 File issues using provided templates
-- ✅ Submit PRs with the checklist to prevent accidental PHI leaks
-
-<br/>
+- Read the [Code of Conduct](CODE_OF_CONDUCT.md) before participating
+- Report vulnerabilities via [Security Policy](SECURITY.md) - never share real PHI
+- File issues using provided templates
+- Submit PRs with the checklist to prevent accidental PHI leaks
 
 ---
-
-<br/>
 
 <div align="center">
 
