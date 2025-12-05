@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-Source%20Available-4B32C3?style=for-the-badge)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Experimental-orange?style=for-the-badge)](#validation)
+[![Status](https://img.shields.io/badge/Status-Experimental-orange?style=for-the-badge)](#-validation)
 
 |     | Metric                | Score         |
 |:---:|:---------------------:|:-------------:|
@@ -249,6 +249,7 @@ Vulpes Celare includes **Vulpes Cortex** - an MCP (Model Context Protocol) serve
 **For AI agents (Claude, ChatGPT, etc.):** Read [`INSTRUCTIONS_FOR_AI_AGENTS.md`](./INSTRUCTIONS_FOR_AI_AGENTS.md) for comprehensive setup and usage instructions.
 
 **For humans:** The MCP integration allows AI assistants to:
+
 - Run tests and analyze results automatically
 - Consult historical data before making recommendations
 - Execute the fix-test-verify loop autonomously
@@ -277,7 +278,7 @@ cd vulpes-celare && npm install && npm run build && npm test
 ```
 
 > **Validation Status:** Metrics derived from 7,000+ adversarial synthetic documents. Zero real patient data used. We welcome independent validation partnerships and real-world pilots.
-
+>
 > **Integration Guidance:** HIPAA compliance is organizational, not purely technical. We recommend pairing with human review for production healthcare deployments.
 
 ---
@@ -300,6 +301,7 @@ cd vulpes-celare && npm install && npm run build && npm test
 ### What This Means
 
 **You can freely use Vulpes Celare if:**
+
 - You're an individual, researcher, or educator
 - You're a non-profit hospital or clinic (any size)
 - Your company makes less than $1M/year
@@ -307,11 +309,13 @@ cd vulpes-celare && npm install && npm run build && npm test
 - You're using it internally (not offering as a service)
 
 **You need a commercial license if:**
+
 - Your company makes > $1M/year AND
 - You want to keep your modifications private, OR
 - You're offering Vulpes Celare as a managed service
 
 **The AGPL ensures:**
+
 - ✅ Code is always auditable (critical for HIPAA compliance)
 - ✅ Improvements are shared back with the community
 - ✅ Large companies can't take without contributing

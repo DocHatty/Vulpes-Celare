@@ -360,6 +360,22 @@
         "t_occurred": "2025-12-05T12:02:31.773Z",
         "t_valid_from": "2025-12-05T12:02:31.773Z",
         "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1764959618132_ewqvqdxzg",
+        "t_recorded": "2025-12-05T18:33:38.132Z",
+        "t_occurred": "2025-12-05T18:33:38.132Z",
+        "t_valid_from": "2025-12-05T18:33:38.132Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1764960247792_dyjxshmeh",
+        "t_recorded": "2025-12-05T18:44:07.792Z",
+        "t_occurred": "2025-12-05T18:44:07.792Z",
+        "t_valid_from": "2025-12-05T18:44:07.792Z",
+        "t_valid_until": null
       }
     ]
   },
@@ -724,11 +740,45 @@
         "t_occurred": "2025-12-05T12:02:31.773Z",
         "t_valid_from": "2025-12-05T12:02:31.773Z",
         "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1764959618132_ewqvqdxzg",
+        "t_recorded": "2025-12-05T18:33:38.132Z",
+        "t_occurred": "2025-12-05T18:33:38.132Z",
+        "t_valid_from": "2025-12-05T18:33:38.132Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1764960247792_dyjxshmeh",
+        "t_recorded": "2025-12-05T18:44:07.792Z",
+        "t_occurred": "2025-12-05T18:44:07.792Z",
+        "t_valid_from": "2025-12-05T18:44:07.792Z",
+        "t_valid_until": null
       }
     ]
   },
   "byValidityPeriod": {},
   "timeline": [
+    {
+      "type": "TestRun",
+      "id": "run_1764960247792_dyjxshmeh",
+      "t_recorded": "2025-12-05T18:44:07.792Z",
+      "t_occurred": "2025-12-05T18:44:07.792Z",
+      "t_valid_from": "2025-12-05T18:44:07.792Z",
+      "t_valid_until": null,
+      "timestamp": 1764960247792
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1764959618132_ewqvqdxzg",
+      "t_recorded": "2025-12-05T18:33:38.132Z",
+      "t_occurred": "2025-12-05T18:33:38.132Z",
+      "t_valid_from": "2025-12-05T18:33:38.132Z",
+      "t_valid_until": null,
+      "timestamp": 1764959618132
+    },
     {
       "type": "TestRun",
       "id": "run_1764936151773_tzboz9raf",

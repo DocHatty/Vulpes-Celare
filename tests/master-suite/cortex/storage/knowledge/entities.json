@@ -1740,6 +1740,60 @@
         "t_valid_from": "2025-12-05T12:02:31.773Z",
         "t_valid_until": null
       }
+    },
+    "run_1764959618132_ewqvqdxzg": {
+      "id": "run_1764959618132_ewqvqdxzg",
+      "timestamp": "2025-12-05T18:33:38.132Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.4522,
+        "specificity": 94.2502,
+        "precision": 98.8832,
+        "f1Score": 97.6526,
+        "mcc": 0.864
+      },
+      "confusionMatrix": {
+        "truePositives": 6552,
+        "falseNegatives": 241,
+        "trueNegatives": 1213,
+        "falsePositives": 74,
+        "totalPHI": 6793,
+        "totalNonPHI": 1287
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T18:33:38.132Z",
+        "t_occurred": "2025-12-05T18:33:38.132Z",
+        "t_valid_from": "2025-12-05T18:33:38.132Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764960247792_dyjxshmeh": {
+      "id": "run_1764960247792_dyjxshmeh",
+      "timestamp": "2025-12-05T18:44:07.792Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.6706,
+        "specificity": 93.3998,
+        "precision": 98.7064,
+        "f1Score": 97.6779,
+        "mcc": 0.8649
+      },
+      "confusionMatrix": {
+        "truePositives": 6562,
+        "falseNegatives": 226,
+        "trueNegatives": 1217,
+        "falsePositives": 86,
+        "totalPHI": 6788,
+        "totalNonPHI": 1303
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T18:44:07.792Z",
+        "t_occurred": "2025-12-05T18:44:07.792Z",
+        "t_valid_from": "2025-12-05T18:44:07.792Z",
+        "t_valid_until": null
+      }
     }
   },
   "Intervention": {

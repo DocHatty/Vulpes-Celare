@@ -190,25 +190,25 @@ export class RadiologyLogger {
       const lengthStr = options.end - options.start;
 
       // Primary log line
-      console.log(
+      console.error(
         `[${timestamp}] [PHI-DETECTED] [${options.filterType}] ` +
           `"${this.truncateText(options.text, 50)}" ` +
           `(pos: ${options.start}-${options.end}, len: ${lengthStr}, conf: ${confidenceStr}%)`,
       );
 
       // Token assignment
-      console.log(`[${timestamp}] [PHI-DETECTED]   -> Token: ${options.token}`);
+      console.error(`[${timestamp}] [PHI-DETECTED]   -> Token: ${options.token}`);
 
       // Context if available
       if (options.context) {
-        console.log(
+        console.error(
           `[${timestamp}] [PHI-DETECTED]   -> Context: "${this.truncateText(options.context, 80)}"`,
         );
       }
 
       // Pattern if available
       if (options.pattern) {
-        console.log(
+        console.error(
           `[${timestamp}] [PHI-DETECTED]   -> Pattern: ${options.pattern}`,
         );
       }
@@ -246,16 +246,16 @@ export class RadiologyLogger {
           ? ` (pos: ${options.start}-${options.end})`
           : "";
 
-      console.log(
+      console.error(
         `[${timestamp}] [PHI-FILTERED] [${options.filterType}] ` +
           `"${this.truncateText(options.text, 50)}"${posStr}`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [PHI-FILTERED]   -> Reason: ${options.reason}`,
       );
 
       if (options.details) {
-        console.log(
+        console.error(
           `[${timestamp}] [PHI-FILTERED]   -> Details: ${options.details}`,
         );
       }
@@ -272,7 +272,7 @@ export class RadiologyLogger {
   static filterStart(filterName: string, filterType: string) {
     if (this.enabled && this.logLevel <= LogLevel.DEBUG) {
       const timestamp = this.getTimestamp();
-      console.log(
+      console.error(
         `[${timestamp}] [FILTER-START] [${filterType}] ${filterName} executing...`,
       );
     }
@@ -294,7 +294,7 @@ export class RadiologyLogger {
       const icon = options.success ? "✓" : "✗";
       const status = options.success ? "OK" : "FAILED";
 
-      console.log(
+      console.error(
         `[${timestamp}] [FILTER-DONE] [${icon}] [${options.filterType}] ` +
           `${options.filterName}: ${options.spansDetected} spans in ${options.executionTimeMs}ms [${status}]`,
       );
@@ -318,7 +318,7 @@ export class RadiologyLogger {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
       const timestamp = this.getTimestamp();
       const spanStr = spanCount !== undefined ? ` (${spanCount} spans)` : "";
-      console.log(`[${timestamp}] [PIPELINE] [${stage}] ${details}${spanStr}`);
+      console.error(`[${timestamp}] [PIPELINE] [${stage}] ${details}${spanStr}`);
     }
   }
 
@@ -337,32 +337,32 @@ export class RadiologyLogger {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
       const timestamp = this.getTimestamp();
 
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY] ============================================================`,
       );
-      console.log(`[${timestamp}] [SUMMARY] Redaction Complete`);
-      console.log(
+      console.error(`[${timestamp}] [SUMMARY] Redaction Complete`);
+      console.error(
         `[${timestamp}] [SUMMARY]   Input:  ${options.inputLength} characters`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY]   Output: ${options.outputLength} characters`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY]   Filters executed: ${options.filterCount}`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY]   Spans detected:   ${options.totalSpansDetected}`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY]   After filtering:  ${options.spansAfterFiltering}`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY]   Tokens applied:   ${options.spansApplied}`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY]   Time: ${options.executionTimeMs}ms`,
       );
-      console.log(
+      console.error(
         `[${timestamp}] [SUMMARY] ============================================================`,
       );
     }
@@ -376,7 +376,7 @@ export class RadiologyLogger {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
       const timestamp = this.getTimestamp();
       const timeStr = timeMs !== undefined ? ` in ${timeMs}ms` : "";
-      console.log(
+      console.error(
         `[${timestamp}] [DICTIONARY] Loaded ${name}: ${count.toLocaleString()} entries${timeStr}`,
       );
     }
@@ -426,21 +426,21 @@ export class RadiologyLogger {
     const stats = this.getStats();
     const timestamp = this.getTimestamp();
 
-    console.log(
+    console.error(
       `\n[${timestamp}] [SESSION-SUMMARY] ============================================================`,
     );
-    console.log(
+    console.error(
       `[${timestamp}] [SESSION-SUMMARY] Session Duration: ${(stats.sessionDurationMs / 1000).toFixed(2)}s`,
     );
-    console.log(
+    console.error(
       `[${timestamp}] [SESSION-SUMMARY] PHI Detected: ${stats.phiDetected}`,
     );
-    console.log(
+    console.error(
       `[${timestamp}] [SESSION-SUMMARY] False Positives Filtered: ${stats.phiFiltered}`,
     );
-    console.log(`[${timestamp}] [SESSION-SUMMARY] Errors: ${stats.errors}`);
-    console.log(`[${timestamp}] [SESSION-SUMMARY] Warnings: ${stats.warnings}`);
-    console.log(
+    console.error(`[${timestamp}] [SESSION-SUMMARY] Errors: ${stats.errors}`);
+    console.error(`[${timestamp}] [SESSION-SUMMARY] Warnings: ${stats.warnings}`);
+    console.error(
       `[${timestamp}] [SESSION-SUMMARY] ============================================================\n`,
     );
 
@@ -451,11 +451,11 @@ export class RadiologyLogger {
         byType[log.filterType] = (byType[log.filterType] || 0) + 1;
       }
 
-      console.log(`[${timestamp}] [SESSION-SUMMARY] PHI by Type:`);
+      console.error(`[${timestamp}] [SESSION-SUMMARY] PHI by Type:`);
       for (const [type, count] of Object.entries(byType).sort(
         (a, b) => b[1] - a[1],
       )) {
-        console.log(`[${timestamp}] [SESSION-SUMMARY]   ${type}: ${count}`);
+        console.error(`[${timestamp}] [SESSION-SUMMARY]   ${type}: ${count}`);
       }
     }
   }
@@ -466,12 +466,12 @@ export class RadiologyLogger {
 
   static loading(message: string, ...args: any[]) {
     if (this.enabled)
-      console.log(`[${this.getTimestamp()}] [LOADING]`, message, ...args);
+      console.error(`[${this.getTimestamp()}] [LOADING]`, message, ...args);
   }
 
   static success(message: string, ...args: any[]) {
     if (this.enabled)
-      console.log(`[${this.getTimestamp()}] [SUCCESS]`, message, ...args);
+      console.error(`[${this.getTimestamp()}] [SUCCESS]`, message, ...args);
   }
 
   static redactionDebug(message: string, data?: any) {

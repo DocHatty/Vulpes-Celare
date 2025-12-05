@@ -593,19 +593,19 @@ export class ParallelRedactionEngine {
 
       // INSURANCE CHECK - catches Aetna, Cigna, Blue Cross, etc.
       if (DocumentVocabulary.isInsuranceTerm(text)) {
-        console.log(`[INSURANCE] Filtering insurance company: "${text}"`);
+        console.error(`[INSURANCE] Filtering insurance company: "${text}"`);
         return false;
       }
 
       // HOSPITAL CHECK - catches Beth Israel, Johns Hopkins, UT Southwestern, etc.
       if (DocumentVocabulary.isHospitalName(text)) {
-        console.log(`[HOSPITAL] Filtering hospital name: "${text}"`);
+        console.error(`[HOSPITAL] Filtering hospital name: "${text}"`);
         return false;
       }
 
       // MASTER NON-PHI CHECK - catches medical terms, geographic terms, field labels, etc.
       if (DocumentVocabulary.isNonPHI(text)) {
-        console.log(`[NON-PHI] Filtering non-PHI term: "${text}"`);
+        console.error(`[NON-PHI] Filtering non-PHI term: "${text}"`);
         return false;
       }
 
@@ -613,19 +613,19 @@ export class ParallelRedactionEngine {
       const words = text.split(/[\s,]+/).filter((w) => w.length > 2);
       for (const word of words) {
         if (DocumentVocabulary.isInsuranceTerm(word)) {
-          console.log(
+          console.error(
             `[INSURANCE-WORD] Filtering span with insurance term "${word}": "${text}"`,
           );
           return false;
         }
         if (DocumentVocabulary.isHospitalName(word)) {
-          console.log(
+          console.error(
             `[HOSPITAL-WORD] Filtering span with hospital term "${word}": "${text}"`,
           );
           return false;
         }
         if (DocumentVocabulary.isNonPHI(word)) {
-          console.log(
+          console.error(
             `[NON-PHI-WORD] Filtering span with non-PHI word "${word}": "${text}"`,
           );
           return false;
@@ -705,7 +705,7 @@ export class ParallelRedactionEngine {
 
       // Check full text first
       if (DocumentVocabulary.isMedicalTerm(text)) {
-        console.log(
+        console.error(
           `[DocumentVocabulary] Filtering NAME matching medical term: "${text}"`,
         );
         return false;
@@ -716,7 +716,7 @@ export class ParallelRedactionEngine {
         HospitalDictionary.isHospital(text) ||
         HospitalDictionary.isPartOfHospitalName(text, text)
       ) {
-        console.log(
+        console.error(
           `[HospitalDictionary] Filtering NAME matching hospital: "${text}"`,
         );
         return false;

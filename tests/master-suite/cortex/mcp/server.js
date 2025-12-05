@@ -68,6 +68,115 @@ const { getTools, executeTool } = require("./tools");
 const { getPrompts, getPrompt } = require("./prompts");
 
 // ============================================================================
+// MCP PROTOCOL SAFETY - CRITICAL
+// ============================================================================
+// MCP uses JSON-RPC over stdio. ANY non-JSON output to stdout breaks the protocol.
+// We MUST ensure stdout is NEVER polluted with debug output.
+
+/**
+ * DEBUG MODE: Set to true for verbose logging (to stderr only!)
+ * When enabled, logs detailed information about every operation.
+ */
+const DEBUG_MODE = process.env.VULPES_DEBUG === "1" || process.argv.includes("--debug");
+
+/**
+ * Safe logging function - ALWAYS goes to stderr, NEVER stdout
+ * Use this instead of console.log() anywhere in this file
+ */
+function log(...args) {
+  console.error("[Cortex]", ...args);
+}
+
+function debug(...args) {
+  if (DEBUG_MODE) {
+    console.error("[Cortex:DEBUG]", ...args);
+  }
+}
+
+function warn(...args) {
+  console.error("[Cortex:WARN]", ...args);
+}
+
+function error(...args) {
+  console.error("[Cortex:ERROR]", ...args);
+}
+
+/**
+ * STDOUT PROTECTION: Intercept and redirect any rogue console.log calls
+ * This is a safety net for any imported modules that might use console.log
+ */
+const originalConsoleLog = console.log;
+let stdoutProtectionEnabled = false;
+
+function enableStdoutProtection() {
+  if (stdoutProtectionEnabled) return;
+  stdoutProtectionEnabled = true;
+
+  console.log = (...args) => {
+    // Check if this looks like JSON-RPC (legit MCP output)
+    if (args.length === 1 && typeof args[0] === "string") {
+      try {
+        const parsed = JSON.parse(args[0]);
+        if (parsed.jsonrpc === "2.0") {
+          // This is legitimate MCP output, allow it
+          originalConsoleLog.apply(console, args);
+          return;
+        }
+      } catch {
+        // Not JSON, redirect to stderr
+      }
+    }
+    // Redirect all other console.log to stderr
+    console.error("[INTERCEPTED console.log]", ...args);
+  };
+
+  debug("Stdout protection ENABLED - console.log redirected to stderr");
+}
+
+function disableStdoutProtection() {
+  console.log = originalConsoleLog;
+  stdoutProtectionEnabled = false;
+}
+
+// ============================================================================
+// ERROR CONTEXT TRACKING
+// ============================================================================
+/**
+ * Tracks current operation for better error messages
+ */
+let currentOperation = {
+  type: null,
+  name: null,
+  startTime: null,
+  args: null,
+};
+
+function startOperation(type, name, args = {}) {
+  currentOperation = {
+    type,
+    name,
+    startTime: Date.now(),
+    args: JSON.stringify(args).substring(0, 200),
+  };
+  debug(`Starting ${type}: ${name}`);
+}
+
+function endOperation(success = true, details = "") {
+  const duration = Date.now() - (currentOperation.startTime || Date.now());
+  if (success) {
+    debug(`Completed ${currentOperation.type}: ${currentOperation.name} (${duration}ms) ${details}`);
+  } else {
+    error(`Failed ${currentOperation.type}: ${currentOperation.name} (${duration}ms) ${details}`);
+  }
+  currentOperation = { type: null, name: null, startTime: null, args: null };
+}
+
+function getOperationContext() {
+  if (!currentOperation.type) return "";
+  return `\n  During: ${currentOperation.type} "${currentOperation.name}"\n  Args: ${currentOperation.args}`;
+}
+
+// ============================================================================
 // VULPES CORTEX MCP SERVER
 // ============================================================================
 
@@ -76,6 +185,8 @@ class VulpesCortexServer {
     this.server = null;
     this.modules = {};
     this.initialized = false;
+    this.errorCount = 0;
+    this.lastErrors = [];
   }
 
   /**
@@ -206,10 +317,13 @@ class VulpesCortexServer {
     // Execute a tool
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
-      console.error(`[Vulpes Cortex] Tool call: ${name}`);
+      startOperation("TOOL", name, args);
+      log(`Tool call: ${name}`);
+      debug(`Full args: ${JSON.stringify(args)}`);
 
       try {
         const result = await executeTool(name, args, this.modules);
+        endOperation(true, `result keys: ${Object.keys(result || {}).join(", ")}`);
         return {
           content: [
             {
@@ -221,13 +335,36 @@ class VulpesCortexServer {
             },
           ],
         };
-      } catch (error) {
-        console.error(`[Vulpes Cortex] Tool error:`, error.message);
+      } catch (err) {
+        // Track error for debugging
+        this.errorCount++;
+        const errorInfo = {
+          timestamp: new Date().toISOString(),
+          tool: name,
+          args: JSON.stringify(args).substring(0, 500),
+          message: err.message,
+          stack: err.stack?.split("\n").slice(0, 5).join("\n"),
+        };
+        this.lastErrors.push(errorInfo);
+        if (this.lastErrors.length > 10) this.lastErrors.shift();
+
+        error(`Tool "${name}" failed: ${err.message}`);
+        error(`Stack trace (first 5 lines):\n${errorInfo.stack}`);
+        error(`Args were: ${errorInfo.args}`);
+        endOperation(false, err.message);
+
         return {
           content: [
             {
               type: "text",
-              text: `Error: ${error.message}`,
+              text: JSON.stringify({
+                error: true,
+                tool: name,
+                message: err.message,
+                hint: "Check stderr for full stack trace",
+                totalErrors: this.errorCount,
+                debugCommand: "Set VULPES_DEBUG=1 for verbose logging",
+              }, null, 2),
             },
           ],
           isError: true,
@@ -372,6 +509,10 @@ class VulpesCortexServer {
    * @param {number} options.port - HTTP port for daemon mode (default: 3100)
    */
   async start(options = {}) {
+    log("Starting Vulpes Cortex MCP Server...");
+    debug(`Options: ${JSON.stringify(options)}`);
+    debug(`DEBUG_MODE: ${DEBUG_MODE}`);
+
     // Initialize modules first
     await this.initialize();
 
@@ -384,6 +525,11 @@ class VulpesCortexServer {
       await this.startDaemon(port);
     } else {
       // STDIO MODE: Connect via stdio (requires connected client)
+      // CRITICAL: Enable stdout protection BEFORE connecting
+      // This catches any rogue console.log calls that would break MCP
+      enableStdoutProtection();
+      log("Stdout protection enabled for stdio mode");
+
       const transport = new StdioServerTransport();
       await this.server.connect(transport);
 
@@ -395,7 +541,7 @@ class VulpesCortexServer {
       );
 
       // Keep process alive - the SDK handles the message loop
-      await new Promise(() => {}); // Never resolves
+      await new Promise(() => { }); // Never resolves
     }
   }
 

@@ -41,11 +41,25 @@
       "filterCount": 29,
       "dictionaryCount": 6,
       "hash": "99df5b673db479a3"
+    },
+    {
+      "id": "STATE-1764959510835",
+      "timestamp": "2025-12-05T18:31:50.835Z",
+      "filterCount": 29,
+      "dictionaryCount": 6,
+      "hash": "51ecb10fa97ffc5c"
+    },
+    {
+      "id": "STATE-1764961963460",
+      "timestamp": "2025-12-05T19:12:43.460Z",
+      "filterCount": 29,
+      "dictionaryCount": 6,
+      "hash": "87e71fb645a39fe1"
     }
   ],
   "current": {
-    "id": "STATE-1764924163776",
-    "timestamp": "2025-12-05T08:42:43.776Z",
+    "id": "STATE-1764961963460",
+    "timestamp": "2025-12-05T19:12:43.460Z",
     "filters": {
       "count": 29,
       "filters": [
@@ -1401,14 +1415,14 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 1220,
+            "lines": 1243,
             "conditionals": 58,
             "loops": 24,
             "functions": 9
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 42364,
-          "hash": "2ae367b41ee0"
+          "lastModified": "2025-12-05T09:13:37.300Z",
+          "size": 42146,
+          "hash": "2e930d8ba86f"
         },
         {
           "name": "SSNFilterSpan",
@@ -2156,7 +2170,7 @@
       "filters\\NPIFilterSpan.ts": "b612e683921b",
       "filters\\PassportNumberFilterSpan.ts": "88eb679f5d95",
       "filters\\PhoneFilterSpan.ts": "eb16c64b3177",
-      "filters\\SmartNameFilterSpan.ts": "2ae367b41ee0",
+      "filters\\SmartNameFilterSpan.ts": "2e930d8ba86f",
       "filters\\SSNFilterSpan.ts": "e701b6aff444",
       "filters\\TitledNameFilterSpan.ts": "cfd2ef5da898",
       "filters\\UniqueIdentifierFilterSpan.ts": "03d162985667",
@@ -2172,19 +2186,19 @@
       "core\\FieldContextDetector.ts": "464a978703e2",
       "core\\FieldLabelWhitelist.ts": "9fca018d148c",
       "core\\FilterAdapter.ts": "15e4f3fa1fce",
-      "core\\ParallelRedactionEngine.ts": "1fa809e193e0",
+      "core\\ParallelRedactionEngine.ts": "e5381f9f9b0e",
       "core\\SpanBasedFilter.ts": "60b4b6fcb8c4",
       "core\\SpanFactory.ts": "71d3fc6183ba",
       "services\\ConfidenceModifierService.ts": "de17be5b08f9",
       "services\\index.ts": "4a2b60a55c10",
       "services\\ReplacementContextService.ts": "ce309f267127",
-      "services\\SpanDisambiguationService.ts": "d017216ac98e",
+      "services\\SpanDisambiguationService.ts": "5af9abf375ce",
       "services\\VectorDisambiguationService.ts": "874f0f11f78a",
       "services\\WindowService.ts": "c77184eafa52",
       "VulpesCelare.ts": "2510e1722ac5"
     },
     "summary": {
-      "timestamp": "2025-12-05T08:42:43.776Z",
+      "timestamp": "2025-12-05T19:12:43.460Z",
       "filters": {
         "total": 29,
         "byType": 23,
@@ -2214,7 +2228,7 @@
         "stages": 6,
         "services": 5
       },
-      "codebaseHash": "99df5b673db479a3"
+      "codebaseHash": "87e71fb645a39fe1"
     }
   }
 }

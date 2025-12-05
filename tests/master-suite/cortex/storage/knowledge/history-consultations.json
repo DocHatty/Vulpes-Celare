@@ -304,11 +304,23 @@
       "timestamp": "2025-12-05T12:02:31.771Z",
       "decisionType": "HOW_TO_FIX",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764959618128",
+      "timestamp": "2025-12-05T18:33:38.128Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764960247788",
+      "timestamp": "2025-12-05T18:44:07.788Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 51,
+    "total": 53,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 50
+    "noHistoryFound": 52
   }
 }

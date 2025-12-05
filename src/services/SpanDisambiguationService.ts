@@ -138,8 +138,8 @@ export class SpanDisambiguationService {
         const position = spans[0].characterStart;
         const text = spans[0].text;
 
-        console.log(`[Disambiguation] Disambiguating "${text}" at position ${position}`);
-        console.log(`[Disambiguation] Candidates: ${spans.map(s => s.filterType).join(", ")}`);
+        console.error(`[Disambiguation] Disambiguating "${text}" at position ${position}`);
+        console.error(`[Disambiguation] Candidates: ${spans.map(s => s.filterType).join(", ")}`);
 
         // Calculate context similarity for each candidate
         const scores = new Map<FilterType, number>();
@@ -147,7 +147,7 @@ export class SpanDisambiguationService {
         for (const span of spans) {
             const score = this.calculateContextScore(span);
             scores.set(span.filterType, score);
-            console.log(`[Disambiguation] ${span.filterType}: ${score.toFixed(3)}`);
+            console.error(`[Disambiguation] ${span.filterType}: ${score.toFixed(3)}`);
         }
 
         // Find best match
@@ -165,7 +165,7 @@ export class SpanDisambiguationService {
 
         // Check if best score meets threshold
         if (bestSpan && bestScore >= this.confidenceThreshold) {
-            console.log(`[Disambiguation] Selected: ${bestSpan.filterType} (score: ${bestScore.toFixed(3)})`);
+            console.error(`[Disambiguation] Selected: ${bestSpan.filterType} (score: ${bestScore.toFixed(3)})`);
             bestSpan.disambiguationScore = bestScore;
             bestSpan.ambiguousWith = spans
                 .filter(s => s.filterType !== bestSpan!.filterType)
@@ -174,7 +174,7 @@ export class SpanDisambiguationService {
         }
 
         // If no clear winner, fall back to highest confidence or priority
-        console.log(`[Disambiguation] No clear winner, using fallback`);
+        console.error(`[Disambiguation] No clear winner, using fallback`);
         return this.fallbackDisambiguation(spans);
     }
 

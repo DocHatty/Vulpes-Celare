@@ -62,7 +62,7 @@ const EXPERIMENT_CONFIG = {
 // ============================================================================
 
 async function main() {
-  console.log(`
+  console.error(`
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
 ║   ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
@@ -78,9 +78,9 @@ async function main() {
 `);
 
   // Initialize Cortex
-  console.log("  Initializing Vulpes Cortex...");
+  console.error("  Initializing Vulpes Cortex...");
   await VulpesCortex.initialize();
-  console.log("  ✓ Cortex ready\n");
+  console.error("  ✓ Cortex ready\n");
 
   // Get the experiment runner module
   const experimentRunner = VulpesCortex.getModule("experimentRunner");
@@ -89,11 +89,11 @@ async function main() {
   // STEP 1: CREATE EXPERIMENT
   // ============================================================================
 
-  console.log(
+  console.error(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
   );
-  console.log("  STEP 1: Creating Experiment");
-  console.log(
+  console.error("  STEP 1: Creating Experiment");
+  console.error(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
   );
 
@@ -113,49 +113,49 @@ async function main() {
     runs: EXPERIMENT_CONFIG.runs,
   });
 
-  console.log(`  Experiment ID: ${experiment.id}`);
-  console.log(`  Name: ${experiment.name}`);
-  console.log(`  Type: ${experiment.type}\n`);
+  console.error(`  Experiment ID: ${experiment.id}`);
+  console.error(`  Name: ${experiment.name}`);
+  console.error(`  Type: ${experiment.type}\n`);
 
   // ============================================================================
   // STEP 2: RUN EXPERIMENT
   // ============================================================================
 
-  console.log(
+  console.error(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
   );
-  console.log("  STEP 2: Running Experiment (Baseline vs Treatment)");
-  console.log(
+  console.error("  STEP 2: Running Experiment (Baseline vs Treatment)");
+  console.error(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
   );
 
   // Set up event listeners for progress
   experimentRunner.on("runStarted", ({ phase, run, total }) => {
-    console.log(`  [${phase.toUpperCase()}] Run ${run}/${total} starting...`);
+    console.error(`  [${phase.toUpperCase()}] Run ${run}/${total} starting...`);
   });
 
   experimentRunner.on("runCompleted", ({ phase, run, total, metrics }) => {
-    console.log(
+    console.error(
       `  [${phase.toUpperCase()}] Run ${run}/${total} complete - Sensitivity: ${(metrics.sensitivity * 100).toFixed(2)}%`,
     );
   });
 
   experimentRunner.on("baselineComplete", ({ metrics }) => {
-    console.log(`\n  ✓ BASELINE COMPLETE`);
-    console.log(
+    console.error(`\n  ✓ BASELINE COMPLETE`);
+    console.error(
       `    Sensitivity: ${(metrics.sensitivity?.mean * 100).toFixed(2)}%`,
     );
-    console.log(
+    console.error(
       `    Specificity: ${(metrics.specificity?.mean * 100).toFixed(2)}%\n`,
     );
   });
 
   experimentRunner.on("treatmentComplete", ({ metrics }) => {
-    console.log(`\n  ✓ TREATMENT COMPLETE`);
-    console.log(
+    console.error(`\n  ✓ TREATMENT COMPLETE`);
+    console.error(
       `    Sensitivity: ${(metrics.sensitivity?.mean * 100).toFixed(2)}%`,
     );
-    console.log(
+    console.error(
       `    Specificity: ${(metrics.specificity?.mean * 100).toFixed(2)}%\n`,
     );
   });
@@ -165,7 +165,7 @@ async function main() {
     // CRITICAL: Seed the RNG before each run so baseline and treatment
     // test the EXACT SAME documents. This enables valid A/B comparison.
     seedGlobal(EXPERIMENT_CONFIG.seed);
-    console.log(
+    console.error(
       `    Running ${EXPERIMENT_CONFIG.documentCount} documents (seed: ${EXPERIMENT_CONFIG.seed})...`,
     );
 
@@ -204,27 +204,27 @@ async function main() {
   // STEP 3: SHOW RESULTS
   // ============================================================================
 
-  console.log(
+  console.error(
     "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
   );
-  console.log("  STEP 3: EXPERIMENT RESULTS");
-  console.log(
+  console.error("  STEP 3: EXPERIMENT RESULTS");
+  console.error(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
   );
 
-  console.log(`  Status: ${result.status}`);
-  console.log(`  Overall Effect: ${result.analysis?.overallEffect || "N/A"}\n`);
+  console.error(`  Status: ${result.status}`);
+  console.error(`  Overall Effect: ${result.analysis?.overallEffect || "N/A"}\n`);
 
   // Show metrics comparison
   if (result.analysis?.metricsComparison) {
-    console.log("  METRICS COMPARISON:");
-    console.log(
+    console.error("  METRICS COMPARISON:");
+    console.error(
       "  ┌─────────────────┬─────────────┬─────────────┬─────────────┬──────────────┐",
     );
-    console.log(
+    console.error(
       "  │ Metric          │ Baseline    │ Treatment   │ Delta       │ Significant? │",
     );
-    console.log(
+    console.error(
       "  ├─────────────────┼─────────────┼─────────────┼─────────────┼──────────────┤",
     );
 
@@ -237,42 +237,42 @@ async function main() {
         (data.delta >= 0 ? "+" : "") + (data.delta * 100).toFixed(2) + "%";
       const sigStr = data.significant ? "YES" : "NO";
 
-      console.log(
+      console.error(
         `  │ ${metric.padEnd(15)} │ ${baselineStr} │ ${treatmentStr} │ ${deltaStr.padStart(11)} │ ${sigStr.padStart(12)} │`,
       );
     }
 
-    console.log(
+    console.error(
       "  └─────────────────┴─────────────┴─────────────┴─────────────┴──────────────┘",
     );
   }
 
   // Show conclusion
   if (result.conclusion) {
-    console.log(`\n  CONCLUSION:`);
-    console.log(`    Accepted: ${result.conclusion.accepted ? "YES" : "NO"}`);
-    console.log(`    Reason: ${result.conclusion.reason}`);
-    console.log(`    Recommendation: ${result.conclusion.recommendation}`);
+    console.error(`\n  CONCLUSION:`);
+    console.error(`    Accepted: ${result.conclusion.accepted ? "YES" : "NO"}`);
+    console.error(`    Reason: ${result.conclusion.reason}`);
+    console.error(`    Recommendation: ${result.conclusion.recommendation}`);
 
     if (result.conclusion.autoRollback) {
-      console.log(`    ⚠ Auto-rollback was triggered!`);
+      console.error(`    ⚠ Auto-rollback was triggered!`);
     }
   }
 
   // Show improvements/regressions
   if (result.analysis?.improvements?.length > 0) {
-    console.log(`\n  IMPROVEMENTS:`);
+    console.error(`\n  IMPROVEMENTS:`);
     for (const imp of result.analysis.improvements) {
-      console.log(
+      console.error(
         `    ✓ ${imp.metric}: +${(imp.improvement * 100).toFixed(2)}% (${imp.percentChange.toFixed(1)}% relative)`,
       );
     }
   }
 
   if (result.analysis?.regressions?.length > 0) {
-    console.log(`\n  REGRESSIONS:`);
+    console.error(`\n  REGRESSIONS:`);
     for (const reg of result.analysis.regressions) {
-      console.log(
+      console.error(
         `    ✗ ${reg.metric}: -${(reg.regression * 100).toFixed(2)}% (${Math.abs(reg.percentChange).toFixed(1)}% relative)`,
       );
     }
@@ -282,33 +282,33 @@ async function main() {
   // STEP 4: RECORD IN CORTEX
   // ============================================================================
 
-  console.log(
+  console.error(
     "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
   );
-  console.log("  STEP 4: Recording in Cortex Knowledge Base");
-  console.log(
+  console.error("  STEP 4: Recording in Cortex Knowledge Base");
+  console.error(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
   );
 
   // Get experiment stats
   const stats = experimentRunner.getStats();
-  console.log(`  Total Experiments: ${stats.total}`);
-  console.log(`  Completed: ${stats.completed}`);
-  console.log(`  Success Rate: ${(stats.successRate * 100).toFixed(1)}%\n`);
+  console.error(`  Total Experiments: ${stats.total}`);
+  console.error(`  Completed: ${stats.completed}`);
+  console.error(`  Success Rate: ${(stats.successRate * 100).toFixed(1)}%\n`);
 
-  console.log("  ✓ Experiment recorded in Cortex knowledge base");
-  console.log("  ✓ Results available for future history consultation\n");
+  console.error("  ✓ Experiment recorded in Cortex knowledge base");
+  console.error("  ✓ Results available for future history consultation\n");
 
   // Final summary
-  console.log(
+  console.error(
     "═══════════════════════════════════════════════════════════════════════════════",
   );
   if (result.conclusion?.accepted) {
-    console.log("  ✓ EXPERIMENT SUCCESSFUL - Changes improved detection");
+    console.error("  ✓ EXPERIMENT SUCCESSFUL - Changes improved detection");
   } else {
-    console.log("  ✗ NO SIGNIFICANT IMPROVEMENT - Try different parameters");
+    console.error("  ✗ NO SIGNIFICANT IMPROVEMENT - Try different parameters");
   }
-  console.log(
+  console.error(
     "═══════════════════════════════════════════════════════════════════════════════\n",
   );
 

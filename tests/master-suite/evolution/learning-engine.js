@@ -1082,25 +1082,25 @@ class LearningEngine {
    * Process a completed test run
    */
   processRun(runData) {
-    console.log(
+    console.error(
       "\n╔═══════════════════════════════════════════════════════════════════════════╗",
     );
-    console.log(
+    console.error(
       "║  LEARNING ENGINE - Processing Run                                          ║",
     );
-    console.log(
+    console.error(
       "╚═══════════════════════════════════════════════════════════════════════════╝\n",
     );
 
     // 1. Record the run in history
     const run = this.evolutionTracker.recordRun(runData);
-    console.log(`  ✓ Recorded run ${run.id}`);
+    console.error(`  ✓ Recorded run ${run.id}`);
 
     // 2. Cluster failures by pattern
     const clusters = this.patternRecognizer.clusterFailures(
       runData.failures || [],
     );
-    console.log(
+    console.error(
       `  ✓ Identified ${Object.keys(clusters).length} failure patterns`,
     );
 
@@ -1111,7 +1111,7 @@ class LearningEngine {
     );
     this.kb.hypotheses.active = hypotheses;
     this.kb.save("hypotheses.json", this.kb.hypotheses);
-    console.log(`  ✓ Generated ${hypotheses.length} hypotheses`);
+    console.error(`  ✓ Generated ${hypotheses.length} hypotheses`);
 
     // 4. Generate learnings
     const learnings = this.insightGenerator.generateLearnings(
@@ -1119,14 +1119,14 @@ class LearningEngine {
       runData.failures || [],
       clusters,
     );
-    console.log(`  ✓ Extracted ${learnings.length} learnings`);
+    console.error(`  ✓ Extracted ${learnings.length} learnings`);
 
     // 5. Generate recommendations
     const recommendations = this.insightGenerator.generateRecommendations(
       run,
       hypotheses,
     );
-    console.log(`  ✓ Created ${recommendations.length} recommendations`);
+    console.error(`  ✓ Created ${recommendations.length} recommendations`);
 
     // Save all knowledge
     this.kb.saveAll();

@@ -88,7 +88,7 @@ class VulpesCortex {
   async initialize() {
     if (this.initialized) return this;
 
-    console.log("[Vulpes Cortex] Initializing...");
+    console.error("[Vulpes Cortex] Initializing...");
 
     // Ensure storage directories exist
     ensureDirectories();
@@ -168,7 +168,7 @@ class VulpesCortex {
     });
 
     this.initialized = true;
-    console.log("[Vulpes Cortex] Initialized successfully");
+    console.error("[Vulpes Cortex] Initialized successfully");
 
     return this;
   }
@@ -523,31 +523,31 @@ async function runCLI() {
       `start "VULPES CORTEX MCP" cmd /k node "${scriptPath}" --server --port=${port}`,
     );
 
-    console.log(
+    console.error(
       "╔══════════════════════════════════════════════════════════════════════════════╗",
     );
-    console.log(
+    console.error(
       "║  VULPES CORTEX - LAUNCHING IN NEW WINDOW                                     ║",
     );
-    console.log(
+    console.error(
       "╠══════════════════════════════════════════════════════════════════════════════╣",
     );
-    console.log(
+    console.error(
       "║  A new CMD window should open showing the MCP server activity.               ║",
     );
-    console.log(
+    console.error(
       `║  Port: ${port}                                                                    ║`,
     );
-    console.log(
+    console.error(
       "║                                                                              ║",
     );
-    console.log(
+    console.error(
       "║  If it doesn't open, run manually:                                           ║",
     );
-    console.log(
+    console.error(
       "║    node tests/master-suite/cortex --server                                   ║",
     );
-    console.log(
+    console.error(
       "╚══════════════════════════════════════════════════════════════════════════════╝",
     );
 
@@ -556,20 +556,20 @@ async function runCLI() {
 
     const http = require("http");
     const req = http.get(`http://localhost:${port}/health`, () => {
-      console.log(
+      console.error(
         "\n  ✓ Server is running! You can see activity in the new window.\n",
       );
       process.exit(0);
     });
     req.on("error", () => {
-      console.log(
+      console.error(
         "\n  ✗ Server may not have started. Check the new window for errors.\n",
       );
       process.exit(1);
     });
     req.setTimeout(3000, () => {
       req.destroy();
-      console.log("\n  ✗ Server startup timed out.\n");
+      console.error("\n  ✗ Server startup timed out.\n");
       process.exit(1);
     });
     return;
@@ -613,28 +613,28 @@ async function runCLI() {
       res.on("end", () => {
         try {
           const status = JSON.parse(data);
-          console.log(
+          console.error(
             "╔══════════════════════════════════════════════════════════════════════════════╗",
           );
-          console.log(
+          console.error(
             "║  VULPES CORTEX - SERVER STATUS                                               ║",
           );
-          console.log(
+          console.error(
             "╠══════════════════════════════════════════════════════════════════════════════╣",
           );
-          console.log(
+          console.error(
             `║  Status:   ✓ RUNNING                                                         ║`,
           );
-          console.log(`║  Server:   ${status.server.padEnd(67)}║`);
-          console.log(`║  Version:  ${status.version.padEnd(67)}║`);
-          console.log(
+          console.error(`║  Server:   ${status.server.padEnd(67)}║`);
+          console.error(`║  Version:  ${status.version.padEnd(67)}║`);
+          console.error(
             `║  Uptime:   ${(status.uptime.toFixed(1) + " seconds").padEnd(67)}║`,
           );
-          console.log(
+          console.error(
             `║  Modules:  ${(status.modules + " loaded").padEnd(67)}║`,
           );
-          console.log(`║  PID:      ${String(status.pid).padEnd(67)}║`);
-          console.log(
+          console.error(`║  PID:      ${String(status.pid).padEnd(67)}║`);
+          console.error(
             "╚══════════════════════════════════════════════════════════════════════════════╝",
           );
           process.exit(0);
@@ -646,25 +646,25 @@ async function runCLI() {
     });
 
     req.on("error", () => {
-      console.log(
+      console.error(
         "╔══════════════════════════════════════════════════════════════════════════════╗",
       );
-      console.log(
+      console.error(
         "║  VULPES CORTEX - SERVER STATUS                                               ║",
       );
-      console.log(
+      console.error(
         "╠══════════════════════════════════════════════════════════════════════════════╣",
       );
-      console.log(
+      console.error(
         "║  Status:   ✗ NOT RUNNING                                                     ║",
       );
-      console.log(
+      console.error(
         "║                                                                              ║",
       );
-      console.log(
+      console.error(
         "║  Start with: node tests/master-suite/cortex --server                         ║",
       );
-      console.log(
+      console.error(
         "╚══════════════════════════════════════════════════════════════════════════════╝",
       );
       process.exit(1);
@@ -678,9 +678,9 @@ async function runCLI() {
   } else if (args.includes("--status")) {
     // Show status
     await cortex.initialize();
-    console.log(await cortex.generateReport("FULL"));
+    console.error(await cortex.generateReport("FULL"));
   } else if (args.includes("--help") || args.includes("-h")) {
-    console.log(`
+    console.error(`
 Vulpes Cortex - Self-Learning PHI Detection Test Intelligence
 
 USAGE:
@@ -710,7 +710,7 @@ PROGRAMMATIC USAGE:
   const recommendation = await cortex.getRecommendation('WHAT_TO_IMPROVE');
 `);
   } else {
-    console.log("Use --help for usage information");
+    console.error("Use --help for usage information");
   }
 }
 

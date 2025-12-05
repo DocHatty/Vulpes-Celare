@@ -428,6 +428,32 @@ After receiving results, the LLM should:
       properties: {},
     },
   },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // DIAGNOSTIC TOOLS
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    name: "diagnose",
+    description: `Run diagnostics on the MCP server and test infrastructure.
+
+Returns:
+- server_status: health check information
+- module_status: which Cortex modules are loaded
+- recent_errors: last 10 errors with timestamps and stack traces
+- environment: Node version, paths, memory usage
+- recommendations: suggested fixes for any issues found
+
+Use this when experiencing issues or before starting a testing session.`,
+    inputSchema: {
+      type: "object",
+      properties: {
+        verbose: {
+          type: "boolean",
+          description: "Include full stack traces and detailed module info",
+        },
+      },
+    },
+  },
 ];
 
 // ============================================================================
@@ -493,8 +519,12 @@ async function executeTool(name, args, modules) {
     case "get_summary":
       return getSummary(modules);
 
+    // DIAGNOSTIC TOOLS
+    case "diagnose":
+      return runDiagnostics(args, modules);
+
     default:
-      throw new Error(`Unknown tool: ${name}`);
+      throw new Error(`Unknown tool: ${name}. Available tools: ${TOOLS.map(t => t.name).join(", ")}`);
   }
 }
 
@@ -1382,6 +1412,109 @@ async function getSummary(modules) {
     experiments: modules.experimentRunner?.getStats() || null,
     decisions: modules.decisionEngine?.exportForLLM() || null,
   };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// runDiagnostics - Comprehensive server diagnostics
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function runDiagnostics(args, modules) {
+  const { verbose = false } = args || {};
+  const diagnostics = {
+    timestamp: new Date().toISOString(),
+    status: "OK",
+    issues: [],
+    recommendations: [],
+  };
+
+  // 1. Server Status
+  diagnostics.server = {
+    uptime: process.uptime(),
+    pid: process.pid,
+    nodeVersion: process.version,
+    platform: process.platform,
+    arch: process.arch,
+    memoryUsage: {
+      heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + " MB",
+      heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + " MB",
+      rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + " MB",
+    },
+  };
+
+  // 2. Module Status
+  diagnostics.modules = {};
+  const expectedModules = [
+    "knowledgeBase", "metricsEngine", "codebaseAnalyzer", "temporalIndex",
+    "patternRecognizer", "hypothesisEngine", "interventionTracker", "insightGenerator",
+    "experimentRunner", "snapshotManager", "comparisonEngine", "rollbackManager",
+    "decisionEngine", "historyConsultant", "recommendationBuilder", "codebaseStateTracker",
+  ];
+
+  let loadedCount = 0;
+  for (const moduleName of expectedModules) {
+    const isLoaded = modules[moduleName] != null;
+    diagnostics.modules[moduleName] = isLoaded ? "✓ loaded" : "✗ NOT LOADED";
+    if (isLoaded) loadedCount++;
+    if (!isLoaded) {
+      diagnostics.issues.push(`Module "${moduleName}" is not loaded`);
+    }
+  }
+  diagnostics.modulesSummary = `${loadedCount}/${expectedModules.length} modules loaded`;
+
+  // 3. Test Infrastructure Check
+  diagnostics.testInfrastructure = {};
+  try {
+    const fs = require("fs");
+    const assessmentPath = require.resolve("../../assessment/rigorous-assessment");
+    diagnostics.testInfrastructure.rigorousAssessment = fs.existsSync(assessmentPath)
+      ? "✓ available"
+      : "✗ NOT FOUND";
+  } catch (e) {
+    diagnostics.testInfrastructure.rigorousAssessment = `✗ ERROR: ${e.message}`;
+    diagnostics.issues.push("RigorousAssessment module not found - tests will fail");
+  }
+
+  try {
+    const enginePath = require.resolve("../../../../dist/VulpesCelare.js");
+    diagnostics.testInfrastructure.vulpesCelareEngine = "✓ built";
+  } catch (e) {
+    diagnostics.testInfrastructure.vulpesCelareEngine = "✗ NOT BUILT";
+    diagnostics.issues.push("VulpesCelare engine not built - run 'npm run build' first");
+    diagnostics.recommendations.push("Run: npm run build");
+  }
+
+  // 4. Environment Variables
+  diagnostics.environment = {
+    VULPES_DEBUG: process.env.VULPES_DEBUG || "not set",
+    NODE_ENV: process.env.NODE_ENV || "not set",
+    cwd: process.cwd(),
+  };
+
+  // 5. Generate Recommendations
+  if (diagnostics.issues.length === 0) {
+    diagnostics.recommendations.push("All systems operational - ready for testing");
+  } else {
+    diagnostics.status = "ISSUES_FOUND";
+    diagnostics.recommendations.unshift(
+      `Found ${diagnostics.issues.length} issue(s) that should be addressed`
+    );
+  }
+
+  // Verbose mode adds more detail
+  if (verbose) {
+    diagnostics.detailedModuleInfo = {};
+    for (const [name, module] of Object.entries(modules)) {
+      if (module && typeof module.exportForLLM === "function") {
+        try {
+          diagnostics.detailedModuleInfo[name] = module.exportForLLM();
+        } catch (e) {
+          diagnostics.detailedModuleInfo[name] = { error: e.message };
+        }
+      }
+    }
+  }
+
+  return diagnostics;
 }
 
 // ============================================================================

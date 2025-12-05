@@ -190,17 +190,17 @@ class RigorousAssessment {
     };
 
     // Generate and process documents
-    console.log(
+    console.error(
       `\n╔═══════════════════════════════════════════════════════════════════════════╗`,
     );
-    console.log(
+    console.error(
       `║  VULPES CELARE - RIGOROUS ASSESSMENT (${this.options.documentCount} Documents)             ║`,
     );
-    console.log(
+    console.error(
       `╚═══════════════════════════════════════════════════════════════════════════╝\n`,
     );
-    console.log(`Engine: ${VulpesCelare.NAME} v${VulpesCelare.VERSION}`);
-    console.log(`Processing ${this.options.documentCount} documents...\n`);
+    console.error(`Engine: ${VulpesCelare.NAME} v${VulpesCelare.VERSION}`);
+    console.error(`Processing ${this.options.documentCount} documents...\n`);
 
     const errorLevels = this.selectErrorLevels(this.options.documentCount);
 
@@ -283,7 +283,7 @@ class RigorousAssessment {
     this.results.documents.push(...results);
 
     this.results.timing.processingMs = Date.now() - startTime;
-    console.log(
+    console.error(
       `\n  Processing complete in ${(this.results.timing.processingMs / 1000).toFixed(2)}s\n`,
     );
 
@@ -295,13 +295,13 @@ class RigorousAssessment {
    * Multi-pass analysis with strict evaluation
    */
   calculateMetrics() {
-    console.log(
+    console.error(
       `╔═══════════════════════════════════════════════════════════════════════════╗`,
     );
-    console.log(
+    console.error(
       `║  PHASE 2: CALCULATING METRICS                                             ║`,
     );
-    console.log(
+    console.error(
       `╚═══════════════════════════════════════════════════════════════════════════╝\n`,
     );
 
@@ -578,43 +578,43 @@ class RigorousAssessment {
         : 0;
 
     if (skippedNonPHI.total > 0) {
-      console.log(
+      console.error(
         `\n╔═══════════════════════════════════════════════════════════════════════════╗`,
       );
-      console.log(
+      console.error(
         `║  ⚠️  TEST SUITE VALIDATION WARNING                                         ║`,
       );
-      console.log(
+      console.error(
         `╚═══════════════════════════════════════════════════════════════════════════╝`,
       );
-      console.log(
+      console.error(
         `\n  ${skippedNonPHI.total}/${totalExpectedNonPHI} (${skippedPercentage}%) expected non-PHI items were NOT FOUND in documents.`,
       );
-      console.log(
+      console.error(
         `  These items are in ground truth but templates don't include them.`,
       );
-      console.log(
+      console.error(
         `  This does NOT affect test accuracy - skipped items are excluded from metrics.\n`,
       );
 
-      console.log(`  Skipped by type:`);
+      console.error(`  Skipped by type:`);
       for (const [type, data] of Object.entries(skippedNonPHI.byType)) {
-        console.log(`    ${type}: ${data.count} items`);
+        console.error(`    ${type}: ${data.count} items`);
         data.examples.forEach((ex) => {
-          console.log(`      - "${ex.value}" (${ex.template})`);
+          console.error(`      - "${ex.value}" (${ex.template})`);
         });
       }
-      console.log(``);
+      console.error(``);
 
       // CRITICAL WARNING: If more than 50% of non-PHI items are skipped, something is very wrong
       if (parseFloat(skippedPercentage) > 50) {
-        console.log(
+        console.error(
           `  ❌ CRITICAL: Over 50% of expected non-PHI items missing from documents!`,
         );
-        console.log(
+        console.error(
           `     This likely indicates a TEST BUG - templates may not match ground truth.`,
         );
-        console.log(
+        console.error(
           `     Review phi-generator.js and templates.js for mismatches.\n`,
         );
       }
@@ -677,18 +677,18 @@ class RigorousAssessment {
    * Analyze patterns, root causes, and remediation strategies
    */
   investigateFailures() {
-    console.log(
+    console.error(
       `╔═══════════════════════════════════════════════════════════════════════════╗`,
     );
-    console.log(
+    console.error(
       `║  PHASE 3: DEEP INVESTIGATION OF FAILURES                                  ║`,
     );
-    console.log(
+    console.error(
       `╚═══════════════════════════════════════════════════════════════════════════╝\n`,
     );
 
     if (this.results.failures.length === 0) {
-      console.log("  ✓ No failures to investigate! Perfect PHI detection.\n");
+      console.error("  ✓ No failures to investigate! Perfect PHI detection.\n");
       this.results.investigation = {
         summary: "No failures detected",
         patterns: [],
@@ -1260,9 +1260,9 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
     );
     fs.writeFileSync(reportPath, this.generateReport(reportOptions));
 
-    console.log(`\nResults saved:`);
-    console.log(`  JSON: ${jsonPath}`);
-    console.log(`  Report: ${reportPath}`);
+    console.error(`\nResults saved:`);
+    console.error(`  JSON: ${jsonPath}`);
+    console.error(`  Report: ${reportPath}`);
 
     return { jsonPath, reportPath };
   }
