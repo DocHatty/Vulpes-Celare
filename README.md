@@ -68,19 +68,19 @@ Clinical documentation drives medical education, research, and innovation—but 
 |                                  |                                          |
 |                                  v                                          |
 |  +-----------------------------------------------------------------------+  |
-|  |                   🦊 VULPES CELARE CORE 🦊                            |  |
-|  |                   ━━━━━━━━━━━━━━━━━━━━━━━━━━                         |  |
+|  |                       VULPES CELARE CORE                              |  |
+|  |                                                                       |  |
 |  |   +---------------------------------------------------------------+   |  |
 |  |   |                                                               |   |  |
 |  |   |  1. RECEIVE       Data + Question from any access point       |   |  |
 |  |   |                                  |                            |   |  |
 |  |   |                                  v                            |   |  |
-|  |   |  🔵 2. REDACT     PHI stripped, tokens created                |   |  |
+|  |   |  <span style="color: #0066cc"><strong>2. REDACT</strong>        PHI stripped, tokens created</span>                |   |  |
 |  |   |                   "John Smith" --> [NAME-1]                   |   |  |
 |  |   |                   "MRN 12345" --> [MRN-1]                     |   |  |
 |  |   |                                  |                            |   |  |
 |  |   |                                  v                            |   |  |
-|  |   |  🔵 3. STORE MAP  Local only, never leaves network            |   |  |
+|  |   |  <span style="color: #0066cc"><strong>3. STORE MAP</strong>     Local only, never leaves network</span>            |   |  |
 |  |   |                   [NAME-1] = "John Smith"                     |   |  |
 |  |   |                                  |                            |   |  |
 |  |   |                                  v                            |   |  |
@@ -116,12 +116,12 @@ Clinical documentation drives medical education, research, and innovation—but 
 |                            BACK TO YOUR NETWORK                             |
 |                                                                             |
 |  +-----------------------------------------------------------------------+  |
-|  |                   🦊 VULPES CELARE CORE 🦊                            |  |
-|  |                   ━━━━━━━━━━━━━━━━━━━━━━━━━━                         |  |
-|  |   🔵 5. RECEIVE RESPONSE   "[NAME-1] shows findings..."                  |  |
+|  |                       VULPES CELARE CORE                              |  |
+|  |                                                                       |  |
+|  |   <span style="color: #0066cc"><strong>5. RECEIVE RESPONSE</strong>   "[NAME-1] shows findings..."</span>                  |  |
 |  |                                  |                                    |  |
 |  |                                  v                                    |  |
-|  |   🔵 6. RESTORE            "John Smith shows findings..."                |  |
+|  |   <span style="color: #0066cc"><strong>6. RESTORE</strong>            "John Smith shows findings..."</span>                |  |
 |  |                                  |                                    |  |
 |  |                                  v                                    |  |
 |  |   7. LOG AUDIT          Record what happened (HIPAA compliance)       |  |
