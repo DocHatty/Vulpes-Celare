@@ -116,12 +116,28 @@
       "id": "INS-1764914827711-owwqgs",
       "timestamp": "2025-12-05T06:07:07.709Z",
       "status": "NEW"
+    },
+    {
+      "type": "RECOMMENDATION",
+      "priority": "HIGH",
+      "title": "Focus Area Identified",
+      "description": "Most improvement opportunities are in dictionary miss (1 items)",
+      "details": {
+        "category": "DICTIONARY_MISS",
+        "count": 1,
+        "totalOpportunities": 3
+      },
+      "action": "Focus on addressing dictionary miss issues for maximum impact",
+      "confidence": 0.85,
+      "id": "INS-1764916341604-hpci3f",
+      "timestamp": "2025-12-05T06:32:21.602Z",
+      "status": "NEW"
     }
   ],
   "dismissed": [],
   "acted": [],
   "stats": {
-    "generated": 6,
+    "generated": 7,
     "acted": 0,
     "dismissed": 0
   }

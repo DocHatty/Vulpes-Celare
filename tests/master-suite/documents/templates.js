@@ -3,7 +3,7 @@
  * ║  VULPES CELARE - COMPREHENSIVE MEDICAL DOCUMENT TEMPLATES                    ║
  * ║  Real-world clinical documents with authentic formatting & structure         ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
- * 
+ *
  * These templates are designed to:
  * - Mirror ACTUAL clinical documentation from EMR systems
  * - Include edge cases that challenge regex-based detection
@@ -13,6 +13,7 @@
  */
 
 const { random, randomInt } = require("../generators/phi");
+const { chance } = require("../generators/seeded-random");
 
 // ============================================================================
 // TEMPLATE 1: DETAILED HISTORY & PHYSICAL (H&P)
@@ -66,19 +67,21 @@ CHIEF COMPLAINT
     "My breathing has gotten worse",
     "I've been having severe headaches",
     "I can't keep anything down",
-    "My leg has been swollen and painful"
+    "My leg has been swollen and painful",
   ])}"
 
 HISTORY OF PRESENT ILLNESS
 ────────────────────────────────────────────────────────────────────────────────
 ${phi.patientName.split(",")[0] || phi.patientName.split(" ")[0]} is a ${phi.age}-year-old ${phi.sex.toLowerCase()} with past medical history significant for ${phi.diagnosis1} and ${phi.diagnosis2} who presents to the emergency department with ${random(["acute onset", "gradual worsening", "sudden", "progressive"])} ${random(["chest pain", "shortness of breath", "abdominal pain", "altered mental status", "weakness"])} beginning ${random(["today", "yesterday", "3 days ago", "1 week ago"])}.
 
-The patient reports that symptoms started ${random(["at rest", "during exertion", "while sleeping", "after meals"])}. ${random([
-    "Pain is described as sharp and stabbing.",
-    "Symptoms are intermittent but worsening.",
-    "No relieving factors have been identified.",
-    "Over-the-counter medications provided minimal relief."
-  ])}
+The patient reports that symptoms started ${random(["at rest", "during exertion", "while sleeping", "after meals"])}. ${random(
+    [
+      "Pain is described as sharp and stabbing.",
+      "Symptoms are intermittent but worsening.",
+      "No relieving factors have been identified.",
+      "Over-the-counter medications provided minimal relief.",
+    ],
+  )}
 
 Associated symptoms include:
 • ${random(["Nausea and vomiting", "Diaphoresis", "Lightheadedness", "Palpitations"])}
@@ -89,7 +92,7 @@ The patient denies ${random([
     "recent travel, sick contacts, or COVID-19 exposure",
     "chest pain, palpitations, or syncope",
     "hematuria, dysuria, or urinary frequency",
-    "melena, hematochezia, or hematemesis"
+    "melena, hematochezia, or hematemesis",
   ])}.
 
 PAST MEDICAL HISTORY
@@ -149,11 +152,11 @@ VITAL SIGNS:
   Blood Pressure:      ${randomInt(90, 180)}/${randomInt(50, 110)} mmHg
   Heart Rate:          ${randomInt(50, 120)} bpm
   Respiratory Rate:    ${randomInt(12, 28)} /min
-  Temperature:         ${(Math.random() * 3 + 97).toFixed(1)}°F
+  Temperature:         ${(random() * 3 + 97).toFixed(1)}°F
   Oxygen Saturation:   ${randomInt(88, 100)}% on ${random(["room air", "2L NC", "4L NC", "NRB 15L"])}
   Height:              ${randomInt(60, 76)} inches
   Weight:              ${randomInt(100, 300)} lbs
-  BMI:                 ${(Math.random() * 20 + 18).toFixed(1)} kg/m²
+  BMI:                 ${(random() * 20 + 18).toFixed(1)} kg/m²
 
 GENERAL:          ${random(["Alert, oriented, no acute distress", "Appears ill, mildly distressed", "Comfortable, well-appearing", "Anxious but cooperative"])}
 
@@ -170,35 +173,35 @@ CARDIOVASCULAR:   ${random([
     "Regular rate and rhythm, no murmurs/rubs/gallops",
     "Irregular rhythm, systolic murmur grade II/VI at apex",
     "Tachycardic, S1 S2 normal, no murmur",
-    "Bradycardic, S1 S2 normal, no murmur"
+    "Bradycardic, S1 S2 normal, no murmur",
   ])}
 
 LUNGS:            ${random([
     "Clear to auscultation bilaterally, no wheezes/rales/rhonchi",
     "Decreased breath sounds at bases bilaterally",
     "Scattered wheezes, no rales",
-    "Bibasilar crackles, no wheezes"
+    "Bibasilar crackles, no wheezes",
   ])}
 
 ABDOMEN:          ${random([
     "Soft, non-tender, non-distended, normoactive bowel sounds",
     "Mild epigastric tenderness, no rebound/guarding",
     "Obese, difficult to assess, no obvious masses",
-    "RUQ tenderness, positive Murphy's sign"
+    "RUQ tenderness, positive Murphy's sign",
   ])}
 
 EXTREMITIES:      ${random([
     "No cyanosis, clubbing, or edema",
     "2+ bilateral lower extremity edema",
     "Left calf swelling and tenderness",
-    "Warm, well-perfused, no edema"
+    "Warm, well-perfused, no edema",
   ])}
 
 NEUROLOGICAL:     ${random([
     "Alert, oriented x4, CN II-XII intact",
     "Mild confusion, otherwise grossly intact",
     "Strength 5/5 all extremities, sensation intact",
-    "No focal deficits, gait steady"
+    "No focal deficits, gait steady",
   ])}
 
 SKIN:             ${random(["Warm, dry, no rashes or lesions", "Mild diaphoresis", "Pale but no cyanosis", "Stage II pressure ulcer sacrum"])}
@@ -206,42 +209,42 @@ SKIN:             ${random(["Warm, dry, no rashes or lesions", "Mild diaphoresis
 LABORATORY DATA
 ────────────────────────────────────────────────────────────────────────────────
 CBC:
-  WBC:             ${(Math.random() * 12 + 4).toFixed(1)} K/uL      (4.5-11.0)
-  Hemoglobin:      ${(Math.random() * 6 + 10).toFixed(1)} g/dL      (12.0-17.5)
-  Hematocrit:      ${(Math.random() * 20 + 30).toFixed(1)} %        (36-50)
+  WBC:             ${(random() * 12 + 4).toFixed(1)} K/uL      (4.5-11.0)
+  Hemoglobin:      ${(random() * 6 + 10).toFixed(1)} g/dL      (12.0-17.5)
+  Hematocrit:      ${(random() * 20 + 30).toFixed(1)} %        (36-50)
   Platelets:       ${randomInt(100, 450)} K/uL     (150-400)
 
 CMP:
   Sodium:          ${randomInt(130, 150)} mEq/L     (136-145)
-  Potassium:       ${(Math.random() * 2 + 3.3).toFixed(1)} mEq/L     (3.5-5.0)
+  Potassium:       ${(random() * 2 + 3.3).toFixed(1)} mEq/L     (3.5-5.0)
   Chloride:        ${randomInt(95, 110)} mEq/L     (98-106)
   CO2:             ${randomInt(18, 32)} mEq/L      (22-29)
   BUN:             ${randomInt(8, 40)} mg/dL       (7-20)
-  Creatinine:      ${(Math.random() * 2 + 0.6).toFixed(2)} mg/dL     (0.7-1.3)
+  Creatinine:      ${(random() * 2 + 0.6).toFixed(2)} mg/dL     (0.7-1.3)
   Glucose:         ${randomInt(70, 300)} mg/dL     (70-100)
   eGFR:            ${randomInt(30, 120)} mL/min    (>60)
 
 Cardiac Markers:
-  Troponin I:      ${(Math.random() * 0.5).toFixed(3)} ng/mL    (<0.04)
+  Troponin I:      ${(random() * 0.5).toFixed(3)} ng/mL    (<0.04)
   BNP:             ${randomInt(50, 2000)} pg/mL    (<100)
 
 IMAGING
 ────────────────────────────────────────────────────────────────────────────────
 ${phi.imagingType} (${phi.admitDate}):
 ${random([
-    "No acute cardiopulmonary abnormality. Heart size normal. Lungs clear.",
-    "Cardiomegaly with mild pulmonary vascular congestion. No focal consolidation.",
-    "Right lower lobe infiltrate concerning for pneumonia. No pleural effusion.",
-    "Stable chronic changes. No acute abnormality identified."
-  ])}
+  "No acute cardiopulmonary abnormality. Heart size normal. Lungs clear.",
+  "Cardiomegaly with mild pulmonary vascular congestion. No focal consolidation.",
+  "Right lower lobe infiltrate concerning for pneumonia. No pleural effusion.",
+  "Stable chronic changes. No acute abnormality identified.",
+])}
 
 ECG (${phi.admitDate}):
 ${random([
-    "Normal sinus rhythm at 78 bpm. No acute ST-T wave changes.",
-    "Atrial fibrillation with RVR. Non-specific ST-T wave abnormalities.",
-    "Sinus tachycardia. ST depressions in V4-V6.",
-    "Normal sinus rhythm. Old inferior infarct pattern."
-  ])}
+  "Normal sinus rhythm at 78 bpm. No acute ST-T wave changes.",
+  "Atrial fibrillation with RVR. Non-specific ST-T wave abnormalities.",
+  "Sinus tachycardia. ST depressions in V4-V6.",
+  "Normal sinus rhythm. Old inferior infarct pattern.",
+])}
 
 ASSESSMENT AND PLAN
 ────────────────────────────────────────────────────────────────────────────────
@@ -287,11 +290,11 @@ NPI: ${phi.attendingNpi}
 function generateOperativeReport(phi) {
   const procedure = phi.procedure1;
   const duration = randomInt(45, 240);
-  
+
   return `
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                             ${phi.hospital}                                   
-║                            OPERATIVE REPORT                                   
+║                             ${phi.hospital}
+║                            OPERATIVE REPORT
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 ══════════════════════════════════════════════════════════════════════════════
@@ -330,7 +333,7 @@ Anesthesia:             ${random([
     "General endotracheal anesthesia",
     "Spinal anesthesia with IV sedation",
     "Regional nerve block with MAC",
-    "Combined spinal-epidural"
+    "Combined spinal-epidural",
   ])}
 
 Duration of Surgery:    ${duration} minutes
@@ -342,21 +345,21 @@ Specimens:              ${random([
     "Tissue sent to pathology for analysis",
     "None",
     "Gallbladder with stones - pathology",
-    "Lymph nodes x3 - pathology"
+    "Lymph nodes x3 - pathology",
   ])}
 
 Drains/Tubes:           ${random([
     "JP drain x1 to bulb suction",
     "Foley catheter to gravity",
     "None",
-    "NGT to low intermittent suction"
+    "NGT to low intermittent suction",
   ])}
 
 Implants:               ${random([
     "None",
     "Mesh - Bard 3D Max, 15x10cm, Lot #BR2024-8847",
     "Screws x4, Plate x1 - Synthes titanium",
-    "Stent - Boston Scientific 6Fr x 24cm"
+    "Stent - Boston Scientific 6Fr x 24cm",
   ])}
 
 Complications:          None
@@ -376,31 +379,31 @@ The patient was brought to the operating room and placed in the ${random([
     "lateral decubitus position",
     "prone position",
     "lithotomy position",
-    "beach chair position"
+    "beach chair position",
   ])} on the operating table. After successful induction of anesthesia, the patient was prepped and draped in the standard sterile fashion. A timeout was performed confirming the correct patient, procedure, and site.
 
 ${random([
-    "A standard midline incision was made and carried through subcutaneous tissue using electrocautery.",
-    "Laparoscopic ports were placed under direct visualization: 12mm umbilical, 5mm bilateral subcostal.",
-    "The standard approach was utilized with adequate exposure obtained throughout.",
-    "An arthroscopic examination was performed revealing the pathology as expected."
-  ])}
+  "A standard midline incision was made and carried through subcutaneous tissue using electrocautery.",
+  "Laparoscopic ports were placed under direct visualization: 12mm umbilical, 5mm bilateral subcostal.",
+  "The standard approach was utilized with adequate exposure obtained throughout.",
+  "An arthroscopic examination was performed revealing the pathology as expected.",
+])}
 
 The procedure proceeded as follows:
 
 ${random([
-    "Careful dissection was performed identifying all relevant anatomical structures. The critical view of safety was achieved and documented photographically.",
-    "The lesion was identified and circumferentially dissected. Adequate margins were obtained and confirmed with intraoperative pathology.",
-    "Systematic exploration revealed the expected findings. All pathology was addressed without difficulty.",
-    "The affected tissue was mobilized and resected. Hemostasis was achieved with electrocautery and suture ligation."
-  ])}
+  "Careful dissection was performed identifying all relevant anatomical structures. The critical view of safety was achieved and documented photographically.",
+  "The lesion was identified and circumferentially dissected. Adequate margins were obtained and confirmed with intraoperative pathology.",
+  "Systematic exploration revealed the expected findings. All pathology was addressed without difficulty.",
+  "The affected tissue was mobilized and resected. Hemostasis was achieved with electrocautery and suture ligation.",
+])}
 
 ${random([
-    "The specimen was removed and sent to pathology.",
-    "Final inspection confirmed excellent hemostasis.",
-    "Irrigation was performed and all counts were correct.",
-    "The wound was copiously irrigated with antibiotic saline."
-  ])}
+  "The specimen was removed and sent to pathology.",
+  "Final inspection confirmed excellent hemostasis.",
+  "Irrigation was performed and all counts were correct.",
+  "The wound was copiously irrigated with antibiotic saline.",
+])}
 
 Closure was performed in layers:
 - ${random(["Fascia closed with #1 Vicryl in running fashion", "Peritoneum closed with 2-0 Vicryl", "No fascial closure required for port sites"])}
@@ -414,11 +417,11 @@ FINDINGS
 ══════════════════════════════════════════════════════════════════════════════
 
 ${random([
-    "Findings consistent with preoperative diagnosis. No unexpected pathology encountered.",
-    "Moderate adhesions from prior surgery, lysed without difficulty. Primary pathology as expected.",
-    "Advanced disease state noted. Complete resection achieved despite technical challenges.",
-    "Findings exactly as predicted by imaging. Straightforward case."
-  ])}
+  "Findings consistent with preoperative diagnosis. No unexpected pathology encountered.",
+  "Moderate adhesions from prior surgery, lysed without difficulty. Primary pathology as expected.",
+  "Advanced disease state noted. Complete resection achieved despite technical challenges.",
+  "Findings exactly as predicted by imaging. Straightforward case.",
+])}
 
 ══════════════════════════════════════════════════════════════════════════════
 DISPOSITION
@@ -665,7 +668,7 @@ The patient reports ${random([
     "progressive symptoms over the past several months",
     "recent worsening despite conservative management",
     "new symptoms concerning for disease progression",
-    "stable symptoms but seeking specialist opinion"
+    "stable symptoms but seeking specialist opinion",
   ])}.
 
 On examination, I found:
@@ -716,8 +719,8 @@ cc: ${phi.pcpName}, Primary Care Provider
 function generatePathologyReport(phi) {
   return `
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    ANATOMIC PATHOLOGY REPORT                                  
-║                    ${phi.hospital}                                            
+║                    ANATOMIC PATHOLOGY REPORT
+║                    ${phi.hospital}
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 ══════════════════════════════════════════════════════════════════════════════
@@ -750,7 +753,7 @@ ${phi.age}-year-old ${phi.sex.toLowerCase()} with ${phi.diagnosis1}. ${random([
     "Patient presents for tissue diagnosis.",
     "Evaluate for malignancy.",
     "Staging procedure.",
-    "Follow-up from abnormal imaging."
+    "Follow-up from abnormal imaging.",
   ])}
 
 SPECIMEN(S) RECEIVED
@@ -772,19 +775,19 @@ Sections of specimen A demonstrate ${random([
     "invasive ductal carcinoma, moderately differentiated",
     "adenocarcinoma, well to moderately differentiated",
     "papillary carcinoma",
-    "squamous cell carcinoma, moderately differentiated"
+    "squamous cell carcinoma, moderately differentiated",
   ])}. ${random([
     "The tumor forms irregular glands infiltrating fibrous stroma.",
     "Sheets and nests of atypical cells are identified.",
     "Papillary architecture with fibrovascular cores is seen.",
-    "Nuclear pleomorphism and increased mitotic activity are present."
+    "Nuclear pleomorphism and increased mitotic activity are present.",
   ])}
 
 Specimen B shows ${random([
     "reactive lymphoid hyperplasia, no evidence of metastatic carcinoma",
     "metastatic carcinoma in 1 of 3 lymph nodes (1/3)",
     "benign lymph node tissue",
-    "micrometastasis identified (< 2mm)"
+    "micrometastasis identified (< 2mm)",
   ])}.
 
 DIAGNOSIS
@@ -792,11 +795,11 @@ DIAGNOSIS
 
 A. ${random(["RIGHT BREAST, LUMPECTOMY", "COLON, SEGMENTAL RESECTION", "THYROID, TOTAL THYROIDECTOMY"])}:
    - ${random([
-       "INVASIVE DUCTAL CARCINOMA, MODERATELY DIFFERENTIATED",
-       "ADENOCARCINOMA, MODERATELY DIFFERENTIATED",
-       "PAPILLARY THYROID CARCINOMA",
-       "SQUAMOUS CELL CARCINOMA"
-     ])}
+     "INVASIVE DUCTAL CARCINOMA, MODERATELY DIFFERENTIATED",
+     "ADENOCARCINOMA, MODERATELY DIFFERENTIATED",
+     "PAPILLARY THYROID CARCINOMA",
+     "SQUAMOUS CELL CARCINOMA",
+   ])}
    - Tumor size: ${randomInt(5, 30)} mm in greatest dimension
    - Margins: ${random(["Negative (closest margin: " + randomInt(1, 10) + " mm)", "Positive at superior margin", "Close (< 1mm) at deep margin"])}
    - Lymphovascular invasion: ${random(["Present", "Not identified"])}
@@ -804,10 +807,10 @@ A. ${random(["RIGHT BREAST, LUMPECTOMY", "COLON, SEGMENTAL RESECTION", "THYROID,
 
 B. ${random(["SENTINEL LYMPH NODE, RIGHT AXILLA", "REGIONAL LYMPH NODES"])}:
    - ${random([
-       "REACTIVE LYMPHOID HYPERPLASIA, NO EVIDENCE OF METASTASIS",
-       "METASTATIC CARCINOMA (1 of 3 nodes positive)",
-       "BENIGN LYMPH NODE TISSUE"
-     ])}
+     "REACTIVE LYMPHOID HYPERPLASIA, NO EVIDENCE OF METASTASIS",
+     "METASTATIC CARCINOMA (1 of 3 nodes positive)",
+     "BENIGN LYMPH NODE TISSUE",
+   ])}
 
 STAGING (AJCC 8th Edition):
    pT${randomInt(1, 3)} pN${randomInt(0, 2)} cM${random(["0", "X"])}
@@ -946,14 +949,38 @@ module.exports = {
   generateReferralLetter,
   generatePathologyReport,
   generateInsuranceDocument,
-  
+
   // Template list for random selection
   TEMPLATES: [
-    { name: "History & Physical", generator: generateHistoryAndPhysical, complexity: "high" },
-    { name: "Operative Report", generator: generateOperativeReport, complexity: "high" },
-    { name: "Registration Form", generator: generateRegistrationForm, complexity: "extreme" },
-    { name: "Referral Letter", generator: generateReferralLetter, complexity: "medium" },
-    { name: "Pathology Report", generator: generatePathologyReport, complexity: "high" },
-    { name: "Insurance EOB", generator: generateInsuranceDocument, complexity: "high" }
-  ]
+    {
+      name: "History & Physical",
+      generator: generateHistoryAndPhysical,
+      complexity: "high",
+    },
+    {
+      name: "Operative Report",
+      generator: generateOperativeReport,
+      complexity: "high",
+    },
+    {
+      name: "Registration Form",
+      generator: generateRegistrationForm,
+      complexity: "extreme",
+    },
+    {
+      name: "Referral Letter",
+      generator: generateReferralLetter,
+      complexity: "medium",
+    },
+    {
+      name: "Pathology Report",
+      generator: generatePathologyReport,
+      complexity: "high",
+    },
+    {
+      name: "Insurance EOB",
+      generator: generateInsuranceDocument,
+      complexity: "high",
+    },
+  ],
 };

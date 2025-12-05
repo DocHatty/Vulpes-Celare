@@ -140,6 +140,100 @@
         "t_valid_from": "2025-12-05T06:07:07.705Z",
         "t_valid_until": null
       }
+    },
+    "run_1764916341596_u9b40ytjb": {
+      "id": "run_1764916341596_u9b40ytjb",
+      "timestamp": "2025-12-05T06:32:21.596Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.3278,
+        "specificity": 92.8341,
+        "precision": 98.6174,
+        "f1Score": 97.4591,
+        "mcc": 0.8512
+      },
+      "confusionMatrix": {
+        "tp": 6348,
+        "tn": 1153,
+        "fp": 89,
+        "fn": 242,
+        "total": 7832,
+        "actualPositive": 6590,
+        "actualNegative": 1242
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.3% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:32:21.596Z",
+        "t_occurred": "2025-12-05T06:32:21.596Z",
+        "t_valid_from": "2025-12-05T06:32:21.596Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1764916430096_uuypduabz": {
+      "id": "run_1764916430096_uuypduabz",
+      "timestamp": "2025-12-05T06:33:50.096Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 96.9116,
+        "specificity": 92.1178,
+        "precision": 98.4696,
+        "f1Score": 97.6844,
+        "mcc": 0.8624
+      },
+      "confusionMatrix": {
+        "tp": 6370,
+        "tn": 1157,
+        "fp": 99,
+        "fn": 203,
+        "total": 7829,
+        "actualPositive": 6573,
+        "actualNegative": 1256
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 96.9% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.7%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-05T06:33:50.096Z",
+        "t_occurred": "2025-12-05T06:33:50.096Z",
+        "t_valid_from": "2025-12-05T06:33:50.096Z",
+        "t_valid_until": null
+      }
     }
   },
   "Intervention": {

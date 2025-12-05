@@ -1,3 +1,5 @@
+const { random } = require("../../generators/seeded-random");
+
 /**
  * ╔══════════════════════════════════════════════════════════════════════════════╗
  * ║  VULPES CORTEX - INTERVENTION TRACKER                                        ║
@@ -155,7 +157,7 @@ class InterventionTracker {
     }
 
     const intervention = {
-      id: `INT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `INT-${Date.now()}-${random().toString(36).substr(2, 9)}`,
       timestamp: new Date().toISOString(), // Required by KB entity schema
       type: options.type,
       typeInfo: {

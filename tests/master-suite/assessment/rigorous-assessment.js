@@ -21,6 +21,7 @@
 
 const path = require("path");
 const fs = require("fs");
+const { random } = require("../generators/seeded-random");
 
 // ============================================================================
 // STRICT GRADING SCHEMA
@@ -880,7 +881,7 @@ class RigorousAssessment {
     const dist = this.options.errorDistribution;
 
     for (let i = 0; i < count; i++) {
-      const rand = Math.random();
+      const rand = random();
       let cumulative = 0;
 
       for (const [level, prob] of Object.entries(dist)) {

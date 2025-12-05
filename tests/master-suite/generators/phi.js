@@ -1,15 +1,29 @@
 /**
  * MASTER TEST SUITE - PHI Generators
  * Generate realistic Protected Health Information for testing
+ *
+ * SEEDED RANDOM: Uses seeded RNG for reproducible test generation.
+ * This enables valid A/B experiments where baseline and treatment
+ * test the exact same documents.
  */
 
-const { FIRST_NAMES, LAST_NAMES, MIDDLE_NAMES, TITLES, SUFFIXES_PATIENT, SUFFIXES_PROVIDER } = require("../data/names");
-const { CITIES, STATES, STREET_TYPES, STREET_NAMES, UNIT_TYPES } = require("../data/locations");
+const {
+  FIRST_NAMES,
+  LAST_NAMES,
+  MIDDLE_NAMES,
+  TITLES,
+  SUFFIXES_PATIENT,
+  SUFFIXES_PROVIDER,
+} = require("../data/names");
+const {
+  CITIES,
+  STATES,
+  STREET_TYPES,
+  STREET_NAMES,
+  UNIT_TYPES,
+} = require("../data/locations");
 const { applyErrors } = require("./errors");
-
-// Utility functions
-function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+const { random, randomInt, randomFrom, chance } = require("./seeded-random");
 
 /**
  * Generate a patient name in various formats
@@ -18,8 +32,8 @@ function generatePatientName(format = "random", errorLevel = "medium") {
   const first = random(FIRST_NAMES);
   const middle = random(MIDDLE_NAMES);
   const last = random(LAST_NAMES);
-  const suffix = Math.random() < 0.08 ? ", " + random(SUFFIXES_PATIENT) : "";
-  
+  const suffix = chance(0.08) ? ", " + random(SUFFIXES_PATIENT) : "";
+
   const formats = {
     first_last: `${first} ${last}${suffix}`,
     first_middle_last: `${first} ${middle} ${last}${suffix}`,
@@ -30,15 +44,16 @@ function generatePatientName(format = "random", errorLevel = "medium") {
     all_caps_last_first: `${last.toUpperCase()}, ${first.toUpperCase()}${suffix.toUpperCase()}`,
     all_caps_full: `${last.toUpperCase()}, ${first.toUpperCase()} ${middle.toUpperCase()}`,
     first_initial_last: `${first} ${middle[0]}. ${last}`,
-    last_first_initial: `${last}, ${first} ${middle[0]}.`
+    last_first_initial: `${last}, ${first} ${middle[0]}.`,
   };
-  
+
   const formatKeys = Object.keys(formats);
-  if (format === "random") format = formatKeys[randomInt(0, formatKeys.length - 1)];
-  
+  if (format === "random")
+    format = formatKeys[randomInt(0, formatKeys.length - 1)];
+
   const clean = formats[format] || formats.first_last;
   const { text: formatted, hasErrors } = applyErrors(clean, errorLevel);
-  
+
   return { first, middle, last, clean, formatted, hasErrors, format };
 }
 
@@ -50,22 +65,23 @@ function generateProviderName(format = "titled", errorLevel = "none") {
   const last = random(LAST_NAMES);
   const title = random(TITLES);
   const suffix = random(SUFFIXES_PROVIDER);
-  
+
   const formats = {
     titled: `${title} ${first} ${last}`,
     titled_last: `${title} ${last}`,
     titled_suffix: `${title} ${first} ${last}, ${suffix}`,
     first_last_suffix: `${first} ${last}, ${suffix}`,
-    last_suffix: `${last}, ${suffix}`
+    last_suffix: `${last}, ${suffix}`,
   };
-  
+
   const formatKeys = Object.keys(formats);
-  if (format === "random") format = formatKeys[randomInt(0, formatKeys.length - 1)];
-  
+  if (format === "random")
+    format = formatKeys[randomInt(0, formatKeys.length - 1)];
+
   const clean = formats[format] || formats.titled;
   // Provider names generally don't get errors since they're typed by staff
   const { text: formatted } = applyErrors(clean, errorLevel);
-  
+
   return { first, last, clean, formatted, isProvider: true };
 }
 
@@ -76,7 +92,7 @@ function generateSSN(applyErr = true, errorLevel = "medium") {
   const area = String(randomInt(100, 899)).padStart(3, "0");
   const group = String(randomInt(10, 99));
   const serial = String(randomInt(1000, 9999));
-  
+
   // Various SSN formats
   const formats = [
     `${area}-${group}-${serial}`,
@@ -85,10 +101,10 @@ function generateSSN(applyErr = true, errorLevel = "medium") {
     `***-**-${serial}`, // Partially masked
     `XXX-XX-${serial}`, // Partially masked
   ];
-  
+
   const clean = random(formats);
   if (!applyErr) return clean;
-  
+
   const { text } = applyErrors(clean, errorLevel);
   return text;
 }
@@ -101,18 +117,18 @@ function generateMRN(applyErr = true, errorLevel = "medium") {
   const prefix = random(prefixes);
   const year = randomInt(2018, 2024);
   const num = randomInt(10000, 9999999);
-  
+
   let mrn;
   if (prefix) {
     const separators = ["-", " ", ": ", ""];
     const sep = random(separators);
-    mrn = Math.random() < 0.5 
+    mrn = chance(0.5)
       ? `${prefix}${sep}${year}-${num}`
       : `${prefix}${sep}${num}`;
   } else {
     mrn = String(num);
   }
-  
+
   if (!applyErr) return mrn;
   const { text } = applyErrors(mrn, errorLevel);
   return text;
@@ -125,7 +141,7 @@ function generatePhone(applyErr = true, errorLevel = "medium") {
   const area = String(randomInt(201, 989));
   const exchange = String(randomInt(200, 999));
   const subscriber = String(randomInt(1000, 9999));
-  
+
   const formats = [
     `(${area}) ${exchange}-${subscriber}`,
     `${area}-${exchange}-${subscriber}`,
@@ -134,12 +150,12 @@ function generatePhone(applyErr = true, errorLevel = "medium") {
     `+1 ${area}-${exchange}-${subscriber}`,
     `1-${area}-${exchange}-${subscriber}`,
     `+1 (${area}) ${exchange}-${subscriber}`,
-    `${area} ${exchange} ${subscriber}`
+    `${area} ${exchange} ${subscriber}`,
   ];
-  
+
   const clean = random(formats);
   if (!applyErr) return clean;
-  
+
   const { text } = applyErrors(clean, errorLevel);
   return text;
 }
@@ -151,7 +167,7 @@ function generateFax(applyErr = true, errorLevel = "medium") {
   const phone = generatePhone(false);
   const labels = ["Fax:", "FAX:", "F:", "Fax", "FAX", "Facsimile:"];
   const fax = `${random(labels)} ${phone}`;
-  
+
   if (!applyErr) return fax;
   const { text } = applyErrors(fax, errorLevel);
   return text;
@@ -162,50 +178,63 @@ function generateFax(applyErr = true, errorLevel = "medium") {
  */
 function generateEmail(first, last) {
   const domains = [
-    "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "aol.com",
-    "icloud.com", "mail.com", "protonmail.com", "live.com", "msn.com"
+    "gmail.com",
+    "yahoo.com",
+    "outlook.com",
+    "hotmail.com",
+    "aol.com",
+    "icloud.com",
+    "mail.com",
+    "protonmail.com",
+    "live.com",
+    "msn.com",
   ];
-  
+
   const cleanFirst = first.toLowerCase().replace(/[^a-z]/g, "");
   const cleanLast = last.toLowerCase().replace(/[^a-z]/g, "");
-  const num = Math.random() < 0.3 ? String(randomInt(1, 99)) : "";
-  
+  const num = chance(0.3) ? String(randomInt(1, 99)) : "";
+
   const patterns = [
     `${cleanFirst}.${cleanLast}${num}@${random(domains)}`,
     `${cleanFirst}${cleanLast}${num}@${random(domains)}`,
     `${cleanFirst[0]}${cleanLast}${num}@${random(domains)}`,
     `${cleanLast}.${cleanFirst}${num}@${random(domains)}`,
     `${cleanFirst}_${cleanLast}${num}@${random(domains)}`,
-    `${cleanFirst}${cleanLast[0]}${num}@${random(domains)}`
+    `${cleanFirst}${cleanLast[0]}${num}@${random(domains)}`,
   ];
-  
+
   return random(patterns);
 }
 
 /**
  * Generate date in various formats
  */
-function generateDate(yearMin = 2020, yearMax = 2024, applyErr = true, errorLevel = "medium") {
+function generateDate(
+  yearMin = 2020,
+  yearMax = 2024,
+  applyErr = true,
+  errorLevel = "medium",
+) {
   const month = randomInt(1, 12);
   const day = randomInt(1, 28);
   const year = randomInt(yearMin, yearMax);
-  
+
   const mm = String(month).padStart(2, "0");
   const dd = String(day).padStart(2, "0");
   const yy = String(year).slice(-2);
-  
+
   const formats = [
     `${mm}/${dd}/${year}`,
     `${mm}-${dd}-${year}`,
     `${year}-${mm}-${dd}`,
     `${month}/${day}/${year}`,
     `${mm}/${dd}/${yy}`,
-    `${month}/${day}/${yy}`
+    `${month}/${day}/${yy}`,
   ];
-  
+
   const clean = random(formats);
   if (!applyErr) return clean;
-  
+
   const { text } = applyErrors(clean, errorLevel);
   return text;
 }
@@ -223,30 +252,30 @@ function generateDOB(applyErr = true, errorLevel = "medium") {
 function generateAddress(applyErr = true, errorLevel = "medium") {
   const num = randomInt(1, 9999);
   const street = `${random(STREET_NAMES)} ${random(STREET_TYPES)}`;
-  
+
   // Optional unit
   let unit = "";
-  if (Math.random() < 0.25) {
+  if (chance(0.25)) {
     const unitType = random(UNIT_TYPES);
     const unitNum = randomInt(1, 999);
     unit = `, ${unitType} ${unitNum}`;
   }
-  
+
   const city = random(CITIES);
   const state = random(STATES);
   const zip = String(randomInt(10000, 99999));
-  const zip4 = Math.random() < 0.2 ? `-${String(randomInt(1000, 9999))}` : "";
-  
+  const zip4 = chance(0.2) ? `-${String(randomInt(1000, 9999))}` : "";
+
   const streetLine = `${num} ${street}${unit}`;
   const full = `${streetLine}, ${city}, ${state} ${zip}${zip4}`;
-  
+
   if (!applyErr) {
     return { street: streetLine, city, state, zip: zip + zip4, full };
   }
-  
+
   const { text: streetErr } = applyErrors(streetLine, errorLevel);
   const { text: fullErr } = applyErrors(full, errorLevel);
-  
+
   return { street: streetErr, city, state, zip: zip + zip4, full: fullErr };
 }
 
@@ -262,7 +291,9 @@ function generateNPI() {
  */
 function generateDEA() {
   const letters = "ABCDEFGHJKLMNPRSTUVWXYZ";
-  const prefix = letters[randomInt(0, letters.length - 1)] + letters[randomInt(0, letters.length - 1)];
+  const prefix =
+    letters[randomInt(0, letters.length - 1)] +
+    letters[randomInt(0, letters.length - 1)];
   return prefix + String(randomInt(1000000, 9999999));
 }
 
@@ -277,10 +308,17 @@ function generateIP() {
  * Generate patient portal URL
  */
 function generateURL() {
-  const subdomains = ["patient-portal", "myhealth", "health-records", "medportal", "mycare", "healthlink"];
+  const subdomains = [
+    "patient-portal",
+    "myhealth",
+    "health-records",
+    "medportal",
+    "mycare",
+    "healthlink",
+  ];
   const tlds = [".com", ".org", ".net", ".health", ".care"];
   const patientId = randomInt(10000, 9999999);
-  
+
   return `https://${random(subdomains)}${random(tlds)}/patient/${patientId}`;
 }
 
@@ -294,31 +332,31 @@ function generateCreditCard() {
     { prefix: "5", length: 16, name: "Mastercard" },
     { prefix: "34", length: 15, name: "Amex" },
     { prefix: "37", length: 15, name: "Amex" },
-    { prefix: "6011", length: 16, name: "Discover" }
+    { prefix: "6011", length: 16, name: "Discover" },
   ];
-  
+
   const card = random(cardTypes);
   let num = card.prefix;
-  
+
   while (num.length < card.length) {
     num += String(randomInt(0, 9));
   }
-  
+
   // Format options
   if (card.length === 15) {
     // AMEX format: xxxx xxxxxx xxxxx
     const formats = [
       num,
-      `${num.slice(0,4)}-${num.slice(4,10)}-${num.slice(10)}`,
-      `${num.slice(0,4)} ${num.slice(4,10)} ${num.slice(10)}`
+      `${num.slice(0, 4)}-${num.slice(4, 10)}-${num.slice(10)}`,
+      `${num.slice(0, 4)} ${num.slice(4, 10)} ${num.slice(10)}`,
     ];
     return random(formats);
   } else {
     // Standard 16-digit format
     const formats = [
       num,
-      `${num.slice(0,4)}-${num.slice(4,8)}-${num.slice(8,12)}-${num.slice(12)}`,
-      `${num.slice(0,4)} ${num.slice(4,8)} ${num.slice(8,12)} ${num.slice(12)}`
+      `${num.slice(0, 4)}-${num.slice(4, 8)}-${num.slice(8, 12)}-${num.slice(12)}`,
+      `${num.slice(0, 4)} ${num.slice(4, 8)} ${num.slice(8, 12)} ${num.slice(12)}`,
     ];
     return random(formats);
   }
@@ -342,17 +380,22 @@ function generateVIN() {
  */
 function generateLicensePlate() {
   const letters = "ABCDEFGHJKLMNPRSTUVWXYZ";
-  
+
   const formats = [
     // Standard formats
-    () => `${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}-${randomInt(1000, 9999)}`,
-    () => `${randomInt(100, 999)} ${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}`,
-    () => `${randomInt(1, 9)}${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}${randomInt(100, 999)}`,
-    () => `${letters[randomInt(0,25)]}${randomInt(10,99)} ${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}`,
+    () =>
+      `${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}-${randomInt(1000, 9999)}`,
+    () =>
+      `${randomInt(100, 999)} ${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}`,
+    () =>
+      `${randomInt(1, 9)}${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}${randomInt(100, 999)}`,
+    () =>
+      `${letters[randomInt(0, 25)]}${randomInt(10, 99)} ${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}`,
     // Vanity style
-    () => `${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}${letters[randomInt(0,25)]}${randomInt(10,99)}`
+    () =>
+      `${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}${letters[randomInt(0, 25)]}${randomInt(10, 99)}`,
   ];
-  
+
   return random(formats)();
 }
 
@@ -361,7 +404,7 @@ function generateLicensePlate() {
  */
 function generateAge() {
   // 15% chance of age 90+ which IS PHI under HIPAA
-  if (Math.random() < 0.15) {
+  if (chance(0.15)) {
     return { age: randomInt(90, 105), needsRedaction: true };
   }
   // 85% chance of age under 90 which is NOT PHI
@@ -375,7 +418,7 @@ function generateAccountNumber() {
   const prefixes = ["ACCT", "ACC", "Account", ""];
   const prefix = random(prefixes);
   const num = randomInt(100000, 99999999);
-  
+
   if (prefix) {
     return `${prefix}: ${num}`;
   }
@@ -387,7 +430,10 @@ function generateAccountNumber() {
  */
 function generateHealthPlanID() {
   const letters = "ABCDEFGHJKLMNPRSTUVWXYZ";
-  const prefix = letters[randomInt(0,25)] + letters[randomInt(0,25)] + letters[randomInt(0,25)];
+  const prefix =
+    letters[randomInt(0, 25)] +
+    letters[randomInt(0, 25)] +
+    letters[randomInt(0, 25)];
   return `${prefix}${randomInt(100000000, 999999999)}`;
 }
 
@@ -413,5 +459,5 @@ module.exports = {
   generateLicensePlate,
   generateAge,
   generateAccountNumber,
-  generateHealthPlanID
+  generateHealthPlanID,
 };

@@ -1,3 +1,5 @@
+const { random } = require("../../generators/seeded-random");
+
 /**
  * ╔══════════════════════════════════════════════════════════════════════════════╗
  * ║  VULPES CORTEX - TEMPORAL INDEX                                              ║
@@ -213,7 +215,7 @@ class TemporalIndex {
     };
 
     // Generate unique run ID
-    const runId = `run_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const runId = `run_${Date.now()}_${random().toString(36).substr(2, 9)}`;
 
     // Create TestRun entity using knowledge base API
     // Required fields: id, timestamp, documentCount, metrics

@@ -41,11 +41,23 @@
       "timestamp": "2025-12-05T06:23:40.330Z",
       "decisionType": "DICTIONARY_UPDATE",
       "foundHistory": true
+    },
+    {
+      "id": "CONSULT-1764916341605",
+      "timestamp": "2025-12-05T06:32:21.605Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764916430106",
+      "timestamp": "2025-12-05T06:33:50.106Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 7,
+    "total": 9,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 6
+    "noHistoryFound": 8
   }
 }

@@ -1,3 +1,5 @@
+const { random } = require("../../generators/seeded-random");
+
 /**
  * ╔══════════════════════════════════════════════════════════════════════════════╗
  * ║  VULPES CORTEX - KNOWLEDGE BASE                                              ║
@@ -26,9 +28,9 @@
  * - regressed: Intervention regressed Metric
  */
 
-const fs = require('fs');
-const path = require('path');
-const { PATHS } = require('./config');
+const fs = require("fs");
+const path = require("path");
+const { PATHS } = require("./config");
 
 // ============================================================================
 // ENTITY SCHEMAS - What we track
@@ -36,101 +38,107 @@ const { PATHS } = require('./config');
 
 const ENTITY_TYPES = {
   TEST_RUN: {
-    name: 'TestRun',
-    description: 'A single test execution with metrics',
-    requiredFields: ['id', 'timestamp', 'documentCount', 'metrics'],
-    optionalFields: ['failures', 'overRedactions', 'profile', 'snapshotId']
+    name: "TestRun",
+    description: "A single test execution with metrics",
+    requiredFields: ["id", "timestamp", "documentCount", "metrics"],
+    optionalFields: ["failures", "overRedactions", "profile", "snapshotId"],
   },
   INTERVENTION: {
-    name: 'Intervention',
-    description: 'A code change made to improve detection',
-    requiredFields: ['id', 'timestamp', 'description', 'targetedPatterns'],
-    optionalFields: ['filesChanged', 'beforeRunId', 'afterRunId', 'status', 'effectiveness']
+    name: "Intervention",
+    description: "A code change made to improve detection",
+    requiredFields: ["id", "timestamp", "description", "targetedPatterns"],
+    optionalFields: [
+      "filesChanged",
+      "beforeRunId",
+      "afterRunId",
+      "status",
+      "effectiveness",
+    ],
   },
   HYPOTHESIS: {
-    name: 'Hypothesis',
-    description: 'A prediction about what might help',
-    requiredFields: ['id', 'timestamp', 'pattern', 'hypothesis', 'confidence'],
-    optionalFields: ['affectedCount', 'reasoning', 'status', 'validatedBy']
+    name: "Hypothesis",
+    description: "A prediction about what might help",
+    requiredFields: ["id", "timestamp", "pattern", "hypothesis", "confidence"],
+    optionalFields: ["affectedCount", "reasoning", "status", "validatedBy"],
   },
   PATTERN: {
-    name: 'Pattern',
-    description: 'A recognized failure pattern',
-    requiredFields: ['id', 'type', 'description'],
-    optionalFields: ['severity', 'count', 'samples', 'knownFixes', 'lastSeen']
+    name: "Pattern",
+    description: "A recognized failure pattern",
+    requiredFields: ["id", "type", "description"],
+    optionalFields: ["severity", "count", "samples", "knownFixes", "lastSeen"],
   },
   INSIGHT: {
-    name: 'Insight',
-    description: 'A learning extracted from data',
-    requiredFields: ['id', 'timestamp', 'type', 'content'],
-    optionalFields: ['sourceRunId', 'confidence', 'actionable']
+    name: "Insight",
+    description: "A learning extracted from data",
+    requiredFields: ["id", "timestamp", "type", "content"],
+    optionalFields: ["sourceRunId", "confidence", "actionable"],
   },
   SNAPSHOT: {
-    name: 'Snapshot',
-    description: 'A saved set of test documents for reproducibility',
-    requiredFields: ['id', 'timestamp', 'documentCount', 'checksum'],
-    optionalFields: ['description', 'filePath']
-  }
+    name: "Snapshot",
+    description: "A saved set of test documents for reproducibility",
+    requiredFields: ["id", "timestamp", "documentCount", "checksum"],
+    optionalFields: ["description", "filePath"],
+  },
 };
 
 const RELATION_TYPES = {
   CAUSED: {
-    name: 'caused',
-    description: 'Intervention caused this effect',
-    validFrom: ['Intervention'],
-    validTo: ['TestRun', 'Insight']
+    name: "caused",
+    description: "Intervention caused this effect",
+    validFrom: ["Intervention"],
+    validTo: ["TestRun", "Insight"],
   },
   VALIDATED: {
-    name: 'validated',
-    description: 'TestRun validated this hypothesis',
-    validFrom: ['TestRun'],
-    validTo: ['Hypothesis']
+    name: "validated",
+    description: "TestRun validated this hypothesis",
+    validFrom: ["TestRun"],
+    validTo: ["Hypothesis"],
   },
   INVALIDATED: {
-    name: 'invalidated',
-    description: 'TestRun invalidated this hypothesis',
-    validFrom: ['TestRun'],
-    validTo: ['Hypothesis']
+    name: "invalidated",
+    description: "TestRun invalidated this hypothesis",
+    validFrom: ["TestRun"],
+    validTo: ["Hypothesis"],
   },
   IDENTIFIED: {
-    name: 'identified',
-    description: 'TestRun identified this pattern',
-    validFrom: ['TestRun'],
-    validTo: ['Pattern']
+    name: "identified",
+    description: "TestRun identified this pattern",
+    validFrom: ["TestRun"],
+    validTo: ["Pattern"],
   },
   GENERATED: {
-    name: 'generated',
-    description: 'Pattern generated this hypothesis',
-    validFrom: ['Pattern'],
-    validTo: ['Hypothesis']
+    name: "generated",
+    description: "Pattern generated this hypothesis",
+    validFrom: ["Pattern"],
+    validTo: ["Hypothesis"],
   },
   IMPROVED: {
-    name: 'improved',
-    description: 'Intervention improved this metric',
-    validFrom: ['Intervention'],
-    validTo: ['Metric'],
-    metadata: ['delta', 'before', 'after']
+    name: "improved",
+    description: "Intervention improved this metric",
+    validFrom: ["Intervention"],
+    validTo: ["Metric"],
+    metadata: ["delta", "before", "after"],
   },
   REGRESSED: {
-    name: 'regressed',
-    description: 'Intervention regressed this metric',
-    validFrom: ['Intervention'],
-    validTo: ['Metric'],
-    metadata: ['delta', 'before', 'after']
+    name: "regressed",
+    description: "Intervention regressed this metric",
+    validFrom: ["Intervention"],
+    validTo: ["Metric"],
+    metadata: ["delta", "before", "after"],
   },
   USED_SNAPSHOT: {
-    name: 'used_snapshot',
-    description: 'TestRun used this document snapshot',
-    validFrom: ['TestRun'],
-    validTo: ['Snapshot']
+    name: "used_snapshot",
+    description: "TestRun used this document snapshot",
+    validFrom: ["TestRun"],
+    validTo: ["Snapshot"],
   },
   ROLLED_BACK: {
-    name: 'rolled_back',
-    description: 'Intervention was rolled back',
-    validFrom: ['Intervention'],
-    validTo: ['Intervention'],
-    metadata: ['reason', 'rollbackRunId']
-  }
+    name: "rolled_back",
+    description: "Intervention was rolled back",
+    validFrom: ["Intervention"],
+    validTo: ["Intervention"],
+    metadata: ["reason", "rollbackRunId"],
+  },
 };
 
 // ============================================================================
@@ -149,9 +157,9 @@ class KnowledgeBase {
     this.metadata = {
       created: null,
       lastModified: null,
-      version: '1.0.0',
+      version: "1.0.0",
       entityCount: 0,
-      relationCount: 0
+      relationCount: 0,
     };
 
     // Load existing data
@@ -175,27 +183,29 @@ class KnowledgeBase {
   load() {
     try {
       // Load entities
-      const entitiesPath = this.getFilePath('entities.json');
+      const entitiesPath = this.getFilePath("entities.json");
       if (fs.existsSync(entitiesPath)) {
-        this.entities = JSON.parse(fs.readFileSync(entitiesPath, 'utf8'));
+        this.entities = JSON.parse(fs.readFileSync(entitiesPath, "utf8"));
       }
 
       // Load relations
-      const relationsPath = this.getFilePath('relations.json');
+      const relationsPath = this.getFilePath("relations.json");
       if (fs.existsSync(relationsPath)) {
-        this.relations = JSON.parse(fs.readFileSync(relationsPath, 'utf8'));
+        this.relations = JSON.parse(fs.readFileSync(relationsPath, "utf8"));
       }
 
       // Load observations
-      const observationsPath = this.getFilePath('observations.json');
+      const observationsPath = this.getFilePath("observations.json");
       if (fs.existsSync(observationsPath)) {
-        this.observations = JSON.parse(fs.readFileSync(observationsPath, 'utf8'));
+        this.observations = JSON.parse(
+          fs.readFileSync(observationsPath, "utf8"),
+        );
       }
 
       // Load metadata
-      const metadataPath = this.getFilePath('metadata.json');
+      const metadataPath = this.getFilePath("metadata.json");
       if (fs.existsSync(metadataPath)) {
-        this.metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+        this.metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
       } else {
         this.metadata.created = new Date().toISOString();
       }
@@ -215,26 +225,28 @@ class KnowledgeBase {
     this.updateCounts();
 
     fs.writeFileSync(
-      this.getFilePath('entities.json'),
-      JSON.stringify(this.entities, null, 2)
+      this.getFilePath("entities.json"),
+      JSON.stringify(this.entities, null, 2),
     );
     fs.writeFileSync(
-      this.getFilePath('relations.json'),
-      JSON.stringify(this.relations, null, 2)
+      this.getFilePath("relations.json"),
+      JSON.stringify(this.relations, null, 2),
     );
     fs.writeFileSync(
-      this.getFilePath('observations.json'),
-      JSON.stringify(this.observations, null, 2)
+      this.getFilePath("observations.json"),
+      JSON.stringify(this.observations, null, 2),
     );
     fs.writeFileSync(
-      this.getFilePath('metadata.json'),
-      JSON.stringify(this.metadata, null, 2)
+      this.getFilePath("metadata.json"),
+      JSON.stringify(this.metadata, null, 2),
     );
   }
 
   updateCounts() {
-    this.metadata.entityCount = Object.values(this.entities)
-      .reduce((sum, typeEntities) => sum + Object.keys(typeEntities).length, 0);
+    this.metadata.entityCount = Object.values(this.entities).reduce(
+      (sum, typeEntities) => sum + Object.keys(typeEntities).length,
+      0,
+    );
     this.metadata.relationCount = this.relations.length;
   }
 
@@ -246,7 +258,7 @@ class KnowledgeBase {
    * Create a new entity with bi-temporal tracking
    */
   createEntity(type, data) {
-    const schema = Object.values(ENTITY_TYPES).find(t => t.name === type);
+    const schema = Object.values(ENTITY_TYPES).find((t) => t.name === type);
     if (!schema) {
       throw new Error(`Unknown entity type: ${type}`);
     }
@@ -254,7 +266,9 @@ class KnowledgeBase {
     // Validate required fields
     for (const field of schema.requiredFields) {
       if (data[field] === undefined) {
-        throw new Error(`Missing required field '${field}' for entity type '${type}'`);
+        throw new Error(
+          `Missing required field '${field}' for entity type '${type}'`,
+        );
       }
     }
 
@@ -268,11 +282,11 @@ class KnowledgeBase {
       ...data,
       _type: type,
       _temporal: {
-        t_recorded: new Date().toISOString(),  // When we learned about it
-        t_occurred: data.timestamp || new Date().toISOString(),  // When it happened
+        t_recorded: new Date().toISOString(), // When we learned about it
+        t_occurred: data.timestamp || new Date().toISOString(), // When it happened
         t_valid_from: new Date().toISOString(),
-        t_valid_until: null  // null = still valid
-      }
+        t_valid_until: null, // null = still valid
+      },
     };
 
     this.entities[type][data.id] = entity;
@@ -297,7 +311,7 @@ class KnowledgeBase {
 
     // Filter by validity (exclude invalidated unless requested)
     if (!options.includeInvalid) {
-      results = results.filter(e => e._temporal.t_valid_until === null);
+      results = results.filter((e) => e._temporal.t_valid_until === null);
     }
 
     // Sort by timestamp (newest first by default)
@@ -337,8 +351,8 @@ class KnowledgeBase {
         ...existing._temporal,
         t_recorded: new Date().toISOString(),
         t_valid_from: new Date().toISOString(),
-        t_valid_until: null
-      }
+        t_valid_until: null,
+      },
     };
 
     this.entities[type][id] = updated;
@@ -371,7 +385,9 @@ class KnowledgeBase {
    * Create a relation between two entities
    */
   createRelation(fromType, fromId, relationType, toType, toId, metadata = {}) {
-    const relationSchema = Object.values(RELATION_TYPES).find(r => r.name === relationType);
+    const relationSchema = Object.values(RELATION_TYPES).find(
+      (r) => r.name === relationType,
+    );
     if (!relationSchema) {
       throw new Error(`Unknown relation type: ${relationType}`);
     }
@@ -385,7 +401,7 @@ class KnowledgeBase {
     }
 
     const relation = {
-      id: `REL-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `REL-${Date.now()}-${random().toString(36).substr(2, 9)}`,
       type: relationType,
       from: { type: fromType, id: fromId },
       to: { type: toType, id: toId },
@@ -393,8 +409,8 @@ class KnowledgeBase {
       _temporal: {
         t_recorded: new Date().toISOString(),
         t_valid_from: new Date().toISOString(),
-        t_valid_until: null
-      }
+        t_valid_until: null,
+      },
     };
 
     this.relations.push(relation);
@@ -407,23 +423,23 @@ class KnowledgeBase {
    * Get relations for an entity
    */
   getRelationsFor(type, id, options = {}) {
-    let results = this.relations.filter(r => {
+    let results = this.relations.filter((r) => {
       const matchesFrom = r.from.type === type && r.from.id === id;
       const matchesTo = r.to.type === type && r.to.id === id;
 
-      if (options.direction === 'outgoing') return matchesFrom;
-      if (options.direction === 'incoming') return matchesTo;
+      if (options.direction === "outgoing") return matchesFrom;
+      if (options.direction === "incoming") return matchesTo;
       return matchesFrom || matchesTo;
     });
 
     // Filter by relation type
     if (options.relationType) {
-      results = results.filter(r => r.type === options.relationType);
+      results = results.filter((r) => r.type === options.relationType);
     }
 
     // Filter by validity
     if (!options.includeInvalid) {
-      results = results.filter(r => r._temporal.t_valid_until === null);
+      results = results.filter((r) => r._temporal.t_valid_until === null);
     }
 
     return results;
@@ -435,33 +451,37 @@ class KnowledgeBase {
    */
   getCausalChain(interventionId) {
     const chain = {
-      intervention: this.getEntity('Intervention', interventionId),
+      intervention: this.getEntity("Intervention", interventionId),
       effects: [],
       hypotheses: [],
-      validations: []
+      validations: [],
     };
 
     if (!chain.intervention) return null;
 
     // Get effects (what test runs this intervention caused)
-    const effectRelations = this.getRelationsFor('Intervention', interventionId, {
-      direction: 'outgoing',
-      relationType: 'caused'
-    });
+    const effectRelations = this.getRelationsFor(
+      "Intervention",
+      interventionId,
+      {
+        direction: "outgoing",
+        relationType: "caused",
+      },
+    );
 
     for (const rel of effectRelations) {
       const effect = this.getEntity(rel.to.type, rel.to.id);
       if (effect) {
         chain.effects.push({
           ...effect,
-          _relation: rel.metadata
+          _relation: rel.metadata,
         });
       }
     }
 
     // Get hypotheses that led to this intervention
-    const hypothesisRelations = this.relations.filter(r =>
-      r.to.type === 'Intervention' && r.to.id === interventionId
+    const hypothesisRelations = this.relations.filter(
+      (r) => r.to.type === "Intervention" && r.to.id === interventionId,
     );
 
     for (const rel of hypothesisRelations) {
@@ -483,12 +503,12 @@ class KnowledgeBase {
    */
   addObservation(entityType, entityId, observation) {
     const obs = {
-      id: `OBS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `OBS-${Date.now()}-${random().toString(36).substr(2, 9)}`,
       entity: { type: entityType, id: entityId },
       content: observation,
       _temporal: {
-        t_recorded: new Date().toISOString()
-      }
+        t_recorded: new Date().toISOString(),
+      },
     };
 
     this.observations.push(obs);
@@ -501,8 +521,8 @@ class KnowledgeBase {
    * Get observations for an entity
    */
   getObservationsFor(entityType, entityId) {
-    return this.observations.filter(o =>
-      o.entity.type === entityType && o.entity.id === entityId
+    return this.observations.filter(
+      (o) => o.entity.type === entityType && o.entity.id === entityId,
     );
   }
 
@@ -514,16 +534,19 @@ class KnowledgeBase {
    * Query entities with flexible filters
    */
   query(type, filters = {}) {
-    let results = this.getEntitiesByType(type, { includeInvalid: filters.includeInvalid });
+    let results = this.getEntitiesByType(type, {
+      includeInvalid: filters.includeInvalid,
+    });
 
     // Apply custom filters
     for (const [key, value] of Object.entries(filters)) {
-      if (key === 'includeInvalid' || key === 'limit' || key === 'sort') continue;
+      if (key === "includeInvalid" || key === "limit" || key === "sort")
+        continue;
 
-      if (typeof value === 'function') {
-        results = results.filter(e => value(e[key], e));
+      if (typeof value === "function") {
+        results = results.filter((e) => value(e[key], e));
       } else {
-        results = results.filter(e => e[key] === value);
+        results = results.filter((e) => e[key] === value);
       }
     }
 
@@ -538,15 +561,15 @@ class KnowledgeBase {
    * Get recent test runs
    */
   getRecentRuns(limit = 10) {
-    return this.getEntitiesByType('TestRun', { limit });
+    return this.getEntitiesByType("TestRun", { limit });
   }
 
   /**
    * Get active hypotheses (not yet validated/invalidated)
    */
   getActiveHypotheses() {
-    return this.query('Hypothesis', {
-      status: (s) => s === 'active' || s === undefined
+    return this.query("Hypothesis", {
+      status: (s) => s === "active" || s === undefined,
     });
   }
 
@@ -554,8 +577,8 @@ class KnowledgeBase {
    * Get interventions pending validation
    */
   getPendingInterventions() {
-    return this.query('Intervention', {
-      status: (s) => s === 'pending_validation' || s === 'in_progress'
+    return this.query("Intervention", {
+      status: (s) => s === "pending_validation" || s === "in_progress",
     });
   }
 
@@ -563,9 +586,9 @@ class KnowledgeBase {
    * Get successful interventions (for "what worked before")
    */
   getSuccessfulInterventions() {
-    return this.query('Intervention', {
-      status: 'validated',
-      effectiveness: (e) => e && e.improved === true
+    return this.query("Intervention", {
+      status: "validated",
+      effectiveness: (e) => e && e.improved === true,
     });
   }
 
@@ -573,8 +596,8 @@ class KnowledgeBase {
    * Get failed interventions (for "what didn't work")
    */
   getFailedInterventions() {
-    return this.query('Intervention', {
-      status: (s) => s === 'ineffective' || s === 'rolled_back'
+    return this.query("Intervention", {
+      status: (s) => s === "ineffective" || s === "rolled_back",
     });
   }
 
@@ -591,25 +614,26 @@ class KnowledgeBase {
       entities: {},
       relations: {
         total: this.relations.length,
-        byType: {}
+        byType: {},
       },
-      observations: this.observations.length
+      observations: this.observations.length,
     };
 
     // Count entities by type
     for (const [type, entities] of Object.entries(this.entities)) {
       const all = Object.values(entities);
-      const valid = all.filter(e => e._temporal.t_valid_until === null);
+      const valid = all.filter((e) => e._temporal.t_valid_until === null);
       stats.entities[type] = {
         total: all.length,
         valid: valid.length,
-        invalidated: all.length - valid.length
+        invalidated: all.length - valid.length,
       };
     }
 
     // Count relations by type
     for (const rel of this.relations) {
-      stats.relations.byType[rel.type] = (stats.relations.byType[rel.type] || 0) + 1;
+      stats.relations.byType[rel.type] =
+        (stats.relations.byType[rel.type] || 0) + 1;
     }
 
     return stats;
@@ -625,7 +649,7 @@ class KnowledgeBase {
       activeHypotheses: this.getActiveHypotheses(),
       pendingInterventions: this.getPendingInterventions(),
       successfulApproaches: this.getSuccessfulInterventions().slice(0, 5),
-      failedApproaches: this.getFailedInterventions().slice(0, 5)
+      failedApproaches: this.getFailedInterventions().slice(0, 5),
     };
   }
 }
@@ -637,5 +661,5 @@ class KnowledgeBase {
 module.exports = {
   KnowledgeBase,
   ENTITY_TYPES,
-  RELATION_TYPES
+  RELATION_TYPES,
 };

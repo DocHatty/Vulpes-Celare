@@ -1,3 +1,5 @@
+const { random } = require("../../generators/seeded-random");
+
 /**
  * ╔══════════════════════════════════════════════════════════════════════════════╗
  * ║  VULPES CORTEX - DECISION ENGINE                                             ║
@@ -39,9 +41,9 @@
  * - Alternative approaches
  */
 
-const fs = require('fs');
-const path = require('path');
-const { PATHS, DECISION_CONFIG } = require('../core/config');
+const fs = require("fs");
+const path = require("path");
+const { PATHS, DECISION_CONFIG } = require("../core/config");
 
 // ============================================================================
 // DECISION ENGINE CLASS
@@ -59,7 +61,7 @@ class DecisionEngine {
     this.insightGenerator = options.insightGenerator || null;
     this.metricsEngine = options.metricsEngine || null;
 
-    this.storagePath = path.join(PATHS.knowledge, 'decisions.json');
+    this.storagePath = path.join(PATHS.knowledge, "decisions.json");
     this.data = this.loadData();
 
     // Decision log for audit trail
@@ -69,10 +71,10 @@ class DecisionEngine {
   loadData() {
     try {
       if (fs.existsSync(this.storagePath)) {
-        return JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        return JSON.parse(fs.readFileSync(this.storagePath, "utf8"));
       }
     } catch (e) {
-      console.warn('DecisionEngine: Starting with empty decision history');
+      console.warn("DecisionEngine: Starting with empty decision history");
     }
     return {
       decisions: [],
@@ -80,8 +82,8 @@ class DecisionEngine {
         total: 0,
         byType: {},
         followed: 0,
-        ignored: 0
-      }
+        ignored: 0,
+      },
     };
   }
 
@@ -104,7 +106,7 @@ class DecisionEngine {
    */
   async makeDecision(type, context = {}) {
     const decision = {
-      id: `DEC-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      id: `DEC-${Date.now()}-${random().toString(36).substr(2, 6)}`,
       type,
       timestamp: new Date().toISOString(),
       context,
@@ -118,7 +120,7 @@ class DecisionEngine {
       recommendation: null,
       alternatives: [],
       confidence: 0,
-      risks: []
+      risks: [],
     };
 
     // STEP 1: MANDATORY HISTORY CONSULTATION
@@ -160,7 +162,7 @@ class DecisionEngine {
       relatedSuccesses: [],
       relatedFailures: [],
       warnings: [],
-      summary: ''
+      summary: "",
     };
 
     if (this.historyConsultant) {
@@ -174,37 +176,43 @@ class DecisionEngine {
       // Check for previous similar interventions
       if (context.phiType) {
         const similar = this.interventionTracker.getInterventionsByTarget({
-          component: context.phiType
+          component: context.phiType,
         });
 
-        analysis.previousAttempts = similar.slice(-10).map(i => ({
+        analysis.previousAttempts = similar.slice(-10).map((i) => ({
           id: i.id,
           description: i.description,
-          effect: i.effect?.classification || 'UNKNOWN',
-          when: i.timeline.applied
+          effect: i.effect?.classification || "UNKNOWN",
+          when: i.timeline.applied,
         }));
 
         // Find successes and failures
         analysis.relatedSuccesses = similar
-          .filter(i => i.effect?.classification?.includes('IMPROVEMENT'))
+          .filter((i) => i.effect?.classification?.includes("IMPROVEMENT"))
           .slice(-5)
-          .map(i => ({
+          .map((i) => ({
             description: i.description,
-            improvement: i.effect?.overallScore
+            improvement: i.effect?.overallScore,
           }));
 
         analysis.relatedFailures = similar
-          .filter(i => i.effect?.classification?.includes('REGRESSION') || i.status === 'ROLLED_BACK')
+          .filter(
+            (i) =>
+              i.effect?.classification?.includes("REGRESSION") ||
+              i.status === "ROLLED_BACK",
+          )
           .slice(-5)
-          .map(i => ({
+          .map((i) => ({
             description: i.description,
-            reason: i.rollbackReason || i.effect?.summary?.join(', ')
+            reason: i.rollbackReason || i.effect?.summary?.join(", "),
           }));
       }
 
       // Check for related hypothesis outcomes
       if (this.hypothesisEngine && context.hypothesisType) {
-        const history = this.hypothesisEngine.getHypothesisHistory(context.hypothesisType);
+        const history = this.hypothesisEngine.getHypothesisHistory(
+          context.hypothesisType,
+        );
         analysis.hypothesisHistory = history;
       }
     }
@@ -212,25 +220,28 @@ class DecisionEngine {
     // Generate warnings based on history
     if (analysis.relatedFailures.length >= 2) {
       analysis.warnings.push({
-        level: 'HIGH',
-        message: `Similar approaches have failed ${analysis.relatedFailures.length} times before`
+        level: "HIGH",
+        message: `Similar approaches have failed ${analysis.relatedFailures.length} times before`,
       });
     }
 
     if (analysis.previousAttempts.length === 0) {
       analysis.warnings.push({
-        level: 'INFO',
-        message: 'No previous attempts found for this type of intervention'
+        level: "INFO",
+        message: "No previous attempts found for this type of intervention",
       });
     }
 
     // Generate summary
     if (analysis.relatedSuccesses.length > analysis.relatedFailures.length) {
       analysis.summary = `Historical evidence suggests this type of change often succeeds (${analysis.relatedSuccesses.length} successes vs ${analysis.relatedFailures.length} failures)`;
-    } else if (analysis.relatedFailures.length > analysis.relatedSuccesses.length) {
+    } else if (
+      analysis.relatedFailures.length > analysis.relatedSuccesses.length
+    ) {
       analysis.summary = `Historical evidence suggests caution - similar changes have often failed (${analysis.relatedFailures.length} failures vs ${analysis.relatedSuccesses.length} successes)`;
     } else {
-      analysis.summary = 'Mixed historical results - proceed with careful testing';
+      analysis.summary =
+        "Mixed historical results - proceed with careful testing";
     }
 
     return analysis;
@@ -248,7 +259,7 @@ class DecisionEngine {
       relevantFilters: [],
       relevantDictionaries: [],
       capabilities: [],
-      gaps: []
+      gaps: [],
     };
 
     if (this.codebaseAnalyzer) {
@@ -257,7 +268,7 @@ class DecisionEngine {
       state.currentState = {
         filterCount: fullState.filters?.count || 0,
         dictionaryCount: fullState.dictionaries?.count || 0,
-        hash: fullState.summary?.codebaseHash
+        hash: fullState.summary?.codebaseHash,
       };
 
       // Find relevant filters for context
@@ -284,37 +295,44 @@ class DecisionEngine {
       timestamp: new Date().toISOString(),
       inputs: {},
       factors: [],
-      overallAssessment: ''
+      overallAssessment: "",
     };
 
     // Gather inputs from all systems
     synthesis.inputs = {
-      history: decision.historyAnalysis?.summary || 'No history available',
+      history: decision.historyAnalysis?.summary || "No history available",
       codebase: decision.codebaseState?.currentState || {},
       patterns: null,
       insights: null,
-      metrics: null
+      metrics: null,
     };
 
     // Get pattern information
     if (this.patternRecognizer && context.phiType) {
-      const patterns = this.patternRecognizer.getPatternsByPhiType(context.phiType);
+      const patterns = this.patternRecognizer.getPatternsByPhiType(
+        context.phiType,
+      );
       synthesis.inputs.patterns = {
         total: patterns.length,
-        topFailure: patterns.find(p => p.key.startsWith('failure:'))?.category || 'NONE'
+        topFailure:
+          patterns.find((p) => p.key.startsWith("failure:"))?.category ||
+          "NONE",
       };
     }
 
     // Get current insights
     if (this.insightGenerator) {
-      const insights = this.insightGenerator.getActiveInsights()
-        .filter(i => !context.phiType || i.details?.phiType === context.phiType)
+      const insights = this.insightGenerator
+        .getActiveInsights()
+        .filter(
+          (i) => !context.phiType || i.details?.phiType === context.phiType,
+        )
         .slice(0, 3);
 
-      synthesis.inputs.insights = insights.map(i => ({
+      synthesis.inputs.insights = insights.map((i) => ({
         type: i.type,
         title: i.title,
-        priority: i.priority
+        priority: i.priority,
       }));
     }
 
@@ -324,18 +342,29 @@ class DecisionEngine {
     }
 
     // Build factors list
-    synthesis.factors = this.buildFactors(type, context, synthesis.inputs, decision);
+    synthesis.factors = this.buildFactors(
+      type,
+      context,
+      synthesis.inputs,
+      decision,
+    );
 
     // Generate overall assessment
-    const positiveFactors = synthesis.factors.filter(f => f.direction === 'POSITIVE').length;
-    const negativeFactors = synthesis.factors.filter(f => f.direction === 'NEGATIVE').length;
+    const positiveFactors = synthesis.factors.filter(
+      (f) => f.direction === "POSITIVE",
+    ).length;
+    const negativeFactors = synthesis.factors.filter(
+      (f) => f.direction === "NEGATIVE",
+    ).length;
 
     if (positiveFactors > negativeFactors + 1) {
-      synthesis.overallAssessment = 'FAVORABLE - Multiple factors support proceeding';
+      synthesis.overallAssessment =
+        "FAVORABLE - Multiple factors support proceeding";
     } else if (negativeFactors > positiveFactors + 1) {
-      synthesis.overallAssessment = 'CAUTIOUS - Several factors suggest risk';
+      synthesis.overallAssessment = "CAUTIOUS - Several factors suggest risk";
     } else {
-      synthesis.overallAssessment = 'NEUTRAL - Mixed signals, careful testing recommended';
+      synthesis.overallAssessment =
+        "NEUTRAL - Mixed signals, careful testing recommended";
     }
 
     return synthesis;
@@ -353,26 +382,32 @@ class DecisionEngine {
       if (total > 0) {
         const successRate = successes / total;
         factors.push({
-          name: 'Historical Success Rate',
+          name: "Historical Success Rate",
           value: `${Math.round(successRate * 100)}%`,
-          direction: successRate > 0.6 ? 'POSITIVE' : successRate < 0.4 ? 'NEGATIVE' : 'NEUTRAL',
+          direction:
+            successRate > 0.6
+              ? "POSITIVE"
+              : successRate < 0.4
+                ? "NEGATIVE"
+                : "NEUTRAL",
           weight: 0.3,
-          explanation: `${successes} successes out of ${total} similar attempts`
+          explanation: `${successes} successes out of ${total} similar attempts`,
         });
       }
     }
 
     // Factor: Filter capability coverage
     if (decision.codebaseState) {
-      const hasRelevantFilter = decision.codebaseState.relevantFilters?.length > 0;
+      const hasRelevantFilter =
+        decision.codebaseState.relevantFilters?.length > 0;
       factors.push({
-        name: 'Filter Coverage',
-        value: hasRelevantFilter ? 'EXISTS' : 'MISSING',
-        direction: hasRelevantFilter ? 'POSITIVE' : 'NEGATIVE',
+        name: "Filter Coverage",
+        value: hasRelevantFilter ? "EXISTS" : "MISSING",
+        direction: hasRelevantFilter ? "POSITIVE" : "NEGATIVE",
         weight: 0.2,
         explanation: hasRelevantFilter
           ? `Filter exists for ${context.phiType}`
-          : `No dedicated filter for ${context.phiType}`
+          : `No dedicated filter for ${context.phiType}`,
       });
     }
 
@@ -380,27 +415,35 @@ class DecisionEngine {
     if (inputs.patterns) {
       const patternCount = inputs.patterns.total;
       factors.push({
-        name: 'Known Pattern Count',
+        name: "Known Pattern Count",
         value: patternCount,
-        direction: patternCount > 10 ? 'POSITIVE' : patternCount > 3 ? 'NEUTRAL' : 'NEGATIVE',
+        direction:
+          patternCount > 10
+            ? "POSITIVE"
+            : patternCount > 3
+              ? "NEUTRAL"
+              : "NEGATIVE",
         weight: 0.15,
-        explanation: patternCount > 10
-          ? 'Many patterns identified - good data for improvement'
-          : patternCount > 3
-          ? 'Some patterns identified'
-          : 'Few patterns - may need more data'
+        explanation:
+          patternCount > 10
+            ? "Many patterns identified - good data for improvement"
+            : patternCount > 3
+              ? "Some patterns identified"
+              : "Few patterns - may need more data",
       });
     }
 
     // Factor: Active insights
     if (inputs.insights && inputs.insights.length > 0) {
-      const hasHighPriority = inputs.insights.some(i => i.priority === 'HIGH' || i.priority === 'CRITICAL');
+      const hasHighPriority = inputs.insights.some(
+        (i) => i.priority === "HIGH" || i.priority === "CRITICAL",
+      );
       factors.push({
-        name: 'Active Insights',
+        name: "Active Insights",
         value: inputs.insights.length,
-        direction: hasHighPriority ? 'POSITIVE' : 'NEUTRAL',
+        direction: hasHighPriority ? "POSITIVE" : "NEUTRAL",
         weight: 0.15,
-        explanation: `${inputs.insights.length} relevant insights${hasHighPriority ? ' including high priority' : ''}`
+        explanation: `${inputs.insights.length} relevant insights${hasHighPriority ? " including high priority" : ""}`,
       });
     }
 
@@ -408,15 +451,21 @@ class DecisionEngine {
     if (inputs.metrics?.sensitivity !== undefined) {
       const sensitivity = inputs.metrics.sensitivity;
       factors.push({
-        name: 'Current Sensitivity',
+        name: "Current Sensitivity",
         value: `${sensitivity.toFixed(1)}%`,
-        direction: sensitivity < 95 ? 'NEGATIVE' : sensitivity < 98 ? 'NEUTRAL' : 'POSITIVE',
+        direction:
+          sensitivity < 95
+            ? "NEGATIVE"
+            : sensitivity < 98
+              ? "NEUTRAL"
+              : "POSITIVE",
         weight: 0.2,
-        explanation: sensitivity < 95
-          ? 'Below target - improvement needed'
-          : sensitivity < 98
-          ? 'Good but room for improvement'
-          : 'Excellent - maintain carefully'
+        explanation:
+          sensitivity < 95
+            ? "Below target - improvement needed"
+            : sensitivity < 98
+              ? "Good but room for improvement"
+              : "Excellent - maintain carefully",
       });
     }
 
@@ -432,32 +481,41 @@ class DecisionEngine {
       recommendation: null,
       alternatives: [],
       confidence: 0,
-      risks: []
+      risks: [],
     };
 
     switch (type) {
-      case 'WHAT_TO_IMPROVE':
+      case "WHAT_TO_IMPROVE":
         result.recommendation = this.recommendWhatToImprove(context, decision);
         break;
 
-      case 'HOW_TO_FIX':
+      case "HOW_TO_FIX":
         result.recommendation = this.recommendHowToFix(context, decision);
         break;
 
-      case 'SHOULD_WE_TRY':
+      case "SHOULD_WE_TRY":
         result.recommendation = this.recommendShouldWeTry(context, decision);
         break;
 
-      case 'VALIDATE_HYPOTHESIS':
-        result.recommendation = this.recommendValidateHypothesis(context, decision);
+      case "VALIDATE_HYPOTHESIS":
+        result.recommendation = this.recommendValidateHypothesis(
+          context,
+          decision,
+        );
         break;
 
-      case 'INTERPRET_RESULTS':
-        result.recommendation = this.recommendInterpretResults(context, decision);
+      case "INTERPRET_RESULTS":
+        result.recommendation = this.recommendInterpretResults(
+          context,
+          decision,
+        );
         break;
 
       default:
-        result.recommendation = this.buildGenericRecommendation(context, decision);
+        result.recommendation = this.buildGenericRecommendation(
+          context,
+          decision,
+        );
     }
 
     // Calculate confidence
@@ -474,33 +532,37 @@ class DecisionEngine {
 
   recommendWhatToImprove(context, decision) {
     const recommendation = {
-      type: 'FOCUS_AREA',
-      summary: '',
+      type: "FOCUS_AREA",
+      summary: "",
       details: [],
-      priority: 'MEDIUM'
+      priority: "MEDIUM",
     };
 
     // Analyze what needs the most improvement
     const insights = this.insightGenerator?.getActiveInsights() || [];
-    const critical = insights.filter(i => i.priority === 'CRITICAL');
-    const high = insights.filter(i => i.priority === 'HIGH');
+    const critical = insights.filter((i) => i.priority === "CRITICAL");
+    const high = insights.filter((i) => i.priority === "HIGH");
 
     if (critical.length > 0) {
       recommendation.summary = `CRITICAL: Address ${critical[0].title} immediately`;
-      recommendation.details = critical.map(i => i.title);
-      recommendation.priority = 'CRITICAL';
+      recommendation.details = critical.map((i) => i.title);
+      recommendation.priority = "CRITICAL";
     } else if (high.length > 0) {
       recommendation.summary = `HIGH PRIORITY: Focus on ${high[0].title}`;
-      recommendation.details = high.slice(0, 3).map(i => i.title);
-      recommendation.priority = 'HIGH';
+      recommendation.details = high.slice(0, 3).map((i) => i.title);
+      recommendation.priority = "HIGH";
     } else {
       // Look at patterns for guidance
-      const topPatterns = this.patternRecognizer?.getTopFailurePatterns(3) || [];
+      const topPatterns =
+        this.patternRecognizer?.getTopFailurePatterns(3) || [];
       if (topPatterns.length > 0) {
         recommendation.summary = `Focus on ${topPatterns[0].category} issues (${topPatterns[0].count} occurrences)`;
-        recommendation.details = topPatterns.map(p => `${p.category}: ${p.count} cases`);
+        recommendation.details = topPatterns.map(
+          (p) => `${p.category}: ${p.count} cases`,
+        );
       } else {
-        recommendation.summary = 'No critical issues - consider expanding test coverage';
+        recommendation.summary =
+          "No critical issues - consider expanding test coverage";
       }
     }
 
@@ -509,46 +571,46 @@ class DecisionEngine {
 
   recommendHowToFix(context, decision) {
     const recommendation = {
-      type: 'FIX_APPROACH',
-      summary: '',
+      type: "FIX_APPROACH",
+      summary: "",
       steps: [],
-      estimatedImpact: 'UNKNOWN',
-      historyNote: ''
+      estimatedImpact: "UNKNOWN",
+      historyNote: "",
     };
 
     // Check what worked before
     const successes = decision.historyAnalysis?.relatedSuccesses || [];
     if (successes.length > 0) {
-      recommendation.historyNote = `Similar approaches that worked: ${successes.map(s => s.description).join('; ')}`;
+      recommendation.historyNote = `Similar approaches that worked: ${successes.map((s) => s.description).join("; ")}`;
     }
 
     // Build steps based on issue type
-    if (context.issueType === 'OCR_CONFUSION') {
-      recommendation.summary = 'Add OCR-tolerant matching';
+    if (context.issueType === "OCR_CONFUSION") {
+      recommendation.summary = "Add OCR-tolerant matching";
       recommendation.steps = [
-        'Identify common OCR substitution patterns',
-        'Add character substitution rules to affected filter',
-        'Run A/B test to measure impact',
-        'Validate with edge cases'
+        "Identify common OCR substitution patterns",
+        "Add character substitution rules to affected filter",
+        "Run A/B test to measure impact",
+        "Validate with edge cases",
       ];
-      recommendation.estimatedImpact = 'MEDIUM';
-    } else if (context.issueType === 'DICTIONARY_MISS') {
-      recommendation.summary = 'Expand dictionary coverage';
+      recommendation.estimatedImpact = "MEDIUM";
+    } else if (context.issueType === "DICTIONARY_MISS") {
+      recommendation.summary = "Expand dictionary coverage";
       recommendation.steps = [
-        'Identify missed entries from false negatives',
-        'Add entries to appropriate dictionary',
-        'Consider enabling fuzzy matching if not already',
-        'Run tests to verify improvement'
+        "Identify missed entries from false negatives",
+        "Add entries to appropriate dictionary",
+        "Consider enabling fuzzy matching if not already",
+        "Run tests to verify improvement",
       ];
-      recommendation.estimatedImpact = 'HIGH';
+      recommendation.estimatedImpact = "HIGH";
     } else {
-      recommendation.summary = 'General improvement approach';
+      recommendation.summary = "General improvement approach";
       recommendation.steps = [
-        'Analyze specific failure patterns',
-        'Form hypothesis for fix',
-        'Create minimal change to test hypothesis',
-        'Run A/B experiment',
-        'Validate results before committing'
+        "Analyze specific failure patterns",
+        "Form hypothesis for fix",
+        "Create minimal change to test hypothesis",
+        "Run A/B experiment",
+        "Validate results before committing",
       ];
     }
 
@@ -557,10 +619,10 @@ class DecisionEngine {
 
   recommendShouldWeTry(context, decision) {
     const recommendation = {
-      type: 'GO_NO_GO',
-      verdict: 'UNKNOWN',
+      type: "GO_NO_GO",
+      verdict: "UNKNOWN",
       reasoning: [],
-      conditions: []
+      conditions: [],
     };
 
     // Check history
@@ -568,17 +630,27 @@ class DecisionEngine {
     const successes = decision.historyAnalysis?.relatedSuccesses || [];
 
     if (failures.length > successes.length * 2) {
-      recommendation.verdict = 'NO';
-      recommendation.reasoning.push(`Historical data shows ${failures.length} failures vs ${successes.length} successes for similar attempts`);
-      recommendation.conditions.push('Would reconsider if: Different approach is taken');
-    } else if (decision.synthesis?.overallAssessment?.includes('FAVORABLE')) {
-      recommendation.verdict = 'YES';
-      recommendation.reasoning.push('Multiple positive factors support proceeding');
-      recommendation.conditions.push('With proper A/B testing and rollback capability');
+      recommendation.verdict = "NO";
+      recommendation.reasoning.push(
+        `Historical data shows ${failures.length} failures vs ${successes.length} successes for similar attempts`,
+      );
+      recommendation.conditions.push(
+        "Would reconsider if: Different approach is taken",
+      );
+    } else if (decision.synthesis?.overallAssessment?.includes("FAVORABLE")) {
+      recommendation.verdict = "YES";
+      recommendation.reasoning.push(
+        "Multiple positive factors support proceeding",
+      );
+      recommendation.conditions.push(
+        "With proper A/B testing and rollback capability",
+      );
     } else {
-      recommendation.verdict = 'MAYBE';
-      recommendation.reasoning.push('Mixed signals - worth testing with caution');
-      recommendation.conditions.push('Recommend small-scale test first');
+      recommendation.verdict = "MAYBE";
+      recommendation.reasoning.push(
+        "Mixed signals - worth testing with caution",
+      );
+      recommendation.conditions.push("Recommend small-scale test first");
     }
 
     return recommendation;
@@ -586,36 +658,49 @@ class DecisionEngine {
 
   recommendValidateHypothesis(context, decision) {
     const recommendation = {
-      type: 'HYPOTHESIS_ASSESSMENT',
+      type: "HYPOTHESIS_ASSESSMENT",
       worthTesting: false,
-      priority: 'LOW',
+      priority: "LOW",
       concerns: [],
-      suggestions: []
+      suggestions: [],
     };
 
     const hypothesis = context.hypothesis;
     if (!hypothesis) {
-      recommendation.concerns.push('No hypothesis provided');
+      recommendation.concerns.push("No hypothesis provided");
       return recommendation;
     }
 
     // Check if similar hypothesis was tried
-    if (this.hypothesisEngine?.hasSimilarHypothesis(hypothesis.type, hypothesis.params)) {
-      recommendation.concerns.push('Similar hypothesis already exists or was tested');
+    if (
+      this.hypothesisEngine?.hasSimilarHypothesis(
+        hypothesis.type,
+        hypothesis.params,
+      )
+    ) {
+      recommendation.concerns.push(
+        "Similar hypothesis already exists or was tested",
+      );
     }
 
     // Check hypothesis history for this type
-    const history = this.hypothesisEngine?.getHypothesisHistory(hypothesis.type);
+    const history = this.hypothesisEngine?.getHypothesisHistory(
+      hypothesis.type,
+    );
     if (history && history.successRate > 0.6) {
       recommendation.worthTesting = true;
-      recommendation.priority = 'HIGH';
-      recommendation.suggestions.push(`This type of hypothesis has ${Math.round(history.successRate * 100)}% success rate`);
+      recommendation.priority = "HIGH";
+      recommendation.suggestions.push(
+        `This type of hypothesis has ${Math.round(history.successRate * 100)}% success rate`,
+      );
     } else if (history && history.successRate < 0.3) {
-      recommendation.concerns.push(`Low historical success rate: ${Math.round(history.successRate * 100)}%`);
-      recommendation.suggestions.push('Consider alternative approach');
+      recommendation.concerns.push(
+        `Low historical success rate: ${Math.round(history.successRate * 100)}%`,
+      );
+      recommendation.suggestions.push("Consider alternative approach");
     } else {
       recommendation.worthTesting = true;
-      recommendation.priority = 'MEDIUM';
+      recommendation.priority = "MEDIUM";
     }
 
     return recommendation;
@@ -623,15 +708,15 @@ class DecisionEngine {
 
   recommendInterpretResults(context, decision) {
     const recommendation = {
-      type: 'RESULT_INTERPRETATION',
-      interpretation: '',
+      type: "RESULT_INTERPRETATION",
+      interpretation: "",
       keyFindings: [],
-      nextSteps: []
+      nextSteps: [],
     };
 
     const results = context.results;
     if (!results) {
-      recommendation.interpretation = 'No results provided';
+      recommendation.interpretation = "No results provided";
       return recommendation;
     }
 
@@ -640,33 +725,41 @@ class DecisionEngine {
     const specificity = results.metrics?.specificity || results.specificity;
 
     if (sensitivity >= 99) {
-      recommendation.keyFindings.push('Excellent sensitivity - near-perfect PHI detection');
+      recommendation.keyFindings.push(
+        "Excellent sensitivity - near-perfect PHI detection",
+      );
     } else if (sensitivity >= 95) {
-      recommendation.keyFindings.push('Good sensitivity - meets HIPAA targets');
+      recommendation.keyFindings.push("Good sensitivity - meets HIPAA targets");
     } else if (sensitivity >= 90) {
-      recommendation.keyFindings.push('Moderate sensitivity - improvement needed');
-      recommendation.nextSteps.push('Analyze false negatives for patterns');
+      recommendation.keyFindings.push(
+        "Moderate sensitivity - improvement needed",
+      );
+      recommendation.nextSteps.push("Analyze false negatives for patterns");
     } else {
-      recommendation.keyFindings.push('Low sensitivity - significant PHI being missed');
-      recommendation.nextSteps.push('URGENT: Review false negatives immediately');
+      recommendation.keyFindings.push(
+        "Low sensitivity - significant PHI being missed",
+      );
+      recommendation.nextSteps.push(
+        "URGENT: Review false negatives immediately",
+      );
     }
 
     // Build interpretation
-    recommendation.interpretation = `Results show ${sensitivity?.toFixed(1)}% sensitivity and ${specificity?.toFixed(1)}% specificity. ${recommendation.keyFindings.join('. ')}.`;
+    recommendation.interpretation = `Results show ${sensitivity?.toFixed(1)}% sensitivity and ${specificity?.toFixed(1)}% specificity. ${recommendation.keyFindings.join(". ")}.`;
 
     return recommendation;
   }
 
   buildGenericRecommendation(context, decision) {
     return {
-      type: 'GENERIC',
-      summary: 'Consult specific decision type for targeted advice',
-      note: 'History consultation completed - see historyAnalysis for past attempts'
+      type: "GENERIC",
+      summary: "Consult specific decision type for targeted advice",
+      note: "History consultation completed - see historyAnalysis for past attempts",
     };
   }
 
   calculateConfidence(decision) {
-    let confidence = 0.5;  // Base confidence
+    let confidence = 0.5; // Base confidence
 
     // History consultation adds confidence
     if (decision.historyConsulted) {
@@ -679,15 +772,18 @@ class DecisionEngine {
     }
 
     // Good historical data adds confidence
-    const totalHistory = (decision.historyAnalysis?.relatedSuccesses?.length || 0) +
-                         (decision.historyAnalysis?.relatedFailures?.length || 0);
+    const totalHistory =
+      (decision.historyAnalysis?.relatedSuccesses?.length || 0) +
+      (decision.historyAnalysis?.relatedFailures?.length || 0);
     if (totalHistory >= 5) {
       confidence += 0.1;
     }
 
     // Strong synthesis assessment adds confidence
-    if (decision.synthesis?.overallAssessment?.includes('FAVORABLE') ||
-        decision.synthesis?.overallAssessment?.includes('CAUTIOUS')) {
+    if (
+      decision.synthesis?.overallAssessment?.includes("FAVORABLE") ||
+      decision.synthesis?.overallAssessment?.includes("CAUTIOUS")
+    ) {
       confidence += 0.1;
     }
 
@@ -701,9 +797,9 @@ class DecisionEngine {
     const failures = decision.historyAnalysis?.relatedFailures || [];
     if (failures.length >= 2) {
       risks.push({
-        level: 'MEDIUM',
-        description: 'Similar approaches have failed before',
-        mitigation: 'Review why previous attempts failed'
+        level: "MEDIUM",
+        description: "Similar approaches have failed before",
+        mitigation: "Review why previous attempts failed",
       });
     }
 
@@ -712,19 +808,23 @@ class DecisionEngine {
     const total = successes + failures.length;
     if (total >= 3 && successes / total < 0.4) {
       risks.push({
-        level: 'HIGH',
-        description: 'Historical success rate is low',
-        mitigation: 'Consider alternative approaches'
+        level: "HIGH",
+        description: "Historical success rate is low",
+        mitigation: "Consider alternative approaches",
       });
     }
 
     // Risk: Missing codebase capability
     if (context.requiredCapability && decision.codebaseState?.capabilities) {
-      if (!decision.codebaseState.capabilities.includes(context.requiredCapability)) {
+      if (
+        !decision.codebaseState.capabilities.includes(
+          context.requiredCapability,
+        )
+      ) {
         risks.push({
-          level: 'MEDIUM',
+          level: "MEDIUM",
           description: `Required capability ${context.requiredCapability} not present`,
-          mitigation: 'May need to add capability first'
+          mitigation: "May need to add capability first",
         });
       }
     }
@@ -740,25 +840,25 @@ class DecisionEngine {
     for (const success of successes.slice(0, 2)) {
       alternatives.push({
         description: success.description,
-        reason: 'Previously successful approach',
-        confidence: 0.7
+        reason: "Previously successful approach",
+        confidence: 0.7,
       });
     }
 
     // Type-specific alternatives
-    if (type === 'HOW_TO_FIX') {
-      if (context.issueType !== 'DICTIONARY_MISS') {
+    if (type === "HOW_TO_FIX") {
+      if (context.issueType !== "DICTIONARY_MISS") {
         alternatives.push({
-          description: 'Expand dictionary instead of modifying patterns',
-          reason: 'Often simpler and less risky',
-          confidence: 0.6
+          description: "Expand dictionary instead of modifying patterns",
+          reason: "Often simpler and less risky",
+          confidence: 0.6,
         });
       }
-      if (context.issueType !== 'ADJUST_THRESHOLD') {
+      if (context.issueType !== "ADJUST_THRESHOLD") {
         alternatives.push({
-          description: 'Adjust confidence thresholds',
-          reason: 'May solve issue without code changes',
-          confidence: 0.5
+          description: "Adjust confidence thresholds",
+          reason: "May solve issue without code changes",
+          confidence: 0.5,
         });
       }
     }
@@ -771,7 +871,7 @@ class DecisionEngine {
   // ==========================================================================
 
   getDecision(id) {
-    return this.data.decisions.find(d => d.id === id);
+    return this.data.decisions.find((d) => d.id === id);
   }
 
   getRecentDecisions(limit = 10) {
@@ -779,7 +879,7 @@ class DecisionEngine {
   }
 
   getDecisionsByType(type) {
-    return this.data.decisions.filter(d => d.type === type);
+    return this.data.decisions.filter((d) => d.type === type);
   }
 
   /**
@@ -791,7 +891,7 @@ class DecisionEngine {
       decision.outcome = {
         followed: outcome.followed,
         result: outcome.result,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       if (outcome.followed) {
@@ -811,19 +911,20 @@ class DecisionEngine {
   exportForLLM() {
     return {
       stats: this.data.stats,
-      recentDecisions: this.getRecentDecisions(3).map(d => ({
+      recentDecisions: this.getRecentDecisions(3).map((d) => ({
         id: d.id,
         type: d.type,
         summary: d.recommendation?.summary,
         confidence: d.confidence,
-        outcome: d.outcome?.result
+        outcome: d.outcome?.result,
       })),
       capabilities: {
-        historyConsultation: !!this.historyConsultant || !!this.interventionTracker,
+        historyConsultation:
+          !!this.historyConsultant || !!this.interventionTracker,
         codebaseAnalysis: !!this.codebaseAnalyzer,
         patternRecognition: !!this.patternRecognizer,
-        insightGeneration: !!this.insightGenerator
-      }
+        insightGeneration: !!this.insightGenerator,
+      },
     };
   }
 }
@@ -833,5 +934,5 @@ class DecisionEngine {
 // ============================================================================
 
 module.exports = {
-  DecisionEngine
+  DecisionEngine,
 };

@@ -1,22 +1,45 @@
 /**
  * MASTER TEST SUITE - Document Generators
  * Generate realistic medical documents with proper PHI expectations
- * 
+ *
  * HIPAA COMPLIANCE NOTES:
  * - Patient names, SSN, MRN, DOB, addresses, phones, emails = PHI (MUST redact)
  * - Ages 90+ = PHI (MUST redact), Ages under 90 = NOT PHI
  * - Hospital names, provider names, diagnoses, medications = NOT PHI
  */
 
-const { DIAGNOSES, PROCEDURES, MEDICATIONS, HOSPITALS, SPECIALTIES } = require("../data/medical");
 const {
-  random, randomInt,
-  generatePatientName, generateProviderName,
-  generateSSN, generateMRN, generatePhone, generateFax, generateEmail,
-  generateDate, generateDOB, generateAddress, generateNPI, generateDEA,
-  generateIP, generateURL, generateCreditCard, generateVIN, generateLicensePlate,
-  generateAge, generateAccountNumber, generateHealthPlanID
+  DIAGNOSES,
+  PROCEDURES,
+  MEDICATIONS,
+  HOSPITALS,
+  SPECIALTIES,
+} = require("../data/medical");
+const {
+  random,
+  randomInt,
+  generatePatientName,
+  generateProviderName,
+  generateSSN,
+  generateMRN,
+  generatePhone,
+  generateFax,
+  generateEmail,
+  generateDate,
+  generateDOB,
+  generateAddress,
+  generateNPI,
+  generateDEA,
+  generateIP,
+  generateURL,
+  generateCreditCard,
+  generateVIN,
+  generateLicensePlate,
+  generateAge,
+  generateAccountNumber,
+  generateHealthPlanID,
 } = require("./phi");
+const { chance } = require("./seeded-random");
 
 // ============================================================================
 // DOCUMENT TYPE 1: Radiology Report (Imaging)
@@ -28,13 +51,15 @@ function generateRadiologyReport(id, errorLevel) {
   const mrn = generateMRN(true, errorLevel);
   const phone = generatePhone(true, errorLevel);
   const accession = `ACC-${randomInt(2023, 2024)}-${randomInt(100000, 999999)}`;
-  
+
   const hospital = random(HOSPITALS);
-  const procedure = random(PROCEDURES.filter(p => /CT|MRI|X-Ray|Ultrasound|PET|Mammo|DEXA/.test(p)));
+  const procedure = random(
+    PROCEDURES.filter((p) => /CT|MRI|X-Ray|Ultrasound|PET|Mammo|DEXA/.test(p)),
+  );
   const diagnosis = random(DIAGNOSES);
   const providerName = generateProviderName("titled").formatted;
   const radiologistName = generateProviderName("titled_suffix").formatted;
-  
+
   const content = `${hospital}
 RADIOLOGY REPORT
 
@@ -52,10 +77,10 @@ CLINICAL INDICATION:
 ${diagnosis} - ${random(["evaluate", "rule out", "follow-up", "staging", "surveillance"])}
 
 TECHNIQUE:
-${procedure} performed per standard protocol. ${Math.random() > 0.5 ? "IV contrast administered." : "Without contrast."}
+${procedure} performed per standard protocol. ${chance(0.5) ? "IV contrast administered." : "Without contrast."}
 
 COMPARISON:
-${Math.random() > 0.4 ? `Prior study dated ${generateDate(2022, 2023, false)}.` : "No prior studies available."}
+${chance(0.6) ? `Prior study dated ${generateDate(2022, 2023, false)}.` : "No prior studies available."}
 
 FINDINGS:
 ${random([
@@ -63,31 +88,39 @@ ${random([
   "Findings consistent with known " + diagnosis + ". No new abnormalities.",
   "Mild degenerative changes noted. No acute osseous abnormality.",
   "Stable appearance compared to prior examination. No interval change.",
-  "Small pleural effusion noted. Clinical correlation recommended."
+  "Small pleural effusion noted. Clinical correlation recommended.",
 ])}
 
 IMPRESSION:
 1. ${random(["Normal study", "No acute findings", "Stable examination", "Findings as above"])}
-${Math.random() > 0.5 ? "2. " + random(["Recommend clinical correlation", "Follow-up as clinically indicated", "No further imaging needed"]) : ""}
+${chance(0.5) ? "2. " + random(["Recommend clinical correlation", "Follow-up as clinically indicated", "No further imaging needed"]) : ""}
 
 Electronically signed by: ${radiologistName}
 Date/Time: ${examDate}`;
 
   return {
-    id, type: "Radiology Report", errorLevel, content,
+    id,
+    type: "Radiology Report",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: examDate },
       { type: "MRN", value: mrn },
       { type: "MRN", value: accession },
-      { type: "PHONE", value: phone }
+      { type: "PHONE", value: phone },
     ],
     shouldNotRedact: [
       { type: "HOSPITAL", value: hospital },
       { type: "PROCEDURE", value: procedure },
-      { type: "DIAGNOSIS", value: diagnosis }
-    ]
+      { type: "DIAGNOSIS", value: diagnosis },
+    ],
   };
 }
 
@@ -103,11 +136,11 @@ function generateLabReport(id, errorLevel) {
   const phone = generatePhone(true, errorLevel);
   const ssn = generateSSN(true, errorLevel);
   const accession = `LAB-${randomInt(100000, 999999)}`;
-  
+
   const hospital = random(HOSPITALS);
   const providerName = generateProviderName("titled").formatted;
   const labDirectorName = generateProviderName("titled_suffix").formatted;
-  
+
   const content = `${hospital}
 CLINICAL LABORATORY REPORT
 
@@ -132,10 +165,10 @@ NPI: ${npi}
 COMPLETE BLOOD COUNT (CBC)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Test                 Result        Reference Range     Flag
-WBC                  ${(Math.random() * 10 + 4).toFixed(1)}          4.5-11.0 K/uL
-RBC                  ${(Math.random() * 2 + 4).toFixed(2)}          4.0-5.5 M/uL
-Hemoglobin           ${(Math.random() * 5 + 12).toFixed(1)}          12.0-17.5 g/dL
-Hematocrit           ${(Math.random() * 15 + 36).toFixed(1)}          36-50 %
+WBC                  ${(random() * 10 + 4).toFixed(1)}          4.5-11.0 K/uL
+RBC                  ${(random() * 2 + 4).toFixed(2)}          4.0-5.5 M/uL
+Hemoglobin           ${(random() * 5 + 12).toFixed(1)}          12.0-17.5 g/dL
+Hematocrit           ${(random() * 15 + 36).toFixed(1)}          36-50 %
 Platelets            ${randomInt(150, 400)}           150-400 K/uL
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -143,9 +176,9 @@ COMPREHENSIVE METABOLIC PANEL (CMP)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Glucose              ${randomInt(70, 200)}           70-100 mg/dL        ${randomInt(70, 200) > 100 ? "H" : ""}
 BUN                  ${randomInt(7, 30)}            7-20 mg/dL
-Creatinine           ${(Math.random() * 1.5 + 0.6).toFixed(2)}          0.7-1.3 mg/dL
+Creatinine           ${(random() * 1.5 + 0.6).toFixed(2)}          0.7-1.3 mg/dL
 Sodium               ${randomInt(135, 148)}          136-145 mEq/L
-Potassium            ${(Math.random() * 2 + 3.5).toFixed(1)}          3.5-5.0 mEq/L
+Potassium            ${(random() * 2 + 3.5).toFixed(1)}          3.5-5.0 mEq/L
 eGFR                 ${randomInt(60, 120)}           >60 mL/min/1.73m2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -154,20 +187,26 @@ Laboratory Director: ${labDirectorName}
 Report Generated: ${collDate}`;
 
   return {
-    id, type: "Lab Report", errorLevel, content,
+    id,
+    type: "Lab Report",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: collDate },
       { type: "MRN", value: mrn },
       { type: "MRN", value: accession },
       { type: "NPI", value: npi },
       { type: "PHONE", value: phone },
-      { type: "SSN", value: ssn }
+      { type: "SSN", value: ssn },
     ],
-    shouldNotRedact: [
-      { type: "HOSPITAL", value: hospital }
-    ]
+    shouldNotRedact: [{ type: "HOSPITAL", value: hospital }],
   };
 }
 
@@ -183,12 +222,12 @@ function generateProgressNote(id, errorLevel) {
   const address = generateAddress(true, errorLevel);
   const email = generateEmail(patient.first, patient.last);
   const ageData = generateAge();
-  
+
   const hospital = random(HOSPITALS);
   const diagnosis = random(DIAGNOSES);
   const medication = random(MEDICATIONS);
   const providerName = generateProviderName("titled").formatted;
-  
+
   const content = `${hospital}
 OUTPATIENT PROGRESS NOTE
 
@@ -228,7 +267,7 @@ Respiratory: ${random(["Negative", "Mild dyspnea on exertion"])}
 GI: ${random(["Negative", "Occasional heartburn"])}
 
 PHYSICAL EXAMINATION:
-Vitals: BP ${randomInt(100, 160)}/${randomInt(60, 100)}, HR ${randomInt(55, 100)}, Temp ${(Math.random() * 2 + 97).toFixed(1)}°F, SpO2 ${randomInt(94, 100)}%
+Vitals: BP ${randomInt(100, 160)}/${randomInt(60, 100)}, HR ${randomInt(55, 100)}, Temp ${(random() * 2 + 97).toFixed(1)}°F, SpO2 ${randomInt(94, 100)}%
 General: Well-appearing, no acute distress
 ${random(["HEENT: Normocephalic, atraumatic", "CV: Regular rate and rhythm", "Lungs: Clear bilaterally", "Abdomen: Soft, non-tender"])}
 
@@ -245,30 +284,41 @@ Electronically signed by ${providerName}
 ${visitDate}`;
 
   const expectedPHI = [
-    { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
+    {
+      type: "NAME",
+      value: patient.clean,
+      actual: patient.formatted,
+      hasErrors: patient.hasErrors,
+    },
     { type: "DATE", value: dob },
     { type: "DATE", value: visitDate },
     { type: "MRN", value: mrn },
     { type: "ADDRESS", value: address.street },
     { type: "ZIPCODE", value: address.zip },
     { type: "PHONE", value: phone },
-    { type: "EMAIL", value: email }
+    { type: "EMAIL", value: email },
   ];
-  
+
   // Only add age if 90+ per HIPAA
   if (ageData.needsRedaction) {
     expectedPHI.push({ type: "AGE_90_PLUS", value: String(ageData.age) });
   }
 
   return {
-    id, type: "Progress Note", errorLevel, content, expectedPHI,
+    id,
+    type: "Progress Note",
+    errorLevel,
+    content,
+    expectedPHI,
     shouldNotRedact: [
       { type: "HOSPITAL", value: hospital },
       { type: "DIAGNOSIS", value: diagnosis },
       { type: "MEDICATION", value: medication },
-      ...(ageData.needsRedaction ? [] : [{ type: "AGE_UNDER_90", value: String(ageData.age) }])
+      ...(ageData.needsRedaction
+        ? []
+        : [{ type: "AGE_UNDER_90", value: String(ageData.age) }]),
     ],
-    ageInfo: ageData
+    ageInfo: ageData,
   };
 }
 
@@ -284,12 +334,12 @@ function generateEmergencyNote(id, errorLevel) {
   const ssn = generateSSN(true, errorLevel);
   const phone = generatePhone(true, errorLevel);
   const address = generateAddress(true, errorLevel);
-  
+
   const hospital = random(HOSPITALS);
   const diagnosis = random(DIAGNOSES);
   const attendingName = generateProviderName("titled").formatted;
   const residentName = generateProviderName("titled").formatted;
-  
+
   const content = `${hospital}
 ═══════════════════════════════════════════════════════════════
            EMERGENCY DEPARTMENT ENCOUNTER
@@ -330,7 +380,7 @@ TRIAGE VITAL SIGNS:
 BP: ${randomInt(80, 200)}/${randomInt(40, 120)} mmHg
 HR: ${randomInt(40, 150)} bpm
 RR: ${randomInt(12, 30)} /min
-Temp: ${(Math.random() * 4 + 96).toFixed(1)}°F
+Temp: ${(random() * 4 + 96).toFixed(1)}°F
 SpO2: ${randomInt(85, 100)}% on ${random(["room air", "2L NC", "4L NC", "NRB"])}
 
 PHYSICAL EXAMINATION:
@@ -351,22 +401,35 @@ Electronically signed: ${attendingName}
 Date/Time: ${arrivalDate}`;
 
   return {
-    id, type: "Emergency Note", errorLevel, content,
+    id,
+    type: "Emergency Note",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
-      { type: "NAME", value: emergencyContact.clean, actual: emergencyContact.formatted, hasErrors: emergencyContact.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
+      {
+        type: "NAME",
+        value: emergencyContact.clean,
+        actual: emergencyContact.formatted,
+        hasErrors: emergencyContact.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: arrivalDate },
       { type: "MRN", value: mrn },
       { type: "SSN", value: ssn },
       { type: "PHONE", value: phone },
       { type: "ADDRESS", value: address.street },
-      { type: "ZIPCODE", value: address.zip }
+      { type: "ZIPCODE", value: address.zip },
     ],
     shouldNotRedact: [
       { type: "HOSPITAL", value: hospital },
-      { type: "DIAGNOSIS", value: diagnosis }
-    ]
+      { type: "DIAGNOSIS", value: diagnosis },
+    ],
   };
 }
 
@@ -382,7 +445,7 @@ function generateDischargeSummary(id, errorLevel) {
   const mrn = generateMRN(true, errorLevel);
   const phone1 = generatePhone(true, errorLevel);
   const phone2 = generatePhone(true, errorLevel);
-  
+
   const hospital = random(HOSPITALS);
   const diagnosis = random(DIAGNOSES);
   const procedure = random(PROCEDURES);
@@ -390,7 +453,7 @@ function generateDischargeSummary(id, errorLevel) {
   const medication2 = random(MEDICATIONS);
   const attendingName = generateProviderName("titled").formatted;
   const pcpName = generateProviderName("titled").formatted;
-  
+
   const content = `${hospital}
 ╔══════════════════════════════════════════════════════════════╗
 ║                    DISCHARGE SUMMARY                          ║
@@ -454,24 +517,37 @@ Dictated by: ${attendingName}
 Date: ${dischargeDate}`;
 
   return {
-    id, type: "Discharge Summary", errorLevel, content,
+    id,
+    type: "Discharge Summary",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
-      { type: "NAME", value: familyContact.clean, actual: familyContact.formatted, hasErrors: familyContact.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
+      {
+        type: "NAME",
+        value: familyContact.clean,
+        actual: familyContact.formatted,
+        hasErrors: familyContact.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: admitDate },
       { type: "DATE", value: dischargeDate },
       { type: "MRN", value: mrn },
       { type: "PHONE", value: phone1 },
-      { type: "PHONE", value: phone2 }
+      { type: "PHONE", value: phone2 },
     ],
     shouldNotRedact: [
       { type: "HOSPITAL", value: hospital },
       { type: "DIAGNOSIS", value: diagnosis },
       { type: "PROCEDURE", value: procedure },
       { type: "MEDICATION", value: medication1 },
-      { type: "MEDICATION", value: medication2 }
-    ]
+      { type: "MEDICATION", value: medication2 },
+    ],
   };
 }
 
@@ -483,14 +559,18 @@ function generateOperativeReport(id, errorLevel) {
   const dob = generateDOB(true, errorLevel);
   const surgeryDate = generateDate(2023, 2024, true, errorLevel);
   const mrn = generateMRN(true, errorLevel);
-  
+
   const hospital = random(HOSPITALS);
-  const procedure = random(PROCEDURES.filter(p => !/CT|MRI|X-Ray|Ultrasound|PET|Echo|EEG|EMG/.test(p)));
+  const procedure = random(
+    PROCEDURES.filter(
+      (p) => !/CT|MRI|X-Ray|Ultrasound|PET|Echo|EEG|EMG/.test(p),
+    ),
+  );
   const diagnosis = random(DIAGNOSES);
   const surgeonName = generateProviderName("titled_suffix").formatted;
   const assistantName = generateProviderName("titled").formatted;
   const anesthesiologistName = generateProviderName("titled").formatted;
-  
+
   const content = `${hospital}
 ┌──────────────────────────────────────────────────────────────┐
 │                     OPERATIVE REPORT                          │
@@ -530,14 +610,14 @@ ${random([
   "A standard midline incision was made and dissection carried through subcutaneous tissues.",
   "Laparoscopic ports were placed under direct visualization.",
   "Standard surgical approach was utilized with adequate exposure obtained.",
-  "Arthroscopic examination performed followed by therapeutic intervention."
+  "Arthroscopic examination performed followed by therapeutic intervention.",
 ])}
 
 ${random([
   "The procedure was completed without complication.",
   "All surgical goals were achieved.",
   "Excellent hemostasis was obtained throughout.",
-  "All anatomical structures were clearly identified and preserved."
+  "All anatomical structures were clearly identified and preserved.",
 ])}
 
 Wound closure performed in layers. Sterile dressing applied.
@@ -563,18 +643,26 @@ Electronically signed: ${surgeonName}
 Date: ${surgeryDate}`;
 
   return {
-    id, type: "Operative Report", errorLevel, content,
+    id,
+    type: "Operative Report",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: surgeryDate },
-      { type: "MRN", value: mrn }
+      { type: "MRN", value: mrn },
     ],
     shouldNotRedact: [
       { type: "HOSPITAL", value: hospital },
       { type: "PROCEDURE", value: procedure },
-      { type: "DIAGNOSIS", value: diagnosis }
-    ]
+      { type: "DIAGNOSIS", value: diagnosis },
+    ],
   };
 }
 
@@ -591,7 +679,7 @@ function generatePrescription(id, errorLevel) {
   const dea = generateDEA();
   const medication = random(MEDICATIONS);
   const prescriberName = generateProviderName("titled_suffix").formatted;
-  
+
   const content = `
 ┌─────────────────────────────────────────────────────────────┐
 │                      PRESCRIPTION                            │
@@ -618,14 +706,14 @@ DEA: ${dea}
 
 ${medication} ${randomInt(5, 100)}mg tablets
 
-Sig: Take ${random(["one", "two", "one-half"])} tablet(s) by mouth 
+Sig: Take ${random(["one", "two", "one-half"])} tablet(s) by mouth
      ${random(["once daily", "twice daily", "three times daily", "every 8 hours", "at bedtime", "as needed for pain"])}
 
 Disp: ${randomInt(30, 90)} tablets
-Refills: ${randomInt(0, 11)} ${Math.random() > 0.5 ? "" : "(No refills)"}
+Refills: ${randomInt(0, 11)} ${chance(0.5) ? "" : "(No refills)"}
 
 ${random(["", "Brand medically necessary", "Generic substitution permitted", "Dispense as written"])}
-${Math.random() > 0.7 ? "WARNING: May cause drowsiness. Use caution when operating machinery." : ""}
+${chance(0.3) ? "WARNING: May cause drowsiness. Use caution when operating machinery." : ""}
 
 ═══════════════════════════════════════════════════════════════
 
@@ -635,20 +723,26 @@ ${prescriberName}
 Date: ${rxDate}`;
 
   return {
-    id, type: "Prescription", errorLevel, content,
+    id,
+    type: "Prescription",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: rxDate },
       { type: "ADDRESS", value: address.street },
       { type: "ZIPCODE", value: address.zip },
       { type: "PHONE", value: phone },
       { type: "NPI", value: npi },
-      { type: "DEA", value: dea }
+      { type: "DEA", value: dea },
     ],
-    shouldNotRedact: [
-      { type: "MEDICATION", value: medication }
-    ]
+    shouldNotRedact: [{ type: "MEDICATION", value: medication }],
   };
 }
 
@@ -664,14 +758,14 @@ function generateConsultationNote(id, errorLevel) {
   const phone = generatePhone(true, errorLevel);
   const email = generateEmail(patient.first, patient.last);
   const ageData = generateAge();
-  
+
   const hospital = random(HOSPITALS);
   const specialty = random(SPECIALTIES);
   const diagnosis = random(DIAGNOSES);
   const medication = random(MEDICATIONS);
   const requestingName = generateProviderName("titled").formatted;
   const consultingName = generateProviderName("titled_suffix").formatted;
-  
+
   const content = `${hospital}
 ══════════════════════════════════════════════════════════════
                CONSULTATION NOTE - ${specialty.toUpperCase()}
@@ -708,7 +802,7 @@ ${random([
   "Cardiovascular: Regular rate and rhythm, no murmurs",
   "Respiratory: Clear to auscultation bilaterally",
   "Neurological: Alert, oriented, no focal deficits",
-  "Musculoskeletal: No joint effusions, full range of motion"
+  "Musculoskeletal: No joint effusions, full range of motion",
 ])}
 
 ──────────────────────────────────────────────────────────────
@@ -729,29 +823,45 @@ Board Certified ${specialty}
 ${consultDate}`;
 
   const expectedPHI = [
-    { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
-    { type: "NAME", value: familyContact.clean, actual: familyContact.formatted, hasErrors: familyContact.hasErrors },
+    {
+      type: "NAME",
+      value: patient.clean,
+      actual: patient.formatted,
+      hasErrors: patient.hasErrors,
+    },
+    {
+      type: "NAME",
+      value: familyContact.clean,
+      actual: familyContact.formatted,
+      hasErrors: familyContact.hasErrors,
+    },
     { type: "DATE", value: dob },
     { type: "DATE", value: consultDate },
     { type: "MRN", value: mrn },
     { type: "PHONE", value: phone },
-    { type: "EMAIL", value: email }
+    { type: "EMAIL", value: email },
   ];
-  
+
   if (ageData.needsRedaction) {
     expectedPHI.push({ type: "AGE_90_PLUS", value: String(ageData.age) });
   }
 
   return {
-    id, type: "Consultation Note", errorLevel, content, expectedPHI,
+    id,
+    type: "Consultation Note",
+    errorLevel,
+    content,
+    expectedPHI,
     shouldNotRedact: [
       { type: "HOSPITAL", value: hospital },
       { type: "SPECIALTY", value: specialty },
       { type: "DIAGNOSIS", value: diagnosis },
       { type: "MEDICATION", value: medication },
-      ...(ageData.needsRedaction ? [] : [{ type: "AGE_UNDER_90", value: String(ageData.age) }])
+      ...(ageData.needsRedaction
+        ? []
+        : [{ type: "AGE_UNDER_90", value: String(ageData.age) }]),
     ],
-    ageInfo: ageData
+    ageInfo: ageData,
   };
 }
 
@@ -768,12 +878,14 @@ function generateNursingAssessment(id, errorLevel) {
   const phone1 = generatePhone(true, errorLevel);
   const phone2 = generatePhone(true, errorLevel);
   const phone3 = generatePhone(true, errorLevel);
-  
+
   const hospital = random(HOSPITALS);
   const pcpName = generateProviderName("titled").formatted;
-  const nurseName = generateProviderName("first_last_suffix").formatted + ", RN";
-  const chargeNurseName = generateProviderName("first_last_suffix").formatted + ", RN";
-  
+  const nurseName =
+    generateProviderName("first_last_suffix").formatted + ", RN";
+  const chargeNurseName =
+    generateProviderName("first_last_suffix").formatted + ", RN";
+
   const content = `${hospital}
 ╔══════════════════════════════════════════════════════════════╗
 ║           NURSING ADMISSION ASSESSMENT                        ║
@@ -797,7 +909,7 @@ EMERGENCY CONTACTS
 1. ${emergContact1.formatted}
    Relationship: ${random(["Spouse", "Partner", "Parent"])}
    Phone: ${phone1}
-   
+
 2. ${emergContact2.formatted}
    Relationship: ${random(["Son", "Daughter", "Sibling", "Child"])}
    Phone: ${phone2}
@@ -812,7 +924,7 @@ ADMISSION VITAL SIGNS
 Blood Pressure: ${randomInt(90, 180)}/${randomInt(50, 110)} mmHg
 Heart Rate: ${randomInt(50, 120)} bpm
 Respiratory Rate: ${randomInt(12, 28)} /min
-Temperature: ${(Math.random() * 3 + 97).toFixed(1)}°F
+Temperature: ${(random() * 3 + 97).toFixed(1)}°F
 SpO2: ${randomInt(90, 100)}% on ${random(["room air", "2L NC", "4L NC", "NRB"])}
 Pain Scale: ${randomInt(0, 10)}/10 - ${random(["none", "mild", "moderate", "severe"])}
 Weight: ${randomInt(100, 300)} lbs
@@ -844,21 +956,37 @@ Assessment completed by: ${nurseName}
 Date/Time: ${admitDate}`;
 
   return {
-    id, type: "Nursing Assessment", errorLevel, content,
+    id,
+    type: "Nursing Assessment",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
-      { type: "NAME", value: emergContact1.clean, actual: emergContact1.formatted, hasErrors: emergContact1.hasErrors },
-      { type: "NAME", value: emergContact2.clean, actual: emergContact2.formatted, hasErrors: emergContact2.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
+      {
+        type: "NAME",
+        value: emergContact1.clean,
+        actual: emergContact1.formatted,
+        hasErrors: emergContact1.hasErrors,
+      },
+      {
+        type: "NAME",
+        value: emergContact2.clean,
+        actual: emergContact2.formatted,
+        hasErrors: emergContact2.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: admitDate },
       { type: "MRN", value: mrn },
       { type: "PHONE", value: phone1 },
       { type: "PHONE", value: phone2 },
-      { type: "PHONE", value: phone3 }
+      { type: "PHONE", value: phone3 },
     ],
-    shouldNotRedact: [
-      { type: "HOSPITAL", value: hospital }
-    ]
+    shouldNotRedact: [{ type: "HOSPITAL", value: hospital }],
   };
 }
 
@@ -882,10 +1010,10 @@ function generateSpecialDocument(id, errorLevel) {
   const plate = generateLicensePlate();
   const accountNum = generateAccountNumber();
   const healthPlanID = generateHealthPlanID();
-  
+
   const hospital = random(HOSPITALS);
   const providerName = generateProviderName("titled").formatted;
-  
+
   const content = `${hospital}
 ══════════════════════════════════════════════════════════════
             COMPREHENSIVE PATIENT REGISTRATION
@@ -945,9 +1073,17 @@ Form completed by: Registration Staff
 System timestamp: ${regDate}`;
 
   return {
-    id, type: "Special Document", errorLevel, content,
+    id,
+    type: "Special Document",
+    errorLevel,
+    content,
     expectedPHI: [
-      { type: "NAME", value: patient.clean, actual: patient.formatted, hasErrors: patient.hasErrors },
+      {
+        type: "NAME",
+        value: patient.clean,
+        actual: patient.formatted,
+        hasErrors: patient.hasErrors,
+      },
       { type: "DATE", value: dob },
       { type: "DATE", value: regDate },
       { type: "MRN", value: mrn },
@@ -963,11 +1099,9 @@ System timestamp: ${regDate}`;
       { type: "VIN", value: vin },
       { type: "LICENSE_PLATE", value: plate },
       { type: "ACCOUNT_NUMBER", value: accountNum },
-      { type: "HEALTH_PLAN_ID", value: healthPlanID }
+      { type: "HEALTH_PLAN_ID", value: healthPlanID },
     ],
-    shouldNotRedact: [
-      { type: "HOSPITAL", value: hospital }
-    ]
+    shouldNotRedact: [{ type: "HOSPITAL", value: hospital }],
   };
 }
 
@@ -984,7 +1118,7 @@ const DOCUMENT_GENERATORS = [
   generatePrescription,
   generateConsultationNote,
   generateNursingAssessment,
-  generateSpecialDocument
+  generateSpecialDocument,
 ];
 
 /**
@@ -995,25 +1129,31 @@ const DOCUMENT_GENERATORS = [
  */
 function generateDocuments(count, options = {}) {
   const {
-    errorDistribution = { none: 0.05, low: 0.25, medium: 0.40, high: 0.25, extreme: 0.05 }
+    errorDistribution = {
+      none: 0.05,
+      low: 0.25,
+      medium: 0.4,
+      high: 0.25,
+      extreme: 0.05,
+    },
   } = options;
-  
+
   const documents = [];
   const errorLevels = Object.keys(errorDistribution);
   const cumulative = [];
   let sum = 0;
-  
+
   for (const level of errorLevels) {
     sum += errorDistribution[level];
     cumulative.push({ level, threshold: sum });
   }
-  
+
   for (let i = 0; i < count; i++) {
     // Select document type (round-robin for even distribution)
     const generator = DOCUMENT_GENERATORS[i % DOCUMENT_GENERATORS.length];
-    
+
     // Select error level based on distribution
-    const rand = Math.random();
+    const rand = random();
     let errorLevel = "medium";
     for (const { level, threshold } of cumulative) {
       if (rand <= threshold) {
@@ -1021,16 +1161,16 @@ function generateDocuments(count, options = {}) {
         break;
       }
     }
-    
+
     documents.push(generator(i + 1, errorLevel));
   }
-  
+
   // Shuffle documents
   for (let i = documents.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomInt(0, i);
     [documents[i], documents[j]] = [documents[j], documents[i]];
   }
-  
+
   return documents;
 }
 
@@ -1046,5 +1186,5 @@ module.exports = {
   generateNursingAssessment,
   generateSpecialDocument,
   generateDocuments,
-  DOCUMENT_GENERATORS
+  DOCUMENT_GENERATORS,
 };

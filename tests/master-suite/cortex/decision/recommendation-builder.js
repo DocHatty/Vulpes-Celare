@@ -1,3 +1,5 @@
+const { random } = require("../../generators/seeded-random");
+
 /**
  * ╔══════════════════════════════════════════════════════════════════════════════╗
  * ║  VULPES CORTEX - RECOMMENDATION BUILDER                                      ║
@@ -27,9 +29,9 @@
  * - Detailed report for review
  */
 
-const fs = require('fs');
-const path = require('path');
-const { PATHS } = require('../core/config');
+const fs = require("fs");
+const path = require("path");
+const { PATHS } = require("../core/config");
 
 // ============================================================================
 // RECOMMENDATION TEMPLATES
@@ -37,69 +39,69 @@ const { PATHS } = require('../core/config');
 
 const RECOMMENDATION_TEMPLATES = {
   ADD_DICTIONARY_ENTRIES: {
-    actionTemplate: 'Add {count} entries to {dictionary}',
-    targetType: 'DICTIONARY',
-    riskLevel: 'LOW',
-    expectedImpact: 'Improved {phiType} detection',
-    prerequisites: ['Backup dictionary', 'Identify false negative patterns'],
-    autoApplicable: true
+    actionTemplate: "Add {count} entries to {dictionary}",
+    targetType: "DICTIONARY",
+    riskLevel: "LOW",
+    expectedImpact: "Improved {phiType} detection",
+    prerequisites: ["Backup dictionary", "Identify false negative patterns"],
+    autoApplicable: true,
   },
   EXTEND_PATTERN: {
-    actionTemplate: 'Extend {filter} pattern to handle {variant}',
-    targetType: 'FILTER',
-    riskLevel: 'MEDIUM',
-    expectedImpact: 'Catch {count} additional cases',
-    prerequisites: ['Review existing patterns', 'Test in isolation'],
-    autoApplicable: false
+    actionTemplate: "Extend {filter} pattern to handle {variant}",
+    targetType: "FILTER",
+    riskLevel: "MEDIUM",
+    expectedImpact: "Catch {count} additional cases",
+    prerequisites: ["Review existing patterns", "Test in isolation"],
+    autoApplicable: false,
   },
   ENABLE_FUZZY_MATCHING: {
-    actionTemplate: 'Enable fuzzy matching for {filter}',
-    targetType: 'FILTER_CONFIG',
-    riskLevel: 'MEDIUM',
-    expectedImpact: 'Better OCR tolerance for {phiType}',
-    prerequisites: ['Assess false positive risk', 'Configure threshold'],
-    autoApplicable: true
+    actionTemplate: "Enable fuzzy matching for {filter}",
+    targetType: "FILTER_CONFIG",
+    riskLevel: "MEDIUM",
+    expectedImpact: "Better OCR tolerance for {phiType}",
+    prerequisites: ["Assess false positive risk", "Configure threshold"],
+    autoApplicable: true,
   },
   ADD_OCR_SUBSTITUTION: {
-    actionTemplate: 'Add OCR substitution rule: {from} → {to}',
-    targetType: 'SYSTEM_CONFIG',
-    riskLevel: 'LOW',
-    expectedImpact: 'Handle {count} OCR confusion cases',
-    prerequisites: ['Verify substitution is valid'],
-    autoApplicable: true
+    actionTemplate: "Add OCR substitution rule: {from} → {to}",
+    targetType: "SYSTEM_CONFIG",
+    riskLevel: "LOW",
+    expectedImpact: "Handle {count} OCR confusion cases",
+    prerequisites: ["Verify substitution is valid"],
+    autoApplicable: true,
   },
   ADJUST_THRESHOLD: {
-    actionTemplate: 'Adjust {parameter} from {oldValue} to {newValue}',
-    targetType: 'CONFIG',
-    riskLevel: 'MEDIUM',
-    expectedImpact: 'Balance between sensitivity and specificity',
-    prerequisites: ['Run baseline metrics', 'Prepare rollback'],
-    autoApplicable: true
+    actionTemplate: "Adjust {parameter} from {oldValue} to {newValue}",
+    targetType: "CONFIG",
+    riskLevel: "MEDIUM",
+    expectedImpact: "Balance between sensitivity and specificity",
+    prerequisites: ["Run baseline metrics", "Prepare rollback"],
+    autoApplicable: true,
   },
   ADD_CONTEXT_RULE: {
-    actionTemplate: 'Add context rule for {pattern}',
-    targetType: 'FILTER',
-    riskLevel: 'MEDIUM',
-    expectedImpact: 'Improved precision for {phiType}',
-    prerequisites: ['Identify context patterns', 'Test boundary cases'],
-    autoApplicable: false
+    actionTemplate: "Add context rule for {pattern}",
+    targetType: "FILTER",
+    riskLevel: "MEDIUM",
+    expectedImpact: "Improved precision for {phiType}",
+    prerequisites: ["Identify context patterns", "Test boundary cases"],
+    autoApplicable: false,
   },
   ADD_EXCLUSION_RULE: {
-    actionTemplate: 'Add exclusion rule for {pattern}',
-    targetType: 'FILTER',
-    riskLevel: 'LOW',
-    expectedImpact: 'Reduce false positives',
-    prerequisites: ['Verify exclusion is safe', 'Check for PHI edge cases'],
-    autoApplicable: true
+    actionTemplate: "Add exclusion rule for {pattern}",
+    targetType: "FILTER",
+    riskLevel: "LOW",
+    expectedImpact: "Reduce false positives",
+    prerequisites: ["Verify exclusion is safe", "Check for PHI edge cases"],
+    autoApplicable: true,
   },
   ROLLBACK_CHANGE: {
-    actionTemplate: 'Rollback to backup {backupId}',
-    targetType: 'SYSTEM',
-    riskLevel: 'LOW',
-    expectedImpact: 'Restore previous state',
-    prerequisites: ['Verify backup exists', 'Prepare for re-test'],
-    autoApplicable: true
-  }
+    actionTemplate: "Rollback to backup {backupId}",
+    targetType: "SYSTEM",
+    riskLevel: "LOW",
+    expectedImpact: "Restore previous state",
+    prerequisites: ["Verify backup exists", "Prepare for re-test"],
+    autoApplicable: true,
+  },
 };
 
 // ============================================================================
@@ -112,14 +114,14 @@ class RecommendationBuilder {
     this.patternRecognizer = options.patternRecognizer || null;
     this.historyConsultant = options.historyConsultant || null;
 
-    this.storagePath = path.join(PATHS.knowledge, 'recommendations.json');
+    this.storagePath = path.join(PATHS.knowledge, "recommendations.json");
     this.data = this.loadData();
   }
 
   loadData() {
     try {
       if (fs.existsSync(this.storagePath)) {
-        return JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        return JSON.parse(fs.readFileSync(this.storagePath, "utf8"));
       }
     } catch (e) {
       // Fresh start
@@ -130,8 +132,8 @@ class RecommendationBuilder {
         total: 0,
         implemented: 0,
         skipped: 0,
-        byType: {}
-      }
+        byType: {},
+      },
     };
   }
 
@@ -160,7 +162,7 @@ class RecommendationBuilder {
     }
 
     const recommendation = {
-      id: `REC-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      id: `REC-${Date.now()}-${random().toString(36).substr(2, 6)}`,
       type,
       timestamp: new Date().toISOString(),
 
@@ -170,12 +172,13 @@ class RecommendationBuilder {
         type: template.targetType,
         file: params.targetFile || this.inferTargetFile(type, params),
         component: params.component || params.filter || params.dictionary,
-        parameter: params.parameter
+        parameter: params.parameter,
       },
 
       // Details
       params,
-      rationale: params.rationale || this.generateRationale(type, params, evidence),
+      rationale:
+        params.rationale || this.generateRationale(type, params, evidence),
       evidence: this.formatEvidence(evidence),
 
       // Assessment
@@ -189,7 +192,7 @@ class RecommendationBuilder {
       expectedImpact: this.formatTemplate(template.expectedImpact, params),
 
       // Status
-      status: 'PENDING'  // PENDING, APPROVED, IMPLEMENTED, SKIPPED, FAILED
+      status: "PENDING", // PENDING, APPROVED, IMPLEMENTED, SKIPPED, FAILED
     };
 
     // Store recommendation
@@ -234,36 +237,42 @@ class RecommendationBuilder {
 
     // Historical basis
     if (evidence.previousSuccesses?.length > 0) {
-      parts.push(`Similar approach succeeded ${evidence.previousSuccesses.length} time(s) before`);
+      parts.push(
+        `Similar approach succeeded ${evidence.previousSuccesses.length} time(s) before`,
+      );
     }
 
     // Pattern basis
     if (evidence.patterns?.length > 0) {
-      parts.push(`Addresses ${evidence.patterns.length} identified failure pattern(s)`);
+      parts.push(
+        `Addresses ${evidence.patterns.length} identified failure pattern(s)`,
+      );
     }
 
     // Metric basis
     if (evidence.metricGap) {
-      parts.push(`Current ${evidence.metricGap.metric} (${evidence.metricGap.current}%) below target (${evidence.metricGap.target}%)`);
+      parts.push(
+        `Current ${evidence.metricGap.metric} (${evidence.metricGap.current}%) below target (${evidence.metricGap.target}%)`,
+      );
     }
 
     // Type-specific rationale
     switch (type) {
-      case 'ADD_DICTIONARY_ENTRIES':
-        parts.push('Expanding vocabulary coverage for missed cases');
+      case "ADD_DICTIONARY_ENTRIES":
+        parts.push("Expanding vocabulary coverage for missed cases");
         break;
-      case 'EXTEND_PATTERN':
-        parts.push('Current pattern does not cover observed format variations');
+      case "EXTEND_PATTERN":
+        parts.push("Current pattern does not cover observed format variations");
         break;
-      case 'ENABLE_FUZZY_MATCHING':
-        parts.push('OCR-induced variations are causing false negatives');
+      case "ENABLE_FUZZY_MATCHING":
+        parts.push("OCR-induced variations are causing false negatives");
         break;
-      case 'ADD_EXCLUSION_RULE':
-        parts.push('Common false positive pattern identified');
+      case "ADD_EXCLUSION_RULE":
+        parts.push("Common false positive pattern identified");
         break;
     }
 
-    return parts.join('. ') + '.';
+    return parts.join(". ") + ".";
   }
 
   formatEvidence(evidence) {
@@ -273,7 +282,7 @@ class RecommendationBuilder {
       previousFailures: evidence.previousFailures || [],
       metrics: evidence.metrics || {},
       historyConsulted: !!evidence.historyConsulted,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -283,49 +292,54 @@ class RecommendationBuilder {
 
   assessRisk(type, params, evidence) {
     const template = RECOMMENDATION_TEMPLATES[type];
-    const baseRisk = template?.riskLevel || 'MEDIUM';
+    const baseRisk = template?.riskLevel || "MEDIUM";
 
     const risk = {
       level: baseRisk,
       factors: [],
-      mitigations: []
+      mitigations: [],
     };
 
     // Increase risk if previous failures
     if (evidence.previousFailures?.length >= 2) {
       risk.level = this.increaseRiskLevel(risk.level);
-      risk.factors.push('Multiple similar attempts have failed');
-      risk.mitigations.push('Review why previous attempts failed before proceeding');
+      risk.factors.push("Multiple similar attempts have failed");
+      risk.mitigations.push(
+        "Review why previous attempts failed before proceeding",
+      );
     }
 
     // Increase risk for filter modifications
-    if (template?.targetType === 'FILTER') {
-      risk.factors.push('Filter changes can affect detection accuracy');
-      risk.mitigations.push('Run comprehensive test suite after change');
+    if (template?.targetType === "FILTER") {
+      risk.factors.push("Filter changes can affect detection accuracy");
+      risk.mitigations.push("Run comprehensive test suite after change");
     }
 
     // Decrease risk if high historical success rate
-    if (evidence.previousSuccesses?.length >= 3 && evidence.previousFailures?.length === 0) {
+    if (
+      evidence.previousSuccesses?.length >= 3 &&
+      evidence.previousFailures?.length === 0
+    ) {
       risk.level = this.decreaseRiskLevel(risk.level);
-      risk.factors.push('Historically reliable approach');
+      risk.factors.push("Historically reliable approach");
     }
 
     // Add standard mitigations
-    risk.mitigations.push('Create backup before applying');
-    risk.mitigations.push('Run A/B test to measure impact');
-    risk.mitigations.push('Have rollback plan ready');
+    risk.mitigations.push("Create backup before applying");
+    risk.mitigations.push("Run A/B test to measure impact");
+    risk.mitigations.push("Have rollback plan ready");
 
     return risk;
   }
 
   increaseRiskLevel(level) {
-    const levels = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+    const levels = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
     const index = levels.indexOf(level);
     return levels[Math.min(index + 1, levels.length - 1)];
   }
 
   decreaseRiskLevel(level) {
-    const levels = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+    const levels = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
     const index = levels.indexOf(level);
     return levels[Math.max(index - 1, 0)];
   }
@@ -335,7 +349,7 @@ class RecommendationBuilder {
   // ==========================================================================
 
   calculateConfidence(type, params, evidence) {
-    let confidence = 0.5;  // Base confidence
+    let confidence = 0.5; // Base confidence
 
     // Evidence-based adjustments
     if (evidence.patterns?.length >= 5) confidence += 0.15;
@@ -350,7 +364,7 @@ class RecommendationBuilder {
       ADD_EXCLUSION_RULE: 0.7,
       EXTEND_PATTERN: 0.55,
       ENABLE_FUZZY_MATCHING: 0.6,
-      ADJUST_THRESHOLD: 0.5
+      ADJUST_THRESHOLD: 0.5,
     };
 
     if (typeConfidence[type]) {
@@ -365,17 +379,20 @@ class RecommendationBuilder {
     let score = 0;
 
     if (params.count) {
-      score += Math.min(params.count / 10, 5);  // Up to 5 points for count
+      score += Math.min(params.count / 10, 5); // Up to 5 points for count
     }
 
     // Pattern frequency
     if (evidence.patterns?.length > 0) {
-      const totalCount = evidence.patterns.reduce((sum, p) => sum + (p.count || 1), 0);
-      score += Math.min(totalCount / 20, 5);  // Up to 5 points for pattern count
+      const totalCount = evidence.patterns.reduce(
+        (sum, p) => sum + (p.count || 1),
+        0,
+      );
+      score += Math.min(totalCount / 20, 5); // Up to 5 points for pattern count
     }
 
     // Critical PHI types get priority
-    const criticalTypes = ['SSN', 'MRN', 'MEDICAL_RECORD', 'HEALTH_PLAN_ID'];
+    const criticalTypes = ["SSN", "MRN", "MEDICAL_RECORD", "HEALTH_PLAN_ID"];
     if (criticalTypes.includes(params.phiType)) {
       score += 3;
     }
@@ -386,10 +403,10 @@ class RecommendationBuilder {
     }
 
     // Determine priority level
-    if (score >= 10) return 'CRITICAL';
-    if (score >= 6) return 'HIGH';
-    if (score >= 3) return 'MEDIUM';
-    return 'LOW';
+    if (score >= 10) return "CRITICAL";
+    if (score >= 6) return "HIGH";
+    if (score >= 3) return "MEDIUM";
+    return "LOW";
   }
 
   // ==========================================================================
@@ -402,43 +419,44 @@ class RecommendationBuilder {
   generateFromPatterns(patternAnalysis) {
     const recommendations = [];
 
-    for (const pattern of (patternAnalysis.failurePatterns || [])) {
+    for (const pattern of patternAnalysis.failurePatterns || []) {
       let recType = null;
       let params = {
         phiType: pattern.phiType,
-        count: 1
+        count: 1,
       };
 
       switch (pattern.category) {
-        case 'OCR_CONFUSION':
+        case "OCR_CONFUSION":
           if (pattern.details?.length > 0) {
             const sub = pattern.details[0];
-            recType = 'ADD_OCR_SUBSTITUTION';
+            recType = "ADD_OCR_SUBSTITUTION";
             params.from = sub.char;
             params.to = sub.possibleOCR;
           }
           break;
 
-        case 'DICTIONARY_MISS':
-          recType = 'ADD_DICTIONARY_ENTRIES';
+        case "DICTIONARY_MISS":
+          recType = "ADD_DICTIONARY_ENTRIES";
           params.dictionary = this.inferDictionary(pattern.phiType);
           params.entries = [pattern.original];
           params.count = 1;
           break;
 
-        case 'FORMAT_VARIATION':
-          recType = 'EXTEND_PATTERN';
+        case "FORMAT_VARIATION":
+          recType = "EXTEND_PATTERN";
           params.filter = this.inferFilter(pattern.phiType);
-          params.variant = pattern.details?.detected_formats?.join(', ') || 'new format';
+          params.variant =
+            pattern.details?.detected_formats?.join(", ") || "new format";
           break;
 
-        case 'CASE_VARIATION':
-          recType = 'ENABLE_FUZZY_MATCHING';
+        case "CASE_VARIATION":
+          recType = "ENABLE_FUZZY_MATCHING";
           params.filter = this.inferFilter(pattern.phiType);
           break;
 
-        case 'FALSE_POSITIVE':
-          recType = 'ADD_EXCLUSION_RULE';
+        case "FALSE_POSITIVE":
+          recType = "ADD_EXCLUSION_RULE";
           params.filter = this.inferFilter(pattern.phiType);
           params.pattern = pattern.detected;
           break;
@@ -446,7 +464,7 @@ class RecommendationBuilder {
 
       if (recType) {
         const rec = this.build(recType, params, {
-          patterns: [pattern]
+          patterns: [pattern],
         });
         recommendations.push(rec);
       }
@@ -469,10 +487,10 @@ class RecommendationBuilder {
       if (recType) {
         const params = {
           ...insight.details,
-          rationale: `From insight: ${insight.title}`
+          rationale: `From insight: ${insight.title}`,
         };
         const rec = this.build(recType, params, {
-          insights: [insight]
+          insights: [insight],
         });
         recommendations.push(rec);
       }
@@ -482,23 +500,23 @@ class RecommendationBuilder {
   }
 
   inferTypeFromInsight(insight) {
-    const title = insight.title?.toLowerCase() || '';
-    const action = insight.action?.toLowerCase() || '';
+    const title = insight.title?.toLowerCase() || "";
+    const action = insight.action?.toLowerCase() || "";
 
-    if (title.includes('dictionary') || action.includes('dictionary')) {
-      return 'ADD_DICTIONARY_ENTRIES';
+    if (title.includes("dictionary") || action.includes("dictionary")) {
+      return "ADD_DICTIONARY_ENTRIES";
     }
-    if (title.includes('ocr') || action.includes('ocr')) {
-      return 'ADD_OCR_SUBSTITUTION';
+    if (title.includes("ocr") || action.includes("ocr")) {
+      return "ADD_OCR_SUBSTITUTION";
     }
-    if (title.includes('pattern') || action.includes('extend')) {
-      return 'EXTEND_PATTERN';
+    if (title.includes("pattern") || action.includes("extend")) {
+      return "EXTEND_PATTERN";
     }
-    if (title.includes('fuzzy') || action.includes('fuzzy')) {
-      return 'ENABLE_FUZZY_MATCHING';
+    if (title.includes("fuzzy") || action.includes("fuzzy")) {
+      return "ENABLE_FUZZY_MATCHING";
     }
-    if (title.includes('false positive') || action.includes('exclusion')) {
-      return 'ADD_EXCLUSION_RULE';
+    if (title.includes("false positive") || action.includes("exclusion")) {
+      return "ADD_EXCLUSION_RULE";
     }
 
     return null;
@@ -506,17 +524,17 @@ class RecommendationBuilder {
 
   inferDictionary(phiType) {
     const map = {
-      NAME: 'first-names.txt',
-      FIRST_NAME: 'first-names.txt',
-      LAST_NAME: 'surnames.txt',
-      HOSPITAL: 'hospitals.txt',
-      CITY: 'cities.txt'
+      NAME: "first-names.txt",
+      FIRST_NAME: "first-names.txt",
+      LAST_NAME: "surnames.txt",
+      HOSPITAL: "hospitals.txt",
+      CITY: "cities.txt",
     };
-    return map[phiType] || 'custom-dictionary.txt';
+    return map[phiType] || "custom-dictionary.txt";
   }
 
   inferFilter(phiType) {
-    return `${phiType.charAt(0)}${phiType.slice(1).toLowerCase().replace(/_/g, '')}Filter`;
+    return `${phiType.charAt(0)}${phiType.slice(1).toLowerCase().replace(/_/g, "")}Filter`;
   }
 
   // ==========================================================================
@@ -524,9 +542,11 @@ class RecommendationBuilder {
   // ==========================================================================
 
   markImplemented(recommendationId, result = {}) {
-    const rec = this.data.recommendations.find(r => r.id === recommendationId);
+    const rec = this.data.recommendations.find(
+      (r) => r.id === recommendationId,
+    );
     if (rec) {
-      rec.status = 'IMPLEMENTED';
+      rec.status = "IMPLEMENTED";
       rec.implementedAt = new Date().toISOString();
       rec.result = result;
       this.data.stats.implemented++;
@@ -535,10 +555,12 @@ class RecommendationBuilder {
     return rec;
   }
 
-  markSkipped(recommendationId, reason = '') {
-    const rec = this.data.recommendations.find(r => r.id === recommendationId);
+  markSkipped(recommendationId, reason = "") {
+    const rec = this.data.recommendations.find(
+      (r) => r.id === recommendationId,
+    );
     if (rec) {
-      rec.status = 'SKIPPED';
+      rec.status = "SKIPPED";
       rec.skippedAt = new Date().toISOString();
       rec.skipReason = reason;
       this.data.stats.skipped++;
@@ -552,16 +574,16 @@ class RecommendationBuilder {
   // ==========================================================================
 
   getRecommendation(id) {
-    return this.data.recommendations.find(r => r.id === id);
+    return this.data.recommendations.find((r) => r.id === id);
   }
 
   getPendingRecommendations() {
-    return this.data.recommendations.filter(r => r.status === 'PENDING');
+    return this.data.recommendations.filter((r) => r.status === "PENDING");
   }
 
   getRecommendationsByPriority(priority) {
-    return this.data.recommendations.filter(r =>
-      r.priority === priority && r.status === 'PENDING'
+    return this.data.recommendations.filter(
+      (r) => r.priority === priority && r.status === "PENDING",
     );
   }
 
@@ -578,8 +600,8 @@ class RecommendationBuilder {
   }
 
   getAutoApplicable() {
-    return this.data.recommendations.filter(r =>
-      r.status === 'PENDING' && r.autoApplicable
+    return this.data.recommendations.filter(
+      (r) => r.status === "PENDING" && r.autoApplicable,
     );
   }
 
@@ -590,13 +612,13 @@ class RecommendationBuilder {
     return {
       stats: this.data.stats,
       pending: this.getPendingRecommendations().length,
-      topRecommendations: this.getTopRecommendations(5).map(r => ({
+      topRecommendations: this.getTopRecommendations(5).map((r) => ({
         id: r.id,
         action: r.action,
         priority: r.priority,
         confidence: r.confidence,
-        risk: r.risk?.level
-      }))
+        risk: r.risk?.level,
+      })),
     };
   }
 
@@ -627,9 +649,9 @@ TOP PENDING RECOMMENDATIONS
       report += `
 [${rec.priority}] ${rec.action}
   ID: ${rec.id}
-  Target: ${rec.target?.component || rec.target?.file || 'N/A'}
+  Target: ${rec.target?.component || rec.target?.file || "N/A"}
   Confidence: ${Math.round(rec.confidence * 100)}%
-  Risk: ${rec.risk?.level || 'UNKNOWN'}
+  Risk: ${rec.risk?.level || "UNKNOWN"}
   Rationale: ${rec.rationale}
 `;
     }
@@ -644,5 +666,5 @@ TOP PENDING RECOMMENDATIONS
 
 module.exports = {
   RecommendationBuilder,
-  RECOMMENDATION_TEMPLATES
+  RECOMMENDATION_TEMPLATES,
 };
