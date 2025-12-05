@@ -54,7 +54,7 @@ flowchart TB
     Data -->|"Question"| LLM
 
     subgraph EXT ["☁️ LLM"]
-        LLM["Claude / GPT-5.1 / Gemini<br/>Only sees: [NAME-1]"]
+        LLM["Claude / GPT-5.1 / Gemini<br/>Only sees: [NAME-1], [ADDRESS-1]<br/>eGFR 28, Cr 2.4 (was 1.8)"]
     end
 
     Map -->|"Clean data"| LLM
