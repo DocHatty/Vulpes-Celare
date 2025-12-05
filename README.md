@@ -35,12 +35,13 @@ Clinical documentation drives medical education, research, and innovation—but 
 
 ```mermaid
 flowchart TB
-    subgraph YN1 [" "]
-        direction TB
-        Data["📋 Clinical Data<br/>PACS · EMR · Labs"]
-        Ask["🤖 Ask AI"]
-        Data --> Ask
+    subgraph INPUT [" "]
+        direction LR
+        Access["🖥️ Access Point<br/>Epic · PACS · Web"]
+        Data["📋 Clinical Data<br/>+ Question"]
     end
+
+    Access --> Data
 
     subgraph CORE ["🦊 VULPES CELARE"]
         direction TB
@@ -49,10 +50,11 @@ flowchart TB
         Redact --> Map
     end
 
-    Ask --> Redact
+    Data -->|"Data"| Redact
+    Data -->|"Question"| LLM
 
     subgraph EXT ["☁️ LLM"]
-        LLM["Claude / GPT-4 / Gemini<br/>Only sees: [NAME-1]"]
+        LLM["Claude / GPT-5.1 / Gemini<br/>Only sees: [NAME-1]"]
     end
 
     Map -->|"Clean data"| LLM
