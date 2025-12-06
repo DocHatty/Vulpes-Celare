@@ -67,6 +67,7 @@ const { MetricsEngine } = require("../core/metrics-engine");
 const { CodebaseAnalyzer } = require("../core/codebase-analyzer");
 const { TemporalIndex } = require("../core/temporal-index");
 const { MerkleLog } = require("../core/merkle-log");
+const { ProvenanceEngine } = require("../core/provenance-engine");
 const { PatternRecognizer } = require("../learning/pattern-recognizer");
 const { HypothesisEngine } = require("../learning/hypothesis-engine");
 const { InterventionTracker } = require("../learning/intervention-tracker");
@@ -295,6 +296,7 @@ class VulpesCortexServer {
       const { getDatabase } = require("../db/database");
       const db = getDatabase();
       this.modules.merkleLog = new MerkleLog(db);
+      this.modules.provenanceEngine = new ProvenanceEngine(db, this.modules.merkleLog);
 
       // Learning modules
       this.modules.patternRecognizer = new PatternRecognizer(
@@ -772,7 +774,47 @@ class VulpesCortexServer {
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(result, null, 2));
         } catch (err) {
-          console.error(`[${timestamp}] Error verifying audit ${id}: ${err.message}`);
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      } else if (req.url === "/provenance/record" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => { body += chunk.toString(); });
+        req.on("end", async () => {
+          try {
+            const timestamp = new Date().toISOString();
+            console.error(`[${timestamp}] POST /provenance/record`);
+            const { docId, original, redacted, manifest, actorId } = JSON.parse(body);
+            if (!docId || !original || !redacted || !manifest) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Missing required fields" }));
+              return;
+            }
+            const receipt = await this.modules.provenanceEngine.createJob(
+              docId, original, redacted, manifest, actorId || "unknown"
+            );
+            res.writeHead(201, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(receipt));
+          } catch (err) {
+            console.error(`Error recording provenance: ${err.message}`);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: err.message }));
+          }
+        });
+      } else if (req.url.startsWith("/provenance/verify/")) {
+        const jobId = req.url.split("/provenance/verify/")[1];
+        const timestamp = new Date().toISOString();
+        console.error(`[${timestamp}] GET /provenance/verify/${jobId}`);
+        try {
+          const verification = this.modules.provenanceEngine.getVerificationData(jobId);
+          if (!verification) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Job not found" }));
+            return;
+          }
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(verification));
+        } catch (err) {
+          console.error(`Error verifying provenance ${jobId}: ${err.message}`);
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: err.message }));
         }

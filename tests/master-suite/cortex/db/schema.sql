@@ -305,6 +305,34 @@ CREATE INDEX IF NOT EXISTS idx_audit_type ON audit_log(event_type);
 CREATE INDEX IF NOT EXISTS idx_audit_hash ON audit_log(data_hash);
 
 -- ============================================================================
+-- REDACTION PROVENANCE TABLE (BLOCKCHAIN TIER 2)
+-- New: Specialized table for Redaction Provenance Layer (RPL) jobs
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS redaction_jobs (
+    job_id TEXT PRIMARY KEY,
+    document_id TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Cryptographic Fingerprints
+    hash_original TEXT NOT NULL,  -- H(D_orig)
+    hash_redacted TEXT NOT NULL,  -- H(D_red)
+    hash_manifest TEXT NOT NULL,  -- H(M)
+    
+    -- Proofs
+    zk_proof TEXT,                -- Serialized ZK Proof (future)
+    signature TEXT,               -- Actor's signature
+    
+    -- Linkage
+    audit_log_id INTEGER,         -- Link to main linear chain
+    FOREIGN KEY(audit_log_id) REFERENCES audit_log(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_rpl_job_id ON redaction_jobs(job_id);
+CREATE INDEX IF NOT EXISTS idx_rpl_doc_id ON redaction_jobs(document_id);
+CREATE INDEX IF NOT EXISTS idx_rpl_audit_link ON redaction_jobs(audit_log_id);
+
+-- ============================================================================
 -- SCHEMA VERSION TABLE
 -- Track database schema version for migrations
 -- ============================================================================
