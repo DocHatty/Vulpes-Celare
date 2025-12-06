@@ -1,0 +1,63 @@
+{
+  "name": "training-education",
+  "description": "Medical education and training policy - optimized for case presentations and teaching while protecting patient identity",
+  "rationale": "Designed for Grand Rounds, case conferences, and resident training. Preserves clinical timeline and provider roles for educational value while removing all patient identifiers.",
+  "filters": {
+    "names": {
+      "enabled": true,
+      "confidenceThreshold": 0.3,
+      "comment": "Lower threshold for more aggressive patient name redaction"
+    },
+    "dates": {
+      "enabled": false,
+      "comment": "Clinical timeline preserved for educational context"
+    },
+    "phones": {
+      "enabled": true
+    },
+    "emails": {
+      "enabled": true
+    },
+    "ssn": {
+      "enabled": true
+    },
+    "mrn": {
+      "enabled": true
+    },
+    "addresses": {
+      "enabled": true
+    },
+    "locations": {
+      "enabled": false,
+      "comment": "Geographic context preserved for epidemiology teaching"
+    },
+    "organizations": {
+      "enabled": false,
+      "comment": "Hospital context preserved for system-level learning"
+    },
+    "professions": {
+      "enabled": false,
+      "comment": "Provider roles preserved for team dynamics teaching"
+    },
+    "ids": {
+      "enabled": true
+    },
+    "ages": {
+      "enabled": false,
+      "comment": "All ages preserved for clinical correlation"
+    }
+  },
+  "globalThreshold": 0.4,
+  "useCase": "medical-education",
+  "approvedFor": [
+    "Internal grand rounds",
+    "Resident training sessions",
+    "Case conferences within BAA boundary",
+    "Medical student teaching"
+  ],
+  "notApprovedFor": [
+    "Public presentations",
+    "External conferences without additional review",
+    "Publication without expert determination"
+  ]
+}

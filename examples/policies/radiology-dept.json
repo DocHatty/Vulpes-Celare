@@ -1,0 +1,54 @@
+{
+  "name": "radiology-dept",
+  "description": "Radiology department workflow policy - preserves MRN and referring physician information for internal operations",
+  "rationale": "Optimized for radiology departments using AI for report generation while maintaining workflow continuity. MRN preservation enables internal tracking without re-identification of patients in external systems.",
+  "filters": {
+    "names": {
+      "enabled": true,
+      "confidenceThreshold": 0.4
+    },
+    "dates": {
+      "enabled": true
+    },
+    "phones": {
+      "enabled": true
+    },
+    "emails": {
+      "enabled": true
+    },
+    "ssn": {
+      "enabled": true
+    },
+    "mrn": {
+      "enabled": false,
+      "comment": "MRN preserved for internal workflow tracking"
+    },
+    "addresses": {
+      "enabled": true
+    },
+    "locations": {
+      "enabled": true
+    },
+    "organizations": {
+      "enabled": false,
+      "comment": "Hospital names preserved for multi-facility organizations"
+    },
+    "professions": {
+      "enabled": false,
+      "comment": "Referring physician names preserved for clinical context"
+    },
+    "ids": {
+      "enabled": true
+    },
+    "ages": {
+      "enabled": true
+    }
+  },
+  "globalThreshold": 0.5,
+  "useCase": "internal-workflow",
+  "security": {
+    "networkBoundary": "Internal network only",
+    "aiProvider": "On-premise or BAA-covered cloud",
+    "auditRequired": true
+  }
+}
