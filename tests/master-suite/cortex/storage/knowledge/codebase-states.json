@@ -76,11 +76,18 @@
       "filterCount": 29,
       "dictionaryCount": 6,
       "hash": "7c92f6d022a0fe1f"
+    },
+    {
+      "id": "STATE-1765035827942",
+      "timestamp": "2025-12-06T15:43:47.942Z",
+      "filterCount": 29,
+      "dictionaryCount": 7,
+      "hash": "b84895fabeed6424"
     }
   ],
   "current": {
-    "id": "STATE-1764970202830",
-    "timestamp": "2025-12-05T21:30:02.830Z",
+    "id": "STATE-1765035827942",
+    "timestamp": "2025-12-06T15:43:47.942Z",
     "filters": {
       "count": 29,
       "filters": [
@@ -1436,14 +1443,14 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 1551,
+            "lines": 1560,
             "conditionals": 75,
             "loops": 31,
             "functions": 11
           },
-          "lastModified": "2025-12-05T21:27:51.805Z",
-          "size": 52724,
-          "hash": "7270fffe85df"
+          "lastModified": "2025-12-05T21:33:58.249Z",
+          "size": 53033,
+          "hash": "56bd40af20be"
         },
         {
           "name": "SSNFilterSpan",
@@ -1967,7 +1974,7 @@
       ]
     },
     "dictionaries": {
-      "count": 6,
+      "count": 7,
       "dictionaries": [
         {
           "name": "cities.txt",
@@ -2000,6 +2007,15 @@
             "aada\r",
             "aadam\r"
           ]
+        },
+        {
+          "name": "FuzzyDictionaryMatcher.ts",
+          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\FuzzyDictionaryMatcher.ts",
+          "type": "OTHER",
+          "size": 15771,
+          "lastModified": "2025-12-06T14:39:20.282Z",
+          "hash": "8934a9a7439f",
+          "isCodeFile": true
         },
         {
           "name": "HospitalDictionary.ts",
@@ -2068,6 +2084,7 @@
         },
         "OTHER": {
           "files": [
+            "FuzzyDictionaryMatcher.ts",
             "HospitalDictionary.ts",
             "NameDictionary.ts"
           ],
@@ -2089,6 +2106,16 @@
     },
     "pipeline": {
       "stages": [
+        {
+          "name": "EnhancedPHIDetector",
+          "file": "EnhancedPHIDetector.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "EnsembleVoter",
+          "file": "EnsembleVoter.ts",
+          "type": "CORE"
+        },
         {
           "name": "FieldContextDetector",
           "file": "FieldContextDetector.ts",
@@ -2112,6 +2139,11 @@
         {
           "name": "SpanBasedFilter",
           "file": "SpanBasedFilter.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "SpanEnhancer",
+          "file": "SpanEnhancer.ts",
           "type": "CORE"
         },
         {
@@ -2191,7 +2223,7 @@
       "filters\\NPIFilterSpan.ts": "b612e683921b",
       "filters\\PassportNumberFilterSpan.ts": "88eb679f5d95",
       "filters\\PhoneFilterSpan.ts": "eb16c64b3177",
-      "filters\\SmartNameFilterSpan.ts": "7270fffe85df",
+      "filters\\SmartNameFilterSpan.ts": "56bd40af20be",
       "filters\\SSNFilterSpan.ts": "9b68cd06a0c0",
       "filters\\TitledNameFilterSpan.ts": "cfd2ef5da898",
       "filters\\UniqueIdentifierFilterSpan.ts": "03d162985667",
@@ -2200,26 +2232,30 @@
       "filters\\ZipCodeFilterSpan.ts": "8e267f417d66",
       "dictionaries\\cities.txt": "cefa96a8e1e1",
       "dictionaries\\first-names.txt": "af46f90c51a9",
+      "dictionaries\\FuzzyDictionaryMatcher.ts": "8934a9a7439f",
       "dictionaries\\HospitalDictionary.ts": "aece2d1ea0be",
       "dictionaries\\hospitals.txt": "8569e18cda52",
       "dictionaries\\NameDictionary.ts": "c84c9517b25c",
       "dictionaries\\surnames.txt": "96c58da18b92",
+      "core\\EnhancedPHIDetector.ts": "e96cfffeb6d4",
+      "core\\EnsembleVoter.ts": "0f85ed2b2e84",
       "core\\FieldContextDetector.ts": "464a978703e2",
       "core\\FieldLabelWhitelist.ts": "9fca018d148c",
       "core\\FilterAdapter.ts": "15e4f3fa1fce",
-      "core\\ParallelRedactionEngine.ts": "e5381f9f9b0e",
+      "core\\ParallelRedactionEngine.ts": "e86ad1e338f7",
       "core\\SpanBasedFilter.ts": "60b4b6fcb8c4",
+      "core\\SpanEnhancer.ts": "4c0eae1c7d27",
       "core\\SpanFactory.ts": "71d3fc6183ba",
-      "services\\ConfidenceModifierService.ts": "de17be5b08f9",
+      "services\\ConfidenceModifierService.ts": "a570fdd2becb",
       "services\\index.ts": "4a2b60a55c10",
       "services\\ReplacementContextService.ts": "ce309f267127",
       "services\\SpanDisambiguationService.ts": "5af9abf375ce",
-      "services\\VectorDisambiguationService.ts": "874f0f11f78a",
+      "services\\VectorDisambiguationService.ts": "4ae052f4554e",
       "services\\WindowService.ts": "c77184eafa52",
       "VulpesCelare.ts": "2510e1722ac5"
     },
     "summary": {
-      "timestamp": "2025-12-05T21:30:02.830Z",
+      "timestamp": "2025-12-06T15:43:47.942Z",
       "filters": {
         "total": 29,
         "byType": 23,
@@ -2235,7 +2271,7 @@
         ]
       },
       "dictionaries": {
-        "total": 6,
+        "total": 7,
         "totalEntries": 201103,
         "types": [
           "CITIES",
@@ -2246,10 +2282,10 @@
         ]
       },
       "pipeline": {
-        "stages": 6,
+        "stages": 9,
         "services": 5
       },
-      "codebaseHash": "7c92f6d022a0fe1f"
+      "codebaseHash": "b84895fabeed6424"
     }
   }
 }

@@ -29,6 +29,9 @@
 
 const path = require("path");
 
+// Import console formatter for beautiful, glitch-free output
+const fmt = require("./core/console-formatter");
+
 // ============================================================================
 // CORE MODULES
 // ============================================================================
@@ -424,11 +427,11 @@ class VulpesCortex {
   }
 
   generateFullReport() {
+    const divider = fmt.divider(fmt.BOX.SH);
     return `
-╔══════════════════════════════════════════════════════════════════════════════╗
-║  VULPES CORTEX - FULL STATUS REPORT                                          ║
-║  Generated: ${new Date().toISOString()}
-╚══════════════════════════════════════════════════════════════════════════════╝
+${fmt.cortexBanner("F U L L   S T A T U S   R E P O R T")}
+
+Generated: ${new Date().toISOString()}
 
 ${this.modules.codebaseStateTracker.generateReport()}
 
@@ -436,14 +439,12 @@ ${this.modules.insightGenerator.generateReport()}
 
 ${this.modules.recommendationBuilder.generateReport()}
 
-───────────────────────────────────────────────────────────────────────────────
 INTERVENTION STATISTICS
-───────────────────────────────────────────────────────────────────────────────
+${divider}
 ${JSON.stringify(this.modules.interventionTracker.getStats(), null, 2)}
 
-───────────────────────────────────────────────────────────────────────────────
 EXPERIMENT STATISTICS
-───────────────────────────────────────────────────────────────────────────────
+${divider}
 ${JSON.stringify(this.modules.experimentRunner.getStats(), null, 2)}
 `;
   }
@@ -489,15 +490,15 @@ const cortex = new VulpesCortex();
 
 async function runCLI() {
   // CRITICAL: Catch ALL uncaught errors to prevent silent crashes
-  process.on('uncaughtException', (error) => {
-    console.error('[Vulpes Cortex] UNCAUGHT EXCEPTION:', error);
-    console.error('[Vulpes Cortex] Stack:', error.stack);
+  process.on("uncaughtException", (error) => {
+    console.error("[Vulpes Cortex] UNCAUGHT EXCEPTION:", error);
+    console.error("[Vulpes Cortex] Stack:", error.stack);
     process.exit(1);
   });
 
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('[Vulpes Cortex] UNHANDLED REJECTION at:', promise);
-    console.error('[Vulpes Cortex] Reason:', reason);
+  process.on("unhandledRejection", (reason, promise) => {
+    console.error("[Vulpes Cortex] UNHANDLED REJECTION at:", promise);
+    console.error("[Vulpes Cortex] Reason:", reason);
     process.exit(1);
   });
 
@@ -524,31 +525,13 @@ async function runCLI() {
     );
 
     console.error(
-      "╔══════════════════════════════════════════════════════════════════════════════╗",
-    );
-    console.error(
-      "║  VULPES CORTEX - LAUNCHING IN NEW WINDOW                                     ║",
-    );
-    console.error(
-      "╠══════════════════════════════════════════════════════════════════════════════╣",
-    );
-    console.error(
-      "║  A new CMD window should open showing the MCP server activity.               ║",
-    );
-    console.error(
-      `║  Port: ${port}                                                                    ║`,
-    );
-    console.error(
-      "║                                                                              ║",
-    );
-    console.error(
-      "║  If it doesn't open, run manually:                                           ║",
-    );
-    console.error(
-      "║    node tests/master-suite/cortex --server                                   ║",
-    );
-    console.error(
-      "╚══════════════════════════════════════════════════════════════════════════════╝",
+      fmt.statusBox("VULPES CORTEX - LAUNCHING IN NEW WINDOW", [
+        "A new CMD window should open showing the MCP server activity.",
+        { key: "Port", value: String(port) },
+        "",
+        "If it doesn't open, run manually:",
+        "  node tests/master-suite/cortex --server",
+      ]),
     );
 
     // Wait then verify it started
@@ -594,8 +577,9 @@ async function runCLI() {
     // Check if we should run in daemon (HTTP) mode or stdio mode
     // - Use daemon mode if --daemon flag passed OR --port specified
     // - Use stdio mode by default (this is what Claude Desktop expects)
-    const useDaemon = args.includes("--daemon") || args.includes("-d") || portArg;
-    
+    const useDaemon =
+      args.includes("--daemon") || args.includes("-d") || portArg;
+
     await server.start({ daemon: useDaemon, port });
     // Server will stay alive until shutdown signal or client disconnect
   } else if (args.includes("--check") || args.includes("-c")) {
@@ -614,28 +598,14 @@ async function runCLI() {
         try {
           const status = JSON.parse(data);
           console.error(
-            "╔══════════════════════════════════════════════════════════════════════════════╗",
-          );
-          console.error(
-            "║  VULPES CORTEX - SERVER STATUS                                               ║",
-          );
-          console.error(
-            "╠══════════════════════════════════════════════════════════════════════════════╣",
-          );
-          console.error(
-            `║  Status:   ✓ RUNNING                                                         ║`,
-          );
-          console.error(`║  Server:   ${status.server.padEnd(67)}║`);
-          console.error(`║  Version:  ${status.version.padEnd(67)}║`);
-          console.error(
-            `║  Uptime:   ${(status.uptime.toFixed(1) + " seconds").padEnd(67)}║`,
-          );
-          console.error(
-            `║  Modules:  ${(status.modules + " loaded").padEnd(67)}║`,
-          );
-          console.error(`║  PID:      ${String(status.pid).padEnd(67)}║`);
-          console.error(
-            "╚══════════════════════════════════════════════════════════════════════════════╝",
+            fmt.statusBox("VULPES CORTEX - SERVER STATUS", [
+              { key: "Status", value: "[OK] RUNNING" },
+              { key: "Server", value: status.server },
+              { key: "Version", value: status.version },
+              { key: "Uptime", value: status.uptime.toFixed(1) + " seconds" },
+              { key: "Modules", value: status.modules + " loaded" },
+              { key: "PID", value: String(status.pid) },
+            ]),
           );
           process.exit(0);
         } catch (e) {
@@ -647,25 +617,11 @@ async function runCLI() {
 
     req.on("error", () => {
       console.error(
-        "╔══════════════════════════════════════════════════════════════════════════════╗",
-      );
-      console.error(
-        "║  VULPES CORTEX - SERVER STATUS                                               ║",
-      );
-      console.error(
-        "╠══════════════════════════════════════════════════════════════════════════════╣",
-      );
-      console.error(
-        "║  Status:   ✗ NOT RUNNING                                                     ║",
-      );
-      console.error(
-        "║                                                                              ║",
-      );
-      console.error(
-        "║  Start with: node tests/master-suite/cortex --server                         ║",
-      );
-      console.error(
-        "╚══════════════════════════════════════════════════════════════════════════════╝",
+        fmt.statusBox("VULPES CORTEX - SERVER STATUS", [
+          { key: "Status", value: "[X] NOT RUNNING" },
+          "",
+          "Start with: node tests/master-suite/cortex --server",
+        ]),
       );
       process.exit(1);
     });

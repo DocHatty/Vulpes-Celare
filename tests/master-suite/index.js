@@ -1,9 +1,9 @@
 /**
  * VULPES CELARE - MASTER TEST SUITE
  * Comprehensive, Unbiased PHI Redaction Assessment
- * 
+ *
  * This is the SINGLE authoritative test system for Vulpes Celare.
- * 
+ *
  * USAGE:
  *   node tests/master-suite/run.js                    # Standard 200-doc test
  *   node tests/master-suite/run.js --quick            # Quick 50-doc test
@@ -12,7 +12,10 @@
  */
 
 // Core Assessment
-const { RigorousAssessment, GRADING_SCHEMA } = require("./assessment/rigorous-assessment");
+const {
+  RigorousAssessment,
+  GRADING_SCHEMA,
+} = require("./assessment/assessment");
 
 // Document Generation
 const { generateCompletePHIDataset } = require("./documents/phi-generator");
@@ -32,30 +35,30 @@ module.exports = {
   // Main Assessment
   RigorousAssessment,
   GRADING_SCHEMA,
-  
+
   // Document Generation
   generateCompletePHIDataset,
   TEMPLATES,
-  
+
   // Data
   data: {
     names,
     locations,
-    medical
+    medical,
   },
-  
+
   // Generators
   generators: {
     errors,
     phi,
-    documents
+    documents,
   },
-  
+
   // Convenience exports
   generateDocuments: documents.generateDocuments,
   applyErrors: errors.applyErrors,
-  
+
   // Re-export commonly used functions
   ...phi,
-  ...documents
+  ...documents,
 };

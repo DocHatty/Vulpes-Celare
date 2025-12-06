@@ -67,6 +67,9 @@ const { CodebaseStateTracker } = require("../decision/codebase-state-tracker");
 const { getTools, executeTool } = require("./tools");
 const { getPrompts, getPrompt } = require("./prompts");
 
+// Import console formatter for beautiful, glitch-free output
+const fmt = require("../core/console-formatter");
+
 // ============================================================================
 // ╔══════════════════════════════════════════════════════════════════════════╗
 // ║  ⚠️  MCP PROTOCOL SAFETY - READ THIS BEFORE EDITING ANY CODE! ⚠️          ║
@@ -98,7 +101,8 @@ const { getPrompts, getPrompt } = require("./prompts");
  * DEBUG MODE: Set to true for verbose logging (to stderr only!)
  * When enabled, logs detailed information about every operation.
  */
-const DEBUG_MODE = process.env.VULPES_DEBUG === "1" || process.argv.includes("--debug");
+const DEBUG_MODE =
+  process.env.VULPES_DEBUG === "1" || process.argv.includes("--debug");
 
 /**
  * Safe logging function - ALWAYS goes to stderr, NEVER stdout
@@ -179,7 +183,9 @@ function enableStdoutProtection() {
     return true;
   };
 
-  debug("Stdout protection ENABLED - console.log AND stdout.write redirected to stderr");
+  debug(
+    "Stdout protection ENABLED - console.log AND stdout.write redirected to stderr",
+  );
 }
 
 function disableStdoutProtection() {
@@ -214,9 +220,13 @@ function startOperation(type, name, args = {}) {
 function endOperation(success = true, details = "") {
   const duration = Date.now() - (currentOperation.startTime || Date.now());
   if (success) {
-    debug(`Completed ${currentOperation.type}: ${currentOperation.name} (${duration}ms) ${details}`);
+    debug(
+      `Completed ${currentOperation.type}: ${currentOperation.name} (${duration}ms) ${details}`,
+    );
   } else {
-    error(`Failed ${currentOperation.type}: ${currentOperation.name} (${duration}ms) ${details}`);
+    error(
+      `Failed ${currentOperation.type}: ${currentOperation.name} (${duration}ms) ${details}`,
+    );
   }
   currentOperation = { type: null, name: null, startTime: null, args: null };
 }
@@ -373,7 +383,10 @@ class VulpesCortexServer {
 
       try {
         const result = await executeTool(name, args, this.modules);
-        endOperation(true, `result keys: ${Object.keys(result || {}).join(", ")}`);
+        endOperation(
+          true,
+          `result keys: ${Object.keys(result || {}).join(", ")}`,
+        );
         return {
           content: [
             {
@@ -407,14 +420,18 @@ class VulpesCortexServer {
           content: [
             {
               type: "text",
-              text: JSON.stringify({
-                error: true,
-                tool: name,
-                message: err.message,
-                hint: "Check stderr for full stack trace",
-                totalErrors: this.errorCount,
-                debugCommand: "Set VULPES_DEBUG=1 for verbose logging",
-              }, null, 2),
+              text: JSON.stringify(
+                {
+                  error: true,
+                  tool: name,
+                  message: err.message,
+                  hint: "Check stderr for full stack trace",
+                  totalErrors: this.errorCount,
+                  debugCommand: "Set VULPES_DEBUG=1 for verbose logging",
+                },
+                null,
+                2,
+              ),
             },
           ],
           isError: true,
@@ -591,7 +608,7 @@ class VulpesCortexServer {
       );
 
       // Keep process alive - the SDK handles the message loop
-      await new Promise(() => { }); // Never resolves
+      await new Promise(() => {}); // Never resolves
     }
   }
 
@@ -632,10 +649,7 @@ class VulpesCortexServer {
       } else if (req.url.startsWith("/tool/")) {
         // TOOL EXECUTION ENDPOINT: /tool/{toolName}
         const toolName = req.url.replace("/tool/", "").split("?")[0];
-        console.error(
-          `[${timestamp}] ════════════════════════════════════════`,
-        );
-        console.error(`[${timestamp}] TOOL CALL: ${toolName}`);
+        console.error(fmt.toolCallHeader(toolName, timestamp));
 
         // Parse args from POST body or query string
         let args = {};
@@ -670,7 +684,7 @@ class VulpesCortexServer {
           const result = await executeTool(toolName, args, this.modules);
           const duration = ((Date.now() - startTime) / 1000).toFixed(1);
 
-          console.error(`[${timestamp}] ✓ COMPLETED in ${duration}s`);
+          console.error(fmt.toolCallFooter(timestamp, true, duration));
           if (result.metrics) {
             console.error(
               `[${timestamp}] Sensitivity: ${result.metrics.sensitivity}%`,
@@ -682,27 +696,28 @@ class VulpesCortexServer {
               `[${timestamp}] Action: ${result.action.substring(0, 60)}...`,
             );
           }
-          console.error(
-            `[${timestamp}] ════════════════════════════════════════`,
-          );
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(result, null, 2));
         } catch (err) {
-          console.error(`[${timestamp}] ✗ ERROR: ${err.message}`);
+          console.error(fmt.toolCallFooter(timestamp, false));
+          console.error(`[${timestamp}] ERROR: ${err.message}`);
           console.error(`[${timestamp}] Stack: ${err.stack}`);
-          console.error(
-            `[${timestamp}] ════════════════════════════════════════`,
-          );
           res.writeHead(500, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({
-            success: false,
-            error: err.message,
-            stack: err.stack,
-            action: `Fix the error: ${err.message}`,
-            timestamp: new Date().toISOString(),
-            hint: "Check the MCP server window for full error details"
-          }, null, 2));
+          res.end(
+            JSON.stringify(
+              {
+                success: false,
+                error: err.message,
+                stack: err.stack,
+                action: `Fix the error: ${err.message}`,
+                timestamp: new Date().toISOString(),
+                hint: "Check the MCP server window for full error details",
+              },
+              null,
+              2,
+            ),
+          );
         }
       } else {
         console.error(`[${timestamp}] 404: ${req.url}`);
@@ -724,31 +739,14 @@ class VulpesCortexServer {
         };
         fs.writeFileSync(statusFile, JSON.stringify(statusData, null, 2));
 
+        // Display beautiful, perfectly-aligned server banner
         console.error(
-          "╔══════════════════════════════════════════════════════════════════════════════╗",
-        );
-        console.error(
-          "║  VULPES CORTEX MCP SERVER - RUNNING                                          ║",
-        );
-        console.error(
-          "╠══════════════════════════════════════════════════════════════════════════════╣",
-        );
-        console.error(
-          `║  Status:      ACTIVE                                                         ║`,
-        );
-        console.error(`║  Port:        ${String(port).padEnd(65)}║`);
-        console.error(`║  PID:         ${String(process.pid).padEnd(65)}║`);
-        console.error(
-          `║  Health:      http://localhost:${port}/health${" ".repeat(43 - String(port).length)}║`,
-        );
-        console.error(
-          "╠══════════════════════════════════════════════════════════════════════════════╣",
-        );
-        console.error(
-          "║  Server will stay running until manually stopped (Ctrl+C)                    ║",
-        );
-        console.error(
-          "╚══════════════════════════════════════════════════════════════════════════════╝",
+          fmt.serverBanner(
+            "VULPES CORTEX MCP SERVER",
+            port,
+            process.pid,
+            `http://localhost:${port}/health`,
+          ),
         );
         console.error("");
 

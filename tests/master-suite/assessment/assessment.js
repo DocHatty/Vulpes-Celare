@@ -1,8 +1,25 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CELARE - RIGOROUS ASSESSMENT ENGINE                                  ║
- * ║  Unbiased, Multi-Pass Evaluation with Deep Investigation                      ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ============================================================================
+ *
+ *    ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗
+ *    ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝
+ *    ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗
+ *    ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║
+ *     ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║
+ *      ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝
+ *
+ *     ██████╗███████╗██╗      █████╗ ██████╗ ███████╗
+ *    ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝
+ *    ██║     █████╗  ██║     ███████║██████╔╝█████╗
+ *    ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝
+ *    ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗
+ *     ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
+ *
+ *           A S S E S S M E N T   E N G I N E
+ *
+ *    Unbiased, Multi-Pass Evaluation with Deep Investigation
+ *
+ * ============================================================================
  *
  * DESIGN PRINCIPLES:
  * 1. UNBIASED: Tests PHI detection without favoring specific implementations
@@ -22,6 +39,9 @@
 const path = require("path");
 const fs = require("fs");
 const { random } = require("../generators/seeded-random");
+
+// Import console formatter for beautiful, glitch-free output
+const fmt = require("../cortex/core/console-formatter");
 
 // ============================================================================
 // STRICT GRADING SCHEMA
@@ -189,18 +209,14 @@ class RigorousAssessment {
       activeFilters: engine.getActiveFilters().length,
     };
 
-    // Generate and process documents
+    // Generate and process documents - show full ASCII art banner
     console.error(
-      `\n╔═══════════════════════════════════════════════════════════════════════════╗`,
+      fmt.assessmentBannerFull(
+        this.options.documentCount,
+        VulpesCelare.NAME,
+        VulpesCelare.VERSION,
+      ),
     );
-    console.error(
-      `║  VULPES CELARE - RIGOROUS ASSESSMENT (${this.options.documentCount} Documents)             ║`,
-    );
-    console.error(
-      `╚═══════════════════════════════════════════════════════════════════════════╝\n`,
-    );
-    console.error(`Engine: ${VulpesCelare.NAME} v${VulpesCelare.VERSION}`);
-    console.error(`Processing ${this.options.documentCount} documents...\n`);
 
     const errorLevels = this.selectErrorLevels(this.options.documentCount);
 
@@ -297,15 +313,8 @@ class RigorousAssessment {
    * Multi-pass analysis with strict evaluation
    */
   calculateMetrics() {
-    console.error(
-      `╔═══════════════════════════════════════════════════════════════════════════╗`,
-    );
-    console.error(
-      `║  PHASE 2: CALCULATING METRICS                                             ║`,
-    );
-    console.error(
-      `╚═══════════════════════════════════════════════════════════════════════════╝\n`,
-    );
+    console.error(fmt.phaseHeader(2, "CALCULATING METRICS"));
+    console.error("");
 
     // Initialize counters
     let totalTruePositives = 0;
@@ -462,7 +471,7 @@ class RigorousAssessment {
     const precision =
       totalTruePositives + totalFalsePositives > 0
         ? (totalTruePositives / (totalTruePositives + totalFalsePositives)) *
-        100
+          100
         : 0;
     const recall = sensitivity;
     const f1Score =
@@ -480,12 +489,14 @@ class RigorousAssessment {
     // MCC (Matthews Correlation Coefficient): Best single metric for imbalanced binary classification
     // Range: -1 (total disagreement) to +1 (perfect prediction), 0 = random guessing
     // Formula: (TP*TN - FP*FN) / sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN))
-    const mccNumerator = (totalTruePositives * totalTrueNegatives) - (totalFalsePositives * totalFalseNegatives);
+    const mccNumerator =
+      totalTruePositives * totalTrueNegatives -
+      totalFalsePositives * totalFalseNegatives;
     const mccDenominator = Math.sqrt(
       (totalTruePositives + totalFalsePositives) *
-      (totalTruePositives + totalFalseNegatives) *
-      (totalTrueNegatives + totalFalsePositives) *
-      (totalTrueNegatives + totalFalseNegatives)
+        (totalTruePositives + totalFalseNegatives) *
+        (totalTrueNegatives + totalFalsePositives) *
+        (totalTrueNegatives + totalFalseNegatives),
     );
     const mcc = mccDenominator === 0 ? 0 : mccNumerator / mccDenominator;
 
@@ -518,16 +529,25 @@ class RigorousAssessment {
         // First few misses hurt more, then diminishing returns
         return -Math.min(Math.log2(count + 1) * Math.abs(basePenalty), 30);
       };
-      penalties += diminishingPenalty(missedSSNs, GRADING_SCHEMA.penalties.missedSSN);
-      penalties += diminishingPenalty(missedNames, GRADING_SCHEMA.penalties.missedPatientName);
-      penalties += diminishingPenalty(missedDOBs, GRADING_SCHEMA.penalties.missedDOB);
+      penalties += diminishingPenalty(
+        missedSSNs,
+        GRADING_SCHEMA.penalties.missedSSN,
+      );
+      penalties += diminishingPenalty(
+        missedNames,
+        GRADING_SCHEMA.penalties.missedPatientName,
+      );
+      penalties += diminishingPenalty(
+        missedDOBs,
+        GRADING_SCHEMA.penalties.missedDOB,
+      );
       // Cap total penalties in development
       penalties = Math.max(penalties, -50);
     } else if (profile === "RESEARCH") {
       // RESEARCH: Minimal penalties - focus on understanding
       const capped = Math.min(
         missedSSNs * 2 + missedNames * 1 + missedDOBs * 1,
-        20
+        20,
       );
       penalties = -capped;
     } else {
@@ -580,24 +600,13 @@ class RigorousAssessment {
         : 0;
 
     if (skippedNonPHI.total > 0) {
-      console.error(
-        `\n╔═══════════════════════════════════════════════════════════════════════════╗`,
-      );
-      console.error(
-        `║  ⚠️  TEST SUITE VALIDATION WARNING                                         ║`,
-      );
-      console.error(
-        `╚═══════════════════════════════════════════════════════════════════════════╝`,
-      );
-      console.error(
-        `\n  ${skippedNonPHI.total}/${totalExpectedNonPHI} (${skippedPercentage}%) expected non-PHI items were NOT FOUND in documents.`,
-      );
-      console.error(
-        `  These items are in ground truth but templates don't include them.`,
-      );
-      console.error(
-        `  This does NOT affect test accuracy - skipped items are excluded from metrics.\n`,
-      );
+      console.error("");
+      console.error(fmt.headerBox("TEST SUITE VALIDATION WARNING"));
+      console.error(`
+  ${skippedNonPHI.total}/${totalExpectedNonPHI} (${skippedPercentage}%) expected non-PHI items were NOT FOUND in documents.
+  These items are in ground truth but templates don't include them.
+  This does NOT affect test accuracy - skipped items are excluded from metrics.
+`);
 
       console.error(`  Skipped by type:`);
       for (const [type, data] of Object.entries(skippedNonPHI.byType)) {
@@ -679,15 +688,8 @@ class RigorousAssessment {
    * Analyze patterns, root causes, and remediation strategies
    */
   investigateFailures() {
-    console.error(
-      `╔═══════════════════════════════════════════════════════════════════════════╗`,
-    );
-    console.error(
-      `║  PHASE 3: DEEP INVESTIGATION OF FAILURES                                  ║`,
-    );
-    console.error(
-      `╚═══════════════════════════════════════════════════════════════════════════╝\n`,
-    );
+    console.error(fmt.phaseHeader(3, "DEEP INVESTIGATION OF FAILURES"));
+    console.error("");
 
     if (this.results.failures.length === 0) {
       console.error("  ✓ No failures to investigate! Perfect PHI detection.\n");
@@ -1049,69 +1051,67 @@ class RigorousAssessment {
       ? ` (${options.profile || "DEVELOPMENT"} profile)`
       : " (HIPAA_STRICT profile)";
 
+    // Build report using formatter for consistent output
+    const divider = fmt.divider(fmt.BOX.SH);
+
     let report = `
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    VULPES CELARE - ASSESSMENT REPORT                          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+${fmt.headerBox("VULPES CELARE - ASSESSMENT REPORT")}
 
 ENGINE INFORMATION
-────────────────────────────────────────────────────────────────────────────────
+${divider}
   Name:            ${this.results.engineInfo.name}
   Version:         ${this.results.engineInfo.version}
   Variant:         ${this.results.engineInfo.variant}
   Active Filters:  ${this.results.engineInfo.activeFilters}
 
 TEST CONFIGURATION
-────────────────────────────────────────────────────────────────────────────────
+${divider}
   Documents:       ${this.results.documents.length}
   Processing Time: ${(this.results.timing.processingMs / 1000).toFixed(2)}s
   Avg per Doc:     ${(this.results.timing.processingMs / this.results.documents.length).toFixed(1)}ms
 
-══════════════════════════════════════════════════════════════════════════════
-                              FINAL GRADE${displayProfile}
-══════════════════════════════════════════════════════════════════════════════
+${fmt.divider(fmt.BOX.H)}
+${fmt.padToWidth(`FINAL GRADE${displayProfile}`, fmt.BOX_WIDTH, "center")}
+${fmt.divider(fmt.BOX.H)}
 
-                         ╔═══════════════╗
-                         ║    ${displayGrade.padStart(3)}        ║
-                         ║   ${displayScore}/100     ║
-                         ╚═══════════════╝
+${fmt.gradeBox(displayGrade, displayScore)}
 
-  ${displayDescription}
+${fmt.padToWidth(displayDescription, fmt.BOX_WIDTH, "center")}
 
-══════════════════════════════════════════════════════════════════════════════
+${fmt.divider(fmt.BOX.H)}
 
 CONFUSION MATRIX
-────────────────────────────────────────────────────────────────────────────────
-                          │ Actual PHI │ Actual Non-PHI │
-  ────────────────────────┼────────────┼────────────────┤
-  Predicted PHI (Redacted)│    ${String(cm.truePositives).padStart(5)}   │      ${String(cm.falsePositives).padStart(5)}     │
-  Predicted Non-PHI       │    ${String(cm.falseNegatives).padStart(5)}   │      ${String(cm.trueNegatives).padStart(5)}     │
-  ────────────────────────┼────────────┼────────────────┤
-  Total                   │    ${String(cm.totalPHI).padStart(5)}   │      ${String(cm.totalNonPHI).padStart(5)}     │
+${divider}
+                          | Actual PHI | Actual Non-PHI |
+  ------------------------+------------+----------------+
+  Predicted PHI (Redacted)|    ${String(cm.truePositives).padStart(5)}   |      ${String(cm.falsePositives).padStart(5)}     |
+  Predicted Non-PHI       |    ${String(cm.falseNegatives).padStart(5)}   |      ${String(cm.trueNegatives).padStart(5)}     |
+  ------------------------+------------+----------------+
+  Total                   |    ${String(cm.totalPHI).padStart(5)}   |      ${String(cm.totalNonPHI).padStart(5)}     |
 
 PRIMARY METRICS
-────────────────────────────────────────────────────────────────────────────────
-  SENSITIVITY (Recall):   ${m.sensitivity.toFixed(2)}%  ← PHI correctly redacted
-  SPECIFICITY:            ${m.specificity.toFixed(2)}%  ← Non-PHI correctly preserved
-  PRECISION (PPV):        ${m.precision.toFixed(2)}%  ← Redaction accuracy
+${divider}
+  SENSITIVITY (Recall):   ${m.sensitivity.toFixed(2)}%  <- PHI correctly redacted
+  SPECIFICITY:            ${m.specificity.toFixed(2)}%  <- Non-PHI correctly preserved
+  PRECISION (PPV):        ${m.precision.toFixed(2)}%  <- Redaction accuracy
   F1 SCORE:               ${m.f1Score.toFixed(2)}
-  F2 SCORE:               ${m.f2Score.toFixed(2)}    ← Recall-weighted (HIPAA gold standard)
-  MCC:                    ${(m.mcc || 0).toFixed(4)}  ← Gold standard for imbalanced data (-1 to +1)
+  F2 SCORE:               ${m.f2Score.toFixed(2)}    <- Recall-weighted (HIPAA gold standard)
+  MCC:                    ${(m.mcc || 0).toFixed(4)}  <- Gold standard for imbalanced data (-1 to +1)
 
 INTEGRITY CHECK
-────────────────────────────────────────────────────────────────────────────────
+${divider}
   Expected PHI Items:     ${m.integrityCheck.expectedPHI}
   Counted PHI Items:      ${m.integrityCheck.countedPHI}
-  Integrity Status:       ${m.integrityCheck.passed ? "✓ PASSED" : "❌ FAILED - Results may be unreliable!"}
+  Integrity Status:       ${m.integrityCheck.passed ? "[OK] PASSED" : "[X] FAILED - Results may be unreliable!"}
 
 SCORE BREAKDOWN
-────────────────────────────────────────────────────────────────────────────────
+${divider}
   Raw Score:              ${m.rawScore.toFixed(2)}
   Penalties/Bonuses:      ${m.penalties >= 0 ? "+" : ""}${m.penalties}
   Final Score:            ${m.finalScore}
 
 PERFORMANCE BY PHI TYPE
-────────────────────────────────────────────────────────────────────────────────
+${divider}
 `;
 
     const sortedTypes = Object.entries(m.byPHIType).sort(
@@ -1129,7 +1129,7 @@ PERFORMANCE BY PHI TYPE
 
     report += `
 PERFORMANCE BY ERROR LEVEL
-────────────────────────────────────────────────────────────────────────────────
+${divider}
 `;
 
     for (const level of ["none", "low", "medium", "high", "extreme"]) {
@@ -1145,7 +1145,7 @@ PERFORMANCE BY ERROR LEVEL
     if (this.results.failures.length > 0) {
       report += `
 MISSED PHI SAMPLES (${this.results.failures.length} total, showing first 20)
-────────────────────────────────────────────────────────────────────────────────
+${divider}
 `;
       for (const failure of this.results.failures.slice(0, 20)) {
         report += `  Doc ${failure.docId} (${failure.templateName}/${failure.errorLevel}):
@@ -1159,7 +1159,7 @@ MISSED PHI SAMPLES (${this.results.failures.length} total, showing first 20)
     if (this.results.overRedactions.length > 0) {
       report += `
 OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
-────────────────────────────────────────────────────────────────────────────────
+${divider}
 `;
       for (const over of this.results.overRedactions.slice(0, 10)) {
         report += `  Doc ${over.docId}: ${over.type} = "${over.value}"\n`;
@@ -1169,9 +1169,9 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
     // Add critical findings
     if (this.results.investigation?.criticalFindings?.length > 0) {
       report += `
-═══════════════════════════════════════════════════════════════════════════════
-                           CRITICAL FINDINGS
-═══════════════════════════════════════════════════════════════════════════════
+${fmt.divider(fmt.BOX.H)}
+${fmt.padToWidth("CRITICAL FINDINGS", fmt.BOX_WIDTH, "center")}
+${fmt.divider(fmt.BOX.H)}
 `;
       for (const finding of this.results.investigation.criticalFindings) {
         report += `
@@ -1187,9 +1187,9 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
     // Add recommendations
     if (this.results.investigation?.recommendations?.length > 0) {
       report += `
-═══════════════════════════════════════════════════════════════════════════════
-                           RECOMMENDATIONS
-═══════════════════════════════════════════════════════════════════════════════
+${fmt.divider(fmt.BOX.H)}
+${fmt.padToWidth("RECOMMENDATIONS", fmt.BOX_WIDTH, "center")}
+${fmt.divider(fmt.BOX.H)}
 `;
       for (const rec of this.results.investigation.recommendations.slice(
         0,
@@ -1207,9 +1207,9 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
     }
 
     report += `
-══════════════════════════════════════════════════════════════════════════════
-                              END OF REPORT
-══════════════════════════════════════════════════════════════════════════════
+${fmt.divider(fmt.BOX.H)}
+${fmt.padToWidth("END OF REPORT", fmt.BOX_WIDTH, "center")}
+${fmt.divider(fmt.BOX.H)}
 `;
 
     return report;
@@ -1230,12 +1230,12 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
     // Save JSON results
     const jsonPath = path.join(
       this.options.outputDir,
-      `rigorous-assessment-${timestamp}.json`,
+      `assessment-${timestamp}.json`,
     );
     const jsonData = {
       meta: {
         timestamp: new Date().toISOString(),
-        testSuite: "rigorous-assessment",
+        testSuite: "assessment",
         version: "3.0.0",
       },
       engine: this.results.engineInfo,
@@ -1247,10 +1247,10 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
       // Include smart grade info if provided
       smartGrade: reportOptions.smartGrade
         ? {
-          profile: reportOptions.profile,
-          grade: reportOptions.smartGrade.grade,
-          score: reportOptions.smartGrade.finalScore,
-        }
+            profile: reportOptions.profile,
+            grade: reportOptions.smartGrade.grade,
+            score: reportOptions.smartGrade.finalScore,
+          }
         : null,
     };
     fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
@@ -1258,7 +1258,7 @@ OVER-REDACTIONS (${this.results.overRedactions.length} total, showing first 10)
     // Save text report (with smart grade if provided)
     const reportPath = path.join(
       this.options.outputDir,
-      `rigorous-assessment-${timestamp}.txt`,
+      `assessment-${timestamp}.txt`,
     );
     fs.writeFileSync(reportPath, this.generateReport(reportOptions));
 

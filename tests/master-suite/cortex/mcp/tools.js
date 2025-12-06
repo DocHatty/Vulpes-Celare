@@ -524,7 +524,9 @@ async function executeTool(name, args, modules) {
       return runDiagnostics(args, modules);
 
     default:
-      throw new Error(`Unknown tool: ${name}. Available tools: ${TOOLS.map(t => t.name).join(", ")}`);
+      throw new Error(
+        `Unknown tool: ${name}. Available tools: ${TOOLS.map((t) => t.name).join(", ")}`,
+      );
   }
 }
 
@@ -659,10 +661,22 @@ async function runTests(args, modules) {
 
     // Confusion matrix (use metrics source for consistency)
     confusionMatrix: {
-      truePositives: metrics.confusionMatrix?.truePositives ?? testResults.confusionMatrix?.tp ?? 0,
-      trueNegatives: metrics.confusionMatrix?.trueNegatives ?? testResults.confusionMatrix?.tn ?? 0,
-      falsePositives: metrics.confusionMatrix?.falsePositives ?? testResults.confusionMatrix?.fp ?? 0,
-      falseNegatives: metrics.confusionMatrix?.falseNegatives ?? testResults.confusionMatrix?.fn ?? 0,
+      truePositives:
+        metrics.confusionMatrix?.truePositives ??
+        testResults.confusionMatrix?.tp ??
+        0,
+      trueNegatives:
+        metrics.confusionMatrix?.trueNegatives ??
+        testResults.confusionMatrix?.tn ??
+        0,
+      falsePositives:
+        metrics.confusionMatrix?.falsePositives ??
+        testResults.confusionMatrix?.fp ??
+        0,
+      falseNegatives:
+        metrics.confusionMatrix?.falseNegatives ??
+        testResults.confusionMatrix?.fn ??
+        0,
       totalPHI: metrics.confusionMatrix?.totalPHI ?? 0,
       totalNonPHI: metrics.confusionMatrix?.totalNonPHI ?? 0,
       // Integrity check: TP + FN should equal totalPHI
@@ -672,25 +686,25 @@ async function runTests(args, modules) {
     // Top failure with full context
     topFailure: topFailure
       ? {
-        type: topFailure.type,
-        count: topFailure.count,
-        examples: topFailure.items.slice(0, 5).map((f) => ({
-          value: f.value,
-          context: f.context?.substring(0, 100),
-          errorLevel: f.errorLevel,
-        })),
-        fileToEdit: fileToEdit?.path || null,
-        lineHint: fileToEdit?.lineHint || null,
-        historicalContext: historyContext
-          ? {
-            summary: historyContext.summary,
-            previousSuccesses: historyContext.relatedSuccesses?.length || 0,
-            previousFailures: historyContext.relatedFailures?.length || 0,
-            warnings: historyContext.warnings?.map((w) => w.message) || [],
-            suggestedApproach: historyContext.suggestedApproach || null,
-          }
-          : null,
-      }
+          type: topFailure.type,
+          count: topFailure.count,
+          examples: topFailure.items.slice(0, 5).map((f) => ({
+            value: f.value,
+            context: f.context?.substring(0, 100),
+            errorLevel: f.errorLevel,
+          })),
+          fileToEdit: fileToEdit?.path || null,
+          lineHint: fileToEdit?.lineHint || null,
+          historicalContext: historyContext
+            ? {
+                summary: historyContext.summary,
+                previousSuccesses: historyContext.relatedSuccesses?.length || 0,
+                previousFailures: historyContext.relatedFailures?.length || 0,
+                warnings: historyContext.warnings?.map((w) => w.message) || [],
+                suggestedApproach: historyContext.suggestedApproach || null,
+              }
+            : null,
+        }
       : null,
 
     // Action instruction for LLM
@@ -770,9 +784,7 @@ async function executeTestSuite(documentCount, profile) {
       }
     });
 
-    const {
-      RigorousAssessment,
-    } = require("../../assessment/rigorous-assessment");
+    const { RigorousAssessment } = require("../../assessment/assessment");
 
     // Create assessment instance with grading profile
     const assessment = new RigorousAssessment({
@@ -1435,8 +1447,10 @@ async function runDiagnostics(args, modules) {
     platform: process.platform,
     arch: process.arch,
     memoryUsage: {
-      heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + " MB",
-      heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + " MB",
+      heapUsed:
+        Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + " MB",
+      heapTotal:
+        Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + " MB",
       rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + " MB",
     },
   };
@@ -1444,10 +1458,22 @@ async function runDiagnostics(args, modules) {
   // 2. Module Status
   diagnostics.modules = {};
   const expectedModules = [
-    "knowledgeBase", "metricsEngine", "codebaseAnalyzer", "temporalIndex",
-    "patternRecognizer", "hypothesisEngine", "interventionTracker", "insightGenerator",
-    "experimentRunner", "snapshotManager", "comparisonEngine", "rollbackManager",
-    "decisionEngine", "historyConsultant", "recommendationBuilder", "codebaseStateTracker",
+    "knowledgeBase",
+    "metricsEngine",
+    "codebaseAnalyzer",
+    "temporalIndex",
+    "patternRecognizer",
+    "hypothesisEngine",
+    "interventionTracker",
+    "insightGenerator",
+    "experimentRunner",
+    "snapshotManager",
+    "comparisonEngine",
+    "rollbackManager",
+    "decisionEngine",
+    "historyConsultant",
+    "recommendationBuilder",
+    "codebaseStateTracker",
   ];
 
   let loadedCount = 0;
@@ -1465,13 +1491,17 @@ async function runDiagnostics(args, modules) {
   diagnostics.testInfrastructure = {};
   try {
     const fs = require("fs");
-    const assessmentPath = require.resolve("../../assessment/rigorous-assessment");
-    diagnostics.testInfrastructure.rigorousAssessment = fs.existsSync(assessmentPath)
+    const assessmentPath = require.resolve("../../assessment/assessment");
+    diagnostics.testInfrastructure.rigorousAssessment = fs.existsSync(
+      assessmentPath,
+    )
       ? "✓ available"
       : "✗ NOT FOUND";
   } catch (e) {
     diagnostics.testInfrastructure.rigorousAssessment = `✗ ERROR: ${e.message}`;
-    diagnostics.issues.push("RigorousAssessment module not found - tests will fail");
+    diagnostics.issues.push(
+      "RigorousAssessment module not found - tests will fail",
+    );
   }
 
   try {
@@ -1479,7 +1509,9 @@ async function runDiagnostics(args, modules) {
     diagnostics.testInfrastructure.vulpesCelareEngine = "✓ built";
   } catch (e) {
     diagnostics.testInfrastructure.vulpesCelareEngine = "✗ NOT BUILT";
-    diagnostics.issues.push("VulpesCelare engine not built - run 'npm run build' first");
+    diagnostics.issues.push(
+      "VulpesCelare engine not built - run 'npm run build' first",
+    );
     diagnostics.recommendations.push("Run: npm run build");
   }
 
@@ -1492,11 +1524,13 @@ async function runDiagnostics(args, modules) {
 
   // 5. Generate Recommendations
   if (diagnostics.issues.length === 0) {
-    diagnostics.recommendations.push("All systems operational - ready for testing");
+    diagnostics.recommendations.push(
+      "All systems operational - ready for testing",
+    );
   } else {
     diagnostics.status = "ISSUES_FOUND";
     diagnostics.recommendations.unshift(
-      `Found ${diagnostics.issues.length} issue(s) that should be addressed`
+      `Found ${diagnostics.issues.length} issue(s) that should be addressed`,
     );
   }
 

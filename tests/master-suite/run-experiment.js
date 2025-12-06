@@ -17,10 +17,13 @@
  */
 
 const path = require("path");
-const { RigorousAssessment } = require("./assessment/rigorous-assessment");
+const { RigorousAssessment } = require("./assessment/assessment");
 const { ExperimentRunner } = require("./cortex/experiments/experiment-runner");
 const VulpesCortex = require("./cortex");
 const { seedGlobal, resetGlobal } = require("./generators/seeded-random");
+
+// Import console formatter for beautiful, glitch-free output
+const fmt = require("./cortex/core/console-formatter");
 
 // Mock electron
 process.env.NODE_ENV = "test";
@@ -62,20 +65,7 @@ const EXPERIMENT_CONFIG = {
 // ============================================================================
 
 async function main() {
-  console.error(`
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║   ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
-║   ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
-║   ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
-║   ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
-║    ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
-║     ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
-║                                                                              ║
-║              A / B   E X P E R I M E N T   R U N N E R                      ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-`);
+  console.error(fmt.experimentBanner());
 
   // Initialize Cortex
   console.error("  Initializing Vulpes Cortex...");
@@ -213,7 +203,9 @@ async function main() {
   );
 
   console.error(`  Status: ${result.status}`);
-  console.error(`  Overall Effect: ${result.analysis?.overallEffect || "N/A"}\n`);
+  console.error(
+    `  Overall Effect: ${result.analysis?.overallEffect || "N/A"}\n`,
+  );
 
   // Show metrics comparison
   if (result.analysis?.metricsComparison) {

@@ -3,7 +3,9 @@
     "allow": [
       "Bash(node:*)",
       "Bash(npm run build:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(dir \"C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\")",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

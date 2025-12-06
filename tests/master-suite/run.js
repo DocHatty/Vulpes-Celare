@@ -168,7 +168,10 @@
  */
 
 const path = require("path");
-const { RigorousAssessment } = require("./assessment/rigorous-assessment");
+const { RigorousAssessment } = require("./assessment/assessment");
+
+// Import console formatter for beautiful, glitch-free output
+const fmt = require("./cortex/core/console-formatter");
 
 // Try to load learning engine (graceful failure if not available)
 let LearningEngine, SmartGrader, generateGradingReport;
@@ -272,23 +275,7 @@ global.require = (moduleName) => {
 // RUN ASSESSMENT
 // ============================================================================
 async function main() {
-  log(`
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║   ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
-║   ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
-║   ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
-║   ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
-║    ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
-║     ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
-║                                                                              ║
-║              C E L A R E   -   E V O L U T I O N A R Y   T E S T            ║
-║                                                                              ║
-║   Comprehensive PHI Redaction Assessment Suite                               ║
-║   Self-Learning • Pattern Recognition • Smart Grading                        ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-`);
+  log(fmt.testRunnerBanner());
 
   // Initialize Vulpes Cortex (advanced learning system)
   let cortex = null;
@@ -328,15 +315,7 @@ async function main() {
   // Show Cortex insights if requested
   if (options.cortexInsights && cortex) {
     const insights = await cortex.getInsights();
-    log(
-      "\n╔═══════════════════════════════════════════════════════════════════════════╗",
-    );
-    log(
-      "║  VULPES CORTEX - ACTIVE INSIGHTS                                          ║",
-    );
-    log(
-      "╚═══════════════════════════════════════════════════════════════════════════╝\n",
-    );
+    log("\n" + fmt.headerBox("VULPES CORTEX - ACTIVE INSIGHTS") + "\n");
     log(JSON.stringify(insights, null, 2));
     if (!options.documentCount) {
       process.exit(0);
@@ -353,15 +332,7 @@ async function main() {
 
   // Show LLM context if requested
   if (options.showContext && learningEngine) {
-    log(
-      "\n╔═══════════════════════════════════════════════════════════════════════════╗",
-    );
-    log(
-      "║  LLM CONTEXT FOR IMPROVEMENT                                              ║",
-    );
-    log(
-      "╚═══════════════════════════════════════════════════════════════════════════╝\n",
-    );
+    log("\n" + fmt.headerBox("LLM CONTEXT FOR IMPROVEMENT") + "\n");
     log(JSON.stringify(learningEngine.getLLMContext(), null, 2));
     if (!options.documentCount) {
       process.exit(0);
@@ -421,9 +392,7 @@ async function main() {
     let cortexAnalysis = null;
 
     if (cortex) {
-      log(
-        "\nPHASE 5: Vulpes Cortex analysis (with history consultation)...\n",
-      );
+      log("\nPHASE 5: Vulpes Cortex analysis (with history consultation)...\n");
 
       // Analyze with Cortex - this automatically consults history
       cortexAnalysis = await cortex.analyzeResults(
@@ -480,15 +449,7 @@ async function main() {
 
       // Cortex analysis report
       if (cortex && cortexAnalysis) {
-        log(
-          "\n╔═══════════════════════════════════════════════════════════════════════════╗",
-        );
-        log(
-          "║  VULPES CORTEX - ANALYSIS SUMMARY                                         ║",
-        );
-        log(
-          "╚═══════════════════════════════════════════════════════════════════════════╝\n",
-        );
+        log("\n" + fmt.headerBox("VULPES CORTEX - ANALYSIS SUMMARY") + "\n");
 
         // Show grade
         log(
@@ -615,9 +576,7 @@ async function main() {
       const hipaaGrade =
         smartGradeResults.allProfiles.HIPAA_STRICT?.grade || grade;
 
-      log(
-        `\n  Exit decision based on ${options.profile} profile: ${grade}`,
-      );
+      log(`\n  Exit decision based on ${options.profile} profile: ${grade}`);
       log(`  (HIPAA_STRICT would be: ${hipaaGrade})`);
     }
 
