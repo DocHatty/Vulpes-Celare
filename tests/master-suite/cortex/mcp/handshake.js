@@ -296,6 +296,11 @@ KEY PRINCIPLE: I always consult history before making recommendations.
 AVAILABLE TOOLS: ${capabilities.capabilities.tools.count}
 AVAILABLE PROMPTS: ${capabilities.capabilities.prompts.count}
 
+REAFFIRMATIONAL PROTOCOL: ACTIVE ✅
+• Every action returns a "ResponseEnvelope"
+• Next Steps are explicitly prioritized
+• Workflow Guards are enforcing safety
+
 Try these to get started:
 • "What should I do next?" - Get prioritized recommendations
 • "Analyze my test results" - Understand what's happening
