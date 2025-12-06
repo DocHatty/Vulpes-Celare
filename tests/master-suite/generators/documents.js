@@ -2,6 +2,15 @@
  * MASTER TEST SUITE - Document Generators
  * Generate realistic medical documents with proper PHI expectations
  *
+ * @deprecated This file is LEGACY CODE. Use `documents/templates.js` instead.
+ *             The templates.js module provides the same functionality with:
+ *             - Consistent PHI type naming (aligned with PHI_TYPES constants)
+ *             - Better integration with the assessment system
+ *             - Unified API via generateCompletePHIDataset()
+ *
+ *             Migration: Replace require('./generators/documents') with
+ *                        require('./documents/templates')
+ *
  * HIPAA COMPLIANCE NOTES:
  * - Patient names, SSN, MRN, DOB, addresses, phones, emails = PHI (MUST redact)
  * - Ages 90+ = PHI (MUST redact), Ages under 90 = NOT PHI
