@@ -20,9 +20,9 @@
 
 ## Why Vulpes Celare?
 
-Clinical documentation drives medical education, research, and innovation—but safely sharing it remains a persistent challenge.
+Clinical documentation drives medical education, research, and innovation - but safely sharing it remains a persistent challenge.
 
-**Most PHI redaction tools are opaque black-boxes where you can't inspect what happens.** Vulpes Celare is fully open source—every decision is traceable.
+**Most PHI redaction tools are opaque black-boxes where you can't inspect what happens.** Vulpes Celare is fully open source - every decision is traceable.
 
 **Generic tools aren't tuned for medical vocabulary.** We're healthcare-native, built for US medical formats from day one.
 
@@ -182,10 +182,10 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 
 **Key Capabilities:**
 
-- **Context-Aware Detection** — Knows "Dr. Wilson" is a person but "Wilson's disease" is a medical condition
-- **OCR Error Resilience** — Catches PHI even when scanners corrupt characters (`0`↔`O`, `1`↔`l`, `5`↔`S`)
-- **Smart Overlap Handling** — When multiple filters match the same text, picks the optimal redaction
-- **Zero External Calls** — Works completely offline, air-gapped deployment ready
+- **Context-Aware Detection** - Knows "Dr. Wilson" is a person but "Wilson's disease" is a medical condition
+- **OCR Error Resilience** - Catches PHI even when scanners corrupt characters (`0`↔`O`, `1`↔`l`, `5`↔`S`)
+- **Smart Overlap Handling** - When multiple filters match the same text, picks the optimal redaction
+- **Zero External Calls** - Works completely offline, air-gapped deployment ready
 
 ---
 
@@ -201,14 +201,14 @@ Beyond basic accuracy, Vulpes Celare employs **clinical-grade statistical analys
 
 | Profile | Sensitivity Weight | Use Case |
 |---------|-------------------|----------|
-| `HIPAA_STRICT` | 70% | Production validation—zero tolerance |
+| `HIPAA_STRICT` | 70% | Production validation - zero tolerance |
 | `DEVELOPMENT` | 60% | Iterative improvement with diminishing penalties |
 | `OCR_TOLERANT` | 55% | Scanned documents with artifact allowances |
 | `RESEARCH` | 50% | Pattern analysis and experimentation |
 
 **Hard Caps:** Sensitivity below 90% caps grade at F regardless of other metrics. Below 95% caps at C. No gaming the system.
 
-**Penalty Scaling:** Diminishing returns on repeated failures—the 50th missed SSN costs less than the 1st, encouraging incremental progress rather than punishing edge cases.
+**Penalty Scaling:** Diminishing returns on repeated failures - the 50th missed SSN costs less than the 1st, encouraging incremental progress rather than punishing edge cases.
 
 ---
 
@@ -228,12 +228,18 @@ Beyond basic accuracy, Vulpes Celare employs **clinical-grade statistical analys
 
 ## 🧠 Vulpes Cortex
 
-**Self-learning test intelligence** that remembers what traditional testing forgets:
+**Self-learning test intelligence** with autonomous reasoning capabilities that remembers what traditional testing forgets:
 
-- **Failure Patterns** — Why specific PHI types slip through
-- **Fix History** — What worked, what didn't, and why
-- **Bi-Temporal Tracking** — When bugs existed vs. when you found them
-- **Regression Alerts** — Automatic detection of metric degradation
+- **Failure Patterns** - Why specific PHI types slip through
+- **Fix History** - What worked, what didn't, and why
+- **Bi-Temporal Tracking** - When bugs existed vs. when you found them
+- **Regression Alerts** - Automatic detection of metric degradation
+
+**Enterprise-Grade Testing Infrastructure:**
+
+- **MCP Protocol Native** - First-class Model Context Protocol integration enables agentic orchestration of test pipelines, live metric queries, and autonomous fix-propose-validate loops
+- **LLM-Augmented Analysis** - Claude, GPT, and Gemini can introspect failure corpuses, synthesize hypotheses, and generate targeted regression suites via structured tool calls
+- **Programmatic API Surface** - RESTful and SDK interfaces expose every metric, filter weight, and grading profile for CI/CD integration, observability dashboards, and custom toolchain composition
 
 ```bash
 node tests/master-suite/run.js --count 200 --cortex --cortex-report
@@ -249,7 +255,7 @@ Vulpes Celare achieves "symbiotic excellence" by assigning each layer what it do
 |-----------|------|------------|
 | **Redaction API** | **The Muscle** | **Speed & Scale.** Processes 7,000+ docs in seconds. Manages persistence, job queues, and the 26+ specialized regex filters. It does the heavy lifting so the AI doesn't have to. |
 | **MCP Layer** | **The Bridge** | **Safety & Protocol.** Enforces strict contracts (e.g., "Must consult history before fixing"). Acts as the secure nervous system connecting the Brain to the Muscle, preventing hallucinations and ensuring safe execution. |
-| **LLM** | **The Brain** | **Reasoning & Strategy.** It doesn't run the tests—it *interprets* them. It analyzes complex failure patterns, formulates hypotheses, and writes the code fixes that the API validates. |
+| **LLM** | **The Brain** | **Reasoning & Strategy.** It doesn't run the tests - it *interprets* them. It analyzes complex failure patterns, formulates hypotheses, and writes the code fixes that the API validates. |
 | **OCR Engine** | **The Lens** | **Resilience.** Our `OCR_TOLERANT` profiles see through the noise. Where rigid systems fail on `0` vs `O` or scanned artifacts, the engine applies fuzzy logic to ensure compliance even on dirty data. |
 
 **The result?** A self-healing system where the AI diagnoses the problem (LLM), the protocol ensures safety (MCP), and the engine executes the cure (API) with millisecond precision.
@@ -260,8 +266,8 @@ Vulpes Celare achieves "symbiotic excellence" by assigning each layer what it do
 
 Cortex exposes an **MCP (Model Context Protocol) server** enabling AI agents to autonomously run tests, analyze failures, and propose fixes.
 
-- **AI Agents:** See [`.agent/CLAUDE.md`](./.agent/CLAUDE.md)
-- **Full Docs:** See [`tests/master-suite/cortex/README.md`](./tests/master-suite/cortex/README.md)
+- **AI Agents** - See [`.agent/CLAUDE.md`](./.agent/CLAUDE.md)
+- **Full Docs** - See [`tests/master-suite/cortex/README.md`](./tests/master-suite/cortex/README.md)
 
 ---
 
@@ -298,7 +304,7 @@ cd vulpes-celare && npm install && npm run build && npm test
 |---------|-------------|
 | **🔗 Immutable Audit Trail** | Every redaction event written to append-only blockchain. Tamper-proof compliance records that auditors can independently verify. |
 | **🔐 Cryptographic Proofs** | Zero-knowledge proofs demonstrate PHI was properly handled without revealing the PHI itself. Prove compliance without exposure. |
-| **✅ Independent Verification** | Third parties can verify redaction integrity against blockchain anchors. No trust required—verify everything. |
+| **✅ Independent Verification** | Third parties can verify redaction integrity against blockchain anchors. No trust required - verify everything. |
 | **🛡️ Granular Access Control** | Role-based permissions with cryptographic enforcement. Time-limited access tokens. Complete access lineage. |
 | **📋 Regulatory Export** | One-click compliance reports for HIPAA audits with blockchain-backed evidence chains. |
 
@@ -308,7 +314,7 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 ## 📜 License
 
-**AGPL-3.0 with Commercial Exception** — See [LICENSE](LICENSE)
+**AGPL-3.0 with Commercial Exception** - See [LICENSE](LICENSE)
 
 **You can freely use Vulpes Celare if:**
 
@@ -339,7 +345,7 @@ For commercial licensing: See [docs/legal/COMMERCIAL_LICENSE.md](docs/legal/COMM
 Contributions welcome! See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
 
 - Read the [Code of Conduct](.github/CODE_OF_CONDUCT.md) before participating
-- Report vulnerabilities via [Security Policy](SECURITY.md)—never share real PHI
+- Report vulnerabilities via [Security Policy](SECURITY.md) - never share real PHI
 - File issues using provided templates
 
 ---
