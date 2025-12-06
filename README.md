@@ -296,19 +296,18 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 ---
 
-## 🚀 Roadmap: Blockchain-Verified Compliance
+## ⛓️ Cryptographic Provenance
 
-**Coming Q1 2026:** Immutable audit infrastructure powered by distributed ledger technology.
+**Trust, but verify.** Vulpes Celare now includes a local, immutable blockchain ledger that cryptographically anchors every redaction event.
 
-| Feature | Description |
-|---------|-------------|
-| **🔗 Immutable Audit Trail** | Every redaction event written to append-only blockchain. Tamper-proof compliance records that auditors can independently verify. |
-| **🔐 Cryptographic Proofs** | Zero-knowledge proofs demonstrate PHI was properly handled without revealing the PHI itself. Prove compliance without exposure. |
-| **✅ Independent Verification** | Third parties can verify redaction integrity against blockchain anchors. No trust required - verify everything. |
-| **🛡️ Granular Access Control** | Role-based permissions with cryptographic enforcement. Time-limited access tokens. Complete access lineage. |
-| **📋 Regulatory Export** | One-click compliance reports for HIPAA audits with blockchain-backed evidence chains. |
+| Capability | Description |
+|:---|:---|
+| **Merkle-Linked Audit Log** | Every action is hashed (SHA-256) and cryptographically linked to the previous entry. Tampering with history breaks the chain immediately. |
+| **Redaction Certificates** | Automatically Minted receipts prove that $H_{original} \rightarrow H_{redacted} + H_{manifest}$. Verify compliance mathematically without revealing PHI. |
+| **Zero-Knowledge Architecture** | Designed for ZK-proof verification. Allow third-party auditors to verify protocol adherence without granting them access to patient data. |
+| **Fail-Safe Integrity** | The provenance layer operates asynchronously. Your application speed is never compromised, but your audit trail is always secured. |
 
-> **Why blockchain?** Healthcare compliance requires provable, immutable records. Traditional databases can be altered. Blockchain-anchored audit trails provide the cryptographic guarantees regulators increasingly demand.
+> **The Ledger Remembers:** Your data stays local, but its integrity is anchored by math. Review the chain at any time via the `/provenance/verify/:id` API.
 
 ---
 
