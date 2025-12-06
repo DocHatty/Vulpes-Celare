@@ -182,9 +182,113 @@
           "confidence": 0.6
         }
       ]
+    },
+    {
+      "id": "CMP-1764974431559",
+      "timestamp": "2025-12-05T22:40:31.559Z",
+      "options": {},
+      "summary": {
+        "direction": "NEUTRAL",
+        "verdict": "No significant change",
+        "keyChanges": {
+          "sensitivity": {
+            "before": 97.77,
+            "after": 97.31,
+            "delta": -0.45999999999999375
+          },
+          "specificity": {
+            "before": 92.5,
+            "after": 92.58,
+            "delta": 0.0799999999999983
+          },
+          "f1": {
+            "delta": 0
+          }
+        },
+        "documentsCounted": {
+          "before": 0,
+          "after": 0
+        }
+      },
+      "metrics": {
+        "sensitivity": {
+          "before": 97.77,
+          "after": 97.31,
+          "delta": -0.45999999999999375,
+          "percentChange": -0.4704919709522285,
+          "improved": false,
+          "significant": false
+        },
+        "specificity": {
+          "before": 92.5,
+          "after": 92.58,
+          "delta": 0.0799999999999983,
+          "percentChange": 0.08648648648648465,
+          "improved": true,
+          "significant": false
+        },
+        "falsePositives": {
+          "before": 97,
+          "after": 96,
+          "delta": -1,
+          "percentChange": -1.0309278350515463,
+          "improved": false,
+          "significant": true
+        },
+        "falseNegatives": {
+          "before": 152,
+          "after": 183,
+          "delta": 31,
+          "percentChange": 20.394736842105264,
+          "improved": true,
+          "significant": true
+        }
+      },
+      "documents": {
+        "improved": [],
+        "regressed": [],
+        "unchanged": [],
+        "onlyInBefore": [],
+        "onlyInAfter": [],
+        "stats": {
+          "improved": 0,
+          "regressed": 0,
+          "unchanged": 0
+        }
+      },
+      "phiTypes": {},
+      "errors": {
+        "fixed": [],
+        "introduced": [],
+        "persistent": [],
+        "stats": {
+          "totalBefore": 0,
+          "totalAfter": 0,
+          "fixed": 0,
+          "introduced": 0,
+          "persistent": 0
+        }
+      },
+      "significance": {
+        "sensitivitySignificant": false,
+        "specificitySignificant": false,
+        "f1Significant": false,
+        "overallSignificant": false,
+        "threshold": 5,
+        "sampleSize": 1,
+        "confidence": "LOW"
+      },
+      "recommendations": [
+        {
+          "priority": "LOW",
+          "action": "GATHER_MORE_DATA",
+          "reason": "Changes not statistically significant - need more test data",
+          "confidence": 0.6
+        }
+      ]
     }
   ],
   "stats": {
-    "total": 2
+    "total": 3
   }
 }

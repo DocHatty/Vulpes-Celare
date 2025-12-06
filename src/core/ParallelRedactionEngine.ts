@@ -341,13 +341,14 @@ export class ParallelRedactionEngine {
 
     // STEP 2.6: ENSEMBLE ENHANCEMENT - Multi-signal scoring (RESEARCH-BACKED)
     // Applies ensemble voting with dictionary, structure, label, and chaos signals
+    // NOTE: Currently only ENHANCING confidence, not filtering - system needs tuning
     const beforeEnsemble = allSpans.length;
-    const spanEnhancer = new SpanEnhancer({ minConfidence: 0.50, modifySpans: true });
+    const spanEnhancer = new SpanEnhancer({ minConfidence: 0.0, modifySpans: true });
     const enhancementAnalysis = spanEnhancer.analyzeSpans(allSpans, text);
     
-    // Filter out low-confidence spans based on ensemble voting
-    allSpans = allSpans.filter(span => span.confidence >= 0.50);
-    const ensembleRemoved = beforeEnsemble - allSpans.length;
+    // Log enhancement stats but DON'T filter yet - let existing filters handle it
+    // Once tuned, we can enable filtering with appropriate threshold
+    const ensembleRemoved = 0; // Not filtering yet
     
     RadiologyLogger.pipelineStage(
       "ENSEMBLE",
