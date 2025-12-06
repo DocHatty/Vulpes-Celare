@@ -86,6 +86,9 @@ const { getPrompts, getPrompt } = require("./prompts");
 // Import console formatter for beautiful, glitch-free output
 const fmt = require("../core/console-formatter");
 
+// Import database adapter for SQLite-backed operations
+const { withDatabase, getDatabaseInstance } = require("../core/db-adapter");
+
 // ============================================================================
 // ╔══════════════════════════════════════════════════════════════════════════╗
 // ║  ⚠️  MCP PROTOCOL SAFETY - READ THIS BEFORE EDITING ANY CODE! ⚠️          ║
@@ -347,6 +350,10 @@ class VulpesCortexServer {
         insightGenerator: this.modules.insightGenerator,
         metricsEngine: this.modules.metricsEngine,
       });
+
+      // Add database to modules for direct access
+      this.modules = withDatabase(this.modules);
+      console.error("[Vulpes Cortex] Database adapter connected");
 
       this.initialized = true;
       console.error("[Vulpes Cortex] All modules initialized successfully");
@@ -624,7 +631,7 @@ class VulpesCortexServer {
       );
 
       // Keep process alive - the SDK handles the message loop
-      await new Promise(() => {}); // Never resolves
+      await new Promise(() => { }); // Never resolves
     }
   }
 

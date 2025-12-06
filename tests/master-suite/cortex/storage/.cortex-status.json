@@ -1,8 +1,8 @@
 {
   "status": "running",
-  "pid": 42496,
+  "pid": 5384,
   "port": 3100,
-  "startedAt": "2025-12-06T16:29:39.541Z",
+  "startedAt": "2025-12-06T18:50:05.933Z",
   "server": "vulpes-learning-brain",
   "version": "1.0.0"
 }
