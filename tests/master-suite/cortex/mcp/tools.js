@@ -37,6 +37,9 @@
 
 const { spawn } = require("child_process");
 const path = require("path");
+const { ResponseEnvelope } = require("./response-protocol");
+const { WorkflowGuard } = require("./workflow-guard");
+const { handshakeManager } = require("./handshake");
 
 const TOOLS = [
   // ─────────────────────────────────────────────────────────────────────────
@@ -477,6 +480,41 @@ Use this when experiencing issues or before starting a testing session.`,
 // ============================================================================
 
 async function executeTool(name, args, modules) {
+  const sessionState = handshakeManager.getSessionState();
+
+  // 1. Workflow Guard
+  const guard = new WorkflowGuard(sessionState);
+  const validation = guard.validate(name);
+
+  if (!validation.allowed) {
+    const context = { toolName: name, sessionState, modules, workflow: guard };
+    const envelope = new ResponseEnvelope({
+      success: false,
+      error: validation.error,
+      required: validation.required
+    }, context);
+    return envelope.toJSON();
+  }
+
+  // 2. Execute Tool
+  let result;
+  try {
+    result = await executeToolInternal(name, args, modules);
+  } catch (error) {
+    result = { success: false, error: error.message };
+  }
+
+  // 3. Record Operation
+  handshakeManager.recordOperation(name, args, result);
+
+  // 4. Wrap Response
+  const context = { toolName: name, sessionState, modules, workflow: guard };
+  const envelope = new ResponseEnvelope(result, context);
+
+  return envelope.toJSON();
+}
+
+async function executeToolInternal(name, args, modules) {
   switch (name) {
     // TEST EXECUTION - PRIMARY TOOL
     case "run_tests":
@@ -702,25 +740,25 @@ async function runTests(args, modules) {
     // Top failure with full context
     topFailure: topFailure
       ? {
-          type: topFailure.type,
-          count: topFailure.count,
-          examples: topFailure.items.slice(0, 5).map((f) => ({
-            value: f.value,
-            context: f.context?.substring(0, 100),
-            errorLevel: f.errorLevel,
-          })),
-          fileToEdit: fileToEdit?.path || null,
-          lineHint: fileToEdit?.lineHint || null,
-          historicalContext: historyContext
-            ? {
-                summary: historyContext.summary,
-                previousSuccesses: historyContext.relatedSuccesses?.length || 0,
-                previousFailures: historyContext.relatedFailures?.length || 0,
-                warnings: historyContext.warnings?.map((w) => w.message) || [],
-                suggestedApproach: historyContext.suggestedApproach || null,
-              }
-            : null,
-        }
+        type: topFailure.type,
+        count: topFailure.count,
+        examples: topFailure.items.slice(0, 5).map((f) => ({
+          value: f.value,
+          context: f.context?.substring(0, 100),
+          errorLevel: f.errorLevel,
+        })),
+        fileToEdit: fileToEdit?.path || null,
+        lineHint: fileToEdit?.lineHint || null,
+        historicalContext: historyContext
+          ? {
+            summary: historyContext.summary,
+            previousSuccesses: historyContext.relatedSuccesses?.length || 0,
+            previousFailures: historyContext.relatedFailures?.length || 0,
+            warnings: historyContext.warnings?.map((w) => w.message) || [],
+            suggestedApproach: historyContext.suggestedApproach || null,
+          }
+          : null,
+      }
       : null,
 
     // Action instruction for LLM

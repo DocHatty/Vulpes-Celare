@@ -39,6 +39,8 @@
  */
 
 const { MCP_CONFIG } = require("../core/config");
+const { generateContextHash } = require("./response-protocol");
+const crypto = require("crypto");
 
 // ============================================================================
 // HANDSHAKE MANAGER
@@ -49,6 +51,17 @@ class HandshakeManager {
     this.clientInfo = null;
     this.negotiatedCapabilities = null;
     this.connected = false;
+    this.sessionState = this.createEmptySession();
+  }
+
+  createEmptySession() {
+    return {
+      sessionId: crypto.randomUUID(),
+      startTime: new Date().toISOString(),
+      operations: [],
+      dataShared: [],
+      contextHash: null
+    };
   }
 
   /**
@@ -336,6 +349,28 @@ I'm here to help make your PHI detection better, one experiment at a time.
     this.clientInfo = null;
     this.negotiatedCapabilities = null;
     this.connected = false;
+    this.sessionState = this.createEmptySession();
+  }
+
+  /**
+   * Record an operation in the session history
+   */
+  recordOperation(toolName, args, result) {
+    // Add operation to history
+    this.sessionState.operations.push({
+      tool: toolName,
+      timestamp: new Date().toISOString(),
+      status: 'success'
+    });
+
+    // Update context hash
+    this.sessionState.contextHash = generateContextHash(this.sessionState);
+
+    return this.sessionState;
+  }
+
+  getSessionState() {
+    return this.sessionState;
   }
 }
 
@@ -361,4 +396,6 @@ module.exports = {
   generateWelcomeMessage: () => handshakeManager.generateWelcomeMessage(),
   generateContextSummary: (modules) =>
     handshakeManager.generateContextSummary(modules),
+  getSessionState: () => handshakeManager.getSessionState(),
+  recordOperation: (tool, args, res) => handshakeManager.recordOperation(tool, args, res),
 };
