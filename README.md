@@ -229,7 +229,7 @@ node tests/master-suite/run.js --count 200 --cortex --cortex-report
 
 Vulpes Celare includes **Vulpes Cortex** - an MCP (Model Context Protocol) server that enables AI agents to autonomously improve the system.
 
-**For AI agents (Claude, ChatGPT, etc.):** Read [`INSTRUCTIONS_FOR_AI_AGENTS.md`](./INSTRUCTIONS_FOR_AI_AGENTS.md) for comprehensive setup and usage instructions.
+**For AI agents (Claude, ChatGPT, etc.):** Read [`.agent/CLAUDE.md`](./.agent/CLAUDE.md) for setup and usage instructions.
 
 **For humans:** The MCP integration allows AI assistants to:
 
@@ -291,15 +291,15 @@ cd vulpes-celare && npm install && npm run build && npm test
 - ✅ Large companies can't take without contributing
 - ✅ Small organizations and researchers use it freely
 
-For commercial licensing: See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)
+For commercial licensing: See [docs/legal/COMMERCIAL_LICENSE.md](docs/legal/COMMERCIAL_LICENSE.md)
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions welcome! See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
 
-- Read the [Code of Conduct](CODE_OF_CONDUCT.md) before participating
+- Read the [Code of Conduct](.github/CODE_OF_CONDUCT.md) before participating
 - Report vulnerabilities via [Security Policy](SECURITY.md)—never share real PHI
 - File issues using provided templates
 
