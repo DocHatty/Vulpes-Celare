@@ -9,25 +9,27 @@
 [![License](https://img.shields.io/badge/License-Source%20Available-4B32C3?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Experimental-orange?style=for-the-badge)](#-validation)
 
-|     | Metric                | Score         |
-|:---:|:---------------------:|:-------------:|
-| 🎯  | **Sensitivity**       | **99.6%**     |
-| 🛡️  | **Specificity**       | **96–100%**   |
-| 📄  | **Documents Tested**  | **7,000+**    |
-| ⚡  | **Speed**             | **2–3 ms**    |
+---
+
+## 📊 Key Metrics
+
+- **99.6% Sensitivity** — Catches virtually all PHI, even in degraded scans
+- **96–100% Specificity** — Minimal false positives, preserves medical context
+- **2–3 ms Speed** — Sub-millisecond processing per document
+- **Privacy-First** — PHI never leaves your infrastructure, zero network calls
 
 ---
 
-## Why Vulpes Celare?
+## Why It Matters
 
-Clinical documentation drives medical education, research, and innovation—but safely sharing it remains a persistent challenge.
+Clinical data powers medical education, research, and innovation—but sharing it safely is hard.
 
-| ❌ The Problem | ✅ Our Solution |
-|:--------------|:----------------|
-| **Opaque** — Black-box SaaS where you cannot inspect what happens | **Fully Inspectable** — Open source, every decision traceable |
-| **Generic** — Not tuned for medical vocabulary | **Healthcare-Native** — Built for US medical formats from day one |
-| **Heavyweight** — Does not fit modern workflows | **Sub-Millisecond** — 2–3 ms processing, stateless, scales linearly |
-| **Cloud-Dependent** — PHI leaves your network | **Privacy-First** — Zero-trust design, data never leaves your infrastructure |
+**Vulpes Celare solves this by being:**
+
+- **Healthcare-Native** — Built for US medical formats (MRNs, NPIs, HIPAA dates, OCR errors)
+- **OCR-Resilient** — Catches garbled PHI from scanned documents (`O3/l5/198O` → `03/15/1980`)
+- **Fully Inspectable** — Open source, every decision traceable, no black boxes
+- **Air-Gapped Ready** — Works completely offline, zero external dependencies
 
 ---
 
@@ -106,222 +108,54 @@ console.log(result.executionTimeMs); // Processing time (~2–3 ms)
 
 ---
 
-## 🔌 Integration Examples
+## 🔌 Integration
 
-Vulpes Celare works as a **universal preprocessing filter** for any LLM, agent, or AI system. Add one line to your existing pipeline:
-
-```typescript
-const safeNote = await VulpesCelare.redact(clinicalNote);  // ← Add this line
-const response = await yourLLM.complete(safeNote);
-```
-
-### OpenAI / ChatGPT
+Vulpes Celare works as a **universal preprocessing filter**. Add one line to your pipeline:
 
 ```typescript
-import { VulpesCelare } from 'vulpes-celare';
-import OpenAI from 'openai';
-
-async function analyzeNote(clinicalNote: string) {
-  const safeNote = await VulpesCelare.redact(clinicalNote);
-  return await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [{ role: 'user', content: safeNote }]
-  });
-}
-```
-
-### Anthropic / Claude
-
-```typescript
-import { VulpesCelare } from 'vulpes-celare';
-import Anthropic from '@anthropic-ai/sdk';
-
-async function analyzeNote(clinicalNote: string) {
-  const safeNote = await VulpesCelare.redact(clinicalNote);
-  return await anthropic.messages.create({
-    model: 'claude-3-opus-20240229',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: safeNote }]
-  });
-}
-```
-
-### LangChain
-
-```typescript
-import { VulpesCelare } from 'vulpes-celare';
-
-const redactPHI = async (input: { text: string }) => {
-  return { text: await VulpesCelare.redact(input.text) };
-};
-
-const chain = RunnableSequence.from([redactPHI, yourExistingChain]);
-```
-
-### REST API Middleware
-
-```typescript
+// REST API Middleware Example
 async function phiRedactionMiddleware(req, res, next) {
-  if (req.body.text) req.body.text = await VulpesCelare.redact(req.body.text);
+  if (req.body.text) {
+    req.body.text = await VulpesCelare.redact(req.body.text);
+  }
   next();
 }
 
 app.use('/api/ai/*', phiRedactionMiddleware);
 ```
 
----
-
-## 🔧 Architecture
-
-Twenty-six specialized filters run in parallel, each tuned for specific PHI types:
-
-| Category      | Filters                                         | Examples                                      |
-|:--------------|:------------------------------------------------|:----------------------------------------------|
-| **Names**     | Titled, formatted, credentialed, family context | `Dr. Smith`, `SMITH, JOHN`, `John Doe, MD`    |
-| **IDs**       | SSN, MRN, NPI, Medicare/Medicaid                | `123-45-6789`, `MRN: 7834921`, `NPI: 1234567890` |
-| **Contact**   | Phone, email, address, ZIP code                 | `(555) 123-4567`, `patient@email.com`         |
-| **Temporal**  | All date formats, ages 90+ (HIPAA requirement)  | `03/15/1980`, `March 15, 2024`, `92-year-old` |
-| **Financial** | Credit cards (Luhn-validated)                   | `4111-1111-1111-1111`                         |
-
-### Key Capabilities
-
-| Feature                     | Description                                                                 |
-|:----------------------------|:----------------------------------------------------------------------------|
-| **Context-Aware Detection** | Knows "Dr. Wilson" is a person but "Wilson's disease" is a medical condition |
-| **OCR Error Resilience**    | Catches PHI even when scanners corrupt characters (`0`↔`O`, `1`↔`l`, `5`↔`S`) |
-| **Smart Overlap Handling**  | When multiple filters match the same text, picks the optimal redaction      |
-| **Zero External Calls**     | Works completely offline—air-gapped deployment ready                        |
-
-### OCR Error Handling
-
-Scanners make predictable mistakes. Vulpes Celare catches PHI even when it is garbled:
-
-| Original        | Scanner Output   | Caught? |
-|:---------------:|:----------------:|:-------:|
-| `03/15/1980`    | `O3/l5/198O`     | ✅       |
-| `123-45-6789`   | `l23-45-67B9`    | ✅       |
-| `(555) 123-4567`| `(5S5) l23-4567` | ✅       |
-
----
-
-## 📈 Performance by Document Quality
-
-| Quality           | Detection Rate | Example                   |
-|:-----------------:|:--------------:|:--------------------------|
-| ✨ Perfect        | 99.9%          | Clean digital text        |
-| 📝 Minor Errors   | 99.8%          | Typos, extra spaces       |
-| 📠 Scanned        | 99.7%          | Light scanner artifacts   |
-| 📋 Bad Scans      | 98.5%          | Faded, skewed documents   |
-| 🔥 Worst Case     | 97.2%          | Barely legible copies     |
-
-> Even the worst scans still catch 97%+ of PHI. Performance degrades gracefully, not catastrophically.
+Works with OpenAI, Anthropic, LangChain, or any LLM—just redact before sending.
 
 ---
 
 ## 🧠 Vulpes Cortex
 
-### Adaptive Neural Testing Engine
+**Self-learning MCP server for autonomous system improvement.**
 
-Traditional testing forgets everything between runs. Cortex remembers:
+Cortex remembers what traditional testing forgets:
+- **Failure Patterns** — "This type of PHI keeps slipping through"
+- **Fix History** — "We tried that before—here's what actually worked"
+- **Regression Detection** — "Detection worsened after Tuesday's commit"
 
-| What                  | Why It Matters                                            |
-|:----------------------|:----------------------------------------------------------|
-| **Failure Patterns**  | "This type of name keeps slipping through—here's why."   |
-| **Fix History**       | "We tried this before. It did not work. Here's what did." |
-| **Trends Over Time**  | "Detection worsened after Tuesday's commit."              |
-| **Cause and Effect**  | "That change broke phone detection but fixed dates."      |
-
-**Bi-Temporal Intelligence:** Tracks both when bugs actually existed and when you discovered them—so "new" bugs can be traced to old regressions.
-
-**Industry-Standard Metrics:** Sensitivity, Specificity, MCC, F1, and PPV—tracked over time with automatic regression alerts.
-
-```bash
-# Run with Cortex
-node tests/master-suite/run.js --count 200 --cortex --cortex-report
-```
-
----
-
-## 🤖 AI Agent Integration
-
-Vulpes Celare includes **Vulpes Cortex** - an MCP (Model Context Protocol) server that enables AI agents to autonomously improve the system.
-
-**For AI agents (Claude, ChatGPT, etc.):** Read [`INSTRUCTIONS_FOR_AI_AGENTS.md`](./INSTRUCTIONS_FOR_AI_AGENTS.md) for comprehensive setup and usage instructions.
-
-**For humans:** The MCP integration allows AI assistants to:
-
-- Run tests and analyze results automatically
-- Consult historical data before making recommendations
-- Execute the fix-test-verify loop autonomously
-- Learn from every change and never forget what worked
-
-See [`tests/master-suite/cortex/README.md`](./tests/master-suite/cortex/README.md) for full Cortex documentation.
-
----
-
-## 🆚 Comparison
-
-| Tool                      | Approach                | Trade-offs                                                    |
-|:--------------------------|:------------------------|:--------------------------------------------------------------|
-| **Vulpes Celare**         | Proprietary rules engine | Sub-ms, air-gapped, zero data exfiltration, OCR-resilient. US-focused. |
-| Microsoft Presidio        | Rules + ML              | Mature, multi-language. Heavier setup, less medical-specific. |
-| AWS Comprehend Medical    | Cloud ML                | High accuracy, maintained. Requires BAA, PHI leaves perimeter. |
-| Google Cloud DLP          | Cloud ML                | Broad coverage. Cost, cloud dependency, data exposure.        |
-
----
-
-## 🧪 Validation
-
-```bash
-git clone https://github.com/anthropics/vulpes-celare
-cd vulpes-celare && npm install && npm run build && npm test
-```
-
-> **Validation Status:** Metrics derived from 7,000+ adversarial synthetic documents. Zero real patient data used. We welcome independent validation partnerships and real-world pilots.
->
-> **Integration Guidance:** HIPAA compliance is organizational, not purely technical. We recommend pairing with human review for production healthcare deployments.
+AI agents can autonomously run tests, analyze results, and execute fixes. See [`INSTRUCTIONS_FOR_AI_AGENTS.md`](./INSTRUCTIONS_FOR_AI_AGENTS.md) for setup.
 
 ---
 
 ## 📜 License
 
-**AGPL-3.0 with Commercial Exception** — See [LICENSE](LICENSE)
+**AGPL-3.0 with Commercial Exception**
 
-| Use Case | Status |
-|:---------|:-------|
-| **Personal & Educational** | ✅ Free under AGPL-3.0 |
-| **Research & Academic** | ✅ Free under AGPL-3.0 |
-| **Non-Profit Healthcare** | ✅ Free under AGPL-3.0 |
-| **Small Organizations** (< $1M revenue) | ✅ Free under AGPL-3.0 |
-| **Open Source Projects** | ✅ Free under AGPL-3.0 (GPL-compatible) |
-| **Large Organizations** (> $1M revenue) | 💼 [Commercial license available](COMMERCIAL_LICENSE.md) |
-| **Proprietary SaaS** | 💼 [Commercial license required](COMMERCIAL_LICENSE.md) |
-| **Closed-Source Products** | 💼 [Commercial license required](COMMERCIAL_LICENSE.md) |
+✅ **Free for:**
+- Personal, educational, and research use
+- Non-profit healthcare (any size)
+- Organizations < $1M revenue
+- Open source projects
 
-### What This Means
+💼 **Commercial license required for:**
+- Organizations > $1M revenue using it in proprietary products
+- SaaS offerings based on Vulpes Celare
 
-**You can freely use Vulpes Celare if:**
-
-- You're an individual, researcher, or educator
-- You're a non-profit hospital or clinic (any size)
-- Your company makes less than $1M/year
-- You're building an open source project
-- You're using it internally (not offering as a service)
-
-**You need a commercial license if:**
-
-- Your company makes > $1M/year AND
-- You want to keep your modifications private, OR
-- You're offering Vulpes Celare as a managed service
-
-**The AGPL ensures:**
-
-- ✅ Code is always auditable (critical for HIPAA compliance)
-- ✅ Improvements are shared back with the community
-- ✅ Large companies can't take without contributing
-- ✅ Small organizations and researchers use it freely
-
-For commercial licensing: See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)
+See [LICENSE](LICENSE) and [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) for details.
 
 ---
 
@@ -329,9 +163,8 @@ For commercial licensing: See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-- Read the [Code of Conduct](CODE_OF_CONDUCT.md) before participating
+- Read the [Code of Conduct](CODE_OF_CONDUCT.md)
 - Report vulnerabilities via [Security Policy](SECURITY.md)—never share real PHI
-- File issues using provided templates
 
 ---
 
