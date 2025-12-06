@@ -78,9 +78,7 @@ flowchart TB
     style Result fill:#c8e6c9,stroke:#2e7d32
 ```
 
-> **The key insight:** PHI never crosses the network boundary. The LLM only ever sees tokenized placeholders.
-
-**PHI never leaves your network. Ever.**
+> **The key insight:** PHI never crosses the network boundary. The LLM only sees tokenized placeholders. Your data stays local. Always.
 
 ---
 
@@ -191,6 +189,29 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 
 ---
 
+## 📊 Advanced Analytics
+
+Beyond basic accuracy, Vulpes Celare employs **clinical-grade statistical analysis**:
+
+**Matthews Correlation Coefficient (MCC):** The gold standard for imbalanced classification. Unlike accuracy or F1, MCC correctly handles the asymmetry between PHI (rare) and non-PHI (common). Our target: MCC ≥ 0.95.
+
+**F2-Score (Recall-Weighted):** Because missing PHI is catastrophic while over-redacting is merely inconvenient, we weight recall 2× higher than precision. F2 = (5 × Precision × Recall) / (4 × Precision + Recall).
+
+**Weighted Grading Profiles:**
+
+| Profile | Sensitivity Weight | Use Case |
+|---------|-------------------|----------|
+| `HIPAA_STRICT` | 70% | Production validation—zero tolerance |
+| `DEVELOPMENT` | 60% | Iterative improvement with diminishing penalties |
+| `OCR_TOLERANT` | 55% | Scanned documents with artifact allowances |
+| `RESEARCH` | 50% | Pattern analysis and experimentation |
+
+**Hard Caps:** Sensitivity below 90% caps grade at F regardless of other metrics. Below 95% caps at C. No gaming the system.
+
+**Penalty Scaling:** Diminishing returns on repeated failures—the 50th missed SSN costs less than the 1st, encouraging incremental progress rather than punishing edge cases.
+
+---
+
 ## 📈 Performance
 
 **Performance by document quality:**
@@ -207,19 +228,14 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 
 ## 🧠 Vulpes Cortex
 
-**Adaptive Neural Testing Engine** that remembers what traditional testing forgets:
+**Self-learning test intelligence** that remembers what traditional testing forgets:
 
-- **Failure Patterns** — "This type of name keeps slipping through—here's why"
-- **Fix History** — "We tried this before. It didn't work. Here's what did"
-- **Trends Over Time** — "Detection worsened after Tuesday's commit"
-- **Cause and Effect** — "That change broke phone detection but fixed dates"
-
-**Bi-Temporal Intelligence:** Tracks both when bugs actually existed and when you discovered them—trace "new" bugs to old regressions.
-
-**Industry-Standard Metrics:** Sensitivity, Specificity, MCC, F1, and PPV tracked over time with automatic regression alerts.
+- **Failure Patterns** — Why specific PHI types slip through
+- **Fix History** — What worked, what didn't, and why
+- **Bi-Temporal Tracking** — When bugs existed vs. when you found them
+- **Regression Alerts** — Automatic detection of metric degradation
 
 ```bash
-# Run with Cortex
 node tests/master-suite/run.js --count 200 --cortex --cortex-report
 ```
 
@@ -227,18 +243,10 @@ node tests/master-suite/run.js --count 200 --cortex --cortex-report
 
 ## 🤖 AI Agent Integration
 
-Vulpes Celare includes **Vulpes Cortex** - an MCP (Model Context Protocol) server that enables AI agents to autonomously improve the system.
+Cortex exposes an **MCP (Model Context Protocol) server** enabling AI agents to autonomously run tests, analyze failures, and propose fixes.
 
-**For AI agents (Claude, ChatGPT, etc.):** Read [`.agent/CLAUDE.md`](./.agent/CLAUDE.md) for setup and usage instructions.
-
-**For humans:** The MCP integration allows AI assistants to:
-
-- Run tests and analyze results automatically
-- Consult historical data before making recommendations
-- Execute the fix-test-verify loop autonomously
-- Learn from every change and never forget what worked
-
-See [`tests/master-suite/cortex/README.md`](./tests/master-suite/cortex/README.md) for full Cortex documentation.
+- **AI Agents:** See [`.agent/CLAUDE.md`](./.agent/CLAUDE.md)
+- **Full Docs:** See [`tests/master-suite/cortex/README.md`](./tests/master-suite/cortex/README.md)
 
 ---
 
@@ -264,6 +272,22 @@ cd vulpes-celare && npm install && npm run build && npm test
 > **Validation Status:** Metrics derived from 7,000+ adversarial synthetic documents. Zero real patient data used. We welcome independent validation partnerships and real-world pilots.
 >
 > **Integration Guidance:** HIPAA compliance is organizational, not purely technical. We recommend pairing with human review for production healthcare deployments.
+
+---
+
+## 🚀 Roadmap: Blockchain-Verified Compliance
+
+**Coming Q1 2026:** Immutable audit infrastructure powered by distributed ledger technology.
+
+| Feature | Description |
+|---------|-------------|
+| **🔗 Immutable Audit Trail** | Every redaction event written to append-only blockchain. Tamper-proof compliance records that auditors can independently verify. |
+| **🔐 Cryptographic Proofs** | Zero-knowledge proofs demonstrate PHI was properly handled without revealing the PHI itself. Prove compliance without exposure. |
+| **✅ Independent Verification** | Third parties can verify redaction integrity against blockchain anchors. No trust required—verify everything. |
+| **🛡️ Granular Access Control** | Role-based permissions with cryptographic enforcement. Time-limited access tokens. Complete access lineage. |
+| **📋 Regulatory Export** | One-click compliance reports for HIPAA audits with blockchain-backed evidence chains. |
+
+> **Why blockchain?** Healthcare compliance requires provable, immutable records. Traditional databases can be altered. Blockchain-anchored audit trails provide the cryptographic guarantees regulators increasingly demand.
 
 ---
 
