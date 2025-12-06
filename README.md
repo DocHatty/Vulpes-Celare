@@ -241,6 +241,21 @@ node tests/master-suite/run.js --count 200 --cortex --cortex-report
 
 ---
 
+## ⚡ Power of Symbiotic Integration
+
+Vulpes Celare achieves "symbiotic excellence" by assigning each layer what it does best, creating a system far more powerful than the sum of its parts:
+
+| Component | Role | Superpower |
+|-----------|------|------------|
+| **Redaction API** | **The Muscle** | **Speed & Scale.** Processes 7,000+ docs in seconds. Manages persistence, job queues, and the 26+ specialized regex filters. It does the heavy lifting so the AI doesn't have to. |
+| **MCP Layer** | **The Bridge** | **Safety & Protocol.** Enforces strict contracts (e.g., "Must consult history before fixing"). Acts as the secure nervous system connecting the Brain to the Muscle, preventing hallucinations and ensuring safe execution. |
+| **LLM** | **The Brain** | **Reasoning & Strategy.** It doesn't run the tests—it *interprets* them. It analyzes complex failure patterns, formulates hypotheses, and writes the code fixes that the API validates. |
+| **OCR Engine** | **The Lens** | **Resilience.** Our `OCR_TOLERANT` profiles see through the noise. Where rigid systems fail on `0` vs `O` or scanned artifacts, the engine applies fuzzy logic to ensure compliance even on dirty data. |
+
+**The result?** A self-healing system where the AI diagnoses the problem (LLM), the protocol ensures safety (MCP), and the engine executes the cure (API) with millisecond precision.
+
+---
+
 ## 🤖 AI Agent Integration
 
 Cortex exposes an **MCP (Model Context Protocol) server** enabling AI agents to autonomously run tests, analyze failures, and propose fixes.
