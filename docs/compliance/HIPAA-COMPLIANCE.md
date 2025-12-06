@@ -167,36 +167,59 @@ app.post('/api/redact', async (req, res) => {
 Vulpes Celare provides **residual risk analysis** capabilities:
 
 ```typescript
-import { ResidualRiskAnalyzer } from 'vulpes-celare';
-
 // Example approach for residual risk analysis
-// Note: Implement based on your organization's risk assessment methodology
+// Note: These are example calculations based on your test results
+// Replace with actual metrics from your validation testing
 
+// Step 1: Run your validation tests and collect results
+// const testResults = await runValidationSuite({
+//   documentCount: 1000,
+//   policy: 'maximum'
+// });
+
+// Step 2: Example calculation using hypothetical test results
+// These values are for illustration - use your actual test data
 const testResults = {
-  totalDocuments: 1000,
-  sensitivity: 0.996,
-  specificity: 1.0,
-  falseNegatives: 4
+  totalDocuments: 1000,          // Example: Number of test documents
+  sensitivity: 0.996,             // Example: From README (99.6% sensitivity)
+  specificity: 1.0,               // Example: From README (100% specificity)
+  falseNegatives: 4,              // Example: PHI elements missed
+  truePositives: 996              // Example: PHI elements correctly identified
 };
 
+// Step 3: Calculate re-identification risk
 const reidentificationRisk = 1 - testResults.sensitivity;
 console.log(`Re-identification risk: ${(reidentificationRisk * 100).toFixed(3)}%`);
 
-// Detailed risk assessment
+// Step 4: Generate risk assessment report
 const assessment = {
   reidentificationRisk: `< ${(reidentificationRisk * 100).toFixed(1)}%`,
   confidence: `${(testResults.sensitivity * 100).toFixed(1)}%`,
+  testingBasis: `${testResults.totalDocuments} documents`,
   residualIdentifiers: [],
-  recommendation: reidentificationRisk < 0.01 ? 'Acceptable for HIPAA Safe Harbor' : 'Manual review recommended'
+  recommendation: reidentificationRisk < 0.01 
+    ? 'Acceptable for HIPAA Safe Harbor' 
+    : 'Manual review recommended'
 };
 
 console.log(assessment);
+// Example output (based on hypothetical test results):
 // {
 //   reidentificationRisk: "< 0.4%",
 //   confidence: "99.6%",
+//   testingBasis: "1000 documents",
 //   residualIdentifiers: [],
 //   recommendation: "Acceptable for HIPAA Safe Harbor"
 // }
+
+// Step 5: Document methodology for compliance
+console.log(`
+Risk Assessment Methodology:
+- Test Corpus: ${testResults.totalDocuments} synthetic clinical documents
+- Sensitivity: ${(testResults.sensitivity * 100).toFixed(1)}% (${testResults.truePositives}/${testResults.totalDocuments} PHI detected)
+- Calculated Risk: ${(reidentificationRisk * 100).toFixed(3)}%
+- Meets HIPAA threshold: ${reidentificationRisk < 0.01 ? 'Yes' : 'No'}
+`);
 ```
 
 ### Risk Management (§ 164.308(a)(1)(ii)(B))

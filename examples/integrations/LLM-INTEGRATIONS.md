@@ -675,37 +675,98 @@ app = FastAPI()
 async def redact_phi(text: str) -> dict:
     """
     Call Vulpes Celare via Node.js subprocess
-    In production, use a proper IPC mechanism or microservice
+    
+    WARNING: This is a simplified example for demonstration.
+    In production, use one of the following approaches:
+    1. HTTP microservice (recommended)
+    2. gRPC service
+    3. Message queue (Redis, RabbitMQ)
+    4. Native Python binding (if available)
     """
-    result = subprocess.run(
-        ['node', '-e', f'''
-        const VulpesCelare = require('vulpes-celare').VulpesCelare;
-        (async () => {{
-            const engine = new VulpesCelare();
-            const result = await engine.process(`{text}`);
-            console.log(JSON.stringify(result));
-        }})();
-        '''],
-        capture_output=True,
-        text=True
-    )
-    return json.loads(result.stdout)
+    # Security note: Properly escape input or use structured IPC
+    import tempfile
+    
+    # Write text to temporary file to avoid injection
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as f:
+        f.write(text)
+        temp_path = f.name
+    
+    try:
+        result = subprocess.run(
+            ['node', '-e', f'''
+            const fs = require('fs');
+            const VulpesCelare = require('vulpes-celare').VulpesCelare;
+            (async () => {{
+                const text = fs.readFileSync('{temp_path}', 'utf8');
+                const engine = new VulpesCelare();
+                const result = await engine.process(text);
+                console.log(JSON.stringify(result));
+            }})();
+            '''],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        return json.loads(result.stdout)
+    finally:
+        os.unlink(temp_path)
 
+# Better approach: Use dependency injection
+from fastapi import Depends
+
+async def get_redacted_text(text: str = Body(...)) -> dict:
+    """Dependency that provides redacted text"""
+    return await redact_phi(text)
+
+@app.post("/api/ai/analyze")
+async def analyze(
+    text: str = Body(...),
+    redaction_result: dict = Depends(get_redacted_text)
+):
+    """
+    Endpoint with automatic redaction via dependency injection.
+    This is more FastAPI-idiomatic than middleware modification.
+    """
+    # text is already redacted via dependency
+    llm_response = your_llm_function(redaction_result["text"])
+    
+    return {
+        "response": llm_response,
+        "redaction_stats": {
+            "phi_removed": redaction_result["redactionCount"],
+            "processing_ms": redaction_result["executionTimeMs"]
+        }
+    }
+
+# Alternative: Middleware approach (less recommended)
 @app.middleware("http")
 async def phi_redaction_middleware(request: Request, call_next):
+    """
+    Note: Modifying request body in middleware is tricky in FastAPI.
+    Dependency injection (above) is recommended instead.
+    """
     if request.url.path.startswith("/api/ai/"):
-        body = await request.json()
+        # Store original body
+        body_bytes = await request.body()
         
-        if "text" in body:
-            redaction_result = await redact_phi(body["text"])
-            body["text"] = redaction_result["text"]
-            body["redaction_stats"] = {
-                "phi_removed": redaction_result["redactionCount"],
-                "processing_ms": redaction_result["executionTimeMs"]
-            }
+        try:
+            body = json.loads(body_bytes)
             
-            # Override request body
-            request._body = json.dumps(body).encode()
+            if "text" in body:
+                redaction_result = await redact_phi(body["text"])
+                body["text"] = redaction_result["text"]
+                body["redaction_stats"] = {
+                    "phi_removed": redaction_result["redactionCount"],
+                    "processing_ms": redaction_result["executionTimeMs"]
+                }
+                
+                # Create new request with modified body
+                async def receive():
+                    return {"type": "http.request", "body": json.dumps(body).encode()}
+                
+                request._receive = receive
+        except json.JSONDecodeError:
+            pass  # Not JSON, continue without modification
     
     response = await call_next(request)
     return response
