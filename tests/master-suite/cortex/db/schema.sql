@@ -284,6 +284,27 @@ CREATE INDEX IF NOT EXISTS idx_insights_type ON insights(type);
 CREATE INDEX IF NOT EXISTS idx_insights_actionable ON insights(actionable);
 
 -- ============================================================================
+-- AUDIT LOG TABLE (BLOCKCHAIN TIER 1)
+-- New: Immutable, cryptographically linked log
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actor_id TEXT,
+    event_type TEXT NOT NULL,
+    data_hash TEXT NOT NULL,      -- Hash of the payload
+    prev_hash TEXT NOT NULL,      -- Hash of the previous row (Blockchain link)
+    merkle_root TEXT NOT NULL,    -- Merkle Root at this point in time
+    payload TEXT,                 -- JSON data (optional)
+    signature TEXT                -- Optional cryptographic signature
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(timestamp);
+CREATE INDEX IF NOT EXISTS idx_audit_type ON audit_log(event_type);
+CREATE INDEX IF NOT EXISTS idx_audit_hash ON audit_log(data_hash);
+
+-- ============================================================================
 -- SCHEMA VERSION TABLE
 -- Track database schema version for migrations
 -- ============================================================================

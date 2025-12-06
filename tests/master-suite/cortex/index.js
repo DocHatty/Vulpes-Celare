@@ -53,10 +53,12 @@ const fmt = require("./core/console-formatter");
 // ============================================================================
 
 const { PATHS, MCP_CONFIG, ensureDirectories } = require("./core/config");
+const { getDatabase } = require("./db/database");
 const { KnowledgeBase } = require("./core/knowledge-base");
 const { MetricsEngine } = require("./core/metrics-engine");
 const { CodebaseAnalyzer } = require("./core/codebase-analyzer");
 const { TemporalIndex } = require("./core/temporal-index");
+const { MerkleLog } = require("./core/merkle-log");
 
 // ============================================================================
 // LEARNING MODULES
@@ -113,6 +115,8 @@ class VulpesCortex {
     ensureDirectories();
 
     // Core modules
+    const db = getDatabase();
+    this.modules.merkleLog = new MerkleLog(db);
     this.modules.knowledgeBase = new KnowledgeBase();
     this.modules.metricsEngine = new MetricsEngine();
     this.modules.codebaseAnalyzer = new CodebaseAnalyzer(
@@ -195,6 +199,22 @@ class VulpesCortex {
   // ==========================================================================
   // HIGH-LEVEL API
   // ==========================================================================
+
+  /**
+   * Log an event to the immutable audit blockchain
+   */
+  async logAudit(eventType, actorId, data) {
+    await this.ensureInitialized();
+    return this.modules.merkleLog.append(eventType, actorId, data);
+  }
+
+  /**
+   * Verify an audit record
+   */
+  async verifyAudit(id) {
+    await this.ensureInitialized();
+    return this.modules.merkleLog.verify(id);
+  }
 
   /**
    * Analyze test results

@@ -445,6 +445,34 @@ app.get("/api/knowledge/search", (req, res) => {
 });
 
 // ============================================================================
+// AUDIT ENDPOINTS (BLOCKCHAIN TIER 1)
+// ============================================================================
+
+// GET /api/audit/verify/:id - Verify integrity of a record
+app.get("/api/audit/verify/:id", (req, res) => {
+    try {
+        const { MerkleLog } = require("../core/merkle-log");
+        const auditLog = new MerkleLog(db);
+        const result = auditLog.verify(req.params.id);
+        res.json({ success: true, verification: result });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// GET /api/audit/head - Get current immutable head
+app.get("/api/audit/head", (req, res) => {
+    try {
+        const { MerkleLog } = require("../core/merkle-log");
+        const auditLog = new MerkleLog(db);
+        const head = auditLog.getHead();
+        res.json({ success: true, head });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================================================
 // JOB QUEUE ENDPOINTS
 // ============================================================================
 

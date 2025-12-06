@@ -66,6 +66,7 @@ const { KnowledgeBase } = require("../core/knowledge-base");
 const { MetricsEngine } = require("../core/metrics-engine");
 const { CodebaseAnalyzer } = require("../core/codebase-analyzer");
 const { TemporalIndex } = require("../core/temporal-index");
+const { MerkleLog } = require("../core/merkle-log");
 const { PatternRecognizer } = require("../learning/pattern-recognizer");
 const { HypothesisEngine } = require("../learning/hypothesis-engine");
 const { InterventionTracker } = require("../learning/intervention-tracker");
@@ -284,6 +285,16 @@ class VulpesCortexServer {
       this.modules.temporalIndex = new TemporalIndex(
         this.modules.knowledgeBase,
       );
+
+      // Initialize MerkleLog (will be connected to DB via withDatabase later, but we need the instance)
+      // Actually, MerkleLog needs DB in constructor. 
+      // Let's get the DB instance first as we do in index.js, or trust withDatabase to inject it?
+      // looking at index.js: this.modules.merkleLog = new MerkleLog(db);
+      // In server.js we use withDatabase at the end. 
+      // Let's grab the DB instance explicitly here to be safe and consistent with index.js
+      const { getDatabase } = require("../db/database");
+      const db = getDatabase();
+      this.modules.merkleLog = new MerkleLog(db);
 
       // Learning modules
       this.modules.patternRecognizer = new PatternRecognizer(
@@ -742,10 +753,33 @@ class VulpesCortexServer {
             ),
           );
         }
+      } else if (req.url === "/audit/head") {
+        console.error(`[${timestamp}] GET /audit/head`);
+        try {
+          const head = this.modules.merkleLog.getHead();
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(head || { status: "empty" }, null, 2));
+        } catch (err) {
+          console.error(`[${timestamp}] Error getting audit head: ${err.message}`);
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      } else if (req.url.startsWith("/audit/verify/")) {
+        const id = parseInt(req.url.split("/").pop());
+        console.error(`[${timestamp}] GET /audit/verify/${id}`);
+        try {
+          const result = this.modules.merkleLog.verify(id);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(result, null, 2));
+        } catch (err) {
+          console.error(`[${timestamp}] Error verifying audit ${id}: ${err.message}`);
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: err.message }));
+        }
       } else {
         console.error(`[${timestamp}] 404: ${req.url}`);
         res.writeHead(404);
-        res.end("Not found. Endpoints: /health, /ready, /tool/{toolName}");
+        res.end("Not found. Endpoints: /health, /ready, /tool/{toolName}, /audit/head, /audit/verify/{id}");
       }
     });
 
