@@ -679,7 +679,7 @@ async def redact_phi(text: str) -> dict:
     """
     result = subprocess.run(
         ['node', '-e', f'''
-        const {{ VulpesCelare }} = require('vulpes-celare');
+        const VulpesCelare = require('vulpes-celare').VulpesCelare;
         (async () => {{
             const engine = new VulpesCelare();
             const result = await engine.process(`{text}`);

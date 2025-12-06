@@ -169,18 +169,33 @@ Vulpes Celare provides **residual risk analysis** capabilities:
 ```typescript
 import { ResidualRiskAnalyzer } from 'vulpes-celare';
 
-const analyzer = new ResidualRiskAnalyzer();
-const assessment = await analyzer.analyze({
-  documentType: 'clinical-note',
-  policy: 'maximum',
-  sampleSize: 1000
-});
+// Example approach for residual risk analysis
+// Note: Implement based on your organization's risk assessment methodology
 
-console.log(assessment.residualRisk);
+const testResults = {
+  totalDocuments: 1000,
+  sensitivity: 0.996,
+  specificity: 1.0,
+  falseNegatives: 4
+};
+
+const reidentificationRisk = 1 - testResults.sensitivity;
+console.log(`Re-identification risk: ${(reidentificationRisk * 100).toFixed(3)}%`);
+
+// Detailed risk assessment
+const assessment = {
+  reidentificationRisk: `< ${(reidentificationRisk * 100).toFixed(1)}%`,
+  confidence: `${(testResults.sensitivity * 100).toFixed(1)}%`,
+  residualIdentifiers: [],
+  recommendation: reidentificationRisk < 0.01 ? 'Acceptable for HIPAA Safe Harbor' : 'Manual review recommended'
+};
+
+console.log(assessment);
 // {
-//   reidentificationRisk: "< 0.001%",
+//   reidentificationRisk: "< 0.4%",
 //   confidence: "99.6%",
-//   residualIdentifiers: []
+//   residualIdentifiers: [],
+//   recommendation: "Acceptable for HIPAA Safe Harbor"
 // }
 ```
 
