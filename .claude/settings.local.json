@@ -5,7 +5,8 @@
       "Bash(npm run build:*)",
       "Bash(cat:*)",
       "Bash(dir \"C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\")",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(timeout /t 3 /nobreak)"
     ],
     "deny": [],
     "ask": []
