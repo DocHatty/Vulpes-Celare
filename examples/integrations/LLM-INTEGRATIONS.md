@@ -665,10 +665,12 @@ app.listen(3000, () => console.log('Server running on port 3000'));
 ### Python Integration
 
 ```python
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, Body
 from fastapi.responses import JSONResponse
 import subprocess
 import json
+import tempfile
+import os
 
 app = FastAPI()
 
@@ -683,8 +685,7 @@ async def redact_phi(text: str) -> dict:
     3. Message queue (Redis, RabbitMQ)
     4. Native Python binding (if available)
     """
-    # Security note: Properly escape input or use structured IPC
-    import tempfile
+    # Security note: Use file-based IPC to avoid code injection
     
     # Write text to temporary file to avoid injection
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as f:
@@ -712,8 +713,6 @@ async def redact_phi(text: str) -> dict:
         os.unlink(temp_path)
 
 # Better approach: Use dependency injection
-from fastapi import Depends
-
 async def get_redacted_text(text: str = Body(...)) -> dict:
     """Dependency that provides redacted text"""
     return await redact_phi(text)
