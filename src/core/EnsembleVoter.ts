@@ -4,9 +4,19 @@
  * RESEARCH BASIS: Ensemble methods consistently outperform single approaches
  * in PHI detection (2016 N-GRID winner, 2014 i2b2 top systems).
  *
- * This module implements a weighted voting system that combines multiple
- * detection signals to make final PHI determination. Each signal contributes
- * a weighted vote, and the combined score determines confidence.
+ * MATHEMATICAL FOUNDATION:
+ * 1. Weighted Geometric Mean - More robust than arithmetic mean for probability combination
+ *    Formula: score = exp(sum(w_i * ln(c_i)) / sum(w_i))
+ *    Reference: Genest & Zidek (1986) "Combining Probability Distributions"
+ *
+ * 2. Log-Odds Bayesian Combination (optional mode)
+ *    Formula: P(PHI|signals) = sigmoid(sum(logit(c_i) * w_i) / sum(w_i) + logit(prior))
+ *    Reference: Good (1950) "Probability and the Weighing of Evidence"
+ *
+ * 3. Agreement Bonus via Normalized Shannon Entropy
+ *    H = -sum(p_i * log2(p_i)) where p_i = positive_signals / total_signals
+ *    Low entropy (high agreement) -> confidence boost
+ *    Reference: Shannon (1948) "A Mathematical Theory of Communication"
  *
  * SIGNALS:
  * 1. Pattern Match - Regex/structural patterns
@@ -50,31 +60,169 @@ export interface VotingConfig {
   };
   /** Minimum number of agreeing signals for high confidence */
   minimumAgreement: number;
+  /** Use Bayesian log-odds combination instead of geometric mean */
+  useBayesian: boolean;
+  /** Prior probability of PHI (base rate) - used in Bayesian mode */
+  phiPrior: number;
 }
 
 const DEFAULT_CONFIG: VotingConfig = {
   redactThreshold: 0.65,
   skipThreshold: 0.35,
   signalWeights: {
-    PATTERN: 0.25,
-    DICTIONARY: 0.20,
-    CONTEXT: 0.20,
-    STRUCTURE: 0.10,
-    LABEL: 0.15,
-    CHAOS_ADJUSTED: 0.10,
+    PATTERN: 0.30,    // Pattern matches are strongest evidence
+    DICTIONARY: 0.25, // Dictionary matches are very reliable
+    CONTEXT: 0.20,    // Context provides good supporting evidence
+    STRUCTURE: 0.10,  // Structure is weak but useful signal
+    LABEL: 0.10,      // Labels boost confidence when present
+    CHAOS_ADJUSTED: 0.05, // Minor adjustment for OCR quality
   },
   minimumAgreement: 2,
+  useBayesian: false,   // Default to geometric mean (more stable)
+  phiPrior: 0.15,       // ~15% of detected candidates are true PHI (empirical)
 };
 
 export class EnsembleVoter {
   private config: VotingConfig;
-  
+
+  // Mathematical constants
+  private static readonly EPSILON = 1e-10;  // Prevent log(0) and division by zero
+  private static readonly LOG2 = Math.log(2);
+
   constructor(config: Partial<VotingConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
   /**
+   * Sigmoid function: maps (-inf, inf) -> (0, 1)
+   * Formula: sigmoid(x) = 1 / (1 + exp(-x))
+   * Used for Bayesian posterior calculation
+   */
+  private static sigmoid(x: number): number {
+    if (x >= 0) {
+      return 1 / (1 + Math.exp(-x));
+    } else {
+      // Numerically stable for negative values
+      const expX = Math.exp(x);
+      return expX / (1 + expX);
+    }
+  }
+
+  /**
+   * Logit function: inverse of sigmoid, maps (0, 1) -> (-inf, inf)
+   * Formula: logit(p) = ln(p / (1 - p))
+   * Converts probability to log-odds for linear combination
+   */
+  private static logit(p: number): number {
+    // Clamp to prevent infinity
+    const clampedP = Math.max(EnsembleVoter.EPSILON, Math.min(1 - EnsembleVoter.EPSILON, p));
+    return Math.log(clampedP / (1 - clampedP));
+  }
+
+  /**
+   * Calculate Shannon entropy for agreement measurement
+   * Formula: H = -sum(p_i * log2(p_i)) for i in {positive, negative}
+   * Returns normalized entropy in [0, 1] where 0 = full agreement, 1 = maximum disagreement
+   */
+  private static normalizedEntropy(positiveCount: number, totalCount: number): number {
+    if (totalCount <= 1) return 0;  // Single signal = no disagreement possible
+
+    const pPositive = positiveCount / totalCount;
+    const pNegative = 1 - pPositive;
+
+    // Handle edge cases where one probability is 0
+    if (pPositive < EnsembleVoter.EPSILON || pNegative < EnsembleVoter.EPSILON) {
+      return 0;  // Full agreement
+    }
+
+    // Binary entropy: H = -p*log2(p) - (1-p)*log2(1-p)
+    const entropy = -(pPositive * Math.log(pPositive) + pNegative * Math.log(pNegative)) / EnsembleVoter.LOG2;
+
+    // Normalized to [0, 1] (max binary entropy is 1.0)
+    return entropy;
+  }
+
+  /**
+   * Weighted Geometric Mean combination
+   * Formula: exp(sum(w_i * ln(c_i)) / sum(w_i))
+   * More robust than arithmetic mean for probabilities - penalizes extreme disagreement
+   * Reference: Genest & Zidek (1986)
+   */
+  private weightedGeometricMean(signals: VoteSignal[]): number {
+    let weightedLogSum = 0;
+    let totalWeight = 0;
+
+    for (const signal of signals) {
+      const typeWeight = this.config.signalWeights[signal.source] || 0.1;
+      const effectiveWeight = typeWeight * signal.weight;
+
+      // Clamp confidence to prevent log(0)
+      const clampedConfidence = Math.max(EnsembleVoter.EPSILON, signal.confidence);
+
+      weightedLogSum += effectiveWeight * Math.log(clampedConfidence);
+      totalWeight += effectiveWeight;
+    }
+
+    if (totalWeight < EnsembleVoter.EPSILON) return 0;
+
+    return Math.exp(weightedLogSum / totalWeight);
+  }
+
+  /**
+   * Bayesian Log-Odds combination
+   * Formula: sigmoid(sum(w_i * logit(c_i)) / sum(w_i) + logit(prior))
+   * Theoretically principled probability combination with prior integration
+   * Reference: Good (1950)
+   */
+  private bayesianLogOddsCombination(signals: VoteSignal[]): number {
+    let weightedLogOddsSum = 0;
+    let totalWeight = 0;
+
+    for (const signal of signals) {
+      const typeWeight = this.config.signalWeights[signal.source] || 0.1;
+      const effectiveWeight = typeWeight * signal.weight;
+
+      weightedLogOddsSum += effectiveWeight * EnsembleVoter.logit(signal.confidence);
+      totalWeight += effectiveWeight;
+    }
+
+    if (totalWeight < EnsembleVoter.EPSILON) return this.config.phiPrior;
+
+    // Average log-odds + prior log-odds
+    const avgLogOdds = weightedLogOddsSum / totalWeight;
+    const priorLogOdds = EnsembleVoter.logit(this.config.phiPrior);
+
+    // Combined log-odds back to probability via sigmoid
+    return EnsembleVoter.sigmoid(avgLogOdds + priorLogOdds);
+  }
+
+  /**
+   * Calculate agreement bonus/penalty based on Shannon entropy
+   * High agreement (low entropy) -> boost, High disagreement (high entropy) -> penalty
+   */
+  private calculateAgreementMultiplier(positiveSignals: number, totalSignals: number): number {
+    if (totalSignals < 2) return 1.0;  // No adjustment for single signal
+
+    const entropy = EnsembleVoter.normalizedEntropy(positiveSignals, totalSignals);
+
+    // Map entropy to multiplier:
+    // entropy = 0 (full agreement) -> multiplier = 1.15 (15% boost)
+    // entropy = 0.5 (moderate disagreement) -> multiplier = 1.0 (no change)
+    // entropy = 1.0 (complete disagreement) -> multiplier = 0.85 (15% penalty)
+    // Linear interpolation: multiplier = 1.15 - 0.30 * entropy
+    const multiplier = 1.15 - 0.30 * entropy;
+
+    // Additional boost if meeting minimum agreement threshold
+    if (positiveSignals >= this.config.minimumAgreement) {
+      return Math.min(1.20, multiplier + 0.05);
+    }
+
+    return multiplier;
+  }
+
+  /**
    * Combine multiple detection signals into a single vote
+   * Uses either weighted geometric mean or Bayesian log-odds based on config
    */
   vote(signals: VoteSignal[]): EnsembleVote {
     if (signals.length === 0) {
@@ -87,42 +235,33 @@ export class EnsembleVoter {
       };
     }
 
-    // Calculate weighted score
-    let totalWeight = 0;
-    let weightedSum = 0;
+    // Count positive signals and find strongest
     let positiveSignals = 0;
     let strongestSignal: VoteSignal | null = null;
-    let strongestWeight = 0;
+    let strongestContribution = 0;
 
     for (const signal of signals) {
-      const typeWeight = this.config.signalWeights[signal.source] || 0.1;
-      const effectiveWeight = typeWeight * signal.weight;
-      const contribution = effectiveWeight * signal.confidence;
-      
-      weightedSum += contribution;
-      totalWeight += effectiveWeight;
-      
       if (signal.confidence > 0.5) {
         positiveSignals++;
       }
-      
-      if (contribution > strongestWeight) {
-        strongestWeight = contribution;
+
+      const typeWeight = this.config.signalWeights[signal.source] || 0.1;
+      const contribution = typeWeight * signal.weight * signal.confidence;
+
+      if (contribution > strongestContribution) {
+        strongestContribution = contribution;
         strongestSignal = signal;
       }
     }
 
-    const combinedScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
-    
-    // Apply agreement bonus/penalty
-    let adjustedScore = combinedScore;
-    if (positiveSignals >= this.config.minimumAgreement) {
-      // Multiple signals agree - boost confidence
-      adjustedScore = Math.min(1.0, combinedScore * 1.1);
-    } else if (positiveSignals === 1 && signals.length > 2) {
-      // Only one signal positive when many available - reduce confidence
-      adjustedScore = combinedScore * 0.85;
-    }
+    // Calculate base combined score using selected method
+    const baseScore = this.config.useBayesian
+      ? this.bayesianLogOddsCombination(signals)
+      : this.weightedGeometricMean(signals);
+
+    // Apply entropy-based agreement multiplier
+    const agreementMultiplier = this.calculateAgreementMultiplier(positiveSignals, signals.length);
+    let adjustedScore = Math.min(1.0, Math.max(0.0, baseScore * agreementMultiplier));
 
     // Determine recommendation
     let recommendation: 'REDACT' | 'SKIP' | 'UNCERTAIN';

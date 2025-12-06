@@ -4,10 +4,22 @@
  * Resolves ambiguous span detections using vector similarity.
  * Based on Phileas's VectorBasedSpanDisambiguationService.
  *
+ * MATHEMATICAL FOUNDATION:
+ * 1. Cosine Similarity - Standard vector comparison metric
+ *    Formula: cos(A, B) = (A · B) / (||A|| * ||B||)
+ *    Reference: Salton & McGill (1983) "Introduction to Modern Information Retrieval"
+ *
+ * 2. L2 Normalization - Unit vector conversion for fair comparison
+ *    Formula: v_norm = v / ||v|| where ||v|| = sqrt(sum(v_i^2))
+ *
+ * 3. TF-IDF Weighting (optional) - Term importance weighting
+ *    Formula: tf-idf(t,d) = tf(t,d) * log(N / df(t))
+ *    Reference: Sparck Jones (1972) "A statistical interpretation of term specificity"
+ *
  * Example: "Jordan" could be NAME or ADDRESS
  * - Analyzes context window: ["Dr", "Jordan", "examined", "patient"]
  * - Creates vector from hash of context
- * - Compares to historical patterns
+ * - Compares to historical patterns using cosine similarity
  * - Selects most similar filter type
  *
  * @module redaction/services
@@ -370,29 +382,77 @@ export class VectorDisambiguationService {
 
   /**
    * Calculate cosine similarity between two vectors
+   * Formula: cos(A, B) = (A · B) / (||A|| * ||B||)
+   *
+   * Edge cases handled:
+   * - Zero vectors: returns 0 (no similarity can be determined)
+   * - Near-zero magnitudes: uses epsilon to prevent division instability
+   * - Single non-zero dimension: handled correctly
+   *
+   * Reference: Salton & McGill (1983)
    */
   private cosineSimilarity(vec1: number[], vec2: number[]): number {
+    const EPSILON = 1e-10;
+
     if (vec1.length !== vec2.length) {
       throw new Error("Vectors must have same length");
     }
 
-    let dotProduct = 0;
-    let mag1 = 0;
-    let mag2 = 0;
-
-    for (let i = 0; i < vec1.length; i++) {
-      dotProduct += vec1[i] * vec2[i];
-      mag1 += vec1[i] * vec1[i];
-      mag2 += vec2[i] * vec2[i];
-    }
-
-    const magnitude = Math.sqrt(mag1) * Math.sqrt(mag2);
-
-    if (magnitude === 0) {
+    // Handle empty vectors
+    if (vec1.length === 0) {
       return 0;
     }
 
-    return dotProduct / magnitude;
+    let dotProduct = 0;
+    let mag1Squared = 0;
+    let mag2Squared = 0;
+
+    for (let i = 0; i < vec1.length; i++) {
+      dotProduct += vec1[i] * vec2[i];
+      mag1Squared += vec1[i] * vec1[i];
+      mag2Squared += vec2[i] * vec2[i];
+    }
+
+    // Handle zero vectors - no similarity can be determined
+    if (mag1Squared < EPSILON || mag2Squared < EPSILON) {
+      return 0;
+    }
+
+    // Use geometric mean of squared magnitudes for numerical stability
+    // cos = dotProduct / sqrt(mag1Squared * mag2Squared)
+    const denominator = Math.sqrt(mag1Squared * mag2Squared);
+
+    // Clamp result to [-1, 1] to handle floating point errors
+    const similarity = dotProduct / denominator;
+    return Math.max(-1, Math.min(1, similarity));
+  }
+
+  /**
+   * Calculate Euclidean (L2) distance between two vectors
+   * Formula: d(A, B) = sqrt(sum((a_i - b_i)^2))
+   * Useful as alternative to cosine when vector magnitudes matter
+   */
+  private euclideanDistance(vec1: number[], vec2: number[]): number {
+    if (vec1.length !== vec2.length) {
+      throw new Error("Vectors must have same length");
+    }
+
+    let sumSquaredDiff = 0;
+    for (let i = 0; i < vec1.length; i++) {
+      const diff = vec1[i] - vec2[i];
+      sumSquaredDiff += diff * diff;
+    }
+
+    return Math.sqrt(sumSquaredDiff);
+  }
+
+  /**
+   * Convert Euclidean distance to similarity in [0, 1]
+   * Formula: similarity = 1 / (1 + distance)
+   * This is a standard transformation that maps [0, inf) -> (0, 1]
+   */
+  private distanceToSimilarity(distance: number): number {
+    return 1 / (1 + distance);
   }
 
   /**

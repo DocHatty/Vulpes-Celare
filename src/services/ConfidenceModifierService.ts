@@ -4,6 +4,20 @@
  * Adjusts span confidence based on surrounding context.
  * Based on Phileas's ConfidenceModifier architecture.
  *
+ * MATHEMATICAL FOUNDATION:
+ * 1. Sigmoid Smoothing - Prevents confidence from hitting hard boundaries
+ *    Formula: smoothed = sigmoid(logit(c) + delta)
+ *    This ensures smooth transitions and prevents 0/1 saturation
+ *
+ * 2. Multiplicative vs Additive Adjustments
+ *    - MULTIPLY: c' = c * factor (preserves relative differences)
+ *    - DELTA: c' = c + delta (absolute shift)
+ *    - OVERRIDE: c' = value (hard set)
+ *
+ * 3. Confidence Bounds with Soft Clamping
+ *    Formula: c_bounded = epsilon + (1 - 2*epsilon) * c
+ *    Keeps confidence in (epsilon, 1-epsilon) to maintain uncertainty
+ *
  * @module redaction/services
  */
 
@@ -68,9 +82,58 @@ export interface ConfidenceModifier {
 export class ConfidenceModifierService {
   private modifiers: ConfidenceModifier[] = [];
 
+  // Mathematical constants for smooth confidence handling
+  private static readonly EPSILON = 0.001;  // Minimum distance from 0 and 1
+  private static readonly LOGIT_CLAMP = 0.999;  // Prevent infinity in logit
+
   constructor(modifiers: ConfidenceModifier[] = []) {
     this.modifiers = modifiers;
     this.registerDefaultModifiers();
+  }
+
+  /**
+   * Sigmoid function for smooth confidence transitions
+   * Formula: sigmoid(x) = 1 / (1 + exp(-x))
+   */
+  private static sigmoid(x: number): number {
+    if (x >= 0) {
+      return 1 / (1 + Math.exp(-x));
+    } else {
+      const expX = Math.exp(x);
+      return expX / (1 + expX);
+    }
+  }
+
+  /**
+   * Logit function (inverse sigmoid)
+   * Formula: logit(p) = ln(p / (1 - p))
+   */
+  private static logit(p: number): number {
+    const clampedP = Math.max(1 - ConfidenceModifierService.LOGIT_CLAMP,
+                              Math.min(ConfidenceModifierService.LOGIT_CLAMP, p));
+    return Math.log(clampedP / (1 - clampedP));
+  }
+
+  /**
+   * Soft clamp confidence to avoid hard 0/1 boundaries
+   * Keeps confidence in (epsilon, 1-epsilon) range
+   * Formula: c_bounded = epsilon + (1 - 2*epsilon) * c
+   */
+  private static softClamp(confidence: number): number {
+    const eps = ConfidenceModifierService.EPSILON;
+    return eps + (1 - 2 * eps) * Math.max(0, Math.min(1, confidence));
+  }
+
+  /**
+   * Apply sigmoid-smoothed delta adjustment
+   * Instead of raw addition, applies delta in log-odds space for smoother transitions
+   * Formula: result = sigmoid(logit(confidence) + scaledDelta)
+   */
+  private static sigmoidDelta(confidence: number, delta: number): number {
+    // Scale delta for log-odds space (approximately 4x in the linear region)
+    const scaledDelta = delta * 4;
+    const logOdds = ConfidenceModifierService.logit(confidence);
+    return ConfidenceModifierService.sigmoid(logOdds + scaledDelta);
   }
 
   /**
@@ -397,25 +460,41 @@ export class ConfidenceModifierService {
   }
 
   /**
-   * Apply action to confidence value
+   * Apply action to confidence value with smooth transitions
+   *
+   * Mathematical approach:
+   * - OVERRIDE: Direct set with soft clamping to avoid hard boundaries
+   * - DELTA: Sigmoid-smoothed addition in log-odds space
+   * - MULTIPLY: Standard multiplication with soft clamping
    */
   private applyAction(
     confidence: number,
     modifier: ConfidenceModifier,
   ): number {
+    let result: number;
+
     switch (modifier.action) {
       case ModifierAction.OVERRIDE:
-        return modifier.value;
+        // Override with soft clamping to maintain some uncertainty
+        result = ConfidenceModifierService.softClamp(modifier.value);
+        break;
 
       case ModifierAction.DELTA:
-        return confidence + modifier.value;
+        // Use sigmoid-smoothed delta for smoother transitions
+        // This prevents confidence from overshooting 0 or 1
+        result = ConfidenceModifierService.sigmoidDelta(confidence, modifier.value);
+        break;
 
       case ModifierAction.MULTIPLY:
-        return confidence * modifier.value;
+        // Standard multiplication with soft clamping
+        result = ConfidenceModifierService.softClamp(confidence * modifier.value);
+        break;
 
       default:
-        return confidence;
+        result = confidence;
     }
+
+    return result;
   }
 
   /**
