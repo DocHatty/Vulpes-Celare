@@ -1,7 +1,7 @@
 {
   "name": "vulpes-celare",
   "version": "1.0.0",
-  "description": "Vulpes Celare - A high-performance HIPAA PHI redaction engine. 99.4% sensitivity, 100% specificity. The fox conceals.",
+  "description": "Vulpes Celare - A high-performance HIPAA PHI redaction engine. 99.4% sensitivity, 100% specificity.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

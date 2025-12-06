@@ -145,6 +145,15 @@ export class RedactionEngine {
         );
       }
 
+
+      // AUTO-PROVENANCE: Record the redaction job
+      try {
+        await RedactionEngine.recordProvenance(text, redactedText);
+      } catch (provError) {
+        RadiologyLogger.error("PROVENANCE", "Failed to record provenance", provError);
+        // We do NOT block the request if provenance fails, but we log it.
+      }
+
       return redactedText;
     } catch (error) {
       RadiologyLogger.error(
@@ -297,5 +306,44 @@ export class RedactionEngine {
    */
   static async loadPolicy(policyName: string): Promise<any> {
     return await PolicyLoader.loadPolicy(policyName);
+  }
+
+  /**
+   * Record provenance data to the local RPL layer
+   */
+  private static async recordProvenance(original: string, redacted: string): Promise<void> {
+    // Only attempt if we are in an environment with fetch (Node 18+)
+    if (typeof fetch === 'undefined') return;
+
+    // Construct simplified manifest for provenance (full manifest to come later)
+    // For now we just prove the transformation occurred
+    const manifest = {
+      timestamp: new Date().toISOString(),
+      engine: "Vulpes-Celare RedactionEngine v1.0"
+    };
+
+    const payload = {
+      docId: `doc-${Date.now()}`, // Generate ad-hoc ID if context doesn't have one
+      original,
+      redacted,
+      manifest,
+      actorId: "system-redaction-engine"
+    };
+
+    try {
+      // Fire and forget - we await it but don't let it crash the main flow
+      const response = await fetch("http://localhost:3106/provenance/record", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`RPL Server responded with ${response.status}: ${err}`);
+      }
+    } catch (e) {
+      throw e; // Rethrow to be caught by caller logger
+    }
   }
 }
