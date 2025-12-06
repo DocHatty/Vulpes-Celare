@@ -1,8 +1,24 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CORTEX - CODEBASE STATE TRACKER                                      ║
- * ║  Continuous Awareness of System Evolution                                     ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                                                                               ║
+ * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+ * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+ * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+ * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+ * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+ * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+ * ║                                                                               ║
+ * ║      ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗                        ║
+ * ║     ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝                        ║
+ * ║     ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝                         ║
+ * ║     ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗                         ║
+ * ║     ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗                        ║
+ * ║      ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝                        ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║   CODEBASE STATE TRACKER                                                      ║
+ * ║   Continuous Awareness of System Evolution                                    ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
  * This module maintains CONTINUOUS awareness of the codebase state:
  *
@@ -26,9 +42,9 @@
  * - What's the correlation between code changes and metric changes?
  */
 
-const fs = require('fs');
-const path = require('path');
-const { PATHS } = require('../core/config');
+const fs = require("fs");
+const path = require("path");
+const { PATHS } = require("../core/config");
 
 // ============================================================================
 // CODEBASE STATE TRACKER CLASS
@@ -40,7 +56,7 @@ class CodebaseStateTracker {
     this.metricsEngine = options.metricsEngine || null;
     this.temporalIndex = options.temporalIndex || null;
 
-    this.storagePath = path.join(PATHS.knowledge, 'codebase-history.json');
+    this.storagePath = path.join(PATHS.knowledge, "codebase-history.json");
     this.data = this.loadData();
 
     // Cache current state
@@ -51,10 +67,10 @@ class CodebaseStateTracker {
   loadData() {
     try {
       if (fs.existsSync(this.storagePath)) {
-        return JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        return JSON.parse(fs.readFileSync(this.storagePath, "utf8"));
       }
     } catch (e) {
-      console.warn('CodebaseStateTracker: Starting with empty history');
+      console.warn("CodebaseStateTracker: Starting with empty history");
     }
     return {
       states: [],
@@ -62,8 +78,8 @@ class CodebaseStateTracker {
       correlations: [],
       stats: {
         totalSnapshots: 0,
-        totalChanges: 0
-      }
+        totalChanges: 0,
+      },
     };
   }
 
@@ -84,7 +100,7 @@ class CodebaseStateTracker {
    */
   captureState() {
     if (!this.codebaseAnalyzer) {
-      throw new Error('CodebaseAnalyzer required for state capture');
+      throw new Error("CodebaseAnalyzer required for state capture");
     }
 
     // Get fresh snapshot
@@ -99,22 +115,24 @@ class CodebaseStateTracker {
         dictionaryCount: snapshot.dictionaries?.count || 0,
         dictionaryEntries: snapshot.dictionaries?.totalEntries || 0,
         capabilities: snapshot.filters?.capabilities || [],
-        gaps: snapshot.filters?.gaps || []
+        gaps: snapshot.filters?.gaps || [],
       },
       // Store filter details
-      filters: snapshot.filters?.filters?.map(f => ({
-        name: f.name,
-        phiType: f.phiType,
-        hash: f.hash,
-        capabilities: f.capabilities
-      })) || [],
+      filters:
+        snapshot.filters?.filters?.map((f) => ({
+          name: f.name,
+          phiType: f.phiType,
+          hash: f.hash,
+          capabilities: f.capabilities,
+        })) || [],
       // Store dictionary details
-      dictionaries: snapshot.dictionaries?.dictionaries?.map(d => ({
-        name: d.name,
-        type: d.type,
-        entries: d.entries,
-        hash: d.hash
-      })) || []
+      dictionaries:
+        snapshot.dictionaries?.dictionaries?.map((d) => ({
+          name: d.name,
+          type: d.type,
+          entries: d.entries,
+          hash: d.hash,
+        })) || [],
     };
 
     // Compare with previous state
@@ -125,7 +143,7 @@ class CodebaseStateTracker {
       id: stateRecord.id,
       timestamp: stateRecord.timestamp,
       hash: stateRecord.hash,
-      summary: stateRecord.summary
+      summary: stateRecord.summary,
     });
 
     // Store changes
@@ -133,7 +151,7 @@ class CodebaseStateTracker {
       this.data.changes.push({
         timestamp: stateRecord.timestamp,
         stateId: stateRecord.id,
-        changes
+        changes,
       });
       this.data.stats.totalChanges += changes.length;
     }
@@ -157,7 +175,7 @@ class CodebaseStateTracker {
     return {
       state: stateRecord,
       changes,
-      changedSinceLastCapture: changes.length > 0
+      changedSinceLastCapture: changes.length > 0,
     };
   }
 
@@ -166,7 +184,7 @@ class CodebaseStateTracker {
     const previousState = this.data.states[this.data.states.length - 1];
 
     if (!previousState) {
-      return [{ type: 'INITIAL_STATE', description: 'First state capture' }];
+      return [{ type: "INITIAL_STATE", description: "First state capture" }];
     }
 
     // Check hash change
@@ -174,25 +192,28 @@ class CodebaseStateTracker {
       // Find specific changes
       const prevFilters = new Map(
         this.data.states.length > 0
-          ? this.getFullState(previousState.id)?.filters?.map(f => [f.name, f]) || []
-          : []
+          ? this.getFullState(previousState.id)?.filters?.map((f) => [
+              f.name,
+              f,
+            ]) || []
+          : [],
       );
-      const currFilters = new Map(currentState.filters.map(f => [f.name, f]));
+      const currFilters = new Map(currentState.filters.map((f) => [f.name, f]));
 
       // Check for filter changes
       for (const [name, curr] of currFilters) {
         const prev = prevFilters.get(name);
         if (!prev) {
           changes.push({
-            type: 'FILTER_ADDED',
+            type: "FILTER_ADDED",
             component: name,
-            phiType: curr.phiType
+            phiType: curr.phiType,
           });
         } else if (prev.hash !== curr.hash) {
           changes.push({
-            type: 'FILTER_MODIFIED',
+            type: "FILTER_MODIFIED",
             component: name,
-            phiType: curr.phiType
+            phiType: curr.phiType,
           });
         }
       }
@@ -200,8 +221,8 @@ class CodebaseStateTracker {
       for (const [name] of prevFilters) {
         if (!currFilters.has(name)) {
           changes.push({
-            type: 'FILTER_REMOVED',
-            component: name
+            type: "FILTER_REMOVED",
+            component: name,
           });
         }
       }
@@ -211,10 +232,10 @@ class CodebaseStateTracker {
       const currEntries = currentState.summary.dictionaryEntries;
       if (currEntries !== prevEntries) {
         changes.push({
-          type: 'DICTIONARY_SIZE_CHANGED',
+          type: "DICTIONARY_SIZE_CHANGED",
           from: prevEntries,
           to: currEntries,
-          delta: currEntries - prevEntries
+          delta: currEntries - prevEntries,
         });
       }
 
@@ -225,8 +246,8 @@ class CodebaseStateTracker {
       for (const cap of currCaps) {
         if (!prevCaps.has(cap)) {
           changes.push({
-            type: 'CAPABILITY_ADDED',
-            capability: cap
+            type: "CAPABILITY_ADDED",
+            capability: cap,
           });
         }
       }
@@ -234,8 +255,8 @@ class CodebaseStateTracker {
       for (const cap of prevCaps) {
         if (!currCaps.has(cap)) {
           changes.push({
-            type: 'CAPABILITY_REMOVED',
-            capability: cap
+            type: "CAPABILITY_REMOVED",
+            capability: cap,
           });
         }
       }
@@ -261,9 +282,13 @@ class CodebaseStateTracker {
    * Get current codebase state (uses cache if fresh)
    */
   getCurrentState(options = {}) {
-    const maxAge = options.maxAge || 60000;  // Default 1 minute
+    const maxAge = options.maxAge || 60000; // Default 1 minute
 
-    if (this.currentState && this.lastRefresh && (Date.now() - this.lastRefresh < maxAge)) {
+    if (
+      this.currentState &&
+      this.lastRefresh &&
+      Date.now() - this.lastRefresh < maxAge
+    ) {
       return this.currentState;
     }
 
@@ -277,16 +302,16 @@ class CodebaseStateTracker {
     const cutoff = new Date(timestamp).getTime();
 
     return this.data.changes
-      .filter(c => new Date(c.timestamp).getTime() > cutoff)
-      .flatMap(c => c.changes);
+      .filter((c) => new Date(c.timestamp).getTime() > cutoff)
+      .flatMap((c) => c.changes);
   }
 
   /**
    * Get changes between two states
    */
   getChangesBetween(fromStateId, toStateId) {
-    const fromIndex = this.data.states.findIndex(s => s.id === fromStateId);
-    const toIndex = this.data.states.findIndex(s => s.id === toStateId);
+    const fromIndex = this.data.states.findIndex((s) => s.id === fromStateId);
+    const toIndex = this.data.states.findIndex((s) => s.id === toStateId);
 
     if (fromIndex === -1 || toIndex === -1) {
       return [];
@@ -294,8 +319,8 @@ class CodebaseStateTracker {
 
     const changes = [];
     for (let i = fromIndex; i < toIndex; i++) {
-      const changeRecord = this.data.changes.find(c =>
-        c.stateId === this.data.states[i + 1]?.id
+      const changeRecord = this.data.changes.find(
+        (c) => c.stateId === this.data.states[i + 1]?.id,
       );
       if (changeRecord) {
         changes.push(...changeRecord.changes);
@@ -312,13 +337,13 @@ class CodebaseStateTracker {
     const history = [];
 
     for (const changeRecord of this.data.changes) {
-      const relevantChanges = changeRecord.changes.filter(c =>
-        c.component === filterName
+      const relevantChanges = changeRecord.changes.filter(
+        (c) => c.component === filterName,
       );
       if (relevantChanges.length > 0) {
         history.push({
           timestamp: changeRecord.timestamp,
-          changes: relevantChanges
+          changes: relevantChanges,
         });
       }
     }
@@ -330,9 +355,9 @@ class CodebaseStateTracker {
    * Get dictionary size history
    */
   getDictionarySizeHistory() {
-    return this.data.states.map(s => ({
+    return this.data.states.map((s) => ({
       timestamp: s.timestamp,
-      entries: s.summary?.dictionaryEntries || 0
+      entries: s.summary?.dictionaryEntries || 0,
     }));
   }
 
@@ -345,24 +370,24 @@ class CodebaseStateTracker {
    */
   analyzeTrends() {
     const trends = {
-      filterCount: this.analyzeMetricTrend('filterCount'),
-      dictionarySize: this.analyzeMetricTrend('dictionaryEntries'),
+      filterCount: this.analyzeMetricTrend("filterCount"),
+      dictionarySize: this.analyzeMetricTrend("dictionaryEntries"),
       capabilities: this.analyzeCapabilityTrend(),
       gaps: this.analyzeGapsTrend(),
-      changeFrequency: this.analyzeChangeFrequency()
+      changeFrequency: this.analyzeChangeFrequency(),
     };
 
     return trends;
   }
 
   analyzeMetricTrend(metricKey) {
-    const values = this.data.states.map(s => ({
+    const values = this.data.states.map((s) => ({
       timestamp: new Date(s.timestamp).getTime(),
-      value: s.summary?.[metricKey] || 0
+      value: s.summary?.[metricKey] || 0,
     }));
 
     if (values.length < 3) {
-      return { direction: 'INSUFFICIENT_DATA', samples: values.length };
+      return { direction: "INSUFFICIENT_DATA", samples: values.length };
     }
 
     // Simple linear regression
@@ -374,71 +399,87 @@ class CodebaseStateTracker {
 
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 
-    let direction = 'STABLE';
-    if (slope > 0.1) direction = 'INCREASING';
-    if (slope < -0.1) direction = 'DECREASING';
+    let direction = "STABLE";
+    if (slope > 0.1) direction = "INCREASING";
+    if (slope < -0.1) direction = "DECREASING";
 
     return {
       direction,
       slope,
       samples: n,
       current: values[values.length - 1]?.value,
-      first: values[0]?.value
+      first: values[0]?.value,
     };
   }
 
   analyzeCapabilityTrend() {
     if (this.data.states.length < 2) {
-      return { direction: 'INSUFFICIENT_DATA' };
+      return { direction: "INSUFFICIENT_DATA" };
     }
 
     const first = new Set(this.data.states[0]?.summary?.capabilities || []);
-    const last = new Set(this.data.states[this.data.states.length - 1]?.summary?.capabilities || []);
+    const last = new Set(
+      this.data.states[this.data.states.length - 1]?.summary?.capabilities ||
+        [],
+    );
 
-    const added = [...last].filter(c => !first.has(c));
-    const removed = [...first].filter(c => !last.has(c));
+    const added = [...last].filter((c) => !first.has(c));
+    const removed = [...first].filter((c) => !last.has(c));
 
     return {
-      direction: added.length > removed.length ? 'IMPROVING' : removed.length > added.length ? 'DEGRADING' : 'STABLE',
+      direction:
+        added.length > removed.length
+          ? "IMPROVING"
+          : removed.length > added.length
+            ? "DEGRADING"
+            : "STABLE",
       added,
       removed,
-      current: [...last]
+      current: [...last],
     };
   }
 
   analyzeGapsTrend() {
     if (this.data.states.length < 2) {
-      return { direction: 'INSUFFICIENT_DATA' };
+      return { direction: "INSUFFICIENT_DATA" };
     }
 
     const first = this.data.states[0]?.summary?.gaps?.length || 0;
-    const last = this.data.states[this.data.states.length - 1]?.summary?.gaps?.length || 0;
+    const last =
+      this.data.states[this.data.states.length - 1]?.summary?.gaps?.length || 0;
 
     return {
-      direction: last < first ? 'IMPROVING' : last > first ? 'DEGRADING' : 'STABLE',
+      direction:
+        last < first ? "IMPROVING" : last > first ? "DEGRADING" : "STABLE",
       firstGapCount: first,
       currentGapCount: last,
-      currentGaps: this.data.states[this.data.states.length - 1]?.summary?.gaps || []
+      currentGaps:
+        this.data.states[this.data.states.length - 1]?.summary?.gaps || [],
     };
   }
 
   analyzeChangeFrequency() {
     if (this.data.changes.length < 2) {
-      return { frequency: 'LOW', changesPerDay: 0 };
+      return { frequency: "LOW", changesPerDay: 0 };
     }
 
     const first = new Date(this.data.changes[0]?.timestamp).getTime();
-    const last = new Date(this.data.changes[this.data.changes.length - 1]?.timestamp).getTime();
+    const last = new Date(
+      this.data.changes[this.data.changes.length - 1]?.timestamp,
+    ).getTime();
     const days = Math.max((last - first) / (24 * 60 * 60 * 1000), 1);
-    const totalChanges = this.data.changes.reduce((sum, c) => sum + c.changes.length, 0);
+    const totalChanges = this.data.changes.reduce(
+      (sum, c) => sum + c.changes.length,
+      0,
+    );
 
     const perDay = totalChanges / days;
 
     return {
-      frequency: perDay > 5 ? 'HIGH' : perDay > 1 ? 'MEDIUM' : 'LOW',
+      frequency: perDay > 5 ? "HIGH" : perDay > 1 ? "MEDIUM" : "LOW",
       changesPerDay: perDay,
       totalChanges,
-      periodDays: days
+      periodDays: days,
     };
   }
 
@@ -461,18 +502,21 @@ class CodebaseStateTracker {
       const changeTime = new Date(changeRecord.timestamp).getTime();
 
       // Find metric readings around this change
-      const beforeMetrics = metricsHistory.find(m =>
-        Math.abs(new Date(m.timestamp).getTime() - changeTime) < 24 * 60 * 60 * 1000 &&
-        new Date(m.timestamp).getTime() < changeTime
+      const beforeMetrics = metricsHistory.find(
+        (m) =>
+          Math.abs(new Date(m.timestamp).getTime() - changeTime) <
+            24 * 60 * 60 * 1000 && new Date(m.timestamp).getTime() < changeTime,
       );
 
-      const afterMetrics = metricsHistory.find(m =>
-        Math.abs(new Date(m.timestamp).getTime() - changeTime) < 24 * 60 * 60 * 1000 &&
-        new Date(m.timestamp).getTime() > changeTime
+      const afterMetrics = metricsHistory.find(
+        (m) =>
+          Math.abs(new Date(m.timestamp).getTime() - changeTime) <
+            24 * 60 * 60 * 1000 && new Date(m.timestamp).getTime() > changeTime,
       );
 
       if (beforeMetrics && afterMetrics) {
-        const sensitivityDelta = (afterMetrics.sensitivity || 0) - (beforeMetrics.sensitivity || 0);
+        const sensitivityDelta =
+          (afterMetrics.sensitivity || 0) - (beforeMetrics.sensitivity || 0);
 
         if (Math.abs(sensitivityDelta) > 0.5) {
           correlations.push({
@@ -480,15 +524,17 @@ class CodebaseStateTracker {
             changes: changeRecord.changes,
             metricImpact: {
               sensitivity: sensitivityDelta,
-              direction: sensitivityDelta > 0 ? 'IMPROVED' : 'REGRESSED'
-            }
+              direction: sensitivityDelta > 0 ? "IMPROVED" : "REGRESSED",
+            },
           });
         }
       }
     }
 
     // Store correlations
-    this.data.correlations = [...this.data.correlations, ...correlations].slice(-50);
+    this.data.correlations = [...this.data.correlations, ...correlations].slice(
+      -50,
+    );
     this.saveData();
 
     return { correlations };
@@ -502,9 +548,11 @@ class CodebaseStateTracker {
    * Export for LLM context
    */
   exportForLLM() {
-    const current = this.getCurrentState({ maxAge: 300000 });  // 5 min cache
+    const current = this.getCurrentState({ maxAge: 300000 }); // 5 min cache
     const trends = this.analyzeTrends();
-    const recentChanges = this.getChangesSince(Date.now() - 7 * 24 * 60 * 60 * 1000);  // Last 7 days
+    const recentChanges = this.getChangesSince(
+      Date.now() - 7 * 24 * 60 * 60 * 1000,
+    ); // Last 7 days
 
     return {
       currentState: {
@@ -512,21 +560,21 @@ class CodebaseStateTracker {
         dictionaries: current?.summary?.dictionaryCount || 0,
         dictionaryEntries: current?.summary?.dictionaryEntries || 0,
         capabilities: current?.summary?.capabilities || [],
-        gaps: current?.summary?.gaps || []
+        gaps: current?.summary?.gaps || [],
       },
       trends: {
         filterTrend: trends.filterCount.direction,
         dictionaryTrend: trends.dictionarySize.direction,
         capabilityTrend: trends.capabilities.direction,
         gapTrend: trends.gaps.direction,
-        changeFrequency: trends.changeFrequency.frequency
+        changeFrequency: trends.changeFrequency.frequency,
       },
-      recentChanges: recentChanges.slice(0, 10).map(c => ({
+      recentChanges: recentChanges.slice(0, 10).map((c) => ({
         type: c.type,
         component: c.component,
-        description: c.description
+        description: c.description,
       })),
-      stats: this.data.stats
+      stats: this.data.stats,
     };
   }
 
@@ -548,16 +596,16 @@ CURRENT STATE
 Filters: ${state?.summary?.filterCount || 0}
 Dictionaries: ${state?.summary?.dictionaryCount || 0}
 Dictionary Entries: ${state?.summary?.dictionaryEntries || 0}
-Capabilities: ${state?.summary?.capabilities?.join(', ') || 'None'}
-Gaps: ${state?.summary?.gaps?.join(', ') || 'None'}
+Capabilities: ${state?.summary?.capabilities?.join(", ") || "None"}
+Gaps: ${state?.summary?.gaps?.join(", ") || "None"}
 
 TRENDS
 ───────────────────────────────────────────────────────────────────────────────
 Filter Count: ${trends.filterCount.direction} (${trends.filterCount.first || 0} → ${trends.filterCount.current || 0})
 Dictionary Size: ${trends.dictionarySize.direction}
 Capabilities: ${trends.capabilities.direction}
-  Added: ${trends.capabilities.added?.join(', ') || 'None'}
-  Removed: ${trends.capabilities.removed?.join(', ') || 'None'}
+  Added: ${trends.capabilities.added?.join(", ") || "None"}
+  Removed: ${trends.capabilities.removed?.join(", ") || "None"}
 Gaps: ${trends.gaps.direction} (${trends.gaps.firstGapCount} → ${trends.gaps.currentGapCount})
 Change Frequency: ${trends.changeFrequency.frequency} (${trends.changeFrequency.changesPerDay?.toFixed(1)}/day)
 
@@ -576,5 +624,5 @@ Total Changes Tracked: ${this.data.stats.totalChanges}
 // ============================================================================
 
 module.exports = {
-  CodebaseStateTracker
+  CodebaseStateTracker,
 };

@@ -1,8 +1,24 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CORTEX - ROLLBACK MANAGER                                            ║
- * ║  Safe Automated Reversal of Harmful Changes                                   ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                                                                               ║
+ * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+ * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+ * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+ * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+ * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+ * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+ * ║                                                                               ║
+ * ║      ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗                        ║
+ * ║     ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝                        ║
+ * ║     ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝                         ║
+ * ║     ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗                         ║
+ * ║     ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗                        ║
+ * ║      ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝                        ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║   ROLLBACK MANAGER                                                            ║
+ * ║   Safe Automated Reversal of Harmful Changes                                  ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
  * CRITICAL SAFETY SYSTEM
  *
@@ -37,11 +53,11 @@
  * FULL_ROLLBACK        - Revert to a complete snapshot
  */
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const { EventEmitter } = require('events');
-const { PATHS } = require('../core/config');
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
+const { EventEmitter } = require("events");
+const { PATHS } = require("../core/config");
 
 // ============================================================================
 // ROLLBACK POLICIES
@@ -49,35 +65,35 @@ const { PATHS } = require('../core/config');
 
 const ROLLBACK_POLICIES = {
   STRICT: {
-    name: 'Strict (HIPAA Mode)',
+    name: "Strict (HIPAA Mode)",
     autoRollbackThresholds: {
-      sensitivityDrop: -1,      // Any drop triggers rollback
-      criticalTypeDrop: -0.5,   // SSN, MRN - very strict
-      specificityDrop: -5
+      sensitivityDrop: -1, // Any drop triggers rollback
+      criticalTypeDrop: -0.5, // SSN, MRN - very strict
+      specificityDrop: -5,
     },
-    requiresApproval: false
+    requiresApproval: false,
   },
   STANDARD: {
-    name: 'Standard',
+    name: "Standard",
     autoRollbackThresholds: {
       sensitivityDrop: -3,
       criticalTypeDrop: -2,
-      specificityDrop: -10
+      specificityDrop: -10,
     },
-    requiresApproval: false
+    requiresApproval: false,
   },
   LENIENT: {
-    name: 'Lenient (Development)',
+    name: "Lenient (Development)",
     autoRollbackThresholds: {
       sensitivityDrop: -5,
       criticalTypeDrop: -5,
-      specificityDrop: -15
+      specificityDrop: -15,
     },
-    requiresApproval: true
-  }
+    requiresApproval: true,
+  },
 };
 
-const CRITICAL_PHI_TYPES = ['SSN', 'MRN', 'MEDICAL_RECORD', 'HEALTH_PLAN_ID'];
+const CRITICAL_PHI_TYPES = ["SSN", "MRN", "MEDICAL_RECORD", "HEALTH_PLAN_ID"];
 
 // ============================================================================
 // ROLLBACK MANAGER CLASS
@@ -89,10 +105,10 @@ class RollbackManager extends EventEmitter {
 
     this.snapshotManager = options.snapshotManager || null;
     this.interventionTracker = options.interventionTracker || null;
-    this.policy = options.policy || 'STANDARD';
+    this.policy = options.policy || "STANDARD";
 
-    this.storagePath = path.join(PATHS.knowledge, 'rollbacks.json');
-    this.backupDir = path.join(PATHS.snapshots, 'backups');
+    this.storagePath = path.join(PATHS.knowledge, "rollbacks.json");
+    this.backupDir = path.join(PATHS.snapshots, "backups");
     this.data = this.loadData();
 
     this.ensureDir(this.backupDir);
@@ -101,10 +117,10 @@ class RollbackManager extends EventEmitter {
   loadData() {
     try {
       if (fs.existsSync(this.storagePath)) {
-        return JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        return JSON.parse(fs.readFileSync(this.storagePath, "utf8"));
       }
     } catch (e) {
-      console.warn('RollbackManager: Starting with empty rollback history');
+      console.warn("RollbackManager: Starting with empty rollback history");
     }
     return {
       rollbacks: [],
@@ -115,8 +131,8 @@ class RollbackManager extends EventEmitter {
         successful: 0,
         failed: 0,
         automatic: 0,
-        manual: 0
-      }
+        manual: 0,
+      },
     };
   }
 
@@ -149,30 +165,37 @@ class RollbackManager extends EventEmitter {
       timestamp: new Date().toISOString(),
       comparisonId: comparison.id,
       shouldRollback: false,
-      type: 'NONE',
-      priority: 'LOW',
+      type: "NONE",
+      priority: "LOW",
       reasons: [],
       requiresApproval: policyConfig.requiresApproval,
-      policy: this.policy
+      policy: this.policy,
     };
 
     // Check sensitivity drop
     const sensitivityDelta = comparison.metrics?.sensitivity?.delta || 0;
     if (sensitivityDelta < thresholds.sensitivityDrop) {
       decision.shouldRollback = true;
-      decision.type = 'AUTOMATIC';
-      decision.priority = 'CRITICAL';
-      decision.reasons.push(`Sensitivity dropped by ${Math.abs(sensitivityDelta).toFixed(2)}% (threshold: ${Math.abs(thresholds.sensitivityDrop)}%)`);
+      decision.type = "AUTOMATIC";
+      decision.priority = "CRITICAL";
+      decision.reasons.push(
+        `Sensitivity dropped by ${Math.abs(sensitivityDelta).toFixed(2)}% (threshold: ${Math.abs(thresholds.sensitivityDrop)}%)`,
+      );
     }
 
     // Check critical PHI types
     for (const phiType of CRITICAL_PHI_TYPES) {
       const typeData = comparison.phiTypes?.[phiType];
-      if (typeData && typeData.sensitivity?.delta < thresholds.criticalTypeDrop) {
+      if (
+        typeData &&
+        typeData.sensitivity?.delta < thresholds.criticalTypeDrop
+      ) {
         decision.shouldRollback = true;
-        decision.type = 'AUTOMATIC';
-        decision.priority = 'CRITICAL';
-        decision.reasons.push(`Critical type ${phiType} sensitivity dropped by ${Math.abs(typeData.sensitivity.delta).toFixed(2)}%`);
+        decision.type = "AUTOMATIC";
+        decision.priority = "CRITICAL";
+        decision.reasons.push(
+          `Critical type ${phiType} sensitivity dropped by ${Math.abs(typeData.sensitivity.delta).toFixed(2)}%`,
+        );
       }
     }
 
@@ -181,25 +204,32 @@ class RollbackManager extends EventEmitter {
     if (specificityDelta < thresholds.specificityDrop) {
       if (!decision.shouldRollback) {
         decision.shouldRollback = true;
-        decision.type = 'SEMI_AUTOMATIC';
-        decision.priority = 'HIGH';
+        decision.type = "SEMI_AUTOMATIC";
+        decision.priority = "HIGH";
       }
-      decision.reasons.push(`Specificity dropped by ${Math.abs(specificityDelta).toFixed(2)}% (threshold: ${Math.abs(thresholds.specificityDrop)}%)`);
+      decision.reasons.push(
+        `Specificity dropped by ${Math.abs(specificityDelta).toFixed(2)}% (threshold: ${Math.abs(thresholds.specificityDrop)}%)`,
+      );
     }
 
     // Check document-level regressions
-    if (comparison.documents?.stats?.regressed > comparison.documents?.stats?.improved * 2) {
+    if (
+      comparison.documents?.stats?.regressed >
+      comparison.documents?.stats?.improved * 2
+    ) {
       if (!decision.shouldRollback) {
         decision.shouldRollback = true;
-        decision.type = 'SEMI_AUTOMATIC';
-        decision.priority = 'MEDIUM';
+        decision.type = "SEMI_AUTOMATIC";
+        decision.priority = "MEDIUM";
       }
-      decision.reasons.push(`${comparison.documents.stats.regressed} documents regressed vs ${comparison.documents.stats.improved} improved`);
+      decision.reasons.push(
+        `${comparison.documents.stats.regressed} documents regressed vs ${comparison.documents.stats.improved} improved`,
+      );
     }
 
     // Emit event for monitoring
     if (decision.shouldRollback) {
-      this.emit('rollbackRecommended', decision);
+      this.emit("rollbackRecommended", decision);
     }
 
     return decision;
@@ -218,21 +248,21 @@ class RollbackManager extends EventEmitter {
     const backup = {
       id: `BACKUP-${Date.now()}`,
       timestamp: new Date().toISOString(),
-      type: target.type || 'GENERAL',
+      type: target.type || "GENERAL",
       files: [],
       config: null,
-      hash: null
+      hash: null,
     };
 
     // Backup files
     if (target.files && target.files.length > 0) {
       for (const filePath of target.files) {
         if (fs.existsSync(filePath)) {
-          const content = fs.readFileSync(filePath, 'utf8');
+          const content = fs.readFileSync(filePath, "utf8");
           const backupPath = path.join(
             this.backupDir,
             backup.id,
-            path.basename(filePath)
+            path.basename(filePath),
           );
 
           this.ensureDir(path.dirname(backupPath));
@@ -241,7 +271,7 @@ class RollbackManager extends EventEmitter {
           backup.files.push({
             originalPath: filePath,
             backupPath,
-            hash: this.hashContent(content)
+            hash: this.hashContent(content),
           });
         }
       }
@@ -249,17 +279,19 @@ class RollbackManager extends EventEmitter {
 
     // Backup config
     if (target.config) {
-      const configPath = path.join(this.backupDir, backup.id, 'config.json');
+      const configPath = path.join(this.backupDir, backup.id, "config.json");
       this.ensureDir(path.dirname(configPath));
       fs.writeFileSync(configPath, JSON.stringify(target.config, null, 2));
       backup.config = {
         path: configPath,
-        hash: this.hashContent(JSON.stringify(target.config))
+        hash: this.hashContent(JSON.stringify(target.config)),
       };
     }
 
     // Overall hash
-    backup.hash = this.hashContent(JSON.stringify(backup.files.map(f => f.hash)));
+    backup.hash = this.hashContent(
+      JSON.stringify(backup.files.map((f) => f.hash)),
+    );
 
     // Register backup
     this.data.backups.push({
@@ -267,11 +299,11 @@ class RollbackManager extends EventEmitter {
       timestamp: backup.timestamp,
       type: backup.type,
       fileCount: backup.files.length,
-      hash: backup.hash
+      hash: backup.hash,
     });
     this.saveData();
 
-    this.emit('backupCreated', backup);
+    this.emit("backupCreated", backup);
     return backup;
   }
 
@@ -285,7 +317,7 @@ class RollbackManager extends EventEmitter {
    * @param {Object} options - Rollback options
    */
   executeRollback(backupId, options = {}) {
-    const backupMeta = this.data.backups.find(b => b.id === backupId);
+    const backupMeta = this.data.backups.find((b) => b.id === backupId);
     if (!backupMeta) {
       throw new Error(`Backup not found: ${backupId}`);
     }
@@ -294,35 +326,35 @@ class RollbackManager extends EventEmitter {
       id: `ROLLBACK-${Date.now()}`,
       timestamp: new Date().toISOString(),
       backupId,
-      reason: options.reason || 'Unspecified',
-      triggeredBy: options.triggeredBy || 'manual',
-      status: 'IN_PROGRESS',
+      reason: options.reason || "Unspecified",
+      triggeredBy: options.triggeredBy || "manual",
+      status: "IN_PROGRESS",
       filesRestored: [],
       configRestored: false,
-      errors: []
+      errors: [],
     };
 
     try {
-      this.emit('rollbackStarted', rollback);
+      this.emit("rollbackStarted", rollback);
 
       // Restore files
       const backupDir = path.join(this.backupDir, backupId);
       if (fs.existsSync(backupDir)) {
         // Read backup manifest
-        const manifestPath = path.join(backupDir, 'manifest.json');
+        const manifestPath = path.join(backupDir, "manifest.json");
         let manifest = null;
 
         if (fs.existsSync(manifestPath)) {
-          manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+          manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
         } else {
           // Reconstruct from files
           manifest = { files: [] };
           const files = fs.readdirSync(backupDir);
           for (const file of files) {
-            if (file !== 'config.json' && file !== 'manifest.json') {
+            if (file !== "config.json" && file !== "manifest.json") {
               manifest.files.push({
                 backupPath: path.join(backupDir, file),
-                originalPath: null  // Unknown - would need to be in manifest
+                originalPath: null, // Unknown - would need to be in manifest
               });
             }
           }
@@ -332,31 +364,30 @@ class RollbackManager extends EventEmitter {
         for (const fileInfo of manifest.files || []) {
           if (fileInfo.originalPath && fs.existsSync(fileInfo.backupPath)) {
             try {
-              const content = fs.readFileSync(fileInfo.backupPath, 'utf8');
+              const content = fs.readFileSync(fileInfo.backupPath, "utf8");
               fs.writeFileSync(fileInfo.originalPath, content);
               rollback.filesRestored.push(fileInfo.originalPath);
             } catch (e) {
               rollback.errors.push({
                 file: fileInfo.originalPath,
-                error: e.message
+                error: e.message,
               });
             }
           }
         }
 
         // Restore config
-        const configPath = path.join(backupDir, 'config.json');
+        const configPath = path.join(backupDir, "config.json");
         if (fs.existsSync(configPath)) {
           rollback.configRestored = true;
           // Config restoration would depend on how config is applied in the system
         }
       }
 
-      rollback.status = rollback.errors.length === 0 ? 'SUCCESS' : 'PARTIAL';
+      rollback.status = rollback.errors.length === 0 ? "SUCCESS" : "PARTIAL";
       this.data.stats.successful++;
-
     } catch (error) {
-      rollback.status = 'FAILED';
+      rollback.status = "FAILED";
       rollback.errors.push({ general: error.message });
       this.data.stats.failed++;
     }
@@ -365,7 +396,7 @@ class RollbackManager extends EventEmitter {
     rollback.completedAt = new Date().toISOString();
     this.data.rollbacks.push(rollback);
     this.data.stats.total++;
-    if (rollback.triggeredBy === 'automatic') {
+    if (rollback.triggeredBy === "automatic") {
       this.data.stats.automatic++;
     } else {
       this.data.stats.manual++;
@@ -376,11 +407,11 @@ class RollbackManager extends EventEmitter {
     if (this.interventionTracker && options.interventionId) {
       this.interventionTracker.recordRollback(options.interventionId, {
         triggeredBy: rollback.triggeredBy,
-        reason: rollback.reason
+        reason: rollback.reason,
       });
     }
 
-    this.emit('rollbackCompleted', rollback);
+    this.emit("rollbackCompleted", rollback);
     return rollback;
   }
 
@@ -402,19 +433,19 @@ class RollbackManager extends EventEmitter {
         decision,
         backupId,
         options,
-        status: 'AWAITING_APPROVAL'
+        status: "AWAITING_APPROVAL",
       });
       this.saveData();
 
-      this.emit('rollbackPendingApproval', { decision, backupId });
+      this.emit("rollbackPendingApproval", { decision, backupId });
       return { executed: false, decision, pendingApproval: true };
     }
 
     // Execute automatic rollback
     const rollback = this.executeRollback(backupId, {
       ...options,
-      reason: decision.reasons.join('; '),
-      triggeredBy: 'automatic'
+      reason: decision.reasons.join("; "),
+      triggeredBy: "automatic",
     });
 
     return { executed: true, decision, rollback };
@@ -424,19 +455,19 @@ class RollbackManager extends EventEmitter {
    * Approve a pending rollback
    */
   approvePendingRollback(pendingId) {
-    const pending = this.data.pending.find(p => p.id === pendingId);
+    const pending = this.data.pending.find((p) => p.id === pendingId);
     if (!pending) {
       throw new Error(`Pending rollback not found: ${pendingId}`);
     }
 
-    pending.status = 'APPROVED';
+    pending.status = "APPROVED";
     pending.approvedAt = new Date().toISOString();
     this.saveData();
 
     const rollback = this.executeRollback(pending.backupId, {
       ...pending.options,
-      reason: pending.decision.reasons.join('; '),
-      triggeredBy: 'approved'
+      reason: pending.decision.reasons.join("; "),
+      triggeredBy: "approved",
     });
 
     return rollback;
@@ -445,18 +476,18 @@ class RollbackManager extends EventEmitter {
   /**
    * Reject a pending rollback
    */
-  rejectPendingRollback(pendingId, reason = '') {
-    const pending = this.data.pending.find(p => p.id === pendingId);
+  rejectPendingRollback(pendingId, reason = "") {
+    const pending = this.data.pending.find((p) => p.id === pendingId);
     if (!pending) {
       throw new Error(`Pending rollback not found: ${pendingId}`);
     }
 
-    pending.status = 'REJECTED';
+    pending.status = "REJECTED";
     pending.rejectedAt = new Date().toISOString();
     pending.rejectionReason = reason;
     this.saveData();
 
-    this.emit('rollbackRejected', pending);
+    this.emit("rollbackRejected", pending);
     return pending;
   }
 
@@ -470,36 +501,35 @@ class RollbackManager extends EventEmitter {
    * @param {Function} testRunner - Function to run tests
    */
   async verifyRollback(rollbackId, testRunner) {
-    const rollback = this.data.rollbacks.find(r => r.id === rollbackId);
+    const rollback = this.data.rollbacks.find((r) => r.id === rollbackId);
     if (!rollback) {
       throw new Error(`Rollback not found: ${rollbackId}`);
     }
 
-    this.emit('verificationStarted', rollback);
+    this.emit("verificationStarted", rollback);
 
     try {
       const results = await testRunner();
 
       rollback.verification = {
         timestamp: new Date().toISOString(),
-        success: results.metrics?.sensitivity >= 95,  // Example threshold
-        metrics: results.metrics
+        success: results.metrics?.sensitivity >= 95, // Example threshold
+        metrics: results.metrics,
       };
 
       this.saveData();
-      this.emit('verificationCompleted', { rollback, results });
+      this.emit("verificationCompleted", { rollback, results });
 
       return rollback.verification;
-
     } catch (error) {
       rollback.verification = {
         timestamp: new Date().toISOString(),
         success: false,
-        error: error.message
+        error: error.message,
       };
       this.saveData();
 
-      this.emit('verificationFailed', { rollback, error });
+      this.emit("verificationFailed", { rollback, error });
       throw error;
     }
   }
@@ -509,7 +539,11 @@ class RollbackManager extends EventEmitter {
   // ==========================================================================
 
   hashContent(content) {
-    return crypto.createHash('md5').update(content).digest('hex').substring(0, 12);
+    return crypto
+      .createHash("md5")
+      .update(content)
+      .digest("hex")
+      .substring(0, 12);
   }
 
   /**
@@ -520,7 +554,7 @@ class RollbackManager extends EventEmitter {
       throw new Error(`Unknown policy: ${policy}`);
     }
     this.policy = policy;
-    this.emit('policyChanged', policy);
+    this.emit("policyChanged", policy);
   }
 
   /**
@@ -529,7 +563,7 @@ class RollbackManager extends EventEmitter {
   getPolicy() {
     return {
       name: this.policy,
-      ...ROLLBACK_POLICIES[this.policy]
+      ...ROLLBACK_POLICIES[this.policy],
     };
   }
 
@@ -538,7 +572,7 @@ class RollbackManager extends EventEmitter {
   // ==========================================================================
 
   getRollback(id) {
-    return this.data.rollbacks.find(r => r.id === id);
+    return this.data.rollbacks.find((r) => r.id === id);
   }
 
   getRecentRollbacks(limit = 10) {
@@ -546,11 +580,11 @@ class RollbackManager extends EventEmitter {
   }
 
   getPendingRollbacks() {
-    return this.data.pending.filter(p => p.status === 'AWAITING_APPROVAL');
+    return this.data.pending.filter((p) => p.status === "AWAITING_APPROVAL");
   }
 
   getBackup(id) {
-    return this.data.backups.find(b => b.id === id);
+    return this.data.backups.find((b) => b.id === id);
   }
 
   getRecentBackups(limit = 10) {
@@ -560,10 +594,11 @@ class RollbackManager extends EventEmitter {
   getStats() {
     return {
       ...this.data.stats,
-      successRate: this.data.stats.total > 0
-        ? this.data.stats.successful / this.data.stats.total
-        : 1,
-      pendingCount: this.getPendingRollbacks().length
+      successRate:
+        this.data.stats.total > 0
+          ? this.data.stats.successful / this.data.stats.total
+          : 1,
+      pendingCount: this.getPendingRollbacks().length,
     };
   }
 
@@ -574,17 +609,17 @@ class RollbackManager extends EventEmitter {
     return {
       policy: this.getPolicy(),
       stats: this.getStats(),
-      recentRollbacks: this.getRecentRollbacks(3).map(r => ({
+      recentRollbacks: this.getRecentRollbacks(3).map((r) => ({
         id: r.id,
         reason: r.reason,
         status: r.status,
-        triggeredBy: r.triggeredBy
+        triggeredBy: r.triggeredBy,
       })),
-      pendingRollbacks: this.getPendingRollbacks().map(p => ({
+      pendingRollbacks: this.getPendingRollbacks().map((p) => ({
         id: p.id,
         reasons: p.decision?.reasons,
-        priority: p.decision?.priority
-      }))
+        priority: p.decision?.priority,
+      })),
     };
   }
 
@@ -594,7 +629,7 @@ class RollbackManager extends EventEmitter {
   cleanup(options = {}) {
     const maxAgeDays = options.maxAgeDays || 30;
     const keepMinimum = options.keepMinimum || 5;
-    const cutoff = Date.now() - (maxAgeDays * 24 * 60 * 60 * 1000);
+    const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
 
     if (this.data.backups.length <= keepMinimum) {
       return { removed: 0 };
@@ -604,7 +639,10 @@ class RollbackManager extends EventEmitter {
 
     for (const backup of this.data.backups) {
       const age = new Date(backup.timestamp).getTime();
-      if (age < cutoff && this.data.backups.length - toRemove.length > keepMinimum) {
+      if (
+        age < cutoff &&
+        this.data.backups.length - toRemove.length > keepMinimum
+      ) {
         toRemove.push(backup.id);
 
         // Remove backup directory
@@ -619,7 +657,9 @@ class RollbackManager extends EventEmitter {
       }
     }
 
-    this.data.backups = this.data.backups.filter(b => !toRemove.includes(b.id));
+    this.data.backups = this.data.backups.filter(
+      (b) => !toRemove.includes(b.id),
+    );
     this.saveData();
 
     return { removed: toRemove.length };
@@ -633,5 +673,5 @@ class RollbackManager extends EventEmitter {
 module.exports = {
   RollbackManager,
   ROLLBACK_POLICIES,
-  CRITICAL_PHI_TYPES
+  CRITICAL_PHI_TYPES,
 };

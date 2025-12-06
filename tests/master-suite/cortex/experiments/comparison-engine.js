@@ -1,8 +1,24 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CORTEX - COMPARISON ENGINE                                           ║
- * ║  Deep Analysis of Before/After Test Results                                   ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                                                                               ║
+ * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+ * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+ * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+ * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+ * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+ * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+ * ║                                                                               ║
+ * ║      ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗                        ║
+ * ║     ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝                        ║
+ * ║     ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝                         ║
+ * ║     ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗                         ║
+ * ║     ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗                        ║
+ * ║      ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝                        ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║   COMPARISON ENGINE                                                           ║
+ * ║   Deep Analysis of Before/After Test Results                                  ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
  * Goes beyond simple metric comparison to answer:
  * - WHAT specifically got better or worse?
@@ -26,9 +42,9 @@
  * - Making data-driven decisions about keeping/reverting changes
  */
 
-const fs = require('fs');
-const path = require('path');
-const { PATHS } = require('../core/config');
+const fs = require("fs");
+const path = require("path");
+const { PATHS } = require("../core/config");
 
 // ============================================================================
 // COMPARISON ENGINE CLASS
@@ -37,23 +53,23 @@ const { PATHS } = require('../core/config');
 class ComparisonEngine {
   constructor(options = {}) {
     this.metricsEngine = options.metricsEngine || null;
-    this.storagePath = path.join(PATHS.knowledge, 'comparisons.json');
+    this.storagePath = path.join(PATHS.knowledge, "comparisons.json");
     this.data = this.loadData();
   }
 
   loadData() {
     try {
       if (fs.existsSync(this.storagePath)) {
-        return JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        return JSON.parse(fs.readFileSync(this.storagePath, "utf8"));
       }
     } catch (e) {
-      console.warn('ComparisonEngine: Starting with empty comparison history');
+      console.warn("ComparisonEngine: Starting with empty comparison history");
     }
     return {
       comparisons: [],
       stats: {
-        total: 0
-      }
+        total: 0,
+      },
     };
   }
 
@@ -100,7 +116,7 @@ class ComparisonEngine {
       significance: this.assessSignificance(before, after),
 
       // Recommendations
-      recommendations: []
+      recommendations: [],
     };
 
     // Generate recommendations based on analysis
@@ -123,43 +139,59 @@ class ComparisonEngine {
     const afterMetrics = after.metrics || after;
 
     // Calculate key deltas
-    const sensitivityDelta = (afterMetrics.sensitivity || 0) - (beforeMetrics.sensitivity || 0);
-    const specificityDelta = (afterMetrics.specificity || 0) - (beforeMetrics.specificity || 0);
-    const f1Delta = (afterMetrics.f1Score || afterMetrics.f1 || 0) - (beforeMetrics.f1Score || beforeMetrics.f1 || 0);
+    const sensitivityDelta =
+      (afterMetrics.sensitivity || 0) - (beforeMetrics.sensitivity || 0);
+    const specificityDelta =
+      (afterMetrics.specificity || 0) - (beforeMetrics.specificity || 0);
+    const f1Delta =
+      (afterMetrics.f1Score || afterMetrics.f1 || 0) -
+      (beforeMetrics.f1Score || beforeMetrics.f1 || 0);
 
     // Determine overall direction
-    let direction = 'NEUTRAL';
-    let verdict = 'No significant change';
+    let direction = "NEUTRAL";
+    let verdict = "No significant change";
 
     if (sensitivityDelta > 0.5 && specificityDelta >= -0.5) {
-      direction = 'IMPROVED';
-      verdict = 'Clear improvement in detection';
+      direction = "IMPROVED";
+      verdict = "Clear improvement in detection";
     } else if (sensitivityDelta < -0.5) {
-      direction = 'REGRESSED';
-      verdict = 'Detection capability decreased';
+      direction = "REGRESSED";
+      verdict = "Detection capability decreased";
     } else if (specificityDelta < -1) {
-      direction = 'REGRESSED';
-      verdict = 'False positive rate increased';
+      direction = "REGRESSED";
+      verdict = "False positive rate increased";
     } else if (f1Delta > 0.3) {
-      direction = 'IMPROVED';
-      verdict = 'Overall balance improved';
+      direction = "IMPROVED";
+      verdict = "Overall balance improved";
     } else if (f1Delta < -0.3) {
-      direction = 'REGRESSED';
-      verdict = 'Overall balance worsened';
+      direction = "REGRESSED";
+      verdict = "Overall balance worsened";
     }
 
     return {
       direction,
       verdict,
       keyChanges: {
-        sensitivity: { before: beforeMetrics.sensitivity, after: afterMetrics.sensitivity, delta: sensitivityDelta },
-        specificity: { before: beforeMetrics.specificity, after: afterMetrics.specificity, delta: specificityDelta },
-        f1: { before: beforeMetrics.f1Score || beforeMetrics.f1, after: afterMetrics.f1Score || afterMetrics.f1, delta: f1Delta }
+        sensitivity: {
+          before: beforeMetrics.sensitivity,
+          after: afterMetrics.sensitivity,
+          delta: sensitivityDelta,
+        },
+        specificity: {
+          before: beforeMetrics.specificity,
+          after: afterMetrics.specificity,
+          delta: specificityDelta,
+        },
+        f1: {
+          before: beforeMetrics.f1Score || beforeMetrics.f1,
+          after: afterMetrics.f1Score || afterMetrics.f1,
+          delta: f1Delta,
+        },
       },
       documentsCounted: {
         before: before.documents?.length || before.documentCount || 0,
-        after: after.documents?.length || after.documentCount || 0
-      }
+        after: after.documents?.length || after.documentCount || 0,
+      },
     };
   }
 
@@ -172,18 +204,25 @@ class ComparisonEngine {
     const afterMetrics = after.metrics || after;
 
     const metrics = {};
-    const allKeys = new Set([...Object.keys(beforeMetrics), ...Object.keys(afterMetrics)]);
+    const allKeys = new Set([
+      ...Object.keys(beforeMetrics),
+      ...Object.keys(afterMetrics),
+    ]);
 
     for (const key of allKeys) {
       // Skip non-numeric values
-      if (typeof beforeMetrics[key] !== 'number' && typeof afterMetrics[key] !== 'number') {
+      if (
+        typeof beforeMetrics[key] !== "number" &&
+        typeof afterMetrics[key] !== "number"
+      ) {
         continue;
       }
 
       const beforeVal = beforeMetrics[key] || 0;
       const afterVal = afterMetrics[key] || 0;
       const delta = afterVal - beforeVal;
-      const percentChange = beforeVal !== 0 ? (delta / beforeVal) * 100 : (afterVal !== 0 ? 100 : 0);
+      const percentChange =
+        beforeVal !== 0 ? (delta / beforeVal) * 100 : afterVal !== 0 ? 100 : 0;
 
       metrics[key] = {
         before: beforeVal,
@@ -191,7 +230,7 @@ class ComparisonEngine {
         delta,
         percentChange,
         improved: this.isImprovement(key, delta),
-        significant: Math.abs(delta) > 0.5
+        significant: Math.abs(delta) > 0.5,
       };
     }
 
@@ -201,24 +240,43 @@ class ComparisonEngine {
   isImprovement(metricKey, delta) {
     // Metrics where higher is better
     const higherBetter = [
-      'sensitivity', 'specificity', 'precision', 'recall', 'f1', 'f1Score',
-      'mcc', 'npv', 'ppv', 'balancedAccuracy', 'accuracy'
+      "sensitivity",
+      "specificity",
+      "precision",
+      "recall",
+      "f1",
+      "f1Score",
+      "mcc",
+      "npv",
+      "ppv",
+      "balancedAccuracy",
+      "accuracy",
     ];
 
     // Metrics where lower is better
     const lowerBetter = [
-      'falsePositiveRate', 'falseNegativeRate', 'fpr', 'fnr',
-      'missRate', 'fallout'
+      "falsePositiveRate",
+      "falseNegativeRate",
+      "fpr",
+      "fnr",
+      "missRate",
+      "fallout",
     ];
 
-    if (higherBetter.some(m => metricKey.toLowerCase().includes(m.toLowerCase()))) {
+    if (
+      higherBetter.some((m) =>
+        metricKey.toLowerCase().includes(m.toLowerCase()),
+      )
+    ) {
       return delta > 0;
     }
-    if (lowerBetter.some(m => metricKey.toLowerCase().includes(m.toLowerCase()))) {
+    if (
+      lowerBetter.some((m) => metricKey.toLowerCase().includes(m.toLowerCase()))
+    ) {
       return delta < 0;
     }
 
-    return delta > 0;  // Default assumption
+    return delta > 0; // Default assumption
   }
 
   // ==========================================================================
@@ -230,8 +288,8 @@ class ComparisonEngine {
     const afterDocs = after.documents || after.documentResults || [];
 
     // Index by document ID
-    const beforeIndex = new Map(beforeDocs.map(d => [d.id || d.filename, d]));
-    const afterIndex = new Map(afterDocs.map(d => [d.id || d.filename, d]));
+    const beforeIndex = new Map(beforeDocs.map((d) => [d.id || d.filename, d]));
+    const afterIndex = new Map(afterDocs.map((d) => [d.id || d.filename, d]));
 
     const comparison = {
       improved: [],
@@ -242,8 +300,8 @@ class ComparisonEngine {
       stats: {
         improved: 0,
         regressed: 0,
-        unchanged: 0
-      }
+        unchanged: 0,
+      },
     };
 
     // Compare documents present in both
@@ -252,10 +310,10 @@ class ComparisonEngine {
         const afterDoc = afterIndex.get(id);
         const docComparison = this.compareDocumentResults(beforeDoc, afterDoc);
 
-        if (docComparison.direction === 'IMPROVED') {
+        if (docComparison.direction === "IMPROVED") {
           comparison.improved.push({ id, ...docComparison });
           comparison.stats.improved++;
-        } else if (docComparison.direction === 'REGRESSED') {
+        } else if (docComparison.direction === "REGRESSED") {
           comparison.regressed.push({ id, ...docComparison });
           comparison.stats.regressed++;
         } else {
@@ -287,17 +345,17 @@ class ComparisonEngine {
     const fpDelta = afterFP - beforeFP;
 
     // Determine direction based on error changes
-    let direction = 'UNCHANGED';
+    let direction = "UNCHANGED";
     if (fnDelta < 0 && fpDelta <= 0) {
-      direction = 'IMPROVED';
+      direction = "IMPROVED";
     } else if (fnDelta < 0 && fpDelta > 0) {
-      direction = fnDelta < -fpDelta ? 'IMPROVED' : 'REGRESSED';
+      direction = fnDelta < -fpDelta ? "IMPROVED" : "REGRESSED";
     } else if (fnDelta > 0) {
-      direction = 'REGRESSED';
+      direction = "REGRESSED";
     } else if (fpDelta > 0) {
-      direction = 'SLIGHTLY_REGRESSED';
+      direction = "SLIGHTLY_REGRESSED";
     } else if (fpDelta < 0) {
-      direction = 'SLIGHTLY_IMPROVED';
+      direction = "SLIGHTLY_IMPROVED";
     }
 
     return {
@@ -308,8 +366,8 @@ class ComparisonEngine {
         newlyDetected: afterFN < beforeFN ? beforeFN - afterFN : 0,
         newlyMissed: afterFN > beforeFN ? afterFN - beforeFN : 0,
         falsePositivesAdded: fpDelta > 0 ? fpDelta : 0,
-        falsePositivesRemoved: fpDelta < 0 ? -fpDelta : 0
-      }
+        falsePositivesRemoved: fpDelta < 0 ? -fpDelta : 0,
+      },
     };
   }
 
@@ -321,19 +379,29 @@ class ComparisonEngine {
     const beforeByType = this.groupByPhiType(before);
     const afterByType = this.groupByPhiType(after);
 
-    const allTypes = new Set([...Object.keys(beforeByType), ...Object.keys(afterByType)]);
+    const allTypes = new Set([
+      ...Object.keys(beforeByType),
+      ...Object.keys(afterByType),
+    ]);
     const comparison = {};
 
     for (const phiType of allTypes) {
-      const beforeStats = beforeByType[phiType] || { tp: 0, fp: 0, fn: 0, tn: 0 };
+      const beforeStats = beforeByType[phiType] || {
+        tp: 0,
+        fp: 0,
+        fn: 0,
+        tn: 0,
+      };
       const afterStats = afterByType[phiType] || { tp: 0, fp: 0, fn: 0, tn: 0 };
 
-      const beforeSensitivity = beforeStats.tp + beforeStats.fn > 0
-        ? beforeStats.tp / (beforeStats.tp + beforeStats.fn) * 100
-        : 0;
-      const afterSensitivity = afterStats.tp + afterStats.fn > 0
-        ? afterStats.tp / (afterStats.tp + afterStats.fn) * 100
-        : 0;
+      const beforeSensitivity =
+        beforeStats.tp + beforeStats.fn > 0
+          ? (beforeStats.tp / (beforeStats.tp + beforeStats.fn)) * 100
+          : 0;
+      const afterSensitivity =
+        afterStats.tp + afterStats.fn > 0
+          ? (afterStats.tp / (afterStats.tp + afterStats.fn)) * 100
+          : 0;
 
       comparison[phiType] = {
         before: beforeStats,
@@ -341,14 +409,14 @@ class ComparisonEngine {
         sensitivity: {
           before: beforeSensitivity,
           after: afterSensitivity,
-          delta: afterSensitivity - beforeSensitivity
+          delta: afterSensitivity - beforeSensitivity,
         },
         falseNegatives: {
           before: beforeStats.fn,
           after: afterStats.fn,
-          delta: afterStats.fn - beforeStats.fn
+          delta: afterStats.fn - beforeStats.fn,
         },
-        direction: this.determineTypeDirection(beforeStats, afterStats)
+        direction: this.determineTypeDirection(beforeStats, afterStats),
       };
     }
 
@@ -363,22 +431,22 @@ class ComparisonEngine {
 
     for (const doc of docs) {
       // Process false negatives
-      for (const fn of (doc.falseNegatives || [])) {
-        const type = fn.type || fn.phiType || 'UNKNOWN';
+      for (const fn of doc.falseNegatives || []) {
+        const type = fn.type || fn.phiType || "UNKNOWN";
         if (!byType[type]) byType[type] = { tp: 0, fp: 0, fn: 0, tn: 0 };
         byType[type].fn++;
       }
 
       // Process false positives
-      for (const fp of (doc.falsePositives || [])) {
-        const type = fp.type || fp.phiType || 'UNKNOWN';
+      for (const fp of doc.falsePositives || []) {
+        const type = fp.type || fp.phiType || "UNKNOWN";
         if (!byType[type]) byType[type] = { tp: 0, fp: 0, fn: 0, tn: 0 };
         byType[type].fp++;
       }
 
       // Process true positives
-      for (const tp of (doc.truePositives || [])) {
-        const type = tp.type || tp.phiType || 'UNKNOWN';
+      for (const tp of doc.truePositives || []) {
+        const type = tp.type || tp.phiType || "UNKNOWN";
         if (!byType[type]) byType[type] = { tp: 0, fp: 0, fn: 0, tn: 0 };
         byType[type].tp++;
       }
@@ -392,11 +460,11 @@ class ComparisonEngine {
     const fpDelta = afterStats.fp - beforeStats.fp;
     const tpDelta = afterStats.tp - beforeStats.tp;
 
-    if (fnDelta < 0 && fpDelta <= 0) return 'IMPROVED';
-    if (tpDelta > 0 && fpDelta <= 0) return 'IMPROVED';
-    if (fnDelta > 0) return 'REGRESSED';
-    if (fpDelta > 1) return 'REGRESSED';
-    return 'UNCHANGED';
+    if (fnDelta < 0 && fpDelta <= 0) return "IMPROVED";
+    if (tpDelta > 0 && fpDelta <= 0) return "IMPROVED";
+    if (fnDelta > 0) return "REGRESSED";
+    if (fpDelta > 1) return "REGRESSED";
+    return "UNCHANGED";
   }
 
   // ==========================================================================
@@ -408,20 +476,24 @@ class ComparisonEngine {
     const afterErrors = this.extractErrors(after);
 
     // Group errors by signature for comparison
-    const beforeSigs = new Map(beforeErrors.map(e => [this.errorSignature(e), e]));
-    const afterSigs = new Map(afterErrors.map(e => [this.errorSignature(e), e]));
+    const beforeSigs = new Map(
+      beforeErrors.map((e) => [this.errorSignature(e), e]),
+    );
+    const afterSigs = new Map(
+      afterErrors.map((e) => [this.errorSignature(e), e]),
+    );
 
     return {
-      fixed: [],  // Errors in before but not after
-      introduced: [],  // Errors in after but not before
-      persistent: [],  // Errors in both
+      fixed: [], // Errors in before but not after
+      introduced: [], // Errors in after but not before
+      persistent: [], // Errors in both
       stats: {
         totalBefore: beforeErrors.length,
         totalAfter: afterErrors.length,
         fixed: 0,
         introduced: 0,
-        persistent: 0
-      }
+        persistent: 0,
+      },
     };
   }
 
@@ -431,22 +503,22 @@ class ComparisonEngine {
 
     for (const doc of docs) {
       // False negatives are missed PHI (errors)
-      for (const fn of (doc.falseNegatives || [])) {
+      for (const fn of doc.falseNegatives || []) {
         errors.push({
-          type: 'FALSE_NEGATIVE',
+          type: "FALSE_NEGATIVE",
           phiType: fn.type || fn.phiType,
           text: fn.text || fn.original,
-          documentId: doc.id || doc.filename
+          documentId: doc.id || doc.filename,
         });
       }
 
       // False positives are over-detection (errors)
-      for (const fp of (doc.falsePositives || [])) {
+      for (const fp of doc.falsePositives || []) {
         errors.push({
-          type: 'FALSE_POSITIVE',
+          type: "FALSE_POSITIVE",
           phiType: fp.type || fp.phiType,
           text: fp.text || fp.detected,
-          documentId: doc.id || doc.filename
+          documentId: doc.id || doc.filename,
         });
       }
     }
@@ -469,14 +541,21 @@ class ComparisonEngine {
     // Simple significance assessment
     // For production, use proper statistical tests
 
-    const sensitivityDelta = Math.abs((afterMetrics.sensitivity || 0) - (beforeMetrics.sensitivity || 0));
-    const specificityDelta = Math.abs((afterMetrics.specificity || 0) - (beforeMetrics.specificity || 0));
-    const f1Delta = Math.abs((afterMetrics.f1Score || afterMetrics.f1 || 0) - (beforeMetrics.f1Score || beforeMetrics.f1 || 0));
+    const sensitivityDelta = Math.abs(
+      (afterMetrics.sensitivity || 0) - (beforeMetrics.sensitivity || 0),
+    );
+    const specificityDelta = Math.abs(
+      (afterMetrics.specificity || 0) - (beforeMetrics.specificity || 0),
+    );
+    const f1Delta = Math.abs(
+      (afterMetrics.f1Score || afterMetrics.f1 || 0) -
+        (beforeMetrics.f1Score || beforeMetrics.f1 || 0),
+    );
 
     // Document count affects significance threshold
     const docCount = Math.max(
       before.documents?.length || before.documentCount || 1,
-      after.documents?.length || after.documentCount || 1
+      after.documents?.length || after.documentCount || 1,
     );
 
     // Threshold scales with sample size
@@ -489,7 +568,7 @@ class ComparisonEngine {
       overallSignificant: sensitivityDelta > threshold || f1Delta > threshold,
       threshold,
       sampleSize: docCount,
-      confidence: docCount >= 100 ? 'HIGH' : docCount >= 50 ? 'MEDIUM' : 'LOW'
+      confidence: docCount >= 100 ? "HIGH" : docCount >= 50 ? "MEDIUM" : "LOW",
     };
   }
 
@@ -503,51 +582,54 @@ class ComparisonEngine {
     const { summary, metrics, documents, phiTypes, significance } = comparison;
 
     // Based on overall direction
-    if (summary.direction === 'IMPROVED' && significance.overallSignificant) {
+    if (summary.direction === "IMPROVED" && significance.overallSignificant) {
       recommendations.push({
-        priority: 'HIGH',
-        action: 'ACCEPT',
-        reason: 'Statistically significant improvement detected',
-        confidence: 0.85
+        priority: "HIGH",
+        action: "ACCEPT",
+        reason: "Statistically significant improvement detected",
+        confidence: 0.85,
       });
-    } else if (summary.direction === 'REGRESSED' && significance.overallSignificant) {
+    } else if (
+      summary.direction === "REGRESSED" &&
+      significance.overallSignificant
+    ) {
       recommendations.push({
-        priority: 'CRITICAL',
-        action: 'REJECT_OR_ROLLBACK',
-        reason: 'Statistically significant regression detected',
-        confidence: 0.9
+        priority: "CRITICAL",
+        action: "REJECT_OR_ROLLBACK",
+        reason: "Statistically significant regression detected",
+        confidence: 0.9,
       });
     } else if (!significance.overallSignificant) {
       recommendations.push({
-        priority: 'LOW',
-        action: 'GATHER_MORE_DATA',
-        reason: 'Changes not statistically significant - need more test data',
-        confidence: 0.6
+        priority: "LOW",
+        action: "GATHER_MORE_DATA",
+        reason: "Changes not statistically significant - need more test data",
+        confidence: 0.6,
       });
     }
 
     // Based on specific PHI type regressions
     const regressedTypes = Object.entries(phiTypes)
-      .filter(([, data]) => data.direction === 'REGRESSED')
+      .filter(([, data]) => data.direction === "REGRESSED")
       .map(([type]) => type);
 
     if (regressedTypes.length > 0) {
       recommendations.push({
-        priority: 'HIGH',
-        action: 'INVESTIGATE_REGRESSIONS',
-        reason: `Regressions in ${regressedTypes.join(', ')} detection`,
+        priority: "HIGH",
+        action: "INVESTIGATE_REGRESSIONS",
+        reason: `Regressions in ${regressedTypes.join(", ")} detection`,
         details: regressedTypes,
-        confidence: 0.8
+        confidence: 0.8,
       });
     }
 
     // Based on document-level analysis
     if (documents.stats.regressed > documents.stats.improved) {
       recommendations.push({
-        priority: 'MEDIUM',
-        action: 'REVIEW_REGRESSED_DOCUMENTS',
+        priority: "MEDIUM",
+        action: "REVIEW_REGRESSED_DOCUMENTS",
         reason: `${documents.stats.regressed} documents regressed vs ${documents.stats.improved} improved`,
-        confidence: 0.75
+        confidence: 0.75,
       });
     }
 
@@ -559,7 +641,7 @@ class ComparisonEngine {
   // ==========================================================================
 
   getComparison(id) {
-    return this.data.comparisons.find(c => c.id === id);
+    return this.data.comparisons.find((c) => c.id === id);
   }
 
   getRecentComparisons(limit = 10) {
@@ -572,12 +654,12 @@ class ComparisonEngine {
   exportForLLM() {
     return {
       stats: this.data.stats,
-      recentComparisons: this.getRecentComparisons(3).map(c => ({
+      recentComparisons: this.getRecentComparisons(3).map((c) => ({
         id: c.id,
         direction: c.summary?.direction,
         verdict: c.summary?.verdict,
-        significant: c.significance?.overallSignificant
-      }))
+        significant: c.significance?.overallSignificant,
+      })),
     };
   }
 
@@ -603,9 +685,11 @@ KEY METRICS
 ───────────────────────────────────────────────────────────────────────────────
 `;
 
-    for (const [metric, data] of Object.entries(comparison.summary.keyChanges)) {
-      const arrow = data.delta > 0 ? '↑' : data.delta < 0 ? '↓' : '→';
-      report += `${metric}: ${data.before?.toFixed(2) || 'N/A'} → ${data.after?.toFixed(2) || 'N/A'} (${arrow} ${data.delta?.toFixed(2) || 0})\n`;
+    for (const [metric, data] of Object.entries(
+      comparison.summary.keyChanges,
+    )) {
+      const arrow = data.delta > 0 ? "↑" : data.delta < 0 ? "↓" : "→";
+      report += `${metric}: ${data.before?.toFixed(2) || "N/A"} → ${data.after?.toFixed(2) || "N/A"} (${arrow} ${data.delta?.toFixed(2) || 0})\n`;
     }
 
     report += `
@@ -617,7 +701,7 @@ Unchanged: ${comparison.documents.stats.unchanged}
 
 STATISTICAL SIGNIFICANCE
 ───────────────────────────────────────────────────────────────────────────────
-Overall Significant: ${comparison.significance.overallSignificant ? 'YES' : 'NO'}
+Overall Significant: ${comparison.significance.overallSignificant ? "YES" : "NO"}
 Confidence Level: ${comparison.significance.confidence}
 Sample Size: ${comparison.significance.sampleSize}
 
@@ -638,5 +722,5 @@ RECOMMENDATIONS
 // ============================================================================
 
 module.exports = {
-  ComparisonEngine
+  ComparisonEngine,
 };

@@ -1,8 +1,24 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CORTEX - SNAPSHOT MANAGER                                            ║
- * ║  Document Versioning for Reproducible Testing                                 ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                                                                               ║
+ * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+ * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+ * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+ * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+ * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+ * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+ * ║                                                                               ║
+ * ║      ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗                        ║
+ * ║     ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝                        ║
+ * ║     ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝                         ║
+ * ║     ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗                         ║
+ * ║     ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗                        ║
+ * ║      ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝                        ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║   SNAPSHOT MANAGER                                                            ║
+ * ║   Document Versioning for Reproducible Testing                                ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
  * PROBLEM: Without snapshots, A/B testing is unreliable
  * - Document corpus may change between runs
@@ -27,10 +43,10 @@
  * - Tracking what changed between experiments
  */
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const { PATHS } = require('../core/config');
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
+const { PATHS } = require("../core/config");
 
 // ============================================================================
 // SNAPSHOT MANAGER CLASS
@@ -39,7 +55,7 @@ const { PATHS } = require('../core/config');
 class SnapshotManager {
   constructor(options = {}) {
     this.codebaseAnalyzer = options.codebaseAnalyzer || null;
-    this.storagePath = path.join(PATHS.snapshots, 'snapshots.json');
+    this.storagePath = path.join(PATHS.snapshots, "snapshots.json");
     this.snapshotDir = PATHS.snapshots;
     this.data = this.loadData();
   }
@@ -47,18 +63,18 @@ class SnapshotManager {
   loadData() {
     try {
       if (fs.existsSync(this.storagePath)) {
-        return JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        return JSON.parse(fs.readFileSync(this.storagePath, "utf8"));
       }
     } catch (e) {
-      console.warn('SnapshotManager: Starting with empty snapshot registry');
+      console.warn("SnapshotManager: Starting with empty snapshot registry");
     }
     return {
       snapshots: [],
-      index: {},  // Quick lookup by ID
+      index: {}, // Quick lookup by ID
       stats: {
         total: 0,
-        byType: {}
-      }
+        byType: {},
+      },
     };
   }
 
@@ -82,39 +98,56 @@ class SnapshotManager {
   createDocumentSnapshot(documents, metadata = {}) {
     const snapshot = {
       id: `SNAP-DOC-${Date.now()}`,
-      type: 'DOCUMENT_SET',
+      type: "DOCUMENT_SET",
       timestamp: new Date().toISOString(),
       metadata: {
-        description: metadata.description || 'Document snapshot',
+        description: metadata.description || "Document snapshot",
         experimentId: metadata.experimentId || null,
-        ...metadata
+        ...metadata,
       },
-      documents: documents.map(doc => ({
+      documents: documents.map((doc) => ({
         id: doc.id || doc.filename || `doc-${Date.now()}`,
-        contentHash: this.hashContent(doc.content || doc.text || ''),
-        length: (doc.content || doc.text || '').length,
-        annotations: doc.annotations || doc.groundTruth || []
+        contentHash: this.hashContent(doc.content || doc.text || ""),
+        length: (doc.content || doc.text || "").length,
+        annotations: doc.annotations || doc.groundTruth || [],
       })),
       stats: {
         documentCount: documents.length,
-        totalLength: documents.reduce((sum, d) => sum + (d.content || d.text || '').length, 0),
-        totalAnnotations: documents.reduce((sum, d) => sum + (d.annotations || d.groundTruth || []).length, 0)
+        totalLength: documents.reduce(
+          (sum, d) => sum + (d.content || d.text || "").length,
+          0,
+        ),
+        totalAnnotations: documents.reduce(
+          (sum, d) => sum + (d.annotations || d.groundTruth || []).length,
+          0,
+        ),
       },
-      hash: null  // Set below
+      hash: null, // Set below
     };
 
     // Overall hash for quick comparison
     snapshot.hash = this.hashContent(JSON.stringify(snapshot.documents));
 
     // Store full document content separately (if not too large)
-    if (snapshot.stats.totalLength < 10 * 1024 * 1024) {  // < 10MB
-      const contentPath = path.join(this.snapshotDir, `${snapshot.id}-content.json`);
+    if (snapshot.stats.totalLength < 10 * 1024 * 1024) {
+      // < 10MB
+      const contentPath = path.join(
+        this.snapshotDir,
+        `${snapshot.id}-content.json`,
+      );
       this.ensureDir(this.snapshotDir);
-      fs.writeFileSync(contentPath, JSON.stringify(documents.map(d => ({
-        id: d.id || d.filename,
-        content: d.content || d.text,
-        annotations: d.annotations || d.groundTruth
-      })), null, 2));
+      fs.writeFileSync(
+        contentPath,
+        JSON.stringify(
+          documents.map((d) => ({
+            id: d.id || d.filename,
+            content: d.content || d.text,
+            annotations: d.annotations || d.groundTruth,
+          })),
+          null,
+          2,
+        ),
+      );
       snapshot.contentPath = contentPath;
     }
 
@@ -129,14 +162,14 @@ class SnapshotManager {
   createConfigSnapshot(config, metadata = {}) {
     const snapshot = {
       id: `SNAP-CFG-${Date.now()}`,
-      type: 'CONFIG',
+      type: "CONFIG",
       timestamp: new Date().toISOString(),
       metadata: {
-        description: metadata.description || 'Configuration snapshot',
-        ...metadata
+        description: metadata.description || "Configuration snapshot",
+        ...metadata,
       },
-      config: JSON.parse(JSON.stringify(config)),  // Deep clone
-      hash: this.hashContent(JSON.stringify(config))
+      config: JSON.parse(JSON.stringify(config)), // Deep clone
+      hash: this.hashContent(JSON.stringify(config)),
     };
 
     this.registerSnapshot(snapshot);
@@ -159,17 +192,17 @@ class SnapshotManager {
 
     const snapshot = {
       id: `SNAP-CODE-${Date.now()}`,
-      type: 'CODEBASE',
+      type: "CODEBASE",
       timestamp: new Date().toISOString(),
       metadata: {
-        description: metadata.description || 'Codebase snapshot',
-        ...metadata
+        description: metadata.description || "Codebase snapshot",
+        ...metadata,
       },
       fileHashes,
       stats: {
-        fileCount: Object.keys(fileHashes).length
+        fileCount: Object.keys(fileHashes).length,
       },
-      hash: this.hashContent(JSON.stringify(fileHashes))
+      hash: this.hashContent(JSON.stringify(fileHashes)),
     };
 
     this.registerSnapshot(snapshot);
@@ -180,28 +213,39 @@ class SnapshotManager {
    * Create a full snapshot (documents + config + codebase)
    */
   createFullSnapshot(documents, config, metadata = {}) {
-    const docSnapshot = this.createDocumentSnapshot(documents, { ...metadata, temporary: true });
-    const cfgSnapshot = this.createConfigSnapshot(config, { ...metadata, temporary: true });
-    const codeSnapshot = this.createCodebaseSnapshot({ ...metadata, temporary: true });
+    const docSnapshot = this.createDocumentSnapshot(documents, {
+      ...metadata,
+      temporary: true,
+    });
+    const cfgSnapshot = this.createConfigSnapshot(config, {
+      ...metadata,
+      temporary: true,
+    });
+    const codeSnapshot = this.createCodebaseSnapshot({
+      ...metadata,
+      temporary: true,
+    });
 
     const snapshot = {
       id: `SNAP-FULL-${Date.now()}`,
-      type: 'FULL',
+      type: "FULL",
       timestamp: new Date().toISOString(),
       metadata: {
-        description: metadata.description || 'Full system snapshot',
-        ...metadata
+        description: metadata.description || "Full system snapshot",
+        ...metadata,
       },
       components: {
         documentSnapshotId: docSnapshot.id,
         configSnapshotId: cfgSnapshot.id,
-        codebaseSnapshotId: codeSnapshot.id
+        codebaseSnapshotId: codeSnapshot.id,
       },
       stats: {
         documents: docSnapshot.stats.documentCount,
-        files: codeSnapshot.stats.fileCount
+        files: codeSnapshot.stats.fileCount,
       },
-      hash: this.hashContent([docSnapshot.hash, cfgSnapshot.hash, codeSnapshot.hash].join(':'))
+      hash: this.hashContent(
+        [docSnapshot.hash, cfgSnapshot.hash, codeSnapshot.hash].join(":"),
+      ),
     };
 
     this.registerSnapshot(snapshot);
@@ -224,13 +268,13 @@ class SnapshotManager {
    */
   getDocumentsFromSnapshot(snapshotId) {
     const snapshot = this.getSnapshot(snapshotId);
-    if (!snapshot || snapshot.type !== 'DOCUMENT_SET') {
+    if (!snapshot || snapshot.type !== "DOCUMENT_SET") {
       return null;
     }
 
     // Load from content file if exists
     if (snapshot.contentPath && fs.existsSync(snapshot.contentPath)) {
-      return JSON.parse(fs.readFileSync(snapshot.contentPath, 'utf8'));
+      return JSON.parse(fs.readFileSync(snapshot.contentPath, "utf8"));
     }
 
     // Return just the metadata if content not stored
@@ -241,7 +285,7 @@ class SnapshotManager {
    * Get snapshots by type
    */
   getSnapshotsByType(type) {
-    return this.data.snapshots.filter(s => s.type === type);
+    return this.data.snapshots.filter((s) => s.type === type);
   }
 
   /**
@@ -255,8 +299,8 @@ class SnapshotManager {
    * Find snapshots for an experiment
    */
   getSnapshotsForExperiment(experimentId) {
-    return this.data.snapshots.filter(s =>
-      s.metadata?.experimentId === experimentId
+    return this.data.snapshots.filter(
+      (s) => s.metadata?.experimentId === experimentId,
     );
   }
 
@@ -272,11 +316,11 @@ class SnapshotManager {
     const snap2 = this.getSnapshot(snapshotId2);
 
     if (!snap1 || !snap2) {
-      throw new Error('One or both snapshots not found');
+      throw new Error("One or both snapshots not found");
     }
 
     if (snap1.type !== snap2.type) {
-      throw new Error('Cannot compare snapshots of different types');
+      throw new Error("Cannot compare snapshots of different types");
     }
 
     const comparison = {
@@ -285,7 +329,7 @@ class SnapshotManager {
       type: snap1.type,
       identical: snap1.hash === snap2.hash,
       timestamp: new Date().toISOString(),
-      differences: []
+      differences: [],
     };
 
     if (comparison.identical) {
@@ -294,13 +338,13 @@ class SnapshotManager {
 
     // Type-specific comparison
     switch (snap1.type) {
-      case 'DOCUMENT_SET':
+      case "DOCUMENT_SET":
         comparison.differences = this.compareDocumentSnapshots(snap1, snap2);
         break;
-      case 'CODEBASE':
+      case "CODEBASE":
         comparison.differences = this.compareCodebaseSnapshots(snap1, snap2);
         break;
-      case 'CONFIG':
+      case "CONFIG":
         comparison.differences = this.compareConfigSnapshots(snap1, snap2);
         break;
     }
@@ -310,20 +354,20 @@ class SnapshotManager {
 
   compareDocumentSnapshots(snap1, snap2) {
     const differences = [];
-    const docs1 = new Map(snap1.documents.map(d => [d.id, d]));
-    const docs2 = new Map(snap2.documents.map(d => [d.id, d]));
+    const docs1 = new Map(snap1.documents.map((d) => [d.id, d]));
+    const docs2 = new Map(snap2.documents.map((d) => [d.id, d]));
 
     // Check for added/removed/changed documents
     for (const [id, doc1] of docs1) {
       if (!docs2.has(id)) {
-        differences.push({ type: 'REMOVED', documentId: id });
+        differences.push({ type: "REMOVED", documentId: id });
       } else {
         const doc2 = docs2.get(id);
         if (doc1.contentHash !== doc2.contentHash) {
           differences.push({
-            type: 'MODIFIED',
+            type: "MODIFIED",
             documentId: id,
-            lengthDelta: doc2.length - doc1.length
+            lengthDelta: doc2.length - doc1.length,
           });
         }
       }
@@ -331,7 +375,7 @@ class SnapshotManager {
 
     for (const id of docs2.keys()) {
       if (!docs1.has(id)) {
-        differences.push({ type: 'ADDED', documentId: id });
+        differences.push({ type: "ADDED", documentId: id });
       }
     }
 
@@ -347,11 +391,11 @@ class SnapshotManager {
 
     for (const file of allFiles) {
       if (!files1[file]) {
-        differences.push({ type: 'ADDED', file });
+        differences.push({ type: "ADDED", file });
       } else if (!files2[file]) {
-        differences.push({ type: 'REMOVED', file });
+        differences.push({ type: "REMOVED", file });
       } else if (files1[file] !== files2[file]) {
-        differences.push({ type: 'MODIFIED', file });
+        differences.push({ type: "MODIFIED", file });
       }
     }
 
@@ -361,8 +405,11 @@ class SnapshotManager {
   compareConfigSnapshots(snap1, snap2) {
     const differences = [];
 
-    const compareObjects = (obj1, obj2, path = '') => {
-      const keys = new Set([...Object.keys(obj1 || {}), ...Object.keys(obj2 || {})]);
+    const compareObjects = (obj1, obj2, path = "") => {
+      const keys = new Set([
+        ...Object.keys(obj1 || {}),
+        ...Object.keys(obj2 || {}),
+      ]);
 
       for (const key of keys) {
         const fullPath = path ? `${path}.${key}` : key;
@@ -370,13 +417,18 @@ class SnapshotManager {
         const val2 = obj2?.[key];
 
         if (val1 === undefined && val2 !== undefined) {
-          differences.push({ type: 'ADDED', path: fullPath, value: val2 });
+          differences.push({ type: "ADDED", path: fullPath, value: val2 });
         } else if (val1 !== undefined && val2 === undefined) {
-          differences.push({ type: 'REMOVED', path: fullPath, value: val1 });
-        } else if (typeof val1 === 'object' && typeof val2 === 'object') {
+          differences.push({ type: "REMOVED", path: fullPath, value: val1 });
+        } else if (typeof val1 === "object" && typeof val2 === "object") {
           compareObjects(val1, val2, fullPath);
         } else if (val1 !== val2) {
-          differences.push({ type: 'MODIFIED', path: fullPath, from: val1, to: val2 });
+          differences.push({
+            type: "MODIFIED",
+            path: fullPath,
+            from: val1,
+            to: val2,
+          });
         }
       }
     };
@@ -395,36 +447,36 @@ class SnapshotManager {
   verifySnapshot(snapshotId) {
     const snapshot = this.getSnapshot(snapshotId);
     if (!snapshot) {
-      return { valid: false, reason: 'Snapshot not found' };
+      return { valid: false, reason: "Snapshot not found" };
     }
 
     const verification = {
       snapshotId,
       timestamp: new Date().toISOString(),
       valid: true,
-      discrepancies: []
+      discrepancies: [],
     };
 
     switch (snapshot.type) {
-      case 'CODEBASE':
+      case "CODEBASE":
         const currentHashes = this.computeCodebaseHashes();
         for (const [file, hash] of Object.entries(snapshot.fileHashes || {})) {
           if (currentHashes[file] !== hash) {
             verification.discrepancies.push({
               file,
               expected: hash,
-              actual: currentHashes[file] || 'MISSING'
+              actual: currentHashes[file] || "MISSING",
             });
           }
         }
         break;
 
-      case 'DOCUMENT_SET':
+      case "DOCUMENT_SET":
         // Verify content file exists and matches
         if (snapshot.contentPath && !fs.existsSync(snapshot.contentPath)) {
           verification.discrepancies.push({
-            type: 'CONTENT_MISSING',
-            path: snapshot.contentPath
+            type: "CONTENT_MISSING",
+            path: snapshot.contentPath,
           });
         }
         break;
@@ -442,33 +494,40 @@ class SnapshotManager {
     this.data.snapshots.push(snapshot);
     this.data.index[snapshot.id] = snapshot;
     this.data.stats.total++;
-    this.data.stats.byType[snapshot.type] = (this.data.stats.byType[snapshot.type] || 0) + 1;
+    this.data.stats.byType[snapshot.type] =
+      (this.data.stats.byType[snapshot.type] || 0) + 1;
     this.saveData();
   }
 
   hashContent(content) {
-    if (typeof content !== 'string') {
+    if (typeof content !== "string") {
       content = JSON.stringify(content);
     }
-    return crypto.createHash('sha256').update(content).digest('hex').substring(0, 16);
+    return crypto
+      .createHash("sha256")
+      .update(content)
+      .digest("hex")
+      .substring(0, 16);
   }
 
   computeCodebaseHashes() {
     const hashes = {};
-    const srcDir = path.join(__dirname, '..', '..', '..', '..', 'src');
+    const srcDir = path.join(__dirname, "..", "..", "..", "..", "src");
 
     const dirsToHash = [
-      path.join(srcDir, 'filters'),
-      path.join(srcDir, 'dictionaries'),
-      path.join(srcDir, 'core')
+      path.join(srcDir, "filters"),
+      path.join(srcDir, "dictionaries"),
+      path.join(srcDir, "core"),
     ];
 
     for (const dir of dirsToHash) {
       if (!fs.existsSync(dir)) continue;
 
-      const files = fs.readdirSync(dir).filter(f =>
-        f.endsWith('.ts') || f.endsWith('.js') || f.endsWith('.txt')
-      );
+      const files = fs
+        .readdirSync(dir)
+        .filter(
+          (f) => f.endsWith(".ts") || f.endsWith(".js") || f.endsWith(".txt"),
+        );
 
       for (const file of files) {
         const filePath = path.join(dir, file);
@@ -483,9 +542,13 @@ class SnapshotManager {
   hashFile(filePath) {
     try {
       const content = fs.readFileSync(filePath);
-      return crypto.createHash('md5').update(content).digest('hex').substring(0, 12);
+      return crypto
+        .createHash("md5")
+        .update(content)
+        .digest("hex")
+        .substring(0, 12);
     } catch (e) {
-      return 'error';
+      return "error";
     }
   }
 
@@ -501,7 +564,7 @@ class SnapshotManager {
   cleanup(options = {}) {
     const maxAge = options.maxAgeDays || 30;
     const keepMinimum = options.keepMinimum || 10;
-    const cutoff = Date.now() - (maxAge * 24 * 60 * 60 * 1000);
+    const cutoff = Date.now() - maxAge * 24 * 60 * 60 * 1000;
 
     const toRemove = [];
 
@@ -512,7 +575,10 @@ class SnapshotManager {
 
     for (const snapshot of this.data.snapshots) {
       const age = new Date(snapshot.timestamp).getTime();
-      if (age < cutoff && this.data.snapshots.length - toRemove.length > keepMinimum) {
+      if (
+        age < cutoff &&
+        this.data.snapshots.length - toRemove.length > keepMinimum
+      ) {
         toRemove.push(snapshot.id);
 
         // Remove content file if exists
@@ -527,7 +593,9 @@ class SnapshotManager {
     }
 
     // Remove from data
-    this.data.snapshots = this.data.snapshots.filter(s => !toRemove.includes(s.id));
+    this.data.snapshots = this.data.snapshots.filter(
+      (s) => !toRemove.includes(s.id),
+    );
     for (const id of toRemove) {
       delete this.data.index[id];
     }
@@ -542,12 +610,12 @@ class SnapshotManager {
   exportForLLM() {
     return {
       stats: this.data.stats,
-      recentSnapshots: this.getRecentSnapshots(5).map(s => ({
+      recentSnapshots: this.getRecentSnapshots(5).map((s) => ({
         id: s.id,
         type: s.type,
         timestamp: s.timestamp,
-        hash: s.hash
-      }))
+        hash: s.hash,
+      })),
     };
   }
 }
@@ -557,5 +625,5 @@ class SnapshotManager {
 // ============================================================================
 
 module.exports = {
-  SnapshotManager
+  SnapshotManager,
 };

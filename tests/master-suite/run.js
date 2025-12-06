@@ -1,28 +1,44 @@
 #!/usr/bin/env node
 
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CELARE - MASTER TEST RUNNER                                          ║
- * ║  Complete Assessment Suite with VULPES CORTEX Intelligence                    ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                                                                               ║
+ * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+ * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+ * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+ * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+ * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+ * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+ * ║                                                                               ║
+ * ║      ██████╗███████╗██╗      █████╗ ██████╗ ███████╗                          ║
+ * ║     ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝                          ║
+ * ║     ██║     █████╗  ██║     ███████║██████╔╝█████╗                            ║
+ * ║     ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝                            ║
+ * ║     ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗                          ║
+ * ║      ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝                          ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║   MASTER TEST RUNNER                                                          ║
+ * ║   Complete Assessment Suite with VULPES CORTEX Intelligence                   ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  🚀 LLM STARTUP CHECKLIST - DO THIS WHEN USER SAYS "TEST THE SYSTEM"         ║
- * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║                                                                              ║
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║  LLM STARTUP CHECKLIST - DO THIS WHEN USER SAYS "TEST THE SYSTEM"            ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                               ║
  * ║  STEP 0: START THE MCP SERVER (for intelligent recommendations)              ║
  * ║    cd tests/master-suite/cortex && node index.js --server                    ║
  * ║    (Run in background - keeps history of what worked/failed)                 ║
- * ║                                                                              ║
+ * ║                                                                               ║
  * ║  STEP 1: RUN THE TEST SUITE                                                  ║
  * ║    node tests/master-suite/run.js --log-file --profile=HIPAA_STRICT          ║
- * ║                                                                              ║
+ * ║                                                                               ║
  * ║  STEP 2: READ THE FULL LOG FILE                                              ║
  * ║    Check tests/results/verbose-*.log for untruncated output                  ║
- * ║                                                                              ║
+ * ║                                                                               ║
  * ║  STEP 3: FOLLOW THE ACTION CHECKLIST PRINTED AT THE END                      ║
  * ║    The test output shows EXACTLY what to fix with real examples              ║
- * ║                                                                              ║
+ * ║                                                                               ║
  * ║  STEP 4: EXECUTE FIXES (You are the execution engine!)                       ║
  * ║    - READ the failing filter/dictionary                                      ║
  * ║    - EDIT it to catch the missed patterns                                    ║

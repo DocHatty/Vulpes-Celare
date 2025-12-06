@@ -1,8 +1,24 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CORTEX - HISTORY CONSULTANT                                          ║
- * ║  The Mandatory Oracle That Knows What Was Tried Before                        ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                                                                               ║
+ * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+ * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+ * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+ * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+ * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+ * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+ * ║                                                                               ║
+ * ║      ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗                        ║
+ * ║     ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝                        ║
+ * ║     ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝                         ║
+ * ║     ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗                         ║
+ * ║     ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗                        ║
+ * ║      ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝                        ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║   HISTORY CONSULTANT                                                          ║
+ * ║   The Mandatory Oracle That Knows What Was Tried Before                       ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
  * "Those who cannot remember the past are condemned to repeat it."
  *
@@ -33,9 +49,9 @@
  * - Recommendations based on what worked
  */
 
-const fs = require('fs');
-const path = require('path');
-const { PATHS } = require('../core/config');
+const fs = require("fs");
+const path = require("path");
+const { PATHS } = require("../core/config");
 
 // ============================================================================
 // HISTORY CONSULTANT CLASS
@@ -50,14 +66,14 @@ class HistoryConsultant {
     this.patternRecognizer = options.patternRecognizer || null;
     this.experimentRunner = options.experimentRunner || null;
 
-    this.storagePath = path.join(PATHS.knowledge, 'history-consultations.json');
+    this.storagePath = path.join(PATHS.knowledge, "history-consultations.json");
     this.data = this.loadData();
   }
 
   loadData() {
     try {
       if (fs.existsSync(this.storagePath)) {
-        return JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        return JSON.parse(fs.readFileSync(this.storagePath, "utf8"));
       }
     } catch (e) {
       // Fresh start
@@ -67,8 +83,8 @@ class HistoryConsultant {
       stats: {
         total: 0,
         foundRelevantHistory: 0,
-        noHistoryFound: 0
-      }
+        noHistoryFound: 0,
+      },
     };
   }
 
@@ -106,9 +122,9 @@ class HistoryConsultant {
       recommendations: [],
 
       // Summary
-      summary: '',
+      summary: "",
       confidence: 0,
-      dataQuality: 'UNKNOWN'
+      dataQuality: "UNKNOWN",
     };
 
     // Search all sources
@@ -136,10 +152,15 @@ class HistoryConsultant {
       id: consultation.id,
       timestamp: consultation.timestamp,
       decisionType,
-      foundHistory: consultation.exactMatches.length + consultation.similarAttempts.length > 0
+      foundHistory:
+        consultation.exactMatches.length + consultation.similarAttempts.length >
+        0,
     });
     this.data.stats.total++;
-    if (consultation.exactMatches.length + consultation.similarAttempts.length > 0) {
+    if (
+      consultation.exactMatches.length + consultation.similarAttempts.length >
+      0
+    ) {
       this.data.stats.foundRelevantHistory++;
     } else {
       this.data.stats.noHistoryFound++;
@@ -153,7 +174,7 @@ class HistoryConsultant {
     // Remove functions and circular references
     const clean = {};
     for (const [key, value] of Object.entries(context || {})) {
-      if (typeof value !== 'function') {
+      if (typeof value !== "function") {
         try {
           JSON.stringify(value);
           clean[key] = value;
@@ -178,15 +199,15 @@ class HistoryConsultant {
       for (const intervention of interventions) {
         if (this.isExactMatch(intervention, context)) {
           matches.push({
-            source: 'INTERVENTION',
+            source: "INTERVENTION",
             id: intervention.id,
             description: intervention.description,
             timestamp: intervention.timeline?.applied,
             outcome: intervention.effect?.classification || intervention.status,
             details: {
               type: intervention.type,
-              effect: intervention.effect
-            }
+              effect: intervention.effect,
+            },
           });
         }
       }
@@ -196,24 +217,26 @@ class HistoryConsultant {
     if (this.hypothesisEngine && context.hypothesisType) {
       const hypotheses = this.hypothesisEngine.data.hypotheses || [];
       for (const hypothesis of hypotheses) {
-        if (hypothesis.type === context.hypothesisType &&
-            this.paramsMatch(hypothesis.params, context)) {
+        if (
+          hypothesis.type === context.hypothesisType &&
+          this.paramsMatch(hypothesis.params, context)
+        ) {
           matches.push({
-            source: 'HYPOTHESIS',
+            source: "HYPOTHESIS",
             id: hypothesis.id,
             description: hypothesis.description,
             timestamp: hypothesis.timeline?.proposed,
             outcome: hypothesis.status,
             details: {
               type: hypothesis.type,
-              validation: hypothesis.validation
-            }
+              validation: hypothesis.validation,
+            },
           });
         }
       }
     }
 
-    return matches.slice(0, 10);  // Limit results
+    return matches.slice(0, 10); // Limit results
   }
 
   findSimilarAttempts(context) {
@@ -225,15 +248,18 @@ class HistoryConsultant {
       const interventions = this.interventionTracker.data.interventions || [];
       for (const intervention of interventions) {
         const similarity = this.calculateSimilarity(intervention, context);
-        if (similarity >= similarity_threshold && !this.isExactMatch(intervention, context)) {
+        if (
+          similarity >= similarity_threshold &&
+          !this.isExactMatch(intervention, context)
+        ) {
           similar.push({
-            source: 'INTERVENTION',
+            source: "INTERVENTION",
             id: intervention.id,
             description: intervention.description,
             timestamp: intervention.timeline?.applied,
             outcome: intervention.effect?.classification || intervention.status,
             similarity,
-            relevantBecause: this.explainSimilarity(intervention, context)
+            relevantBecause: this.explainSimilarity(intervention, context),
           });
         }
       }
@@ -243,16 +269,19 @@ class HistoryConsultant {
     if (this.experimentRunner) {
       const experiments = this.experimentRunner.data.experiments || [];
       for (const experiment of experiments) {
-        const similarity = this.calculateExperimentSimilarity(experiment, context);
+        const similarity = this.calculateExperimentSimilarity(
+          experiment,
+          context,
+        );
         if (similarity >= similarity_threshold) {
           similar.push({
-            source: 'EXPERIMENT',
+            source: "EXPERIMENT",
             id: experiment.id,
             description: experiment.name,
             timestamp: experiment.timeline?.created,
-            outcome: experiment.conclusion?.accepted ? 'ACCEPTED' : 'REJECTED',
+            outcome: experiment.conclusion?.accepted ? "ACCEPTED" : "REJECTED",
             similarity,
-            relevantBecause: `Treatment: ${experiment.treatment?.description}`
+            relevantBecause: `Treatment: ${experiment.treatment?.description}`,
           });
         }
       }
@@ -272,11 +301,11 @@ class HistoryConsultant {
       for (const intervention of successful) {
         if (this.isRelated(intervention, context)) {
           successes.push({
-            source: 'INTERVENTION',
+            source: "INTERVENTION",
             description: intervention.description,
             improvement: intervention.effect?.overallScore,
             type: intervention.type,
-            timestamp: intervention.timeline?.applied
+            timestamp: intervention.timeline?.applied,
           });
         }
       }
@@ -288,11 +317,11 @@ class HistoryConsultant {
       for (const hypothesis of validated) {
         if (this.isRelated(hypothesis, context)) {
           successes.push({
-            source: 'HYPOTHESIS',
+            source: "HYPOTHESIS",
             description: hypothesis.description,
             improvement: hypothesis.results?.actualChange,
             type: hypothesis.type,
-            timestamp: hypothesis.timeline?.completed
+            timestamp: hypothesis.timeline?.completed,
           });
         }
       }
@@ -310,11 +339,13 @@ class HistoryConsultant {
       for (const intervention of regressive) {
         if (this.isRelated(intervention, context)) {
           failures.push({
-            source: 'INTERVENTION',
+            source: "INTERVENTION",
             description: intervention.description,
-            reason: intervention.rollbackReason || intervention.effect?.summary?.join(', '),
+            reason:
+              intervention.rollbackReason ||
+              intervention.effect?.summary?.join(", "),
             type: intervention.type,
-            timestamp: intervention.timeline?.applied
+            timestamp: intervention.timeline?.applied,
           });
         }
       }
@@ -322,17 +353,17 @@ class HistoryConsultant {
 
     // Invalidated hypotheses
     if (this.hypothesisEngine) {
-      const invalidated = this.hypothesisEngine.data.hypotheses.filter(h =>
-        h.status === 'INVALIDATED'
+      const invalidated = this.hypothesisEngine.data.hypotheses.filter(
+        (h) => h.status === "INVALIDATED",
       );
       for (const hypothesis of invalidated) {
         if (this.isRelated(hypothesis, context)) {
           failures.push({
-            source: 'HYPOTHESIS',
+            source: "HYPOTHESIS",
             description: hypothesis.description,
             reason: hypothesis.validation?.explanation,
             type: hypothesis.type,
-            timestamp: hypothesis.timeline?.completed
+            timestamp: hypothesis.timeline?.completed,
           });
         }
       }
@@ -347,13 +378,15 @@ class HistoryConsultant {
     if (this.patternRecognizer) {
       // Get patterns for specific PHI type if provided
       if (context.phiType) {
-        const typePatterns = this.patternRecognizer.getPatternsByPhiType(context.phiType);
+        const typePatterns = this.patternRecognizer.getPatternsByPhiType(
+          context.phiType,
+        );
         for (const pattern of typePatterns) {
           patterns.push({
             category: pattern.category,
             phiType: pattern.phiType,
             count: pattern.count,
-            trend: 'UNKNOWN'  // Would need temporal analysis
+            trend: "UNKNOWN", // Would need temporal analysis
           });
         }
       }
@@ -361,11 +394,11 @@ class HistoryConsultant {
       // Get top failure patterns
       const topFailures = this.patternRecognizer.getTopFailurePatterns(5);
       for (const pattern of topFailures) {
-        if (!patterns.find(p => p.category === pattern.category)) {
+        if (!patterns.find((p) => p.category === pattern.category)) {
           patterns.push({
             category: pattern.category,
             count: pattern.count,
-            examples: pattern.examples?.slice(0, 2)
+            examples: pattern.examples?.slice(0, 2),
           });
         }
       }
@@ -381,7 +414,9 @@ class HistoryConsultant {
   isExactMatch(item, context) {
     // Check if this is the exact same thing
     if (context.description && item.description) {
-      return item.description.toLowerCase() === context.description.toLowerCase();
+      return (
+        item.description.toLowerCase() === context.description.toLowerCase()
+      );
     }
     if (context.phiType && item.target?.component) {
       return item.target.component === context.phiType;
@@ -393,7 +428,7 @@ class HistoryConsultant {
     if (!params1 || !params2) return false;
     const keys1 = Object.keys(params1);
     const keys2 = Object.keys(params2);
-    const common = keys1.filter(k => keys2.includes(k));
+    const common = keys1.filter((k) => keys2.includes(k));
     if (common.length === 0) return false;
 
     let matches = 0;
@@ -417,7 +452,9 @@ class HistoryConsultant {
     if (context.phiType) {
       if (item.target?.component === context.phiType) {
         score += 1;
-      } else if (item.description?.toLowerCase().includes(context.phiType.toLowerCase())) {
+      } else if (
+        item.description?.toLowerCase().includes(context.phiType.toLowerCase())
+      ) {
         score += 0.5;
       }
       factors++;
@@ -427,7 +464,7 @@ class HistoryConsultant {
     if (context.description && item.description) {
       const words1 = context.description.toLowerCase().split(/\s+/);
       const words2 = item.description.toLowerCase().split(/\s+/);
-      const common = words1.filter(w => words2.includes(w)).length;
+      const common = words1.filter((w) => words2.includes(w)).length;
       score += common / Math.max(words1.length, words2.length);
       factors++;
     }
@@ -446,12 +483,17 @@ class HistoryConsultant {
 
     if (context.description && experiment.treatment?.description) {
       const words1 = context.description.toLowerCase().split(/\s+/);
-      const words2 = experiment.treatment.description.toLowerCase().split(/\s+/);
-      const common = words1.filter(w => words2.includes(w)).length;
+      const words2 = experiment.treatment.description
+        .toLowerCase()
+        .split(/\s+/);
+      const common = words1.filter((w) => words2.includes(w)).length;
       score = common / Math.max(words1.length, words2.length);
     }
 
-    if (context.phiType && experiment.treatment?.description?.includes(context.phiType)) {
+    if (
+      context.phiType &&
+      experiment.treatment?.description?.includes(context.phiType)
+    ) {
       score += 0.3;
     }
 
@@ -463,7 +505,10 @@ class HistoryConsultant {
     if (context.phiType) {
       if (item.target?.component === context.phiType) return true;
       if (item.params?.phiType === context.phiType) return true;
-      if (item.description?.toLowerCase().includes(context.phiType.toLowerCase())) return true;
+      if (
+        item.description?.toLowerCase().includes(context.phiType.toLowerCase())
+      )
+        return true;
     }
 
     if (context.type && item.type === context.type) return true;
@@ -475,14 +520,17 @@ class HistoryConsultant {
   explainSimilarity(item, context) {
     const reasons = [];
 
-    if (context.phiType && item.description?.toLowerCase().includes(context.phiType.toLowerCase())) {
+    if (
+      context.phiType &&
+      item.description?.toLowerCase().includes(context.phiType.toLowerCase())
+    ) {
       reasons.push(`Also targets ${context.phiType}`);
     }
     if (context.type && item.type === context.type) {
       reasons.push(`Same intervention type: ${context.type}`);
     }
 
-    return reasons.join('; ') || 'General similarity';
+    return reasons.join("; ") || "General similarity";
   }
 
   // ==========================================================================
@@ -495,44 +543,53 @@ class HistoryConsultant {
     // Warning: Repeated failures
     if (consultation.relatedFailures.length >= 2) {
       warnings.push({
-        level: 'HIGH',
+        level: "HIGH",
         message: `${consultation.relatedFailures.length} similar attempts have failed before`,
-        details: consultation.relatedFailures.slice(0, 2).map(f => f.reason)
+        details: consultation.relatedFailures.slice(0, 2).map((f) => f.reason),
       });
     }
 
     // Warning: Exact match with bad outcome
-    const badExact = consultation.exactMatches.filter(m =>
-      m.outcome === 'REGRESSION' || m.outcome === 'INVALIDATED' || m.outcome === 'ROLLED_BACK'
+    const badExact = consultation.exactMatches.filter(
+      (m) =>
+        m.outcome === "REGRESSION" ||
+        m.outcome === "INVALIDATED" ||
+        m.outcome === "ROLLED_BACK",
     );
     if (badExact.length > 0) {
       warnings.push({
-        level: 'CRITICAL',
-        message: 'This EXACT approach was tried before and failed',
-        details: badExact.map(m => ({ id: m.id, outcome: m.outcome }))
+        level: "CRITICAL",
+        message: "This EXACT approach was tried before and failed",
+        details: badExact.map((m) => ({ id: m.id, outcome: m.outcome })),
       });
     }
 
     // Warning: Low success rate
-    const total = consultation.relatedSuccesses.length + consultation.relatedFailures.length;
+    const total =
+      consultation.relatedSuccesses.length +
+      consultation.relatedFailures.length;
     if (total >= 3) {
       const successRate = consultation.relatedSuccesses.length / total;
       if (successRate < 0.4) {
         warnings.push({
-          level: 'MEDIUM',
+          level: "MEDIUM",
           message: `Low historical success rate: ${Math.round(successRate * 100)}%`,
-          details: `${consultation.relatedSuccesses.length} successes, ${consultation.relatedFailures.length} failures`
+          details: `${consultation.relatedSuccesses.length} successes, ${consultation.relatedFailures.length} failures`,
         });
       }
     }
 
     // Warning: Pattern indicates known problem
-    const problematicPatterns = consultation.patterns.filter(p => p.count >= 10);
+    const problematicPatterns = consultation.patterns.filter(
+      (p) => p.count >= 10,
+    );
     if (problematicPatterns.length > 0) {
       warnings.push({
-        level: 'INFO',
-        message: 'Known recurring patterns in this area',
-        details: problematicPatterns.map(p => `${p.category}: ${p.count} occurrences`)
+        level: "INFO",
+        message: "Known recurring patterns in this area",
+        details: problematicPatterns.map(
+          (p) => `${p.category}: ${p.count} occurrences`,
+        ),
       });
     }
 
@@ -546,20 +603,22 @@ class HistoryConsultant {
     if (consultation.relatedSuccesses.length > 0) {
       const topSuccess = consultation.relatedSuccesses[0];
       recommendations.push({
-        priority: 'HIGH',
+        priority: "HIGH",
         action: `Consider approach similar to: ${topSuccess.description}`,
-        reason: `Previously successful with ${topSuccess.improvement?.toFixed(2) || 'positive'} improvement`
+        reason: `Previously successful with ${topSuccess.improvement?.toFixed(2) || "positive"} improvement`,
       });
     }
 
     // Recommend avoiding failure patterns
     if (consultation.relatedFailures.length >= 2) {
-      const commonFailure = this.findCommonPattern(consultation.relatedFailures);
+      const commonFailure = this.findCommonPattern(
+        consultation.relatedFailures,
+      );
       if (commonFailure) {
         recommendations.push({
-          priority: 'HIGH',
+          priority: "HIGH",
           action: `Avoid ${commonFailure} - multiple failures`,
-          reason: `${consultation.relatedFailures.length} similar attempts failed`
+          reason: `${consultation.relatedFailures.length} similar attempts failed`,
         });
       }
     }
@@ -568,9 +627,9 @@ class HistoryConsultant {
     if (consultation.patterns.length > 0) {
       const topPattern = consultation.patterns[0];
       recommendations.push({
-        priority: 'MEDIUM',
+        priority: "MEDIUM",
         action: `Address ${topPattern.category} pattern first`,
-        reason: `${topPattern.count} occurrences identified`
+        reason: `${topPattern.count} occurrences identified`,
       });
     }
 
@@ -591,13 +650,17 @@ class HistoryConsultant {
 
     // Exact matches
     if (consultation.exactMatches.length > 0) {
-      const outcomes = consultation.exactMatches.map(m => m.outcome);
-      parts.push(`Found ${consultation.exactMatches.length} exact match(es) with outcomes: ${[...new Set(outcomes)].join(', ')}`);
+      const outcomes = consultation.exactMatches.map((m) => m.outcome);
+      parts.push(
+        `Found ${consultation.exactMatches.length} exact match(es) with outcomes: ${[...new Set(outcomes)].join(", ")}`,
+      );
     }
 
     // Similar attempts
     if (consultation.similarAttempts.length > 0) {
-      parts.push(`Found ${consultation.similarAttempts.length} similar past attempts`);
+      parts.push(
+        `Found ${consultation.similarAttempts.length} similar past attempts`,
+      );
     }
 
     // Success/failure ratio
@@ -605,13 +668,19 @@ class HistoryConsultant {
     const failures = consultation.relatedFailures.length;
     if (successes + failures > 0) {
       const rate = Math.round((successes / (successes + failures)) * 100);
-      parts.push(`Historical success rate: ${rate}% (${successes} successes, ${failures} failures)`);
+      parts.push(
+        `Historical success rate: ${rate}% (${successes} successes, ${failures} failures)`,
+      );
     }
 
     // Warnings count
     if (consultation.warnings.length > 0) {
-      const critical = consultation.warnings.filter(w => w.level === 'CRITICAL').length;
-      const high = consultation.warnings.filter(w => w.level === 'HIGH').length;
+      const critical = consultation.warnings.filter(
+        (w) => w.level === "CRITICAL",
+      ).length;
+      const high = consultation.warnings.filter(
+        (w) => w.level === "HIGH",
+      ).length;
       if (critical > 0) {
         parts.push(`⚠️ ${critical} CRITICAL warning(s)`);
       } else if (high > 0) {
@@ -620,32 +689,33 @@ class HistoryConsultant {
     }
 
     if (parts.length === 0) {
-      return 'No relevant historical data found for this context';
+      return "No relevant historical data found for this context";
     }
 
-    return parts.join('. ') + '.';
+    return parts.join(". ") + ".";
   }
 
   assessDataQuality(consultation) {
-    const totalData = consultation.exactMatches.length +
-                     consultation.similarAttempts.length +
-                     consultation.relatedSuccesses.length +
-                     consultation.relatedFailures.length;
+    const totalData =
+      consultation.exactMatches.length +
+      consultation.similarAttempts.length +
+      consultation.relatedSuccesses.length +
+      consultation.relatedFailures.length;
 
-    if (totalData >= 10) return 'HIGH';
-    if (totalData >= 5) return 'MEDIUM';
-    if (totalData >= 1) return 'LOW';
-    return 'NONE';
+    if (totalData >= 10) return "HIGH";
+    if (totalData >= 5) return "MEDIUM";
+    if (totalData >= 1) return "LOW";
+    return "NONE";
   }
 
   calculateConfidence(consultation) {
-    let confidence = 0.3;  // Base
+    let confidence = 0.3; // Base
 
     // More data = more confidence
     const dataQuality = consultation.dataQuality;
-    if (dataQuality === 'HIGH') confidence += 0.4;
-    else if (dataQuality === 'MEDIUM') confidence += 0.25;
-    else if (dataQuality === 'LOW') confidence += 0.1;
+    if (dataQuality === "HIGH") confidence += 0.4;
+    else if (dataQuality === "MEDIUM") confidence += 0.25;
+    else if (dataQuality === "LOW") confidence += 0.1;
 
     // Exact matches are very informative
     if (consultation.exactMatches.length > 0) confidence += 0.2;
@@ -655,7 +725,7 @@ class HistoryConsultant {
     const failures = consultation.relatedFailures.length;
     if (successes + failures >= 3) {
       const rate = successes / (successes + failures);
-      if (rate >= 0.8 || rate <= 0.2) confidence += 0.1;  // Clear pattern
+      if (rate >= 0.8 || rate <= 0.2) confidence += 0.1; // Clear pattern
     }
 
     return Math.min(confidence, 0.95);
@@ -673,8 +743,8 @@ class HistoryConsultant {
         hypotheses: !!this.hypothesisEngine,
         patterns: !!this.patternRecognizer,
         experiments: !!this.experimentRunner,
-        knowledge: !!this.knowledgeBase
-      }
+        knowledge: !!this.knowledgeBase,
+      },
     };
   }
 }
@@ -684,5 +754,5 @@ class HistoryConsultant {
 // ============================================================================
 
 module.exports = {
-  HistoryConsultant
+  HistoryConsultant,
 };

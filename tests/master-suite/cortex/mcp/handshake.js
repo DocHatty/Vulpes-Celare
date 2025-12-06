@@ -1,8 +1,24 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════════════════╗
- * ║  VULPES CORTEX - MCP HANDSHAKE                                               ║
- * ║  Auto-Discovery and Capability Negotiation                                    ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                                                                               ║
+ * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
+ * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
+ * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
+ * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
+ * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
+ * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
+ * ║                                                                               ║
+ * ║      ██████╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗                        ║
+ * ║     ██╔════╝██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝                        ║
+ * ║     ██║     ██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝                         ║
+ * ║     ██║     ██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗                         ║
+ * ║     ╚██████╗╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗                        ║
+ * ║      ╚═════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝                        ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║   MCP HANDSHAKE                                                               ║
+ * ║   Auto-Discovery and Capability Negotiation                                   ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
  * This module handles the automatic handshake between Vulpes Cortex and any
  * LLM/IDE/SDK that connects via MCP.
@@ -22,7 +38,7 @@
  * - Enables/disables features based on client support
  */
 
-const { MCP_CONFIG } = require('../core/config');
+const { MCP_CONFIG } = require("../core/config");
 
 // ============================================================================
 // HANDSHAKE MANAGER
@@ -42,21 +58,22 @@ class HandshakeManager {
     return {
       serverName: MCP_CONFIG.serverName,
       version: MCP_CONFIG.version,
-      description: 'Vulpes Cortex - Self-Learning PHI Detection Test Intelligence',
+      description:
+        "Vulpes Cortex - Self-Learning PHI Detection Test Intelligence",
 
       capabilities: {
         tools: {
           supported: true,
-          count: this.getToolCount()
+          count: this.getToolCount(),
         },
         prompts: {
           supported: true,
-          count: this.getPromptCount()
+          count: this.getPromptCount(),
         },
         resources: {
           supported: true,
-          types: ['knowledge', 'codebase', 'insights', 'metrics', 'history']
-        }
+          types: ["knowledge", "codebase", "insights", "metrics", "history"],
+        },
       },
 
       features: {
@@ -65,21 +82,21 @@ class HandshakeManager {
         autoRollback: true,
         patternRecognition: true,
         insightGeneration: true,
-        temporalTracking: true
+        temporalTracking: true,
       },
 
       metadata: {
-        repository: 'Vulpes-Celare',
-        component: 'cortex',
-        purpose: 'PHI Detection Testing and Improvement'
-      }
+        repository: "Vulpes-Celare",
+        component: "cortex",
+        purpose: "PHI Detection Testing and Improvement",
+      },
     };
   }
 
   getToolCount() {
     // Import dynamically to avoid circular dependency
     try {
-      const { getTools } = require('./tools');
+      const { getTools } = require("./tools");
       return getTools().length;
     } catch (e) {
       return 0;
@@ -88,7 +105,7 @@ class HandshakeManager {
 
   getPromptCount() {
     try {
-      const { getPrompts } = require('./prompts');
+      const { getPrompts } = require("./prompts");
       return getPrompts().length;
     } catch (e) {
       return 0;
@@ -100,17 +117,20 @@ class HandshakeManager {
    */
   processClientCapabilities(clientInfo) {
     this.clientInfo = {
-      name: clientInfo?.name || 'unknown',
-      version: clientInfo?.version || 'unknown',
+      name: clientInfo?.name || "unknown",
+      version: clientInfo?.version || "unknown",
       capabilities: clientInfo?.capabilities || {},
-      receivedAt: new Date().toISOString()
+      receivedAt: new Date().toISOString(),
     };
 
     // Detect client type
     const clientType = this.detectClientType(clientInfo);
 
     // Configure based on client
-    this.negotiatedCapabilities = this.negotiateCapabilities(clientType, clientInfo);
+    this.negotiatedCapabilities = this.negotiateCapabilities(
+      clientType,
+      clientInfo,
+    );
 
     this.connected = true;
 
@@ -119,7 +139,7 @@ class HandshakeManager {
       serverCapabilities: this.getServerCapabilities(),
       negotiated: this.negotiatedCapabilities,
       clientType,
-      message: `Welcome to Vulpes Cortex! Connected as ${clientType}.`
+      message: `Welcome to Vulpes Cortex! Connected as ${clientType}.`,
     };
   }
 
@@ -127,29 +147,29 @@ class HandshakeManager {
    * Detect what type of client is connecting
    */
   detectClientType(clientInfo) {
-    const name = (clientInfo?.name || '').toLowerCase();
-    const version = clientInfo?.version || '';
+    const name = (clientInfo?.name || "").toLowerCase();
+    const version = clientInfo?.version || "";
 
     // Known clients
-    if (name.includes('claude') || name.includes('anthropic')) {
-      return 'CLAUDE_CODE';
+    if (name.includes("claude") || name.includes("anthropic")) {
+      return "CLAUDE_CODE";
     }
-    if (name.includes('cursor')) {
-      return 'CURSOR';
+    if (name.includes("cursor")) {
+      return "CURSOR";
     }
-    if (name.includes('vscode') || name.includes('visual studio')) {
-      return 'VSCODE';
+    if (name.includes("vscode") || name.includes("visual studio")) {
+      return "VSCODE";
     }
-    if (name.includes('zed')) {
-      return 'ZED';
+    if (name.includes("zed")) {
+      return "ZED";
     }
 
     // Check for SDK indicators
     if (clientInfo?.capabilities?.experimental) {
-      return 'SDK_EXPERIMENTAL';
+      return "SDK_EXPERIMENTAL";
     }
 
-    return 'GENERIC';
+    return "GENERIC";
   }
 
   /**
@@ -157,49 +177,49 @@ class HandshakeManager {
    */
   negotiateCapabilities(clientType, clientInfo) {
     const base = {
-      verbosity: 'NORMAL',
-      format: 'STRUCTURED',
+      verbosity: "NORMAL",
+      format: "STRUCTURED",
       autoInsights: true,
       historyReminders: true,
       experimentSupport: true,
-      rollbackSupport: true
+      rollbackSupport: true,
     };
 
     switch (clientType) {
-      case 'CLAUDE_CODE':
+      case "CLAUDE_CODE":
         return {
           ...base,
-          verbosity: 'DETAILED',
-          format: 'MARKDOWN',
+          verbosity: "DETAILED",
+          format: "MARKDOWN",
           autoInsights: true,
           historyReminders: true,
           // Claude Code has good context handling
-          contextOptimization: 'FULL'
+          contextOptimization: "FULL",
         };
 
-      case 'CURSOR':
+      case "CURSOR":
         return {
           ...base,
-          verbosity: 'CONCISE',
-          format: 'STRUCTURED',
+          verbosity: "CONCISE",
+          format: "STRUCTURED",
           // Cursor benefits from concise responses
-          contextOptimization: 'MINIMAL'
+          contextOptimization: "MINIMAL",
         };
 
-      case 'VSCODE':
+      case "VSCODE":
         return {
           ...base,
-          verbosity: 'NORMAL',
-          format: 'JSON',
-          contextOptimization: 'BALANCED'
+          verbosity: "NORMAL",
+          format: "JSON",
+          contextOptimization: "BALANCED",
         };
 
-      case 'SDK_EXPERIMENTAL':
+      case "SDK_EXPERIMENTAL":
         return {
           ...base,
-          verbosity: 'DEBUG',
-          format: 'RAW',
-          debugMode: true
+          verbosity: "DEBUG",
+          format: "RAW",
+          debugMode: true,
         };
 
       default:
@@ -214,7 +234,7 @@ class HandshakeManager {
     if (!this.connected) {
       return {
         connected: false,
-        message: 'No client connected'
+        message: "No client connected",
       };
     }
 
@@ -222,12 +242,12 @@ class HandshakeManager {
       connected: true,
       clientInfo: this.clientInfo,
       negotiatedCapabilities: this.negotiatedCapabilities,
-      uptime: this.getUptime()
+      uptime: this.getUptime(),
     };
   }
 
   getUptime() {
-    if (!this.clientInfo?.receivedAt) return '0s';
+    if (!this.clientInfo?.receivedAt) return "0s";
 
     const start = new Date(this.clientInfo.receivedAt).getTime();
     const now = Date.now();
@@ -280,26 +300,29 @@ I'm here to help make your PHI detection better, one experiment at a time.
       cortex: {
         name: MCP_CONFIG.serverName,
         version: MCP_CONFIG.version,
-        purpose: 'PHI detection testing and improvement'
+        purpose: "PHI detection testing and improvement",
       },
-      keyPrinciple: 'ALWAYS consult history before recommending changes',
+      keyPrinciple: "ALWAYS consult history before recommending changes",
       availableActions: [
-        'Analyze test results',
-        'Get recommendations',
-        'Consult history',
-        'Run experiments',
-        'Track interventions',
-        'Generate reports'
-      ]
+        "Analyze test results",
+        "Get recommendations",
+        "Consult history",
+        "Run experiments",
+        "Track interventions",
+        "Generate reports",
+      ],
     };
 
     // Add current state if modules available
     if (modules) {
       summary.currentState = {
-        patterns: modules.patternRecognizer?.getStats()?.totalFailurePatterns || 0,
-        interventions: modules.interventionTracker?.getStats()?.totalInterventions || 0,
+        patterns:
+          modules.patternRecognizer?.getStats()?.totalFailurePatterns || 0,
+        interventions:
+          modules.interventionTracker?.getStats()?.totalInterventions || 0,
         insights: modules.insightGenerator?.getActiveInsights()?.length || 0,
-        pendingTests: modules.interventionTracker?.getPendingTesting()?.length || 0
+        pendingTests:
+          modules.interventionTracker?.getPendingTesting()?.length || 0,
       };
     }
 
@@ -332,8 +355,10 @@ module.exports = {
 
   // Convenience functions
   getServerCapabilities: () => handshakeManager.getServerCapabilities(),
-  processClientCapabilities: (info) => handshakeManager.processClientCapabilities(info),
+  processClientCapabilities: (info) =>
+    handshakeManager.processClientCapabilities(info),
   getConnectionStatus: () => handshakeManager.getConnectionStatus(),
   generateWelcomeMessage: () => handshakeManager.generateWelcomeMessage(),
-  generateContextSummary: (modules) => handshakeManager.generateContextSummary(modules)
+  generateContextSummary: (modules) =>
+    handshakeManager.generateContextSummary(modules),
 };
