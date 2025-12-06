@@ -321,7 +321,7 @@ cd vulpes-celare && npm install && npm run build && npm test
 - You're a non-profit hospital or clinic (any size)
 - Your company makes less than $1M/year
 - You're building an open source project
-- You're using it internally (not offering as a service)
+- You're using it internally (not offering as a service or for financial incentive adoption)
 
 **You need a commercial license if:**
 
