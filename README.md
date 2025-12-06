@@ -298,16 +298,17 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 ## ⛓️ Cryptographic Provenance
 
-**Trust, but verify.** Vulpes Celare now includes a local, immutable blockchain ledger that cryptographically anchors every redaction event.
+**Trust, but verify.** Vulpes Celare includes a local, immutable blockchain ledger that cryptographically anchors every redaction event.
 
 | Capability | Description |
 |:---|:---|
 | **Merkle-Linked Audit Log** | Every action is hashed (SHA-256) and cryptographically linked to the previous entry. Tampering with history breaks the chain immediately. |
 | **Redaction Certificates** | Automatically Minted receipts prove that $H_{original} \rightarrow H_{redacted} + H_{manifest}$. Verify compliance mathematically without revealing PHI. |
+| **Verification Portal** | **NEW:** Web UI for non-technical auditors. Drag-and-drop Trust Bundles for instant cryptographic verification. No technical knowledge required. [Learn more →](verification-portal/) |
 | **Zero-Knowledge Architecture** | Designed for ZK-proof verification. Allow third-party auditors to verify protocol adherence without granting them access to patient data. |
 | **Fail-Safe Integrity** | The provenance layer operates asynchronously. Your application speed is never compromised, but your audit trail is always secured. |
 
-> **The Ledger Remembers:** Your data stays local, but its integrity is anchored by math. Review the chain at any time via the `/provenance/verify/:id` API.
+> **The Ledger Remembers:** Your data stays local, but its integrity is anchored by math. Auditors can verify compliance in seconds using the [Verification Portal](verification-portal/).
 
 ---
 
