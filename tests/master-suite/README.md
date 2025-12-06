@@ -253,20 +253,6 @@ The suite also tests that non-PHI is NOT redacted:
 - Ages under 90
 - Insurance company names
 
-## Deprecated Files
-
-The following test files are superseded by this master suite:
-- `comprehensive-200-assessment.js`
-- `fresh-200-assessment.js`
-- `hipaa-compliant-200-assessment.js`
-- `mega-assessment.js`
-- `stress-test-200.js`
-- `vulpes-realistic-assessment.js`
-- `vulpes-assessment.js`
-- `vigorous-assessment.js`
-
-These files can be safely deleted.
-
 ## Changelog
 
 ### v3.0.0 (Current)
