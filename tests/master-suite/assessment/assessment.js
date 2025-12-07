@@ -176,20 +176,24 @@ class RigorousAssessment {
    * Let the ENTIRE suite run before any analysis
    */
   async runFullSuite() {
+    console.error('[DEBUG] runFullSuite() called');
     const startTime = Date.now();
 
+    console.error('[DEBUG] Clearing require cache...');
     // Clear require cache for test documents to pick up any changes
     const phiGenPath = require.resolve("../documents/phi-generator");
     const templatesPath = require.resolve("../documents/templates");
     delete require.cache[phiGenPath];
     delete require.cache[templatesPath];
 
+    console.error('[DEBUG] Importing modules...');
     // Import required modules (fresh after cache clear)
     const {
       generateCompletePHIDataset,
     } = require("../documents/phi-generator");
     const { TEMPLATES } = require("../documents/templates");
 
+    console.error('[DEBUG] Loading engine...');
     // Load the engine (test as integrated system)
     let VulpesCelare;
     try {
@@ -201,7 +205,9 @@ class RigorousAssessment {
       );
     }
 
+    console.error('[DEBUG] Creating engine instance...');
     const engine = new VulpesCelare();
+    console.error('[DEBUG] Getting engine info...');
     this.results.engineInfo = {
       name: VulpesCelare.NAME,
       version: VulpesCelare.VERSION,
@@ -209,6 +215,7 @@ class RigorousAssessment {
       activeFilters: engine.getActiveFilters().length,
     };
 
+    console.error('[DEBUG] Showing banner...');
     // Generate and process documents - show full ASCII art banner
     console.error(
       fmt.assessmentBannerFull(
@@ -218,8 +225,10 @@ class RigorousAssessment {
       ),
     );
 
+    console.error('[DEBUG] Selecting error levels...');
     const errorLevels = this.selectErrorLevels(this.options.documentCount);
 
+    console.error('[DEBUG] Setting up parallel processing...');
     // ========================================================================
     // PARALLEL DOCUMENT PROCESSING
     // Process documents concurrently for significant speed improvement
@@ -228,6 +237,7 @@ class RigorousAssessment {
     const totalDocs = this.options.documentCount;
     let completed = 0;
 
+    console.error('[DEBUG] Preparing document tasks...');
     // Prepare all document tasks
     const documentTasks = [];
     for (let i = 0; i < totalDocs; i++) {
@@ -237,6 +247,8 @@ class RigorousAssessment {
         template: TEMPLATES[i % TEMPLATES.length],
       });
     }
+
+    console.error(`[DEBUG] Created ${documentTasks.length} tasks`);
 
     // Process a single document
     const processDocument = async (task) => {
@@ -290,15 +302,22 @@ class RigorousAssessment {
 
     // Execute with concurrency pool (batched Promise.all)
     const results = [];
+    console.error(`  Starting ${Math.ceil(documentTasks.length / CONCURRENCY)} batches...`);
     for (let i = 0; i < documentTasks.length; i += CONCURRENCY) {
+      console.error(`  Batch ${Math.floor(i/CONCURRENCY) + 1}: processing tasks ${i} to ${Math.min(i+CONCURRENCY-1, documentTasks.length-1)}`);
       const batch = documentTasks.slice(i, i + CONCURRENCY);
       const batchResults = await Promise.all(batch.map(processDocument));
       results.push(...batchResults);
+      console.error(`  Batch ${Math.floor(i/CONCURRENCY) + 1}: complete (${batchResults.length} results)`);
     }
+    console.error(`  All batches complete, total results: ${results.length}`);
 
     // Sort by ID to maintain order and add to results
+    console.error(`  Sorting results...`);
     results.sort((a, b) => a.id - b.id);
+    console.error(`  Adding to this.results.documents...`);
     this.results.documents.push(...results);
+    console.error(`  Documents added`);
 
     this.results.timing.processingMs = Date.now() - startTime;
     console.error(

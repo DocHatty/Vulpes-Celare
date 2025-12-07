@@ -364,7 +364,10 @@ async function main() {
 
     // PHASE 1: Run the complete test suite
     log("PHASE 1: Running complete test suite...\n");
+    console.error('[DEBUG run.js] About to call assessment.runFullSuite()');
     await assessment.runFullSuite();
+    console.error('[DEBUG run.js] assessment.runFullSuite() returned');
+    log("✓ Phase 1 complete\n");
 
     // PHASE 2: Calculate metrics with strict grading (original method)
     log("\nPHASE 2: Calculating metrics...\n");

@@ -161,11 +161,13 @@ export class EnhancedPHIDetector {
     }
 
     // 3. STRUCTURE SIGNAL - document position context
+    console.error(`[DEBUG evaluate] Getting position context for "${candidate.text.substring(0, 20)}"...`);
     const position = DocumentStructureAnalyzer.getPositionContext(
       context.fullText,
       candidate.start,
       docAnalysis.profile
     );
+    console.error(`[DEBUG evaluate] Position context done`);
     const structureBoost = DocumentStructureAnalyzer.getContextBoost(position, candidate.phiType);
     
     if (Math.abs(structureBoost) > 0.05) {
@@ -228,14 +230,21 @@ export class EnhancedPHIDetector {
     fullText: string
   ): EnhancedDetectionResult[] {
     // Analyze document once
+    console.error(`[DEBUG evaluateBatch] Processing ${candidates.length} candidates...`);
     const docAnalysis = this.analyzeDocument(fullText);
+    console.error(`[DEBUG evaluateBatch] Document analyzed, now mapping evaluate...`);
     const context: DetectionContext = {
       fullText,
       documentProfile: docAnalysis.profile,
       chaosAnalysis: docAnalysis.chaos,
     };
 
-    return candidates.map(candidate => this.evaluate(candidate, context));
+    const results = candidates.map((candidate, idx) => {
+      if (idx % 50 === 0) console.error(`[DEBUG evaluateBatch] Evaluating candidate ${idx}/${candidates.length}...`);
+      return this.evaluate(candidate, context);
+    });
+    console.error(`[DEBUG evaluateBatch] All candidates evaluated, returning`);
+    return results;
   }
 
   /**

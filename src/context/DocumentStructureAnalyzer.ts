@@ -309,12 +309,24 @@ export class DocumentStructureAnalyzer {
     const searchText = text.substring(searchStart, offset);
     
     // Find last label in search range
+    // FIXED: Don't use /g flag with exec in while loop - can cause infinite loop
     const labelRegex = /([A-Za-z][A-Za-z\s]{2,30})[\s]*:[\s]*/g;
     let lastMatch: RegExpExecArray | null = null;
     let match: RegExpExecArray | null;
+    let safetyCounter = 0; // Prevent infinite loops
+    const MAX_ITERATIONS = 1000;
     
     while ((match = labelRegex.exec(searchText)) !== null) {
       lastMatch = match;
+      // Safety check to prevent infinite loops
+      if (++safetyCounter > MAX_ITERATIONS) {
+        console.error('[ERROR] findNearestLabel infinite loop detected, breaking');
+        break;
+      }
+      // Ensure we advance past this match
+      if (match.index === labelRegex.lastIndex) {
+        labelRegex.lastIndex++;
+      }
     }
     
     if (lastMatch) {
@@ -355,7 +367,15 @@ export class DocumentStructureAnalyzer {
     
     // Search backwards for header row (usually has === or --- after it, or is first row)
     let searchPos = lineStart;
+    let safetyCounter = 0;
+    const MAX_ITERATIONS = 100; // Max 100 lines to search
+    
     while (searchPos > 0) {
+      if (++safetyCounter > MAX_ITERATIONS) {
+        console.error('[ERROR] findColumnHeader infinite loop detected, breaking');
+        break;
+      }
+      
       const prevLineStart = text.lastIndexOf('\n', searchPos - 2) + 1;
       const prevLine = text.substring(prevLineStart, searchPos - 1);
       
@@ -372,6 +392,13 @@ export class DocumentStructureAnalyzer {
       
       // Stop if we've gone too far
       if (lineStart - prevLineStart > 500) break;
+      
+      // Safety: ensure we're actually moving backwards
+      if (prevLineStart >= searchPos) {
+        console.error('[ERROR] findColumnHeader not advancing, breaking');
+        break;
+      }
+      
       searchPos = prevLineStart;
     }
     

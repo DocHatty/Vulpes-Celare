@@ -343,8 +343,11 @@ export class ParallelRedactionEngine {
     // Applies ensemble voting with dictionary, structure, label, and chaos signals
     // NOTE: Currently only ENHANCING confidence, not filtering - system needs tuning
     const beforeEnsemble = allSpans.length;
+    console.error(`[DEBUG] About to create SpanEnhancer with ${allSpans.length} spans...`);
     const spanEnhancer = new SpanEnhancer({ minConfidence: 0.0, modifySpans: true });
+    console.error(`[DEBUG] SpanEnhancer created, calling analyzeSpans...`);
     const enhancementAnalysis = spanEnhancer.analyzeSpans(allSpans, text);
+    console.error(`[DEBUG] analyzeSpans returned`);
     
     // Log enhancement stats but DON'T filter yet - let existing filters handle it
     // Once tuned, we can enable filtering with appropriate threshold
