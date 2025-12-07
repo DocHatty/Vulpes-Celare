@@ -173,6 +173,22 @@ export {
 } from "./PolicyDSL";
 
 // ============================================================================
+// TRUST BUNDLE & PROVENANCE
+// ============================================================================
+
+export {
+  TrustBundleExporter,
+  TrustBundle,
+  TrustBundleManifest,
+  TrustBundleCertificate,
+  TrustBundlePolicy,
+  TrustBundleOptions,
+  VerificationResult,
+  TRUST_BUNDLE_VERSION,
+  TRUST_BUNDLE_EXTENSION,
+} from "./provenance/TrustBundleExporter";
+
+// ============================================================================
 // VERSION INFO
 // ============================================================================
 
