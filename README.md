@@ -378,7 +378,7 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 **You need a commercial license if:**
 
-- You are a for-profit company and/or make > $1M/year AND you want to keep modifications private
+- You are a for-profit company and/or make > $1M/year
 - You're offering Vulpes Celare as a managed service
 
 **The AGPL ensures:**
