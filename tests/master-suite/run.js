@@ -606,15 +606,33 @@ async function main() {
     if (sensitivity >= 95 && passingGrades.includes(grade)) {
       log("\n  ✓ PASS\n");
       printLLMActionChecklist(assessment.results, smartGradeResults, "PASS");
+      
+      // Shutdown Cortex to close database connection
+      if (cortex) {
+        cortex.shutdown();
+      }
+      
       process.exit(0);
     } else {
       log("\n  ✗ NEEDS IMPROVEMENT\n");
       printLLMActionChecklist(assessment.results, smartGradeResults, "IMPROVE");
+      
+      // Shutdown Cortex to close database connection
+      if (cortex) {
+        cortex.shutdown();
+      }
+      
       process.exit(1);
     }
   } catch (error) {
     console.error(`\n❌ Assessment failed: ${error.message}`);
     console.error(error.stack);
+    
+    // Shutdown Cortex to close database connection
+    if (cortex) {
+      cortex.shutdown();
+    }
+    
     process.exit(2);
   }
 }

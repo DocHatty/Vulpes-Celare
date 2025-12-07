@@ -512,6 +512,23 @@ ${JSON.stringify(this.modules.experimentRunner.getStats(), null, 2)}
   getModule(name) {
     return this.modules[name];
   }
+
+  /**
+   * Shutdown Cortex and close all resources
+   * CRITICAL: Call this when done to prevent hanging processes!
+   */
+  shutdown() {
+    if (!this.initialized) return;
+    
+    console.error("[Vulpes Cortex] Shutting down...");
+    
+    // Close database connection
+    const { closeDatabase } = require("./db/database");
+    closeDatabase();
+    
+    this.initialized = false;
+    console.error("[Vulpes Cortex] Shutdown complete");
+  }
 }
 
 // ============================================================================
