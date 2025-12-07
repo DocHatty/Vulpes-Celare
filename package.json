@@ -37,7 +37,7 @@
     "node": ">=16.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.25",
     "@types/string-similarity": "^4.0.2",
     "typescript": "^5.0.0"
   }

@@ -156,40 +156,42 @@ npm start
 
 **Actual Effort**: ~1 day for MVP
 
-#### 2.2 Streaming Redaction API 🔨
-**Status**: PLANNED
+#### 2.2 Streaming Redaction API ✅
+**Status**: COMPLETED
 
-**Scope**:
+**Implementation**: `src/StreamingRedactor.ts`
+
+**Delivered**:
+- ✅ StreamingRedactor class with async iterator support
+- ✅ WebSocketRedactionHandler for real-time websocket streams
+- ✅ Configurable buffer sizes and flush timeouts
+- ✅ Two modes: 'immediate' (low latency) and 'sentence' (high accuracy)
+- ✅ Automatic context management across chunks
+- ✅ Stats tracking (redaction count, position)
+- ✅ Comprehensive examples:
+  - Live dictation with speech-to-text
+  - WebSocket server and client
+  - Voice-to-text integration (Deepgram, Google, Azure)
+  - Medical scribe application
+  - Performance tuning guidelines
+
+**How to Use**:
 ```typescript
-// Real-time redaction as text streams in
-class StreamingRedactor {
-  async *redactStream(textStream: AsyncIterable<string>): AsyncIterable<string> {
-    for await (const chunk of textStream) {
-      yield await this.redactChunk(chunk);
-    }
-  }
-}
+import { StreamingRedactor } from 'vulpes-celare';
 
-// Use case: Live dictation
-const redactor = new StreamingRedactor();
-const stream = microphoneStream.pipe(speechToText);
+const redactor = new StreamingRedactor({
+  bufferSize: 100,
+  mode: 'sentence'
+});
 
-for await (const safeText of redactor.redactStream(stream)) {
-  // Safe to display/store in real-time
-  display.append(safeText);
+for await (const chunk of redactor.redactStream(textStream)) {
+  console.log(chunk.text); // Safe to display in real-time
 }
 ```
 
-**Deliverables**:
-- Streaming API with token-by-token redaction
-- WebSocket support for real-time applications
-- Integration with dictation systems
-- Voice-to-text pipeline example
-- Live scribe app demo
+**Impact**: Enables real-time PHI protection for live dictation, scribe apps, and streaming documentation.
 
-**Impact**: Enables real-time clinical documentation with automatic PHI protection.
-
-**Effort**: ~3 weeks
+**Actual Effort**: ~2 hours for MVP
 
 #### 2.3 Policy DSL (Domain-Specific Language) 🔨
 **Status**: PLANNED

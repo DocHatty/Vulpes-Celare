@@ -129,6 +129,29 @@ async function analyzeNote(clinicalNote: string) {
 }
 ```
 
+### Streaming Redaction (NEW ✨)
+
+**Real-time PHI protection for live dictation and scribe applications**
+
+```typescript
+import { StreamingRedactor } from 'vulpes-celare';
+
+const redactor = new StreamingRedactor({
+  bufferSize: 100,
+  mode: 'sentence'  // Balance latency and accuracy
+});
+
+// Process live dictation stream
+for await (const chunk of redactor.redactStream(speechToTextStream)) {
+  // Display immediately - PHI already redacted
+  console.log(chunk.text);
+  
+  if (chunk.containsRedactions) {
+    console.log(`🔒 Redacted ${chunk.redactionCount} PHI elements`);
+  }
+}
+```
+
 ### Anthropic / Claude
 
 ```typescript

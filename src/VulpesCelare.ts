@@ -265,4 +265,8 @@ export class VulpesCelare {
   }
 }
 
+// Export streaming redactor
+export { StreamingRedactor, WebSocketRedactionHandler } from './StreamingRedactor';
+export type { StreamingRedactorConfig, StreamingChunk } from './StreamingRedactor';
+
 export default VulpesCelare;
