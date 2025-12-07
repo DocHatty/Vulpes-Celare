@@ -150,6 +150,29 @@ export { TokenManager } from "./tokens/TokenManager";
 export { PolicyLoader } from "./policies/PolicyLoader";
 
 // ============================================================================
+// STREAMING REDACTION API
+// ============================================================================
+
+export {
+  StreamingRedactor,
+  WebSocketRedactionHandler,
+  StreamingRedactorConfig,
+  StreamingChunk,
+} from "./StreamingRedactor";
+
+// ============================================================================
+// POLICY DSL
+// ============================================================================
+
+export {
+  PolicyCompiler,
+  PolicyTemplates,
+  PolicyRule,
+  PolicyDefinition,
+  CompiledPolicy,
+} from "./PolicyDSL";
+
+// ============================================================================
 // VERSION INFO
 // ============================================================================
 
