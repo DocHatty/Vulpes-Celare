@@ -36,3 +36,7 @@ tmp/
 temp/
 *.tmp
 nul
+
+# SQLite temporary files
+*.db-shm
+*.db-wal
