@@ -5,11 +5,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "setup": "node scripts/setup.js",
+    "postinstall": "cd tests/master-suite/cortex && npm install --silent",
     "build": "tsc && node scripts/copy-assets.js",
     "build:watch": "tsc --watch",
     "test": "node tests/master-suite/run.js",
+    "test:quick": "node tests/master-suite/run.js --quick",
+    "test:1000": "node tests/master-suite/run.js --count=1000",
     "clean": "rm -rf dist",
-    "rebuild": "npm run clean && npm run build"
+    "rebuild": "npm run clean && npm run build",
+    "api": "node tests/master-suite/cortex/api/server.js"
   },
   "keywords": [
     "hipaa",
