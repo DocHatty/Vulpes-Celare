@@ -375,6 +375,27 @@ class TemporalIndex {
   }
 
   /**
+   * Get the most recent metrics from recorded test runs
+   * Returns null if no test runs have been recorded
+   */
+  getLatestMetrics() {
+    const runs = this.kb.getEntitiesByType("TestRun", { limit: 1 });
+    
+    if (runs.length === 0) {
+      return null;
+    }
+    
+    const latestRun = runs[0];
+    return {
+      ...latestRun.metrics,
+      timestamp: latestRun.timestamp,
+      documentCount: latestRun.documentCount,
+      profile: latestRun.profile,
+      runId: latestRun.id
+    };
+  }
+
+  /**
    * Detect anomalies (sudden changes)
    */
   detectAnomalies(metricName, options = {}) {

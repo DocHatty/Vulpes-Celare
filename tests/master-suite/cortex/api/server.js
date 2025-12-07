@@ -26,6 +26,7 @@ const WebSocket = require("ws");
 const path = require("path");
 
 const { getDatabase } = require("../db/database");
+const { initializeServices, getServices } = require("../core/services");
 const { getJobQueue } = require("./queue");
 const { getExperimentService } = require("./experiments");
 const { getRetentionService } = require("./retention");
@@ -45,6 +46,7 @@ app.use(express.json());
 
 // Database instance
 let db = null;
+let services = null;
 let jobQueue = null;
 let experimentService = null;
 let retentionService = null;
@@ -95,7 +97,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-    const stats = db ? db.getStats() : {};
+    const stats = services ? services.knowledge.getSummary().stats : {};
     res.json({
         status: "healthy",
         uptime: process.uptime(),
@@ -126,7 +128,7 @@ app.get("/api/patterns", (req, res) => {
             sortOrder: req.query.sortOrder || "DESC",
         };
 
-        const patterns = db.queryPatterns(filters, options);
+        const patterns = services.patterns.query(filters, options);
         res.json({ success: true, count: patterns.length, patterns });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -137,7 +139,7 @@ app.get("/api/patterns", (req, res) => {
 app.get("/api/patterns/trending", (req, res) => {
     try {
         const limit = req.query.limit ? parseInt(req.query.limit) : 20;
-        const patterns = db.getTrendingPatterns(limit);
+        const patterns = services.patterns.getTrending(limit);
         res.json({ success: true, count: patterns.length, patterns });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -147,7 +149,7 @@ app.get("/api/patterns/trending", (req, res) => {
 // GET /api/patterns/:phiType - Get patterns for specific PHI type
 app.get("/api/patterns/:phiType", (req, res) => {
     try {
-        const patterns = db.getPatternsByPhiType(req.params.phiType);
+        const patterns = services.patterns.getByPhiType(req.params.phiType);
         res.json({ success: true, count: patterns.length, patterns });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -157,7 +159,7 @@ app.get("/api/patterns/:phiType", (req, res) => {
 // POST /api/patterns - Record a pattern
 app.post("/api/patterns", (req, res) => {
     try {
-        const id = db.recordPattern(req.body);
+        const id = services.patterns.record(req.body);
         res.json({ success: true, id });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -184,7 +186,7 @@ app.get("/api/decisions", (req, res) => {
             offset: req.query.offset ? parseInt(req.query.offset) : 0,
         };
 
-        const decisions = db.queryDecisions(filters, options);
+        const decisions = services.decisions.query(filters, options);
         res.json({ success: true, count: decisions.length, decisions });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -194,7 +196,7 @@ app.get("/api/decisions", (req, res) => {
 // GET /api/decisions/:id - Get specific decision
 app.get("/api/decisions/:id", (req, res) => {
     try {
-        const decision = db.getDecision(req.params.id);
+        const decision = services.decisions.get(req.params.id);
         if (!decision) {
             return res.status(404).json({ success: false, error: "Decision not found" });
         }
@@ -207,7 +209,7 @@ app.get("/api/decisions/:id", (req, res) => {
 // POST /api/decisions - Record a decision
 app.post("/api/decisions", (req, res) => {
     try {
-        const id = db.recordDecision(req.body);
+        const id = services.decisions.record(req.body);
         res.json({ success: true, id });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -221,7 +223,7 @@ app.post("/api/decisions", (req, res) => {
 // GET /api/metrics - Get latest metrics
 app.get("/api/metrics", (req, res) => {
     try {
-        const metrics = db.getLatestMetrics();
+        const metrics = services.metrics.getLatest();
         res.json({ success: true, metrics });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -238,7 +240,7 @@ app.get("/api/metrics/trend/:metricName", (req, res) => {
             limit: req.query.limit ? parseInt(req.query.limit) : 100,
         };
 
-        const trend = db.getMetricsTrend(req.params.metricName, options);
+        const trend = services.metrics.getTrend(req.params.metricName, options);
         res.json({ success: true, metricName: req.params.metricName, count: trend.length, trend });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -249,7 +251,7 @@ app.get("/api/metrics/trend/:metricName", (req, res) => {
 app.post("/api/metrics", (req, res) => {
     try {
         const { runId, metrics, context } = req.body;
-        db.recordMetrics(runId, metrics, context);
+        services.metrics.record(runId, metrics, context);
         res.json({ success: true, runId });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -261,7 +263,7 @@ app.get("/api/metrics/compare", (req, res) => {
     try {
         const period1 = { start: req.query.period1Start, end: req.query.period1End };
         const period2 = { start: req.query.period2Start, end: req.query.period2End };
-        const comparison = db.compareMetricsPeriods(period1, period2);
+        const comparison = services.metrics.compare(period1, period2);
         res.json({ success: true, comparison });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -281,7 +283,7 @@ app.post("/api/tests/run", (req, res) => {
             quick: req.body.quick || false,
         };
 
-        const testId = db.enqueueTest(config);
+        const testId = services.tests.enqueue(config);
         res.json({
             success: true,
             testId,
@@ -296,7 +298,7 @@ app.post("/api/tests/run", (req, res) => {
 // GET /api/tests/:id - Get test status
 app.get("/api/tests/:id", (req, res) => {
     try {
-        const status = db.getTestStatus(req.params.id);
+        const status = services.tests.getStatus(req.params.id);
         if (!status) {
             return res.status(404).json({ success: false, error: "Test not found" });
         }
@@ -315,7 +317,7 @@ app.get("/api/experiments", (req, res) => {
     try {
         const filters = { status: req.query.status };
         const options = { limit: req.query.limit ? parseInt(req.query.limit) : 20 };
-        const experiments = db.queryExperiments(filters, options);
+        const experiments = services.experiments.query(filters, options);
         res.json({ success: true, count: experiments.length, experiments });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -325,7 +327,7 @@ app.get("/api/experiments", (req, res) => {
 // POST /api/experiments - Create experiment
 app.post("/api/experiments", (req, res) => {
     try {
-        const id = db.createExperiment(req.body);
+        const id = services.experiments.create(req.body);
         res.json({ success: true, id, status: "CREATED" });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -335,7 +337,7 @@ app.post("/api/experiments", (req, res) => {
 // GET /api/experiments/:id - Get experiment details
 app.get("/api/experiments/:id", (req, res) => {
     try {
-        const experiment = db.getExperiment(req.params.id);
+        const experiment = services.experiments.get(req.params.id);
         if (!experiment) {
             return res.status(404).json({ success: false, error: "Experiment not found" });
         }
@@ -348,7 +350,7 @@ app.get("/api/experiments/:id", (req, res) => {
 // PUT /api/experiments/:id - Update experiment
 app.put("/api/experiments/:id", (req, res) => {
     try {
-        db.updateExperiment(req.params.id, req.body);
+        services.experiments.update(req.params.id, req.body);
         res.json({ success: true, id: req.params.id });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -364,7 +366,7 @@ app.get("/api/interventions", (req, res) => {
     try {
         const filters = { type: req.query.type, status: req.query.status };
         const options = { limit: req.query.limit ? parseInt(req.query.limit) : 50 };
-        const interventions = db.queryInterventions(filters, options);
+        const interventions = services.interventions.query(filters, options);
         res.json({ success: true, count: interventions.length, interventions });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -374,7 +376,7 @@ app.get("/api/interventions", (req, res) => {
 // POST /api/interventions - Record intervention
 app.post("/api/interventions", (req, res) => {
     try {
-        const id = db.recordIntervention(req.body);
+        const id = services.interventions.record(req.body);
         res.json({ success: true, id });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -384,7 +386,7 @@ app.post("/api/interventions", (req, res) => {
 // PUT /api/interventions/:id - Update intervention
 app.put("/api/interventions/:id", (req, res) => {
     try {
-        db.updateIntervention(req.params.id, req.body);
+        services.interventions.update(req.params.id, req.body);
         res.json({ success: true, id: req.params.id });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -398,9 +400,9 @@ app.put("/api/interventions/:id", (req, res) => {
 // GET /api/knowledge/summary - Get knowledge summary
 app.get("/api/knowledge/summary", (req, res) => {
     try {
-        const stats = db.getStats();
-        const latestMetrics = db.getLatestMetrics();
-        const trendingPatterns = db.getTrendingPatterns(5);
+        const stats = services.knowledge.getSummary().stats;
+        const latestMetrics = services.metrics.getLatest();
+        const trendingPatterns = services.patterns.getTrending(5);
 
         res.json({
             success: true,
@@ -425,7 +427,7 @@ app.get("/api/knowledge/search", (req, res) => {
         }
 
         // Search across patterns and decisions
-        const patternResults = db.queryPatterns({}, { limit: 20 }).filter(
+        const patternResults = services.patterns.query({}, { limit: 20 }).filter(
             (p) =>
                 p.description?.toLowerCase().includes(query.toLowerCase()) ||
                 p.phi_type?.toLowerCase().includes(query.toLowerCase()) ||
@@ -693,6 +695,10 @@ function start() {
     experimentService = getExperimentService({ database: db, queue: jobQueue });
     retentionService = getRetentionService({ database: db });
     console.error("[Cortex API] Services initialized (queue, experiments, retention)");
+    
+    // Initialize core services layer
+    services = initializeServices(db, {});
+    console.error("[Cortex API] Core services initialized (patterns, metrics, decisions, tests)");
 
     // Create HTTP server
     const server = http.createServer(app);

@@ -1091,6 +1091,342 @@
           "PHOTO"
         ]
       }
+    },
+    {
+      "id": "STATE-1765119002168",
+      "timestamp": "2025-12-07T14:50:02.168Z",
+      "hash": "b84895fabeed6424",
+      "summary": {
+        "filterCount": 29,
+        "dictionaryCount": 7,
+        "dictionaryEntries": 201103,
+        "capabilities": [
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING"
+        ],
+        "gaps": [
+          "IP",
+          "PHOTO"
+        ]
+      }
+    },
+    {
+      "id": "STATE-1765119860428",
+      "timestamp": "2025-12-07T15:04:20.428Z",
+      "hash": "58d479ca9223d433",
+      "summary": {
+        "filterCount": 29,
+        "dictionaryCount": 7,
+        "dictionaryEntries": 201103,
+        "capabilities": [
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING"
+        ],
+        "gaps": [
+          "IP",
+          "PHOTO"
+        ]
+      }
+    },
+    {
+      "id": "STATE-1765120107967",
+      "timestamp": "2025-12-07T15:08:27.967Z",
+      "hash": "58d479ca9223d433",
+      "summary": {
+        "filterCount": 29,
+        "dictionaryCount": 7,
+        "dictionaryEntries": 201103,
+        "capabilities": [
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING"
+        ],
+        "gaps": [
+          "IP",
+          "PHOTO"
+        ]
+      }
+    },
+    {
+      "id": "STATE-1765127819380",
+      "timestamp": "2025-12-07T17:16:59.380Z",
+      "hash": "58d479ca9223d433",
+      "summary": {
+        "filterCount": 29,
+        "dictionaryCount": 7,
+        "dictionaryEntries": 201103,
+        "capabilities": [
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CONTEXT_AWARE",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "OCR_TOLERANCE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CASE_INSENSITIVE",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING",
+          "CONTEXT_AWARE",
+          "CONFIDENCE_SCORING"
+        ],
+        "gaps": [
+          "IP",
+          "PHOTO"
+        ]
+      }
     }
   ],
   "changes": [
@@ -1718,11 +2054,162 @@
           "phiType": "ZIPCODE"
         }
       ]
+    },
+    {
+      "timestamp": "2025-12-07T15:04:20.428Z",
+      "stateId": "STATE-1765119860428",
+      "changes": [
+        {
+          "type": "FILTER_ADDED",
+          "component": "AccountNumberFilterSpan",
+          "phiType": "ACCOUNT_NUMBER"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "AddressFilterSpan",
+          "phiType": "ADDRESS"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "AgeFilterSpan",
+          "phiType": "AGE"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "BiometricContextFilterSpan",
+          "phiType": "BIOMETRIC"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "CreditCardFilterSpan",
+          "phiType": "CREDIT_CARD"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "DateFilterSpan",
+          "phiType": "DATE"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "DEAFilterSpan",
+          "phiType": "DEA"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "DeviceIdentifierFilterSpan",
+          "phiType": "DEVICE"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "EmailFilterSpan",
+          "phiType": "EMAIL"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "FamilyNameFilterSpan",
+          "phiType": "NAME"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "FaxNumberFilterSpan",
+          "phiType": "FAX"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "FilterRegistry",
+          "phiType": "UNKNOWN"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "FinalNameCleanupFilter",
+          "phiType": "NAME"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "FormattedNameFilterSpan",
+          "phiType": "NAME"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "HealthPlanNumberFilterSpan",
+          "phiType": "HEALTH_PLAN_ID"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "HospitalFilterSpan",
+          "phiType": "UNKNOWN"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "IPAddressFilterSpan",
+          "phiType": "ADDRESS"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "LicenseNumberFilterSpan",
+          "phiType": "LICENSE"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "MRNFilterSpan",
+          "phiType": "MRN"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "NPIFilterSpan",
+          "phiType": "NPI"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "PassportNumberFilterSpan",
+          "phiType": "PASSPORT"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "PhoneFilterSpan",
+          "phiType": "PHONE"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "SmartNameFilterSpan",
+          "phiType": "NAME"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "SSNFilterSpan",
+          "phiType": "SSN"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "TitledNameFilterSpan",
+          "phiType": "NAME"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "UniqueIdentifierFilterSpan",
+          "phiType": "UNIQUE_ID"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "URLFilterSpan",
+          "phiType": "URL"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "VehicleIdentifierFilterSpan",
+          "phiType": "VEHICLE"
+        },
+        {
+          "type": "FILTER_ADDED",
+          "component": "ZipCodeFilterSpan",
+          "phiType": "ZIPCODE"
+        }
+      ]
     }
   ],
   "correlations": [],
   "stats": {
-    "totalSnapshots": 13,
-    "totalChanges": 118
+    "totalSnapshots": 17,
+    "totalChanges": 147
   }
 }
