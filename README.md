@@ -127,6 +127,11 @@ const compiled = PolicyCompiler.compile(policy);
 // Use compiled policy with redaction engine
 ```
 
+> 📊 **NEW: Comprehensive System Assessment Available**  
+> Want to see how Vulpes Celare compares to industry alternatives? Check out our detailed assessment:
+> - [📋 Quick Summary](docs/ASSESSMENT-SUMMARY.md) - TL;DR with key findings
+> - [📖 Full Assessment](docs/COMPREHENSIVE-ASSESSMENT.md) - In-depth analysis with quality grades
+
 ---
 
 ## 🔌 Integration Examples
