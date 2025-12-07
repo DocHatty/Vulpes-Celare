@@ -269,4 +269,8 @@ export class VulpesCelare {
 export { StreamingRedactor, WebSocketRedactionHandler } from './StreamingRedactor';
 export type { StreamingRedactorConfig, StreamingChunk } from './StreamingRedactor';
 
+// Export policy DSL
+export { PolicyCompiler, PolicyTemplates } from './PolicyDSL';
+export type { PolicyRule, PolicyDefinition, CompiledPolicy } from './PolicyDSL';
+
 export default VulpesCelare;

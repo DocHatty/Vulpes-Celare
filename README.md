@@ -103,6 +103,30 @@ console.log(result.redactionCount);  // PHI elements found
 console.log(result.executionTimeMs); // Processing time (~2–3 ms)
 ```
 
+### Policy DSL (NEW ✨)
+
+**Declarative policy language for simplified customization**
+
+```typescript
+import { PolicyCompiler } from 'vulpes-celare';
+
+const policy = `
+policy RESEARCH {
+  description "IRB-approved research"
+  
+  redact names
+  redact ssn
+  keep dates
+  keep ages
+  
+  threshold 0.4
+}
+`;
+
+const compiled = PolicyCompiler.compile(policy);
+// Use compiled policy with redaction engine
+```
+
 ---
 
 ## 🔌 Integration Examples
