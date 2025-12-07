@@ -150,6 +150,45 @@ export { TokenManager } from "./tokens/TokenManager";
 export { PolicyLoader } from "./policies/PolicyLoader";
 
 // ============================================================================
+// STREAMING REDACTION API
+// ============================================================================
+
+export {
+  StreamingRedactor,
+  WebSocketRedactionHandler,
+  StreamingRedactorConfig,
+  StreamingChunk,
+} from "./StreamingRedactor";
+
+// ============================================================================
+// POLICY DSL
+// ============================================================================
+
+export {
+  PolicyCompiler,
+  PolicyTemplates,
+  PolicyRule,
+  PolicyDefinition,
+  CompiledPolicy,
+} from "./PolicyDSL";
+
+// ============================================================================
+// TRUST BUNDLE & PROVENANCE
+// ============================================================================
+
+export {
+  TrustBundleExporter,
+  TrustBundle,
+  TrustBundleManifest,
+  TrustBundleCertificate,
+  TrustBundlePolicy,
+  TrustBundleOptions,
+  VerificationResult,
+  TRUST_BUNDLE_VERSION,
+  TRUST_BUNDLE_EXTENSION,
+} from "./provenance/TrustBundleExporter";
+
+// ============================================================================
 // VERSION INFO
 // ============================================================================
 
