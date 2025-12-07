@@ -1,0 +1,68 @@
+{
+  "name": "trauma-fortress",
+  "description": "Maximum security air-gapped deployment policy for trauma centers and high-security environments",
+  "rationale": "Designed for air-gapped networks, trauma centers, and defense/VA healthcare facilities where no data can leave the secure perimeter. Uses aggressive thresholds and redacts all organizational identifiers.",
+  "filters": {
+    "names": {
+      "enabled": true,
+      "confidenceThreshold": 0.3,
+      "comment": "Aggressive threshold - better to over-redact than leak"
+    },
+    "dates": {
+      "enabled": true
+    },
+    "phones": {
+      "enabled": true
+    },
+    "emails": {
+      "enabled": true
+    },
+    "ssn": {
+      "enabled": true
+    },
+    "mrn": {
+      "enabled": true
+    },
+    "addresses": {
+      "enabled": true
+    },
+    "locations": {
+      "enabled": true
+    },
+    "organizations": {
+      "enabled": true,
+      "comment": "Hospital names redacted in maximum security mode"
+    },
+    "professions": {
+      "enabled": true,
+      "comment": "Provider names redacted in maximum security mode"
+    },
+    "ids": {
+      "enabled": true
+    },
+    "ages": {
+      "enabled": true
+    }
+  },
+  "globalThreshold": 0.3,
+  "deployment": {
+    "mode": "air-gapped",
+    "networkPolicy": "No outbound connections allowed",
+    "processingLocation": "On-device only",
+    "llmDeployment": "Local models only (Ollama, LLaMA, etc.)",
+    "auditStorage": "Local encrypted database"
+  },
+  "security": {
+    "encryptionAtRest": "required",
+    "encryptionInTransit": "N/A (air-gapped)",
+    "accessControl": "Role-based with audit logging",
+    "integrityChecks": "Cryptographic provenance for all operations"
+  },
+  "approvedFor": [
+    "VA Medical Centers",
+    "DoD healthcare facilities",
+    "Trauma centers with security requirements",
+    "Research facilities with controlled data",
+    "Air-gapped hospital networks"
+  ]
+}

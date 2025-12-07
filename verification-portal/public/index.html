@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulpes Celare - Verification Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .upload-area.dragging {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 14px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+        }
+
+        .results.valid {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+
+        .results.invalid {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .status-badge.valid {
+            background: #22c55e;
+            color: white;
+        }
+
+        .status-badge.invalid {
+            background: #ef4444;
+            color: white;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .check-icon {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 24px;
+        }
+
+        .check-label {
+            flex: 1;
+            color: #333;
+        }
+
+        .details {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+            width: 200px;
+        }
+
+        .detail-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .error-list, .warning-list {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .error-item {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: #fee;
+            border-left: 4px solid #ef4444;
+            border-radius: 4px;
+            color: #991b1b;
+        }
+
+        .warning-item {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+            color: #92400e;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .file-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .reset-btn {
+            background: #6b7280;
+            margin-top: 20px;
+        }
+
+        .reset-btn:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🦊</div>
+            <h1>Vulpes Celare</h1>
+            <p class="subtitle">Provenance Verification Portal</p>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Drop Trust Bundle (.red) here</div>
+            <div class="upload-hint">or click to browse</div>
+            <input type="file" id="fileInput" accept=".red,.zip">
+        </div>
+
+        <div class="file-info" id="fileInfo">
+            <strong>Selected:</strong> <span id="fileName"></span>
+        </div>
+
+        <button class="btn" id="verifyBtn" disabled>Verify Trust Bundle</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>Verifying cryptographic proofs...</div>
+        </div>
+
+        <div class="results" id="results">
+            <span class="status-badge" id="statusBadge">✓ VERIFIED</span>
+            
+            <div class="checks" id="checks"></div>
+
+            <div class="details" id="details" style="display: none;">
+                <h3 style="margin-bottom: 15px; color: #333;">Certificate Details</h3>
+                <div id="detailsContent"></div>
+            </div>
+
+            <div class="error-list" id="errorList" style="display: none;"></div>
+            <div class="warning-list" id="warningList" style="display: none;"></div>
+
+            <button class="btn reset-btn" id="resetBtn">Verify Another Bundle</button>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        let selectedFile = null;
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // File selection
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragging');
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileInfo.style.display = 'block';
+            verifyBtn.disabled = false;
+        }
+
+        // Verify button
+        verifyBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            // Show loading
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            verifyBtn.disabled = true;
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('bundle', selectedFile);
+
+            try {
+                // Call API
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                // Hide loading
+                loading.style.display = 'none';
+                
+                // Show results
+                displayResults(result);
+
+            } catch (error) {
+                loading.style.display = 'none';
+                alert('Verification failed: ' + error.message);
+                verifyBtn.disabled = false;
+            }
+        });
+
+        function displayResults(result) {
+            results.style.display = 'block';
+            
+            // Set status
+            const statusBadge = document.getElementById('statusBadge');
+            if (result.valid) {
+                results.className = 'results valid';
+                statusBadge.className = 'status-badge valid';
+                statusBadge.textContent = '✓ VERIFIED';
+            } else {
+                results.className = 'results invalid';
+                statusBadge.className = 'status-badge invalid';
+                statusBadge.textContent = '✗ VERIFICATION FAILED';
+            }
+
+            // Display checks
+            const checksHtml = Object.entries(result.checks).map(([key, value]) => {
+                const icon = value ? '✅' : '❌';
+                const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                return `
+                    <div class="check-item">
+                        <span class="check-icon">${icon}</span>
+                        <span class="check-label">${label}</span>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('checks').innerHTML = checksHtml;
+
+            // Display details if available
+            if (result.details && Object.keys(result.details).length > 0) {
+                document.getElementById('details').style.display = 'block';
+                const detailsHtml = Object.entries(result.details)
+                    .filter(([key, value]) => value !== null && value !== undefined)
+                    .map(([key, value]) => {
+                        const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                        return `
+                            <div class="detail-row">
+                                <div class="detail-label">${label}:</div>
+                                <div class="detail-value">${value}</div>
+                            </div>
+                        `;
+                    }).join('');
+                document.getElementById('detailsContent').innerHTML = detailsHtml;
+            }
+
+            // Display errors
+            const errorList = document.getElementById('errorList');
+            if (result.errors && result.errors.length > 0) {
+                errorList.style.display = 'block';
+                errorList.innerHTML = '<h3 style="margin-bottom: 10px; color: #991b1b;">Errors</h3>' +
+                    result.errors.map(err => `<div class="error-item">⚠️ ${err}</div>`).join('');
+            }
+
+            // Display warnings
+            const warningList = document.getElementById('warningList');
+            if (result.warnings && result.warnings.length > 0) {
+                warningList.style.display = 'block';
+                warningList.innerHTML = '<h3 style="margin-bottom: 10px; color: #92400e;">Warnings</h3>' +
+                    result.warnings.map(warn => `<div class="warning-item">⚡ ${warn}</div>`).join('');
+            }
+        }
+
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            results.style.display = 'none';
+            verifyBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

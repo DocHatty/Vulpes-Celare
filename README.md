@@ -103,6 +103,30 @@ console.log(result.redactionCount);  // PHI elements found
 console.log(result.executionTimeMs); // Processing time (~2–3 ms)
 ```
 
+### Policy DSL (NEW ✨)
+
+**Declarative policy language for simplified customization**
+
+```typescript
+import { PolicyCompiler } from 'vulpes-celare';
+
+const policy = `
+policy RESEARCH {
+  description "IRB-approved research"
+  
+  redact names
+  redact ssn
+  keep dates
+  keep ages
+  
+  threshold 0.4
+}
+`;
+
+const compiled = PolicyCompiler.compile(policy);
+// Use compiled policy with redaction engine
+```
+
 ---
 
 ## 🔌 Integration Examples
@@ -126,6 +150,29 @@ async function analyzeNote(clinicalNote: string) {
     model: 'gpt-4',
     messages: [{ role: 'user', content: safeNote }]
   });
+}
+```
+
+### Streaming Redaction (NEW ✨)
+
+**Real-time PHI protection for live dictation and scribe applications**
+
+```typescript
+import { StreamingRedactor } from 'vulpes-celare';
+
+const redactor = new StreamingRedactor({
+  bufferSize: 100,
+  mode: 'sentence'  // Balance latency and accuracy
+});
+
+// Process live dictation stream
+for await (const chunk of redactor.redactStream(speechToTextStream)) {
+  // Display immediately - PHI already redacted
+  console.log(chunk.text);
+  
+  if (chunk.containsRedactions) {
+    console.log(`🔒 Redacted ${chunk.redactionCount} PHI elements`);
+  }
 }
 ```
 
@@ -298,16 +345,17 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 ## ⛓️ Cryptographic Provenance
 
-**Trust, but verify.** Vulpes Celare now includes a local, immutable blockchain ledger that cryptographically anchors every redaction event.
+**Trust, but verify.** Vulpes Celare includes a local, immutable blockchain ledger that cryptographically anchors every redaction event.
 
 | Capability | Description |
 |:---|:---|
 | **Merkle-Linked Audit Log** | Every action is hashed (SHA-256) and cryptographically linked to the previous entry. Tampering with history breaks the chain immediately. |
 | **Redaction Certificates** | Automatically Minted receipts prove that $H_{original} \rightarrow H_{redacted} + H_{manifest}$. Verify compliance mathematically without revealing PHI. |
+| **Verification Portal** | **NEW:** Web UI for non-technical auditors. Drag-and-drop Trust Bundles for instant cryptographic verification. No technical knowledge required. [Learn more →](verification-portal/) |
 | **Zero-Knowledge Architecture** | Designed for ZK-proof verification. Allow third-party auditors to verify protocol adherence without granting them access to patient data. |
 | **Fail-Safe Integrity** | The provenance layer operates asynchronously. Your application speed is never compromised, but your audit trail is always secured. |
 
-> **The Ledger Remembers:** Your data stays local, but its integrity is anchored by math. Review the chain at any time via the `/provenance/verify/:id` API.
+> **The Ledger Remembers:** Your data stays local, but its integrity is anchored by math. Auditors can verify compliance in seconds using the [Verification Portal](verification-portal/).
 
 ---
 
