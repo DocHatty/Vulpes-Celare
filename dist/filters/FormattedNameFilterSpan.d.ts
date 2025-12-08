@@ -1,0 +1,104 @@
+/**
+ * FormattedNameFilterSpan - Formatted Name Detection (Span-Based)
+ *
+ * Detects standard formatted names in various patterns and returns Spans.
+ * This is the most complex name filter with extensive validation.
+ * Parallel-execution ready.
+ *
+ * @module filters
+ */
+import { Span } from "../models/Span";
+import { SpanBasedFilter } from "../core/SpanBasedFilter";
+import { RedactionContext } from "../context/RedactionContext";
+export declare class FormattedNameFilterSpan extends SpanBasedFilter {
+    getType(): string;
+    getPriority(): number;
+    detect(text: string, config: any, context: RedactionContext): Span[];
+    /**
+     * Pattern 0: Last, First format (both mixed case and ALL CAPS)
+     * STREET-SMART: "Last, First" and "Last, First Middle" formats are highly specific
+     * to person names in medical documents. Don't whitelist based on individual words.
+     */
+    private detectLastFirstNames;
+    /**
+     * Check if a titled name is a PROVIDER name (should NOT be redacted)
+     * Delegates to shared NameDetectionUtils
+     */
+    private isProviderTitledName;
+    /**
+     * Pattern 0.5: Titled names (Dr. Smith, Mr. Jones)
+     *
+     * IMPORTANT: Titled names are PROVIDER names under HIPAA Safe Harbor
+     * and should NOT be redacted. Patients don't have formal titles.
+     */
+    private detectTitledNames;
+    /**
+     * Pattern 0.6: Family relationship names (Daughter: Emma, Wife: Mary)
+     */
+    private detectFamilyRelationshipNames;
+    /**
+     * Pattern 1: Patient + Mixed Case Name
+     */
+    private detectPatientNames;
+    /**
+     * Pattern 2: Patient + ALL CAPS NAME
+     */
+    private detectPatientAllCapsNames;
+    /**
+     * Pattern 3: Standalone ALL CAPS names
+     */
+    private detectStandaloneAllCapsNames;
+    /**
+     * Pattern 4: Name with suffix
+     */
+    private detectNamesWithSuffix;
+    /**
+     * Pattern 5: First Initial + Last Name
+     */
+    private detectInitialLastNames;
+    /**
+     * Pattern 6: Possessive names
+     */
+    private detectPossessiveNames;
+    /**
+     * Pattern 7: Names after age/gender descriptors
+     */
+    private detectAgeGenderNames;
+    /**
+     * Pattern 8: General full names (most permissive)
+     */
+    private detectGeneralFullNames;
+    /**
+     * Validation helpers - Delegates to shared NameDetectionUtils
+     */
+    private validateLastFirst;
+    /**
+     * STREET-SMART: Special whitelist check for "Last, First [Middle]" format.
+     * Only whitelist if the ENTIRE phrase is a known non-person term.
+     * Do NOT whitelist based on individual words like "Ann" (Ann Arbor staging).
+     */
+    private isWhitelistedLastFirst;
+    private isLikelyName;
+    private isLikelyPersonName;
+    /**
+     * Check if text is a non-person structure term.
+     * Delegates to shared NameDetectionUtils
+     */
+    private isNonPersonStructureTerm;
+    /**
+     * Enhanced whitelist check that includes medical terms, hospital names, and word-by-word checking
+     * STREET-SMART: For ALL CAPS LAST, FIRST format, be more permissive -
+     * these are almost always patient names in medical documents
+     */
+    private isWhitelisted;
+    /**
+     * Pattern 9: Names with credential suffixes (RN, NP, MD, etc.)
+     * Matches: "Kenneth Stokes, RN", "Tyler Weber NP", "Pedro Turner, MD"
+     *
+     * IMPORTANT: Names with professional credentials are ALWAYS PROVIDERS
+     * under HIPAA Safe Harbor and should NOT be redacted.
+     * "Sarah Stokes, RN" is a provider (nurse), not a patient.
+     */
+    private detectNamesWithCredentials;
+}
+//# sourceMappingURL=FormattedNameFilterSpan.d.ts.map

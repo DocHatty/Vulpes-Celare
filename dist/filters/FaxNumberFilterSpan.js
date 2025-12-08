@@ -1,0 +1,76 @@
+"use strict";
+/**
+ * FaxNumberFilterSpan - Fax Number Detection (Span-Based)
+ *
+ * Detects fax numbers with explicit labels to avoid false positives with phone numbers.
+ * Only captures when explicitly labeled as "Fax" to maintain precision.
+ * Parallel-execution ready.
+ *
+ * @module filters
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FaxNumberFilterSpan = void 0;
+const Span_1 = require("../models/Span");
+const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
+class FaxNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    getType() {
+        return "FAX";
+    }
+    getPriority() {
+        return SpanBasedFilter_1.FilterPriority.FAX;
+    }
+    detect(text, config, context) {
+        const spans = [];
+        for (const pattern of FaxNumberFilterSpan.COMPILED_PATTERNS) {
+            pattern.lastIndex = 0; // Reset regex
+            let match;
+            while ((match = pattern.exec(text)) !== null) {
+                const fullMatch = match[0];
+                const faxNumber = match[1] || fullMatch;
+                // Validate it's actually a fax number (must contain "fax")
+                if (!fullMatch.toLowerCase().includes("fax")) {
+                    continue;
+                }
+                // Validate phone number format
+                if (!this.isValidUSPhoneNumber(faxNumber)) {
+                    continue;
+                }
+                // Create span for the fax number
+                const span = this.createSpanFromMatch(text, match, Span_1.FilterType.FAX, 0.95);
+                spans.push(span);
+            }
+        }
+        return spans;
+    }
+    /**
+     * Validate US phone number format (10 digits + optional +1)
+     */
+    isValidUSPhoneNumber(phoneNumber) {
+        // Extract digits only
+        const digits = phoneNumber.replace(/\D/g, "");
+        // Must be 10 digits (US) or 11 digits (with country code 1)
+        if (digits.length === 10) {
+            return true;
+        }
+        if (digits.length === 11 && digits[0] === "1") {
+            return true;
+        }
+        return false;
+    }
+}
+exports.FaxNumberFilterSpan = FaxNumberFilterSpan;
+/**
+ * Fax number regex pattern sources
+ */
+FaxNumberFilterSpan.FAX_PATTERN_SOURCES = [
+    // Pattern 1: Explicitly labeled fax numbers
+    // Must have "Fax" or "FAX" label to avoid false positives
+    /\b(?:Fax|FAX)(?:\s+(?:Number|No|#))?\s*[#:]?\s*(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\b/gi,
+    // Pattern 2: "Send to fax" or "Fax results to"
+    /\b(?:send|fax|transmit)(?:\s+(?:to|results))?\s+(?:fax)?\s*[#:]?\s*(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\b/gi,
+];
+/**
+ * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
+ */
+FaxNumberFilterSpan.COMPILED_PATTERNS = FaxNumberFilterSpan.compilePatterns(FaxNumberFilterSpan.FAX_PATTERN_SOURCES);
+//# sourceMappingURL=FaxNumberFilterSpan.js.map

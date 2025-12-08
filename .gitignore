@@ -2,8 +2,8 @@
 node_modules/
 package-lock.json
 
-# Build output
-dist/
+# Build output (dist/ is included for plug-and-play usage)
+# dist/
 *.tsbuildinfo
 
 # IDE
@@ -30,6 +30,8 @@ npm-debug.log*
 # Test artifacts
 coverage/
 .nyc_output/
+tests/results/
+tests/master-suite/cortex/storage/
 
 # Temporary
 tmp/
