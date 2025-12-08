@@ -200,6 +200,21 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
      */
     private detectChaosAwareLabeledNames;
     /**
+     * Pattern 16: CamelCase Concatenated Names
+     *
+     * Detects names where the space between first and last name was lost,
+     * resulting in CamelCase patterns like "LuisHill", "PedroKowalczyk", "MaryJohnson".
+     *
+     * This is common in:
+     * - OCR errors where space wasn't detected
+     * - Data entry errors
+     * - System exports with concatenated names
+     *
+     * The pattern looks for: CapitalLowercase + CapitalLowercase (2+ chars each)
+     * Examples: LuisHill, PedroKowalczyk, JohnSmith, MaryAnn (if last name follows)
+     */
+    private detectCamelCaseNames;
+    /**
      * Quick check for obvious non-name patterns that should never be captured
      */
     private isObviousNonName;

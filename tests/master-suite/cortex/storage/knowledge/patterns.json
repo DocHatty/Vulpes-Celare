@@ -3,2022 +3,6 @@
     {
       "type": "FALSE_NEGATIVE",
       "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 5244013538                         DEA: DH9511491  First Assistant:        Dr. Robert McDonald Anes",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                john Hamid Relationship:                        Child Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "orm ID: REG-1764960176866-1068 Registration Date: 0B/02/24  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "ADDRESS",
-      "context": {
-        "surroundingText": "ENT ADDRESS: Street Address:                      1462 FifthC0mmons Apartment/Unit:                      Apt 596 City",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": "930.792.8839 Cell Phone:                          (798) S31-485Z Work Phone:                          +1 784-306-1",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════ Patient Name:            RIFHARD B. LI Medical Record #:        PT2589705 Date of Birth:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "er:            GRP-57107 Date of Birth:           2/Z4/194q Member Address:          8997 Fighth (inc|e, Cihc",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   JASmINE JOhaNSSoN Relationship:           Child Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": "tionship:           Child Phone:                  695-7l 2-2081  INSURANCE INFORMATION ──────────────────────────",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 9771216912                         DEA: NS3917824  First Assistant:        Mrs. Hassan Katz Anesthe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     KENNETH L. MOREAU Preferred Name:                      N/A Date of",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "e, MO 25247  RE:   Patient: BRIAN KANG       DOB: 5/G/192       MRN: ACC: 2950920  Dear Mrs. Raj Tanaka,  T",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════ Patient Name:            sANJAY sHCMIDT Medical Record #:        rEC 9205698 Date of Birt",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "MRN",
-      "context": {
-        "surroundingText": "nilsson, Ahmed Vincent Medical Record #:       563 478 Date of Birth:          05-033-1987 Date of Surge",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 1560537957                         DEA: YF7233482  First Assistant:        Mr. Paula Murphy Anesthe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "orm ID: REG-1764960182275-7775 Registration Date: 08/1 72/3  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "ADDRESS",
-      "context": {
-        "surroundingText": "ENT ADDRESS: Street Address:                      1868 Back Tfail Apartment/Unit:                      Apt 552 City",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "LICENSE_PLATE",
-      "context": {
-        "surroundingText": "Blue License Plate:                       MundefinedLA19 State:                               MO VIN (for",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   Gentrude V. Va der 8drg Date of Birth:          /920/99 Medical Record #:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "MRN",
-      "context": {
-        "surroundingText": "f Birth:          /920/99 Medical Record #:       rce 6288529 Social Security #:      ***-**-7784 Admission Dat",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": ", syracuse, ca 81330-9284 Home Phone:             3b7-751-8Bo Cell Phone:             +1 400-88-3014 Email:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════  Patient Name:           Canol Anthnr Yamaomto Medical Record #:       paat2021-2734213 Date of",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "#:       paat2021-2734213 Date of Birth:          6/1 3/54 Date of Surgery:        4/4/2020 Account Number:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 7885549204                         DEA: LK7246884  First Assistant:        Sir Pedro Ibn Saud Anest",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "orm ID: REG-1764960184477-4660 Registration Date: O8/23/20Z4  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "ADDRESS",
-      "context": {
-        "surroundingText": "ENT ADDRESS: Street Address:                      905 2Pine Gardens Apartment/Unit:                      N/A City, St",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "LICENSE_PLATE",
-      "context": {
-        "surroundingText": "Blue License Plate:                       3undefinedB934 State:                               MS VIN (for",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "Pine Ridge, Charleston, IA 43618  RE:   Patient: AJSRNINE R. O'CANNOR       DOB: 3/2/1930       MRN: pat:3810097  Dear",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   PatriciaGoldberg Relationship:           Parent Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "agarwal, donna  lee Date of Birth:          1//166 Medical Record #:       ID: 2018-2648077 Social S",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "LICENSE_PLATE",
-      "context": {
-        "surroundingText": "Red License Plate:                       KJundefined-2024 State:                               CT VIN (for",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             jacksan,M aryam Nicholas Member ID:               JUB254555182 Group Numbe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "er:            GRP-82952 Date of Birth:           o2/0 5/75 Member Address:          6G04 Spruce Strcet, Memp",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   Nil sson , Malik Date of Birth:          722/4/82 Medical Record #",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #1: Name:                                Ke iko Pilli@ Relationship:                        Partner Phon",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                ThlmasScmhidt Relationship:                        Partner Phon",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "SSN",
-      "context": {
-        "surroundingText": "Self SSN:                                 xXX-X X-7925 Phone:                               1-868-210-87",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": "ONE NUMBERS: Home Phone:                          842.4w.4504 Cell Phone:                          +1 (967) 877",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════  Patient Name:           mARCUS v. hILL Medical Record #:       190 5185 Date of Birth:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "MRN",
-      "context": {
-        "surroundingText": "mARCUS v. hILL Medical Record #:       190 5185 Date of Birth:          6/220/67 Date of Surgery:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 8211737196                         DEA: DJ5247881  First Assistant:        Rev. Gertrude Bui Anesth",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Datnell Sato Preferred Name:                      N/A Date of",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                priya nguyen Relationship:                        Child Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "ADDRESS",
-      "context": {
-        "surroundingText": "ENT ADDRESS: Street Address:                      7324 West Pass, Fl553 Apartment/Unit:                      Apt 587 City",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "ty Hospital Department of Gastroenterology  Date: 2o24-08-21  Sir Elena O'Brien Specialty Associates 3797 Eigh",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════ Patient Name:            ahMED cLArk Medical Record #:        249150 Date of Birth:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "AGE_90_PLUS",
-      "context": {
-        "surroundingText": "───────────────────────── Age:                    100 years old Sex:                    Female Race:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 3234200873                         DEA: UP6500608  First Assistant:        Ms. Millicent Iyer Anest",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "dams Place, Minneapolis, NJ 40954  RE:   Patient: CLEMFNTINE Y0VsEF       DOB: 12/06/50       MRN: ACC99620980  Dear",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "ladelphia Department of Infectious Disease  Date: 0l-06-Z0Z4  Dame Michael Lewis Health Partners 9293 Adams Pl",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════ Patient Name:            PRIYA WALSH Medical Record #:        PT-2022-5588769 Date of",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   FFat ima Walker Relationship:           Parent Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "SSN",
-      "context": {
-        "surroundingText": "#:       meD2018-g6269661 Social Security #:      XXS-X X-3279 Admission Date:         3/24/2042 Attending Physi",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": "543-712-6177 Cell Phone:             890 323 G902 Email:                  shaniquatakahashi21@mail.",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 3292804401                         DEA: YJ6466328  First Assistant:        Prof. Clementine Weiss A",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "SSN",
-      "context": {
-        "surroundingText": "10-27-1963 Social Security Number:              ***-* -*4783 Age:                                 88 years  Se",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════ Patient Name:            Keisha Marie Mehta Medical Record #:        med-7159984 Date of Birt",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "ADDRESS",
-      "context": {
-        "surroundingText": "th:           1965-06-22 Member Address:          5780 North Commons, Baltimore, SC 40722  ━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   oMAAR LOPEZ, 1II Date of Birth:          07-07-1984 Medical Record",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   aTt iana Rcdd Relationship:           Spouse Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "SSN",
-      "context": {
-        "surroundingText": ":       MED 22022-8815426 Social Security #:      ***-* -*6169 Admission Date:         80/23/24 Attending Physic",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "─────────── 1. MRI - 2020-12-12 2. Appendectomy - 021/I/2020  MEDICATIONS ────────────────────────────────────",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": ",Nashville, OR 77430-8692 Home Phone:             20S85 93!17 Cell Phone:             1-909-540-7902 Email:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════  Patient Name:           AMANSA D. KAPLAN Medical Record #:       ac: 7194224 Date of Birth",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "cord #:       ac: 7194224 Date of Birth:          2o03-LL2-03 Date of Surgery:        9/25/2022 Account Number:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "MRN",
-      "context": {
-        "surroundingText": "AMANSA D. KAPLAN Medical Record #:       ac: 7194224 Date of Birth:          2o03-LL2-03 Date of Surge",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 1699310842                         DEA: NZ8065266  First Assistant:        Hon. Ming Suzuki Anesthe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                M@riqna Yousscf Relationship:                        Sibling Phon",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "oln Pike, San Francisco, MS 14986  RE:   Patient: minhf lore$       DOB: 08/28/1950       MRN: 9500435  Dear Re",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             mARCUS IOT Member ID:               VUS881671510 Group Numbe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "er:            GRP-25838 Date of Birth:           /118/9g Member Address:          1132 First Poont, Jackso",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   JAVIR GIRA5D Date of Birth:          0/720/1990 Medical Record",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   p@r kjobnson Relationship:           Spouse Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "──────────────────────────────── 1. Stress Test - 08-Z5-2020 2. Appendectomy - 12/28/21  MEDICATIONS ─────────",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "MRN",
-      "context": {
-        "surroundingText": "Scott, Oakshmi Medical Record #:       PAT:2 006502 Date of Birth:          04-26-1941 Date of Surger",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #1: Name:                                Iruna Pham Relationship:                        Child Phone",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "ADDRESS",
-      "context": {
-        "surroundingText": "ENT ADDRESS: Street Address:                      4102 Tenth Pass Apartment/Unit:                      N/A City, St",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "uilding 900, Louisville, KY 85792  RE:   Patient: LINDBERG, DEBORAAH MARIE       DOB: 07/27/1994       MRN: pA-T2018-8920389",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "irth:          04/25/1946 Date of Surgery:        Z/14/23 Account Number:         Account: 24823540  ══════",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 7169927203                         DEA: ZK1752703  First Assistant:        Rev. Hana Patel Anesthes",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                DeShawn upta Relationship:                        Friend Phone",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "SSN",
-      "context": {
-        "surroundingText": "4/18/62 Social Security Number:              524 36 510 Age:                                 80 years  Se",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": "3757821059 Cell Phone:                          -410-3P6-9926 Work Phone:                          +1(534) 296-",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "Commons, Oklahoma City, ID 94770  RE:   Patient: $coTt, hcEi5topher, V       DOB: 08-04-9162       MRN: 9481534  Dear Ho",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 6448980574                         DEA: EV4754038  First Assistant:        Mrs. Nancy Levy Anesthes",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #1: Name:                                dEBORAH cOHEN Relationship:                        Partner Phon",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   jOhn clArK Date of Birth:          1957-11-12 Medical Record",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   Shaniqua Yng Relationship:           Partner Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 6560207073                         DEA: TS3111386  First Assistant:        Dr. David Pillai Anesthe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #1: Name:                                Pisaa Cbai Relationship:                        Sibling Phon",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                Ievin Laarsson Relationship:                        Partner Phon",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "ADDRESS",
-      "context": {
-        "surroundingText": "ENT ADDRESS: Street Address:                      5812 Hi|l Parkwa Apartment/Unit:                      N/A City, St",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "herry Square, Worcester, WY 77749  RE:   Patient: thaddeusDaniel Wang       DOB: 1/14/44       MRN: MrN: 9531771  Dear",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════ Patient Name:            TORRES,MIKHZIL Medical Record #:        2859111 Date of Birth:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "════════════════════════ Date of Collection:      0/20/2l Date Received:           0/20/2l Date of Report:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   ANTHony LINdBErg Date of Birth:          62/6 /1973 Medical Record",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "─────────────────────── 1. Exercise Stress Test - 20Z0-03--17 2. Knee arthroscopy - 7/16 /2020  MEDICATIONS ───",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #1: Name:                                Natasba Johnxor Relationship:                        Partner Phon",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": "Partner Phone (Primary):                     3S3.66 1.1328 Phone (Alternate):                   69bS454848 A",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "ter Circle, Dallas, UT 71704-5890  RE:   Patient: lINH cHRISTOPHER eULLIVAN       DOB: 10-O6-!996       MRN: ACC-1320300  Dea",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": ":   Patient: lINH cHRISTOPHER eULLIVAN       DOB: 10-O6-!996       MRN: ACC-1320300  Dear Hon. Ananya Johansse",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Kang, 6abicla Member ID:               RVY663746919 Group Numbe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   IrinaAl-Farsi, V Relationship:           Sibling Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "Keisha Robetr Wisni ewski Date of Birth:          0B/1 3/64 Medical Record #:       mrn:7 790002 Social Secur",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "MRN",
-      "context": {
-        "surroundingText": "Birth:          0B/1 3/64 Medical Record #:       mrn:7 790002 Social Security #:      xxx-xx-9199 Admission Dat",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════ Patient Name:            aJAnyA maRgaREt bbUI Medical Record #:        REC: 1O6938B Date of Bir",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             AnDrEA mEyER Member ID:               AZP977031623 Group Numbe",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   gERTRUDE kATZ Date of Birth:          1979-01-16 Medical Record",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   CbristopherMcDonald Relationship:           Child Phone:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "════════════════════════  Patient Name:           Dmotri Fitzgerald Medical Record #:       id-780878| Date of Birth:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 3487754391                         DEA: NY4245540  First Assistant:        Hon. Shaniqua Nowak Anes",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     CARLOS G.  MILLER Preferred Name:                      Carlos Date",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                Maoi kMueeller Relationship:                        Friend Phone",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "LICENSE_PLATE",
-      "context": {
-        "surroundingText": "Gray License Plate:                       undefinedLL-3554 State:                               CO VIN (for",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "yon Court, El Paso, MT 78741-2323  RE:   Patient: nakamura , tyrone       DOB: 06/15 /196g       MRN: ME0-Z021 -93q69",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "2323  RE:   Patient: nakamura , tyrone       DOB: 06/15 /196g       MRN: ME0-Z021 -93q691S  Dear Mrs. Linh Mans",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "Mayo Clinic Department of Gastroenterology  Date: 10/5/s0z3  Mrs. Linh Mansour Health Partners 6926 Canyon Co",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "───────────────────────── Name:                   HanaK ely Date of Birth:          s/5Z /1938 Medical Record",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "HanaK ely Date of Birth:          s/5Z /1938 Medical Record #:       D1317Z444 Social Security",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "urity #:      881 54 4464 Admission Date:         B/25/23 Attending Physician:    Mrs. Sarah Chen-Wang Prim",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DATE",
-      "context": {
-        "surroundingText": "───────────────────────────── 1. Holter Monitor - 04/0 4/22 2. Appendectomy - 111/20/Z022  MEDICATIONS ──────",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "PHONE",
-      "context": {
-        "surroundingText": "est Place, mOaha, CT 9197 Home Phone:             5O9 2k9 51I5 Cell Phone:             (339) 030-2239 Email:",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "DEA",
-      "context": {
-        "surroundingText": "NPI: 2324907671                         DEA: EV1733689  First Assistant:        Ms. Zainab Moreau Anesth",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #1: Name:                                SvetlanaPham Relationship:                        Parent Phone",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "DICTIONARY_MISS",
-      "phiType": "NAME",
-      "context": {
-        "surroundingText": "CONTACT #2: Name:                                Steph@nie Jobanssno Relationship:                        Parent Phone",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "not_in_dictionary"
-      ],
-      "confidence": 0.7,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Add to dictionary or use fuzzy dictionary matching"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
-      "phiType": "SSN",
-      "context": {
-        "surroundingText": "01-1-91931 Social Security Number:              XXX-X X-9998 Age:                                 50 years  Se",
-        "documentType": "unknown",
-        "position": null
-      },
-      "indicators": [
-        "unmatched_pattern"
-      ],
-      "confidence": 0.5,
-      "timestamp": "2025-12-05T18:44:07.783Z",
-      "remediation": "Extend regex patterns to cover edge cases"
-    },
-    {
-      "type": "FALSE_NEGATIVE",
-      "category": "PATTERN_EDGE_CASE",
       "phiType": "LICENSE_PLATE",
       "context": {
         "surroundingText": "Blue License Plate:                       UGGundefined35 State:                               NY VIN (for",
@@ -15293,6 +13277,1948 @@
       "confidence": 0.7,
       "timestamp": "2025-12-05T22:40:26.855Z",
       "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "── 1. Vertebroplasty - 02/1/122 2. Appendectomy - 11/19/Z2  MEDICATIONS ────────────────────────────────────",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.500Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "+1 (797) 255-4407 Cell Phone:             5(05) 463-S872 Email:                  ndang@yahoo.com  EMERGENC",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════  Patient Name:           oGldbe4g , Penelope Medical Record #:       ACC: 2020-464617 Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 9193970634                         DEA: NJ1653496  First Assistant:        Hon. Beatrice Williams A",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "SSN",
+      "context": {
+        "surroundingText": "Parent SSN:                                 46G 79 6981 Phone:                               +1 (30q)228-",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "***-**-5395 Age:                                 98 years  Sex Assigned at Birth:               Male",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "Beech Terrace, Santa Fe, FL 57609  RE:   Patient: Keisha Lee Taylor       DOB: 07/04/9       MRN: MRN-202 1-267141  D",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "ee Taylor Date of Birth:  07/04/9 Age:            90 years Phone:          6s4 795 1602 Address:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "ZIPCODE",
+      "context": {
+        "surroundingText": "2 Address:        6g07 Summit Plaza, Rochester, OR41071  CLINICAL SUMMARY: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "───────────────────────── Name:                   LuisHill Date of Birth:          05/225/69 Medical Record",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "iversity Hospital Department of Hematology  Date: 87//23  Mr. Mary Kumar Health Partners 9881 Monroe Point",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "ZIPCODE",
+      "context": {
+        "surroundingText": "211P8 Address:        2894 Epm Run, Sacrmaento, ME87676  CLINICAL SUMMARY: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "23 /1947 Age:            59 years Phone:          b0284211P8 Address:        2894 Epm Run, Sacrmaento, ME87676",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════ Patient Name:            K@minski, M@tthcvv V. Medical Record #:        ID: 7070918 Date of Birt",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "71905 Atlanta, TX 54876  Statement Date:          2O24-06-17 Claim Number:            CLM-1765171144464-8636 M",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════  Patient Name:           Hassqn oJJhn Abboud Medical Record #:       REC2020 -740548 Date of B",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Charles A. Lopez Preferred Name:                      N/A Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "MRN",
+      "context": {
+        "surroundingText": "Moare, Elizabeth       DOB: 08-03-1959       MRN: pt: 621 1291  Dear Mrs. Santiago Dela Rosa,  Thank you for ref",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "er:            GRP-91599 Date of Birth:           1Z/05/94 Member Address:          2535 Morroe Tcrra(e, Boe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "19339-01-2B Medical Record #:       ACC-021-2948750 Social Security #:      136-3 2-5003 Admissio",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 5958927288                         DEA: VX8056971  First Assistant:        Ms. Hiroshi Anderson Ane",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "SSN",
+      "context": {
+        "surroundingText": "Guardian SSN:                                 ***-**-54G3 Phone:                               +1 442-799-4",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "dt, Aisha Date of Birth:  4/22/62 Age:            104 years Phone:          2456071126 Address:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             LAKSHMI MART INEZ Member ID:               UVN120615178 Group Numbe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━━━━┛  Blue Cross Blue Shield PO Box 45890 Phoenix, GA 62751  Statement Date:          5/11/",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 1771363944                         DEA: VB4632883  First Assistant:        Mr. Paul Nguyen Anesthes",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     NOWAK, W1LLlAM WILLIAM Preferred Name:                      William Date",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "LICENSE_PLATE",
+      "context": {
+        "surroundingText": "Silver License Plate:                       undefinedYH-5482 State:                               LA VIN (for",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Joshua orers Member ID:               MXF357973470 Group Numbe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════  Patient Name:           Dorofhy YYuang Medical Record #:       MEDZ023 -9Z861S! Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "ZIPCODE",
+      "context": {
+        "surroundingText": "Address:        7I00 WETS PARKVVAY, BA1TIMORE, PA 62043  CLINICAL SUMMARY: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "ADDRESS",
+      "context": {
+        "surroundingText": "ENT ADDRESS: Street Address:                      2004 Hospital Pass Apartment/Unit:                      N/A City, St",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "Luuis, V Date of Birth:  11/9/60 Age:            91 years Phone:          4121921917 Address:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     DANIEL MICHEL Preferred Name:                      N/A Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "/10/1932 Age:            42 years Phone:          4G43Z12317 Address:        363 Madison Pass, Fl 210, Madison",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "───────────────────────── Age:                    105 years old Sex:                    Female Race:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 8582992654                         DEA: WL8757133  First Assistant:        Mr. Elizabeth Sato Anest",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════ Patient Name:            ANTH9NY MOORE Medical Record #:        reC0g34892 Date of Birth",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "ed:           07/13/2020 Date of Report:          Z023-oZ-22 Requesting Physician:    Hon. Nguyen Goldberg, FA",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "A-LOPEZ, MARIANA MARGARET Date of Birth:          10-0S -20O6 Medical Record #:       eMD 629 503 Social Securi",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "I: 5096319538                         DEA: KJ5001894  First Assistant:        Hon. Millicent Rosen Ane",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 5096319538                         DEA: KJ5001894  First Assistant:        Hon. Millicent Rosen Ane",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     NAKAMURA, AMRY Preferred Name:                      N/A Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "e, Unit 992, Miami, OH 15374-3174  RE:   Patient: Rosehberq , 0aniel       DOB: 11-27-1993       MRN: MED44704415  Dea",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "ZIPCODE",
+      "context": {
+        "surroundingText": "s:        682 Mountain Meadows, Rm 699, enver, ME 42045-3445  CLINICAL SUMMARY: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "th:           01-12-1954 Age:                     92 years Sex:                     Female Account Num",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             ali AlxeAnder TORrES Member ID:               TNT870970760 Group Numbe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════ Patient Name:            Katya Ann Lauernt Medical Record #:        PT425828 Date of Birth:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "ecord #:        PT425828 Date of Birth:           1q74-O1-15 Age:                     38 years Sex:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Hortense Kang Member ID:               LFA418049354 Group Numbe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "ZIPCODE",
+      "context": {
+        "surroundingText": "ress:          2565 Fourth Road, Spring field, FL 84381  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "1-456-452-1926 Cell Phone:             543.3z0.9456 Email:                  aaliyahschmidt3@hotmail.c",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     ANDERsON, KEIKO JOHN Preferred Name:                      Keiko Date o",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "hodist Hospital Department of Neurosurgery  Date: 5/1 8/23  Mr. Nikolai Chen-Wang Specialty Associates 2732",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════ Patient Name:            EYER, 0LGA DNAIEL Medical Record #:        MED:2021-3775423 Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "ed:           04-05-2021 Date of Report:          64//23 Requesting Physician:    Dr. Hortense Lewandowski",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Michelle P. Jones Member ID:               BWG687118559 Group Numbe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 9065604442                         DEA: UL4477249  First Assistant:        Rev. Zainab Yoon Anesthe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     youssef, james Preferred Name:                      James Date o",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "orm ID: REG-1765171192231-2847 Registration Date: 5/1 9/23  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "Sycamore Court, Ithaca, MN 69626  RE:   Patient: WEI MCKENZIE       DOB: 195-03-16       MRN: ACC-2505238  Dear",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "CKENZIE Date of Birth:  195-03-16 Age:            90 years Phone:          (700)770-7666 Address:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "════════════════════════ Date of Collection:      o5-24-202Z Date Received:           o5-24-202Z Date of Repor",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Raj R. Habib Member ID:               ESP607685832 Group Numbe",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "───────────────────────── Name:                   daniel garcia Date of Birth:          1980-06-19 Medical Record",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 3585519614                         DEA: HG8322263  First Assistant:        Prof. Ali Cho Anesthesio",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Aaloyah Lewis Preferred Name:                      N/A Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "Spring Place, San Jose, DC 84774  RE:   Patient: RAJ O'SUlIVAN       DOB: /227/78       MRN: ME 9617833  Dear Ms",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "MRN",
+      "context": {
+        "surroundingText": "ient: RAJ O'SUlIVAN       DOB: /227/78       MRN: ME 9617833  Dear Ms. Elizabeth Schneider,  Thank you for ref",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "─────────────────────────────────── 1. V/Q Scan - 2/2/4202z 2. Hernia repair - 8/19/2018  MEDICATIONS ───────",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "ionship:           Spouse Phone:                  57.197 7.7375  INSURANCE INFORMATION ──────────────────────────",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "l Record #:       3496Z31 Date of Birth:          7/!0/64 Date of Surgery:        8/12 /2022 Account Number",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 8629768705                         DEA: UV6414769  First Assistant:        Rev. Christopher McKenzi",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "SSN",
+      "context": {
+        "surroundingText": "2/16/1951 Social Security Number:              XXX-XX-3B69 Age:                                 52 years  Se",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "ZIPCODE",
+      "context": {
+        "surroundingText": "523 Address:        8722 Tenth PIace, Oak|ahd, ME 86612  CLINICAL SUMMARY: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "════════════════════════  Patient Name:           Mansour , LaTonya Medical Record #:       ID2021-4139535 Date of Bi",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "ID2021-4139535 Date of Birth:          6/19/1969 Date of Surgery:        4/27/2023 Account Number",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DEA",
+      "context": {
+        "surroundingText": "NPI: 5279492439                         DEA: ER6048039  First Assistant:        Mrs. Nikolai Worthington",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "━━━━━━━━━━━  Legal Name (Last, First Middle):     PedroKowalczyk Preferred Name:                      N/A Date of",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "CONTACT #2: Name:                                Iv@n Lce, |I Relationship:                        Child Phone:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "818-341-6573 Phone (Alternate):                   411.Z6 5.2846 Address:                             3231 SpruceL",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "AGE_90_PLUS",
+      "context": {
+        "surroundingText": "yla A. Date of Birth:  11-06-1962 Age:            105 years Phone:          8308144617 Address:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "ived:           02/18/21 Date of Report:          02/1  8/24 Requesting Physician:    Mr. Sergei Smith, FACP",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "SSN",
+      "context": {
+        "surroundingText": "#:       MRN-2021-380138 Social Security #:      ***-* *-8144 Admission Date:         2023-01-21 Attending Phys",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "MRN",
+      "context": {
+        "surroundingText": "Tanaia, Sanjay Philip Medical Record #:       0T: 2330965 Date of Birth:          11/18/98 Date of Surgery:",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "DATE",
+      "context": {
+        "surroundingText": "N/A Date of Birth (MM/DD/YYYY):          04-0B-|95Z Social Security Number:              ***-**-3045",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "ONE NUMBERS: Home Phone:                          (832) 61-322S Cell Phone:                          811-843-5331",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "PATTERN_EDGE_CASE",
+      "phiType": "PHONE",
+      "context": {
+        "surroundingText": "Parent Phone:                               (497) 788- 9963  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "unmatched_pattern"
+      ],
+      "confidence": 0.5,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Extend regex patterns to cover edge cases"
+    },
+    {
+      "type": "FALSE_NEGATIVE",
+      "category": "DICTIONARY_MISS",
+      "phiType": "NAME",
+      "context": {
+        "surroundingText": "Lincoln Terrace, Tampa, AR 33703  RE:   Patient: jes sica iowalskii       DOB: 2/2/05       MRN: ID 20ZZ7- 965125  De",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [
+        "not_in_dictionary"
+      ],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to dictionary or use fuzzy dictionary matching"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "AGE_UNDER_90",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "PROCEDURE",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "PROCEDURE",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "MEDICATION",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "PROCEDURE",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "MEDICATION",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "HOSPITAL",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
+    },
+    {
+      "type": "FALSE_POSITIVE",
+      "category": "FALSE_POSITIVE",
+      "phiType": "DIAGNOSIS",
+      "context": {
+        "surroundingText": "",
+        "documentType": "unknown",
+        "position": null
+      },
+      "indicators": [],
+      "confidence": 0.7,
+      "timestamp": "2025-12-08T05:20:11.501Z",
+      "remediation": "Add to exclusion list or improve pattern specificity"
     }
   ],
   "successes": [],
@@ -15301,7 +15227,7 @@
       "type": "failure",
       "category": "DICTIONARY_MISS",
       "phiType": "NAME",
-      "count": 2556,
+      "count": 2586,
       "examples": [
         "unknown",
         "unknown",
@@ -15310,13 +15236,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:DATE": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "DATE",
-      "count": 1377,
+      "count": 1392,
       "examples": [
         "unknown",
         "unknown",
@@ -15325,13 +15251,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:MRN": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "MRN",
-      "count": 237,
+      "count": 240,
       "examples": [
         "unknown",
         "unknown",
@@ -15340,13 +15266,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:PHONE": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "PHONE",
-      "count": 409,
+      "count": 417,
       "examples": [
         "unknown",
         "unknown",
@@ -15355,13 +15281,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:SSN": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "SSN",
-      "count": 401,
+      "count": 405,
       "examples": [
         "unknown",
         "unknown",
@@ -15370,13 +15296,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:ADDRESS": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "ADDRESS",
-      "count": 403,
+      "count": 404,
       "examples": [
         "unknown",
         "unknown",
@@ -15385,13 +15311,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.854Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:DEA": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "DEA",
-      "count": 658,
+      "count": 667,
       "examples": [
         "unknown",
         "unknown",
@@ -15400,13 +15326,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:LICENSE_PLATE": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "LICENSE_PLATE",
-      "count": 239,
+      "count": 240,
       "examples": [
         "unknown",
         "unknown",
@@ -15415,13 +15341,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:AGE_90_PLUS": {
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "AGE_90_PLUS",
-      "count": 187,
+      "count": 199,
       "examples": [
         "unknown",
         "unknown",
@@ -15430,7 +15356,7 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.707Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:VIN": {
       "type": "failure",
@@ -15451,7 +15377,7 @@
       "type": "failure",
       "category": "PATTERN_EDGE_CASE",
       "phiType": "ZIPCODE",
-      "count": 25,
+      "count": 31,
       "examples": [
         "unknown",
         "unknown",
@@ -15460,13 +15386,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.708Z",
-      "lastSeen": "2025-12-05T22:40:26.854Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:FALSE_POSITIVE:AGE_UNDER_90": {
       "type": "failure",
       "category": "FALSE_POSITIVE",
       "phiType": "AGE_UNDER_90",
-      "count": 786,
+      "count": 787,
       "examples": [
         "unknown",
         "unknown",
@@ -15475,13 +15401,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.708Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:FALSE_POSITIVE:DIAGNOSIS": {
       "type": "failure",
       "category": "FALSE_POSITIVE",
       "phiType": "DIAGNOSIS",
-      "count": 1037,
+      "count": 1057,
       "examples": [
         "unknown",
         "unknown",
@@ -15490,13 +15416,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.708Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:FALSE_POSITIVE:HOSPITAL": {
       "type": "failure",
       "category": "FALSE_POSITIVE",
       "phiType": "HOSPITAL",
-      "count": 597,
+      "count": 608,
       "examples": [
         "unknown",
         "unknown",
@@ -15505,13 +15431,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.708Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:FALSE_POSITIVE:PROCEDURE": {
       "type": "failure",
       "category": "FALSE_POSITIVE",
       "phiType": "PROCEDURE",
-      "count": 170,
+      "count": 173,
       "examples": [
         "unknown",
         "unknown",
@@ -15520,13 +15446,13 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.708Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:FALSE_POSITIVE:MEDICATION": {
       "type": "failure",
       "category": "FALSE_POSITIVE",
       "phiType": "MEDICATION",
-      "count": 58,
+      "count": 60,
       "examples": [
         "unknown",
         "unknown",
@@ -15535,7 +15461,7 @@
         "unknown"
       ],
       "firstSeen": "2025-12-05T06:07:07.708Z",
-      "lastSeen": "2025-12-05T22:40:26.855Z"
+      "lastSeen": "2025-12-08T05:20:11.501Z"
     },
     "failure:PATTERN_EDGE_CASE:FAX": {
       "type": "failure",
@@ -15553,5 +15479,5 @@
       "lastSeen": "2025-12-05T22:40:26.854Z"
     }
   },
-  "lastUpdated": "2025-12-05T22:40:26.855Z"
+  "lastUpdated": "2025-12-08T05:20:11.501Z"
 }

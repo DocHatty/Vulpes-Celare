@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmartNameFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
+const NameDictionary_1 = require("../dictionaries/NameDictionary");
 const NameFilterConstants_1 = require("./constants/NameFilterConstants");
 const DocumentVocabulary_1 = require("../vocabulary/DocumentVocabulary");
 const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
@@ -64,6 +65,9 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // Pattern 15: CHAOS-AWARE labeled names with adaptive confidence
         // Catches chaotic OCR like "pATriCIA L. jOHNsOn" when preceded by labels
         this.detectChaosAwareLabeledNames(text, spans);
+        // Pattern 16: CamelCase concatenated names (LuisHill, PedroKowalczyk)
+        // Catches names where space between first/last was lost in OCR or data entry
+        this.detectCamelCaseNames(text, spans);
         return spans;
     }
     // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
@@ -572,39 +576,39 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             // Catches: "aNDREA bUI", "arjun al-fasri", "Ka rer Kim-Pqrk", "vladimir p. wrighf"
             {
                 regex: /\b([a-zA-Z][a-zA-Z\s.'-]{1,40})\s+([a-zA-Z][a-zA-Z\s.'-]{1,40})\b/g,
-                confidence: 0.80,
-                note: "ultra-permissive mixed case"
+                confidence: 0.8,
+                note: "ultra-permissive mixed case",
             },
             // Space before comma: "Le , Sanjay"
             {
                 regex: /\b([A-Z][a-z]+)\s+,\s+([A-Z][a-z]+)\b/g,
                 confidence: 0.88,
-                note: "space before comma"
+                note: "space before comma",
             },
             // Last, First with optional spaces around comma: "Torres , Wilferd"
             {
                 regex: /\b([A-Za-z][A-Za-z\s.'-]{1,30})\s*,\s*([A-Za-z][A-Za-z\s.'-]{1,30})\b/g,
                 confidence: 0.87,
-                note: "Last, First with spaces"
+                note: "Last, First with spaces",
             },
             // OCR comma in wrong place: "Wals,h Ali" or "Hajid,R aj"
             {
                 regex: /\b([A-Z][a-z]{1,10}),([a-z]{1,10})\s+([A-Z][a-z]+(?:\s+[A-Z]\.?)?)\b/g,
                 confidence: 0.88,
-                note: "comma misplaced"
+                note: "comma misplaced",
             },
             // OCR digits in names: "J0nse", "ZHAN6", "Wilferd" (f→d)
             {
                 regex: /\b([A-Z][a-z0-9]{2,20}),\s*([A-Z][a-z0-9\s]{2,})\b/gi,
-                confidence: 0.90,
-                note: "digits in name"
+                confidence: 0.9,
+                note: "digits in name",
             },
             // ALL CAPS with OCR digits: "ZHAN6, SUSAN"
             {
                 regex: /\b([A-Z0-9]{2,20}),\s+([A-Z][A-Z\s]+)\b/g,
                 confidence: 0.92,
-                note: "ALL CAPS with OCR"
-            }
+                note: "ALL CAPS with OCR",
+            },
         ];
         for (const patternObj of patterns) {
             const pattern = patternObj.regex;
@@ -655,24 +659,24 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      */
     normalizeNameOcr(name) {
         return name
-            .replace(/0/g, 'o')
-            .replace(/1/g, 'l')
-            .replace(/6/g, 'G')
-            .replace(/5/g, 'S')
-            .replace(/8/g, 'B')
+            .replace(/0/g, "o")
+            .replace(/1/g, "l")
+            .replace(/6/g, "G")
+            .replace(/5/g, "S")
+            .replace(/8/g, "B")
             .toUpperCase();
     }
     /**
      * Quick heuristic to check if a string is likely a person name
      */
     isLikelyOcrName(normalized, text, position) {
-        const clean = normalized.replace(/[,.\s]/g, '').toUpperCase();
+        const clean = normalized.replace(/[,.\s]/g, "").toUpperCase();
         if (clean.length < 4)
             return false;
         // PHASE 1: Dictionary validation - check EACH word
-        const words = normalized.split(/\s+/).filter(w => w.length > 2);
+        const words = normalized.split(/\s+/).filter((w) => w.length > 2);
         for (const word of words) {
-            const cleanWord = word.replace(/[^a-zA-Z]/g, '');
+            const cleanWord = word.replace(/[^a-zA-Z]/g, "");
             // Check against medical term dictionary
             if (DocumentVocabulary_1.DocumentVocabulary.isMedicalTerm(cleanWord)) {
                 return false;
@@ -683,7 +687,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             }
         }
         // Check full phrase against dictionary
-        const cleanPhrase = normalized.replace(/[^a-zA-Z\s]/g, '').trim();
+        const cleanPhrase = normalized.replace(/[^a-zA-Z\s]/g, "").trim();
         if (DocumentVocabulary_1.DocumentVocabulary.isMedicalTerm(cleanPhrase)) {
             return false;
         }
@@ -1174,7 +1178,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             /CONTACT\s+#?\d*:?\s*Name:\s*/gi,
         ];
         // Track already-detected positions to avoid duplicates
-        const detectedPositions = new Set(spans.map(s => `${s.characterStart}-${s.characterEnd}`));
+        const detectedPositions = new Set(spans.map((s) => `${s.characterStart}-${s.characterEnd}`));
         for (const labelPattern of labelPatterns) {
             labelPattern.lastIndex = 0;
             let match;
@@ -1196,11 +1200,10 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 if (detectedPositions.has(posKey))
                     continue;
                 // Skip if too short
-                if (capturedName.replace(/[\s,.'-]/g, '').length < 3)
+                if (capturedName.replace(/[\s,.'-]/g, "").length < 3)
                     continue;
                 // Calculate confidence based on chaos level and case pattern
-                const confidence = OcrChaosDetector_1.OcrChaosDetector.calculateNameConfidence(capturedName, chaosAnalysis.score, true // hasLabel = true - big boost
-                );
+                const confidence = OcrChaosDetector_1.OcrChaosDetector.calculateNameConfidence(capturedName, chaosAnalysis.score, true);
                 // Skip if confidence too low (even with label boost)
                 if (confidence < 0.55)
                     continue;
@@ -1229,6 +1232,102 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 spans.push(span);
                 detectedPositions.add(posKey);
             }
+        }
+    }
+    /**
+     * Pattern 16: CamelCase Concatenated Names
+     *
+     * Detects names where the space between first and last name was lost,
+     * resulting in CamelCase patterns like "LuisHill", "PedroKowalczyk", "MaryJohnson".
+     *
+     * This is common in:
+     * - OCR errors where space wasn't detected
+     * - Data entry errors
+     * - System exports with concatenated names
+     *
+     * The pattern looks for: CapitalLowercase + CapitalLowercase (2+ chars each)
+     * Examples: LuisHill, PedroKowalczyk, JohnSmith, MaryAnn (if last name follows)
+     */
+    detectCamelCaseNames(text, spans) {
+        // Pattern: Two capitalized name parts concatenated without space
+        // Each part must be: Capital letter + 2+ lowercase letters
+        // Minimum total length of 6 to avoid false positives
+        const camelCasePattern = /\b([A-Z][a-z]{2,})([A-Z][a-z]{2,})\b/g;
+        // Track already-detected positions to avoid duplicates
+        const detectedPositions = new Set(spans.map((s) => `${s.characterStart}-${s.characterEnd}`));
+        let match;
+        while ((match = camelCasePattern.exec(text)) !== null) {
+            const firstName = match[1];
+            const lastName = match[2];
+            const fullMatch = match[0];
+            const matchIndex = match.index;
+            // Skip if already detected at this position
+            const posKey = `${matchIndex}-${matchIndex + fullMatch.length}`;
+            if (detectedPositions.has(posKey))
+                continue;
+            // Validate: each part should be at least 3 chars
+            if (firstName.length < 3 || lastName.length < 3)
+                continue;
+            // Validate: total length should be reasonable (6-30 chars)
+            if (fullMatch.length < 6 || fullMatch.length > 30)
+                continue;
+            // Skip if this is in a provider context
+            if (this.isInProviderContext(fullMatch, matchIndex, text))
+                continue;
+            // Check both parts against name dictionary for validation
+            const firstNameLower = firstName.toLowerCase();
+            const lastNameLower = lastName.toLowerCase();
+            // Skip if either part is a medical term or whitelisted
+            if (DocumentVocabulary_1.DocumentVocabulary.isMedicalTerm(firstName) ||
+                DocumentVocabulary_1.DocumentVocabulary.isMedicalTerm(lastName))
+                continue;
+            if (FieldLabelWhitelist_1.FieldLabelWhitelist.shouldExclude(firstName) ||
+                FieldLabelWhitelist_1.FieldLabelWhitelist.shouldExclude(lastName))
+                continue;
+            // Check against name dictionary for higher confidence
+            const firstIsName = NameDictionary_1.NameDictionary.isFirstName(firstNameLower);
+            const lastIsName = NameDictionary_1.NameDictionary.isLastName(lastNameLower);
+            // Calculate confidence based on dictionary matches
+            let confidence = 0.75; // Base confidence for CamelCase pattern
+            if (firstIsName && lastIsName) {
+                confidence = 0.92; // High confidence - both parts are known names
+            }
+            else if (firstIsName || lastIsName) {
+                confidence = 0.85; // Medium-high - one part is a known name
+            }
+            // Additional validation: check context for name indicators
+            const contextStart = Math.max(0, matchIndex - 50);
+            const contextEnd = Math.min(text.length, matchIndex + fullMatch.length + 50);
+            const context = text.substring(contextStart, contextEnd).toLowerCase();
+            // Boost confidence if near name-related labels
+            if (/\b(patient|name|member|contact|spouse|guardian)\b/.test(context)) {
+                confidence = Math.min(0.95, confidence + 0.05);
+            }
+            // Skip low-confidence matches that aren't in name dictionaries
+            if (confidence < 0.8 && !firstIsName && !lastIsName)
+                continue;
+            // Create the span - store the original concatenated form
+            // The separated form would be: firstName + " " + lastName
+            const span = new Span_1.Span({
+                text: fullMatch,
+                originalValue: fullMatch,
+                characterStart: matchIndex,
+                characterEnd: matchIndex + fullMatch.length,
+                filterType: Span_1.FilterType.NAME,
+                confidence: confidence,
+                priority: this.getPriority(),
+                context: this.getContext(text, matchIndex, fullMatch.length),
+                window: [],
+                replacement: null,
+                salt: null,
+                pattern: "CamelCase concatenated name",
+                applied: false,
+                ignored: false,
+                ambiguousWith: [],
+                disambiguationScore: null,
+            });
+            spans.push(span);
+            detectedPositions.add(posKey);
         }
     }
     /**
