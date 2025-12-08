@@ -192,7 +192,8 @@ class VulpesAgent {
     // MAIN ENTRY POINT
     // ══════════════════════════════════════════════════════════════════════════
     async start() {
-        this.printBanner();
+        // Banner is now printed by launcher, don't duplicate
+        // this.printBanner();
         // Auto-vulpesify if enabled
         if (this.config.autoVulpesify) {
             await this.ensureVulpesified();
@@ -358,13 +359,24 @@ class VulpesAgent {
     // SPAWN EXTERNAL AGENT
     // ══════════════════════════════════════════════════════════════════════════
     async spawnAgent(cmd, args, env) {
+        // Build command string to avoid DEP0190 deprecation warning
+        // (passing args with shell: true triggers the warning)
+        const escapedArgs = args.map((arg) => {
+            // Escape quotes and wrap in quotes if contains spaces
+            if (arg.includes(" ") || arg.includes('"')) {
+                return `"${arg.replace(/"/g, '\\"')}"`;
+            }
+            return arg;
+        });
+        const fullCommand = `${cmd} ${escapedArgs.join(" ")}`;
         const spawnOptions = {
             cwd: this.config.workingDir,
             stdio: "inherit",
             shell: true,
             env,
         };
-        this.subprocess = (0, child_process_1.spawn)(cmd, args, spawnOptions);
+        // Use command string instead of args array to avoid deprecation
+        this.subprocess = (0, child_process_1.spawn)(fullCommand, [], spawnOptions);
         this.subprocess.on("error", (err) => {
             console.error(theme.error(`\n  Failed to start ${cmd}: ${err.message}`));
             console.log(theme.muted(`  Make sure ${cmd} is installed and in your PATH\n`));

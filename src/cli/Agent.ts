@@ -208,7 +208,8 @@ export class VulpesAgent {
   // ══════════════════════════════════════════════════════════════════════════
 
   async start(): Promise<void> {
-    this.printBanner();
+    // Banner is now printed by launcher, don't duplicate
+    // this.printBanner();
 
     // Auto-vulpesify if enabled
     if (this.config.autoVulpesify) {
@@ -452,6 +453,17 @@ export class VulpesAgent {
     args: string[],
     env: NodeJS.ProcessEnv,
   ): Promise<void> {
+    // Build command string to avoid DEP0190 deprecation warning
+    // (passing args with shell: true triggers the warning)
+    const escapedArgs = args.map((arg) => {
+      // Escape quotes and wrap in quotes if contains spaces
+      if (arg.includes(" ") || arg.includes('"')) {
+        return `"${arg.replace(/"/g, '\\"')}"`;
+      }
+      return arg;
+    });
+    const fullCommand = `${cmd} ${escapedArgs.join(" ")}`;
+
     const spawnOptions: SpawnOptions = {
       cwd: this.config.workingDir,
       stdio: "inherit",
@@ -459,7 +471,8 @@ export class VulpesAgent {
       env,
     };
 
-    this.subprocess = spawn(cmd, args, spawnOptions);
+    // Use command string instead of args array to avoid deprecation
+    this.subprocess = spawn(fullCommand, [], spawnOptions);
 
     this.subprocess.on("error", (err) => {
       console.error(theme.error(`\n  Failed to start ${cmd}: ${err.message}`));

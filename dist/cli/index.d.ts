@@ -16,6 +16,7 @@
  * @module CLI
  * @version 1.0.0
  */
-declare const program: any;
+import { Command } from "commander";
+declare const program: Command;
 export { program };
 //# sourceMappingURL=index.d.ts.map

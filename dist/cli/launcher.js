@@ -199,7 +199,7 @@ async function showAgentSubmenu() {
             desc: [
                 "OpenAI's code-focused CLI",
                 "Best for: Quick code generation, explanations",
-                "Auto-injects: AGENTS.md, config.toml MCP",
+                "Auto-injects: CLAUDE.md, config.toml MCP",
             ],
         },
         {

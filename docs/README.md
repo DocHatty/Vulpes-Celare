@@ -33,6 +33,7 @@
 |----------|-------------|
 | [internal/ASSESSMENT-SUMMARY.md](internal/ASSESSMENT-SUMMARY.md) | Quick system assessment summary |
 | [internal/COMPREHENSIVE-ASSESSMENT.md](internal/COMPREHENSIVE-ASSESSMENT.md) | Full implementation assessment |
+| [internal/IMPLEMENTATION_PLAN.md](internal/IMPLEMENTATION_PLAN.md) | Performance overhaul implementation plan |
 
 ---
 
