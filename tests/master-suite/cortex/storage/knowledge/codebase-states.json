@@ -118,13 +118,34 @@
       "filterCount": 29,
       "dictionaryCount": 7,
       "hash": "58d479ca9223d433"
+    },
+    {
+      "id": "STATE-1765170614928",
+      "timestamp": "2025-12-08T05:10:14.928Z",
+      "filterCount": 28,
+      "dictionaryCount": 8,
+      "hash": "845ef2d5af836b43"
+    },
+    {
+      "id": "STATE-1765172972308",
+      "timestamp": "2025-12-08T05:49:32.308Z",
+      "filterCount": 28,
+      "dictionaryCount": 8,
+      "hash": "e92eaa7a47ba8e32"
+    },
+    {
+      "id": "STATE-1765173702117",
+      "timestamp": "2025-12-08T06:01:42.117Z",
+      "filterCount": 28,
+      "dictionaryCount": 8,
+      "hash": "9a87dd3989fcdb11"
     }
   ],
   "current": {
-    "id": "STATE-1765127819311",
-    "timestamp": "2025-12-07T17:16:59.311Z",
+    "id": "STATE-1765173702117",
+    "timestamp": "2025-12-08T06:01:42.117Z",
     "filters": {
-      "count": 29,
+      "count": 28,
       "filters": [
         {
           "name": "AccountNumberFilterSpan",
@@ -853,69 +874,6 @@
           "hash": "bd1f4a0ef614"
         },
         {
-          "name": "FinalNameCleanupFilter",
-          "file": "FinalNameCleanupFilter.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\FinalNameCleanupFilter.ts",
-          "phiType": "NAME",
-          "patterns": [
-            {
-              "type": "regex",
-              "pattern": "/\\{\\{NAME_[^}]+\\}\\}/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Remove invalid tokens (restore original value)"
-            },
-            {
-              "type": "regex",
-              "pattern": "new RegExp(this.escapeRegex(token), \"g\")"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Filter 0: Exact match false positive list (document structure phrases)"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Document titles/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Professional titles/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Signature/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/^[A-Z\\s]+$/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Filter 3: Too short (less than 5 chars)"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Filter 5: Ends with trailing words (captured too much)"
-            }
-          ],
-          "capabilities": [
-            "CONTEXT_AWARE",
-            "CASE_INSENSITIVE"
-          ],
-          "configOptions": [],
-          "complexity": {
-            "level": "HIGH",
-            "lines": 234,
-            "conditionals": 12,
-            "loops": 7,
-            "functions": 0
-          },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 5951,
-          "hash": "4e3ab77524dc"
-        },
-        {
           "name": "FormattedNameFilterSpan",
           "file": "FormattedNameFilterSpan.ts",
           "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\FormattedNameFilterSpan.ts",
@@ -1478,14 +1436,14 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 1560,
+            "lines": 1582,
             "conditionals": 75,
             "loops": 31,
             "functions": 11
           },
-          "lastModified": "2025-12-05T21:33:58.249Z",
-          "size": 53033,
-          "hash": "56bd40af20be"
+          "lastModified": "2025-12-08T05:58:36.286Z",
+          "size": 53157,
+          "hash": "4b715041497c"
         },
         {
           "name": "SSNFilterSpan",
@@ -1887,7 +1845,6 @@
         ],
         "NAME": [
           "FamilyNameFilterSpan",
-          "FinalNameCleanupFilter",
           "FormattedNameFilterSpan",
           "SmartNameFilterSpan",
           "TitledNameFilterSpan"
@@ -1960,8 +1917,6 @@
         "CONFIDENCE_SCORING",
         "CONTEXT_AWARE",
         "CONTEXT_AWARE",
-        "CONTEXT_AWARE",
-        "CASE_INSENSITIVE",
         "OCR_TOLERANCE",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
@@ -2009,7 +1964,7 @@
       ]
     },
     "dictionaries": {
-      "count": 7,
+      "count": 8,
       "dictionaries": [
         {
           "name": "cities.txt",
@@ -2026,6 +1981,15 @@
             "houston\r",
             "philadelphia\r"
           ]
+        },
+        {
+          "name": "FastFuzzyMatcher.ts",
+          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\FastFuzzyMatcher.ts",
+          "type": "OTHER",
+          "size": 15541,
+          "lastModified": "2025-12-08T03:42:35.535Z",
+          "hash": "612f05dcd3ff",
+          "isCodeFile": true
         },
         {
           "name": "first-names.txt",
@@ -2047,9 +2011,9 @@
           "name": "FuzzyDictionaryMatcher.ts",
           "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\FuzzyDictionaryMatcher.ts",
           "type": "OTHER",
-          "size": 15771,
-          "lastModified": "2025-12-06T14:39:20.282Z",
-          "hash": "8934a9a7439f",
+          "size": 18784,
+          "lastModified": "2025-12-08T03:45:35.586Z",
+          "hash": "5b86ca0320cc",
           "isCodeFile": true
         },
         {
@@ -2081,9 +2045,9 @@
           "name": "NameDictionary.ts",
           "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\NameDictionary.ts",
           "type": "OTHER",
-          "size": 9849,
-          "lastModified": "2025-12-04T04:08:21.758Z",
-          "hash": "c84c9517b25c",
+          "size": 12367,
+          "lastModified": "2025-12-08T06:00:28.595Z",
+          "hash": "0ea330d3f5c3",
           "isCodeFile": true
         },
         {
@@ -2111,19 +2075,20 @@
           ],
           "totalEntries": 1000
         },
-        "FIRST_NAMES": {
-          "files": [
-            "first-names.txt"
-          ],
-          "totalEntries": 30460
-        },
         "OTHER": {
           "files": [
+            "FastFuzzyMatcher.ts",
             "FuzzyDictionaryMatcher.ts",
             "HospitalDictionary.ts",
             "NameDictionary.ts"
           ],
           "totalEntries": 0
+        },
+        "FIRST_NAMES": {
+          "files": [
+            "first-names.txt"
+          ],
+          "totalEntries": 30460
         },
         "HOSPITALS": {
           "files": [
@@ -2141,6 +2106,16 @@
     },
     "pipeline": {
       "stages": [
+        {
+          "name": "ConfidenceCalibrator",
+          "file": "ConfidenceCalibrator.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "CrossTypeReasoner",
+          "file": "CrossTypeReasoner.ts",
+          "type": "CORE"
+        },
         {
           "name": "EnhancedPHIDetector",
           "file": "EnhancedPHIDetector.ts",
@@ -2167,6 +2142,11 @@
           "type": "CORE"
         },
         {
+          "name": "MLWeightOptimizer",
+          "file": "MLWeightOptimizer.ts",
+          "type": "CORE"
+        },
+        {
           "name": "ParallelRedactionEngine",
           "file": "ParallelRedactionEngine.ts",
           "type": "CORE"
@@ -2184,6 +2164,11 @@
         {
           "name": "SpanFactory",
           "file": "SpanFactory.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "WeightedPHIScorer",
+          "file": "WeightedPHIScorer.ts",
           "type": "CORE"
         }
       ],
@@ -2248,7 +2233,6 @@
       "filters\\FamilyNameFilterSpan.ts": "f7a35c22c01c",
       "filters\\FaxNumberFilterSpan.ts": "41a22146bd43",
       "filters\\FilterRegistry.ts": "bd1f4a0ef614",
-      "filters\\FinalNameCleanupFilter.ts": "4e3ab77524dc",
       "filters\\FormattedNameFilterSpan.ts": "991316ea9ecd",
       "filters\\HealthPlanNumberFilterSpan.ts": "294d1a70ed9e",
       "filters\\HospitalFilterSpan.ts": "307a518ecff7",
@@ -2258,7 +2242,7 @@
       "filters\\NPIFilterSpan.ts": "b612e683921b",
       "filters\\PassportNumberFilterSpan.ts": "88eb679f5d95",
       "filters\\PhoneFilterSpan.ts": "eb16c64b3177",
-      "filters\\SmartNameFilterSpan.ts": "56bd40af20be",
+      "filters\\SmartNameFilterSpan.ts": "4b715041497c",
       "filters\\SSNFilterSpan.ts": "9b68cd06a0c0",
       "filters\\TitledNameFilterSpan.ts": "cfd2ef5da898",
       "filters\\UniqueIdentifierFilterSpan.ts": "03d162985667",
@@ -2266,23 +2250,28 @@
       "filters\\VehicleIdentifierFilterSpan.ts": "9953f86eb1ef",
       "filters\\ZipCodeFilterSpan.ts": "8e267f417d66",
       "dictionaries\\cities.txt": "cefa96a8e1e1",
+      "dictionaries\\FastFuzzyMatcher.ts": "612f05dcd3ff",
       "dictionaries\\first-names.txt": "af46f90c51a9",
-      "dictionaries\\FuzzyDictionaryMatcher.ts": "8934a9a7439f",
+      "dictionaries\\FuzzyDictionaryMatcher.ts": "5b86ca0320cc",
       "dictionaries\\HospitalDictionary.ts": "aece2d1ea0be",
       "dictionaries\\hospitals.txt": "8569e18cda52",
-      "dictionaries\\NameDictionary.ts": "c84c9517b25c",
+      "dictionaries\\NameDictionary.ts": "0ea330d3f5c3",
       "dictionaries\\surnames.txt": "96c58da18b92",
+      "core\\ConfidenceCalibrator.ts": "d38b4c7be09a",
+      "core\\CrossTypeReasoner.ts": "ffaaff8d9da4",
       "core\\EnhancedPHIDetector.ts": "e96cfffeb6d4",
-      "core\\EnsembleVoter.ts": "0f85ed2b2e84",
+      "core\\EnsembleVoter.ts": "e2fcd4fd813b",
       "core\\FieldContextDetector.ts": "464a978703e2",
       "core\\FieldLabelWhitelist.ts": "9fca018d148c",
       "core\\FilterAdapter.ts": "15e4f3fa1fce",
-      "core\\ParallelRedactionEngine.ts": "e86ad1e338f7",
+      "core\\MLWeightOptimizer.ts": "984aa8156773",
+      "core\\ParallelRedactionEngine.ts": "976e94e2f9c6",
       "core\\SpanBasedFilter.ts": "60b4b6fcb8c4",
-      "core\\SpanEnhancer.ts": "4c0eae1c7d27",
+      "core\\SpanEnhancer.ts": "c554fbce1ca9",
       "core\\SpanFactory.ts": "71d3fc6183ba",
-      "services\\ConfidenceModifierService.ts": "a570fdd2becb",
-      "services\\index.ts": "4a2b60a55c10",
+      "core\\WeightedPHIScorer.ts": "8e4db172b73b",
+      "services\\ConfidenceModifierService.ts": "d0aacd6c458e",
+      "services\\index.ts": "7e15643e4078",
       "services\\ReplacementContextService.ts": "ce309f267127",
       "services\\SpanDisambiguationService.ts": "5af9abf375ce",
       "services\\VectorDisambiguationService.ts": "4ae052f4554e",
@@ -2290,9 +2279,9 @@
       "VulpesCelare.ts": "f5754f324e2c"
     },
     "summary": {
-      "timestamp": "2025-12-07T17:16:59.311Z",
+      "timestamp": "2025-12-08T06:01:42.117Z",
       "filters": {
-        "total": 29,
+        "total": 28,
         "byType": 23,
         "gaps": [
           "IP",
@@ -2306,21 +2295,21 @@
         ]
       },
       "dictionaries": {
-        "total": 7,
+        "total": 8,
         "totalEntries": 201103,
         "types": [
           "CITIES",
-          "FIRST_NAMES",
           "OTHER",
+          "FIRST_NAMES",
           "HOSPITALS",
           "SURNAMES"
         ]
       },
       "pipeline": {
-        "stages": 9,
+        "stages": 13,
         "services": 5
       },
-      "codebaseHash": "58d479ca9223d433"
+      "codebaseHash": "9a87dd3989fcdb11"
     }
   }
 }

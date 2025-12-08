@@ -50,6 +50,8 @@
   "dependencies": {
     "@flatten-js/interval-tree": "^2.0.3",
     "bloom-filters": "^3.0.4",
+    "double-metaphone": "^2.0.1",
+    "fastest-levenshtein": "^1.0.16",
     "lru-cache": "^11.2.4"
   }
 }

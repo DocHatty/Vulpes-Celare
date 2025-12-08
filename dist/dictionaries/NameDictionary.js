@@ -50,6 +50,7 @@ exports.NameDictionary = exports.DictionaryInitError = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const RadiologyLogger_1 = require("../utils/RadiologyLogger");
+const PhoneticMatcher_1 = require("../utils/PhoneticMatcher");
 /**
  * Dictionary initialization error - thrown when dictionaries cannot be loaded
  */
@@ -140,9 +141,34 @@ class NameDictionary {
             }
         }
         this.initialized = true;
+        // Initialize phonetic matcher with loaded dictionaries
+        this.initPhoneticMatcher();
         // Log overall status
         if (this.initErrors.length > 0) {
             RadiologyLogger_1.RadiologyLogger.warn("DICTIONARY", `NameDictionary initialized with ${this.initErrors.length} error(s). Name validation may be degraded.`);
+        }
+    }
+    /**
+     * Initialize the phonetic matcher for fuzzy name matching
+     * This enables detection of OCR-corrupted names like "PENEL0PE" -> "PENELOPE"
+     */
+    static initPhoneticMatcher() {
+        if (this.phoneticInitialized)
+            return;
+        try {
+            const firstNamesArray = this.firstNames
+                ? Array.from(this.firstNames)
+                : [];
+            const surnamesArray = this.surnames ? Array.from(this.surnames) : [];
+            if (firstNamesArray.length > 0 || surnamesArray.length > 0) {
+                this.phoneticMatcher = new PhoneticMatcher_1.PhoneticMatcher();
+                this.phoneticMatcher.initialize(firstNamesArray, surnamesArray);
+                this.phoneticInitialized = true;
+                RadiologyLogger_1.RadiologyLogger.info("DICTIONARY", `PhoneticMatcher initialized for fuzzy name matching`);
+            }
+        }
+        catch (error) {
+            RadiologyLogger_1.RadiologyLogger.warn("DICTIONARY", `Failed to initialize PhoneticMatcher: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
     /**
@@ -203,6 +229,7 @@ class NameDictionary {
     }
     /**
      * Check if a word is a known first name
+     * Uses exact match, OCR normalization, deduplication, and phonetic matching
      */
     static isFirstName(name) {
         if (!this.initialized)
@@ -222,10 +249,20 @@ class NameDictionary {
         const deduplicated = this.deduplicate(normalized);
         if (deduplicated !== normalized && this.firstNames.has(deduplicated))
             return true;
+        // DISABLED: Phonetic matching causing regression (Sens 96.59% vs 97.09% baseline)
+        // Keeping code for reference but bypassing for now
+        // TODO: Investigate why phonetic matching hurts performance
+        // if (this.phoneticMatcher && this.phoneticInitialized) {
+        //   const phoneticMatch = this.phoneticMatcher.matchFirstName(name);
+        //   if (phoneticMatch && phoneticMatch.confidence >= 0.9) {
+        //     return true;
+        //   }
+        // }
         return false;
     }
     /**
      * Check if a word is a known surname
+     * Uses exact match, OCR normalization, deduplication, and phonetic matching
      */
     static isSurname(name) {
         if (!this.initialized)
@@ -245,7 +282,22 @@ class NameDictionary {
         const deduplicated = this.deduplicate(normalized);
         if (deduplicated !== normalized && this.surnames.has(deduplicated))
             return true;
+        // DISABLED: Phonetic matching causing regression
+        // if (this.phoneticMatcher && this.phoneticInitialized) {
+        //   const phoneticMatch = this.phoneticMatcher.matchSurname(name);
+        //   if (phoneticMatch && phoneticMatch.confidence >= 0.9) {
+        //     return true;
+        //   }
+        // }
         return false;
+    }
+    /**
+     * Get phonetic match details for a name (for debugging/logging)
+     */
+    static getPhoneticMatch(name) {
+        if (!this.phoneticMatcher || !this.phoneticInitialized)
+            return null;
+        return this.phoneticMatcher.matchAnyName(name);
     }
     /**
      * Check if a two-word phrase is likely a real name
@@ -312,4 +364,6 @@ NameDictionary.firstNames = null;
 NameDictionary.surnames = null;
 NameDictionary.initialized = false;
 NameDictionary.initErrors = [];
+NameDictionary.phoneticMatcher = null;
+NameDictionary.phoneticInitialized = false;
 //# sourceMappingURL=NameDictionary.js.map

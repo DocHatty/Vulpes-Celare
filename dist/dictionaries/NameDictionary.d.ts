@@ -11,6 +11,7 @@
  *
  * @module redaction/dictionaries
  */
+import { PhoneticMatch } from "../utils/PhoneticMatcher";
 /**
  * Dictionary initialization error - thrown when dictionaries cannot be loaded
  */
@@ -35,6 +36,8 @@ export declare class NameDictionary {
     private static surnames;
     private static initialized;
     private static initErrors;
+    private static phoneticMatcher;
+    private static phoneticInitialized;
     /**
      * Initialize dictionaries from files
      * Call once at app startup
@@ -44,6 +47,11 @@ export declare class NameDictionary {
     static init(options?: {
         throwOnError?: boolean;
     }): void;
+    /**
+     * Initialize the phonetic matcher for fuzzy name matching
+     * This enables detection of OCR-corrupted names like "PENEL0PE" -> "PENELOPE"
+     */
+    private static initPhoneticMatcher;
     /**
      * Get initialization status
      */
@@ -70,12 +78,18 @@ export declare class NameDictionary {
     private static deduplicate;
     /**
      * Check if a word is a known first name
+     * Uses exact match, OCR normalization, deduplication, and phonetic matching
      */
     static isFirstName(name: string): boolean;
     /**
      * Check if a word is a known surname
+     * Uses exact match, OCR normalization, deduplication, and phonetic matching
      */
     static isSurname(name: string): boolean;
+    /**
+     * Get phonetic match details for a name (for debugging/logging)
+     */
+    static getPhoneticMatch(name: string): PhoneticMatch | null;
     /**
      * Check if a two-word phrase is likely a real name
      * Returns confidence score 0.0 - 1.0

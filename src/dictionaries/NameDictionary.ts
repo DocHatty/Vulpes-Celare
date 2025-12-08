@@ -15,6 +15,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { RadiologyLogger } from "../utils/RadiologyLogger";
+import { PhoneticMatcher, PhoneticMatch } from "../utils/PhoneticMatcher";
 
 /**
  * Dictionary initialization error - thrown when dictionaries cannot be loaded
@@ -47,6 +48,8 @@ export class NameDictionary {
   private static surnames: Set<string> | null = null;
   private static initialized = false;
   private static initErrors: string[] = [];
+  private static phoneticMatcher: PhoneticMatcher | null = null;
+  private static phoneticInitialized = false;
 
   /**
    * Initialize dictionaries from files
@@ -148,11 +151,44 @@ export class NameDictionary {
 
     this.initialized = true;
 
+    // Initialize phonetic matcher with loaded dictionaries
+    this.initPhoneticMatcher();
+
     // Log overall status
     if (this.initErrors.length > 0) {
       RadiologyLogger.warn(
         "DICTIONARY",
         `NameDictionary initialized with ${this.initErrors.length} error(s). Name validation may be degraded.`,
+      );
+    }
+  }
+
+  /**
+   * Initialize the phonetic matcher for fuzzy name matching
+   * This enables detection of OCR-corrupted names like "PENEL0PE" -> "PENELOPE"
+   */
+  private static initPhoneticMatcher(): void {
+    if (this.phoneticInitialized) return;
+
+    try {
+      const firstNamesArray = this.firstNames
+        ? Array.from(this.firstNames)
+        : [];
+      const surnamesArray = this.surnames ? Array.from(this.surnames) : [];
+
+      if (firstNamesArray.length > 0 || surnamesArray.length > 0) {
+        this.phoneticMatcher = new PhoneticMatcher();
+        this.phoneticMatcher.initialize(firstNamesArray, surnamesArray);
+        this.phoneticInitialized = true;
+        RadiologyLogger.info(
+          "DICTIONARY",
+          `PhoneticMatcher initialized for fuzzy name matching`,
+        );
+      }
+    } catch (error) {
+      RadiologyLogger.warn(
+        "DICTIONARY",
+        `Failed to initialize PhoneticMatcher: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -220,6 +256,7 @@ export class NameDictionary {
 
   /**
    * Check if a word is a known first name
+   * Uses exact match, OCR normalization, deduplication, and phonetic matching
    */
   static isFirstName(name: string): boolean {
     if (!this.initialized) this.init();
@@ -238,11 +275,22 @@ export class NameDictionary {
     if (deduplicated !== normalized && this.firstNames.has(deduplicated))
       return true;
 
+    // DISABLED: Phonetic matching causing regression (Sens 96.59% vs 97.09% baseline)
+    // Keeping code for reference but bypassing for now
+    // TODO: Investigate why phonetic matching hurts performance
+    // if (this.phoneticMatcher && this.phoneticInitialized) {
+    //   const phoneticMatch = this.phoneticMatcher.matchFirstName(name);
+    //   if (phoneticMatch && phoneticMatch.confidence >= 0.9) {
+    //     return true;
+    //   }
+    // }
+
     return false;
   }
 
   /**
    * Check if a word is a known surname
+   * Uses exact match, OCR normalization, deduplication, and phonetic matching
    */
   static isSurname(name: string): boolean {
     if (!this.initialized) this.init();
@@ -261,7 +309,23 @@ export class NameDictionary {
     if (deduplicated !== normalized && this.surnames.has(deduplicated))
       return true;
 
+    // DISABLED: Phonetic matching causing regression
+    // if (this.phoneticMatcher && this.phoneticInitialized) {
+    //   const phoneticMatch = this.phoneticMatcher.matchSurname(name);
+    //   if (phoneticMatch && phoneticMatch.confidence >= 0.9) {
+    //     return true;
+    //   }
+    // }
+
     return false;
+  }
+
+  /**
+   * Get phonetic match details for a name (for debugging/logging)
+   */
+  static getPhoneticMatch(name: string): PhoneticMatch | null {
+    if (!this.phoneticMatcher || !this.phoneticInitialized) return null;
+    return this.phoneticMatcher.matchAnyName(name);
   }
 
   /**

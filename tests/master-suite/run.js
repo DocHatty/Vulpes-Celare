@@ -721,6 +721,42 @@ function printLLMActionChecklist(results, smartGradeResults, status) {
     lines.push(pointed2("Worse?  Revert with: git checkout <file>"));
     lines.push(blank);
     lines.push(mid);
+    lines.push(pointed("CHAIN OF THOUGHT - MANDATORY REASONING"));
+    lines.push(mid);
+    lines.push(blank);
+    lines.push(pointed("BEFORE making ANY change, you MUST write out:"));
+    lines.push(blank);
+    lines.push(pointed("A. OBSERVATION: What specific pattern am I seeing?"));
+    lines.push(
+      pointed2('Example: "3 of 5 missed names have digits: PENEL0PE"'),
+    );
+    lines.push(blank);
+    lines.push(pointed("B. ROOT CAUSE: Why is the current code missing this?"));
+    lines.push(
+      pointed2('Example: "OCR normalization doesn\'t run before detection"'),
+    );
+    lines.push(blank);
+    lines.push(pointed("C. HYPOTHESIS: What change will fix it?"));
+    lines.push(
+      pointed2('Example: "Normalize OCR chars in isFirstName() before lookup"'),
+    );
+    lines.push(blank);
+    lines.push(pointed("D. RISK ASSESSMENT: What could go wrong?"));
+    lines.push(
+      pointed2('Example: "Might match medical terms like C0PD -> COPD"'),
+    );
+    lines.push(blank);
+    lines.push(pointed("E. SUCCESS CRITERIA: How will I know it worked?"));
+    lines.push(
+      pointed2('Example: "Sensitivity +0.5% AND Specificity unchanged"'),
+    );
+    lines.push(blank);
+    lines.push(pointed("F. ROLLBACK PLAN: How to undo if it fails?"));
+    lines.push(
+      pointed2('Example: "git checkout src/dictionaries/NameDictionary.ts"'),
+    );
+    lines.push(blank);
+    lines.push(mid);
     lines.push(pointed("ALL FAILURES BY TYPE"));
     lines.push(mid);
     for (const [type, items] of sortedTypes) {
