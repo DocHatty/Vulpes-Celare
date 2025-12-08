@@ -86,6 +86,33 @@ flowchart TB
 
 ## 🚀 Quick Start
 
+### CLI Installation (Interactive Menu)
+
+```bash
+# Clone and build
+git clone https://github.com/DocHatty/Vulpes-Celare.git
+cd Vulpes-Celare
+npm install
+npm run build
+
+# Install globally (creates vulpes command)
+npm run install-global
+
+# Or run directly
+npm run vulpes
+```
+
+After running `install-global`, add the displayed path to your system PATH, then:
+
+```bash
+vulpes              # Interactive menu
+vulpes cc           # Claude CLI chat (no API key needed)
+vulpes chat         # Native API chat
+vulpes --help       # All options
+```
+
+### Library Usage
+
 ```bash
 npm install vulpes-celare
 ```

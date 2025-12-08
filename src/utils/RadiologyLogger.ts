@@ -38,10 +38,35 @@ export interface PHIFilteredLog {
 }
 
 export class RadiologyLogger {
-  // ENABLED BY DEFAULT for transparency
-  private static enabled = true;
+  // These are checked at runtime via getters to support dynamic changes
+  private static _enabled: boolean | null = null;
+  private static _logLevel: LogLevel | null = null;
   private static suppressErrors = false;
-  private static logLevel: LogLevel = LogLevel.INFO;
+
+  private static get enabled(): boolean {
+    if (this._enabled !== null) return this._enabled;
+    return (
+      !process.env.VULPES_QUIET &&
+      !process.argv.includes("--quiet") &&
+      !process.argv.includes("-q")
+    );
+  }
+
+  private static set enabled(value: boolean) {
+    this._enabled = value;
+  }
+
+  private static get logLevel(): LogLevel {
+    if (this._logLevel !== null) return this._logLevel;
+    if (process.env.VULPES_LOG_LEVEL)
+      return parseInt(process.env.VULPES_LOG_LEVEL);
+    if (process.env.VULPES_QUIET) return LogLevel.NONE;
+    return LogLevel.INFO;
+  }
+
+  private static set logLevel(value: LogLevel) {
+    this._logLevel = value;
+  }
 
   // Statistics tracking
   private static stats = {
@@ -197,7 +222,9 @@ export class RadiologyLogger {
       );
 
       // Token assignment
-      console.error(`[${timestamp}] [PHI-DETECTED]   -> Token: ${options.token}`);
+      console.error(
+        `[${timestamp}] [PHI-DETECTED]   -> Token: ${options.token}`,
+      );
 
       // Context if available
       if (options.context) {
@@ -318,7 +345,9 @@ export class RadiologyLogger {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
       const timestamp = this.getTimestamp();
       const spanStr = spanCount !== undefined ? ` (${spanCount} spans)` : "";
-      console.error(`[${timestamp}] [PIPELINE] [${stage}] ${details}${spanStr}`);
+      console.error(
+        `[${timestamp}] [PIPELINE] [${stage}] ${details}${spanStr}`,
+      );
     }
   }
 
@@ -439,7 +468,9 @@ export class RadiologyLogger {
       `[${timestamp}] [SESSION-SUMMARY] False Positives Filtered: ${stats.phiFiltered}`,
     );
     console.error(`[${timestamp}] [SESSION-SUMMARY] Errors: ${stats.errors}`);
-    console.error(`[${timestamp}] [SESSION-SUMMARY] Warnings: ${stats.warnings}`);
+    console.error(
+      `[${timestamp}] [SESSION-SUMMARY] Warnings: ${stats.warnings}`,
+    );
     console.error(
       `[${timestamp}] [SESSION-SUMMARY] ============================================================\n`,
     );

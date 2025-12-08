@@ -23,19 +23,19 @@ const fastest_levenshtein_1 = require("fastest-levenshtein");
  * OCR character substitution map for pre-normalization
  */
 const OCR_SUBSTITUTIONS = {
-    '0': 'o',
-    '1': 'l',
-    '|': 'l',
-    '!': 'i',
-    '@': 'a',
-    '$': 's',
-    '3': 'e',
-    '4': 'a',
-    '5': 's',
-    '6': 'g',
-    '7': 't',
-    '8': 'b',
-    '9': 'g',
+    "0": "o",
+    "1": "l",
+    "|": "l",
+    "!": "i",
+    "@": "a",
+    $: "s",
+    "3": "e",
+    "4": "a",
+    "5": "s",
+    "6": "g",
+    "7": "t",
+    "8": "b",
+    "9": "g",
 };
 class PhoneticMatcher {
     constructor() {
@@ -61,15 +61,20 @@ class PhoneticMatcher {
      * Call this once at startup with your name lists
      */
     initialize(firstNames, surnames) {
-        console.log(`[PhoneticMatcher] Indexing ${firstNames.length} first names and ${surnames.length} surnames...`);
         const startTime = Date.now();
         this.firstNameIndex = this.buildIndex(firstNames);
         this.surnameIndex = this.buildIndex(surnames);
         this.initialized = true;
         const elapsed = Date.now() - startTime;
-        console.log(`[PhoneticMatcher] Indexing complete in ${elapsed}ms`);
-        console.log(`[PhoneticMatcher] First names: ${this.firstNameIndex.primary.size} primary codes, ${this.firstNameIndex.secondary.size} secondary codes`);
-        console.log(`[PhoneticMatcher] Surnames: ${this.surnameIndex.primary.size} primary codes, ${this.surnameIndex.secondary.size} secondary codes`);
+        // Only log if not in quiet mode
+        if (!process.env.VULPES_QUIET &&
+            !process.argv.includes("--quiet") &&
+            !process.argv.includes("-q")) {
+            console.log(`[PhoneticMatcher] Indexing ${firstNames.length} first names and ${surnames.length} surnames...`);
+            console.log(`[PhoneticMatcher] Indexing complete in ${elapsed}ms`);
+            console.log(`[PhoneticMatcher] First names: ${this.firstNameIndex.primary.size} primary codes, ${this.firstNameIndex.secondary.size} secondary codes`);
+            console.log(`[PhoneticMatcher] Surnames: ${this.surnameIndex.primary.size} primary codes, ${this.surnameIndex.secondary.size} secondary codes`);
+        }
     }
     /**
      * Build a phonetic index from a list of names
@@ -111,7 +116,7 @@ class PhoneticMatcher {
             result = result.split(ocr).join(letter);
         }
         // Remove extra spaces
-        result = result.replace(/\s+/g, ' ').trim();
+        result = result.replace(/\s+/g, " ").trim();
         return result;
     }
     /**
@@ -120,7 +125,7 @@ class PhoneticMatcher {
      */
     matchFirstName(input) {
         if (!this.initialized) {
-            console.warn('[PhoneticMatcher] Not initialized - call initialize() first');
+            console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
             return null;
         }
         return this.matchAgainstIndex(input, this.firstNameIndex);
@@ -131,7 +136,7 @@ class PhoneticMatcher {
      */
     matchSurname(input) {
         if (!this.initialized) {
-            console.warn('[PhoneticMatcher] Not initialized - call initialize() first');
+            console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
             return null;
         }
         return this.matchAgainstIndex(input, this.surnameIndex);
@@ -150,7 +155,9 @@ class PhoneticMatcher {
         if (!surnameMatch)
             return firstMatch;
         // Return the higher confidence match
-        return firstMatch.confidence >= surnameMatch.confidence ? firstMatch : surnameMatch;
+        return firstMatch.confidence >= surnameMatch.confidence
+            ? firstMatch
+            : surnameMatch;
     }
     /**
      * Match input against a phonetic index
@@ -166,7 +173,7 @@ class PhoneticMatcher {
                 original: input,
                 matched: normalized,
                 confidence: 1.0,
-                matchType: 'exact',
+                matchType: "exact",
             };
         }
         // 2. Phonetic match (primary code)
@@ -180,7 +187,7 @@ class PhoneticMatcher {
                         original: input,
                         matched: bestMatch,
                         confidence: 0.9,
-                        matchType: 'phonetic_primary',
+                        matchType: "phonetic_primary",
                     };
                 }
             }
@@ -193,7 +200,7 @@ class PhoneticMatcher {
                         original: input,
                         matched: bestMatch,
                         confidence: 0.85,
-                        matchType: 'phonetic_secondary',
+                        matchType: "phonetic_secondary",
                     };
                 }
             }
@@ -209,7 +216,7 @@ class PhoneticMatcher {
                     original: input,
                     matched: levenshteinMatch,
                     confidence: 0.75,
-                    matchType: 'levenshtein',
+                    matchType: "levenshtein",
                 };
             }
         }

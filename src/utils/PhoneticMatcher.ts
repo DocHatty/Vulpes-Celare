@@ -11,45 +11,49 @@
  * @module utils
  */
 
-import { doubleMetaphone } from 'double-metaphone';
-import { closest, distance } from 'fastest-levenshtein';
+import { doubleMetaphone } from "double-metaphone";
+import { closest, distance } from "fastest-levenshtein";
 
 /**
  * Pre-computed phonetic index for fast lookup
  */
 interface PhoneticIndex {
-  primary: Map<string, Set<string>>;   // primary code -> set of names
+  primary: Map<string, Set<string>>; // primary code -> set of names
   secondary: Map<string, Set<string>>; // secondary code -> set of names
-  names: Set<string>;                   // all indexed names (lowercase)
+  names: Set<string>; // all indexed names (lowercase)
 }
 
 /**
  * Match result with confidence scoring
  */
 export interface PhoneticMatch {
-  original: string;      // The OCR-corrupted input
-  matched: string;       // The dictionary match found
-  confidence: number;    // 0-1 confidence score
-  matchType: 'exact' | 'phonetic_primary' | 'phonetic_secondary' | 'levenshtein';
+  original: string; // The OCR-corrupted input
+  matched: string; // The dictionary match found
+  confidence: number; // 0-1 confidence score
+  matchType:
+    | "exact"
+    | "phonetic_primary"
+    | "phonetic_secondary"
+    | "levenshtein";
 }
 
 /**
  * OCR character substitution map for pre-normalization
  */
 const OCR_SUBSTITUTIONS: Record<string, string> = {
-  '0': 'o',
-  '1': 'l',
-  '|': 'l',
-  '!': 'i',
-  '@': 'a',
-  '$': 's',
-  '3': 'e',
-  '4': 'a',
-  '5': 's',
-  '6': 'g',
-  '7': 't',
-  '8': 'b',
-  '9': 'g',
+  "0": "o",
+  "1": "l",
+  "|": "l",
+  "!": "i",
+  "@": "a",
+  $: "s",
+  "3": "e",
+  "4": "a",
+  "5": "s",
+  "6": "g",
+  "7": "t",
+  "8": "b",
+  "9": "g",
 };
 
 export class PhoneticMatcher {
@@ -82,7 +86,6 @@ export class PhoneticMatcher {
    * Call this once at startup with your name lists
    */
   initialize(firstNames: string[], surnames: string[]): void {
-    console.log(`[PhoneticMatcher] Indexing ${firstNames.length} first names and ${surnames.length} surnames...`);
     const startTime = Date.now();
 
     this.firstNameIndex = this.buildIndex(firstNames);
@@ -90,9 +93,24 @@ export class PhoneticMatcher {
     this.initialized = true;
 
     const elapsed = Date.now() - startTime;
-    console.log(`[PhoneticMatcher] Indexing complete in ${elapsed}ms`);
-    console.log(`[PhoneticMatcher] First names: ${this.firstNameIndex.primary.size} primary codes, ${this.firstNameIndex.secondary.size} secondary codes`);
-    console.log(`[PhoneticMatcher] Surnames: ${this.surnameIndex.primary.size} primary codes, ${this.surnameIndex.secondary.size} secondary codes`);
+
+    // Only log if not in quiet mode
+    if (
+      !process.env.VULPES_QUIET &&
+      !process.argv.includes("--quiet") &&
+      !process.argv.includes("-q")
+    ) {
+      console.log(
+        `[PhoneticMatcher] Indexing ${firstNames.length} first names and ${surnames.length} surnames...`,
+      );
+      console.log(`[PhoneticMatcher] Indexing complete in ${elapsed}ms`);
+      console.log(
+        `[PhoneticMatcher] First names: ${this.firstNameIndex.primary.size} primary codes, ${this.firstNameIndex.secondary.size} secondary codes`,
+      );
+      console.log(
+        `[PhoneticMatcher] Surnames: ${this.surnameIndex.primary.size} primary codes, ${this.surnameIndex.secondary.size} secondary codes`,
+      );
+    }
   }
 
   /**
@@ -142,7 +160,7 @@ export class PhoneticMatcher {
     }
 
     // Remove extra spaces
-    result = result.replace(/\s+/g, ' ').trim();
+    result = result.replace(/\s+/g, " ").trim();
 
     return result;
   }
@@ -153,7 +171,9 @@ export class PhoneticMatcher {
    */
   matchFirstName(input: string): PhoneticMatch | null {
     if (!this.initialized) {
-      console.warn('[PhoneticMatcher] Not initialized - call initialize() first');
+      console.warn(
+        "[PhoneticMatcher] Not initialized - call initialize() first",
+      );
       return null;
     }
     return this.matchAgainstIndex(input, this.firstNameIndex);
@@ -165,7 +185,9 @@ export class PhoneticMatcher {
    */
   matchSurname(input: string): PhoneticMatch | null {
     if (!this.initialized) {
-      console.warn('[PhoneticMatcher] Not initialized - call initialize() first');
+      console.warn(
+        "[PhoneticMatcher] Not initialized - call initialize() first",
+      );
       return null;
     }
     return this.matchAgainstIndex(input, this.surnameIndex);
@@ -184,13 +206,18 @@ export class PhoneticMatcher {
     if (!surnameMatch) return firstMatch;
 
     // Return the higher confidence match
-    return firstMatch.confidence >= surnameMatch.confidence ? firstMatch : surnameMatch;
+    return firstMatch.confidence >= surnameMatch.confidence
+      ? firstMatch
+      : surnameMatch;
   }
 
   /**
    * Match input against a phonetic index
    */
-  private matchAgainstIndex(input: string, index: PhoneticIndex): PhoneticMatch | null {
+  private matchAgainstIndex(
+    input: string,
+    index: PhoneticIndex,
+  ): PhoneticMatch | null {
     const normalized = this.normalizeOcr(input);
 
     if (normalized.length < this.MIN_NAME_LENGTH) {
@@ -203,7 +230,7 @@ export class PhoneticMatcher {
         original: input,
         matched: normalized,
         confidence: 1.0,
-        matchType: 'exact',
+        matchType: "exact",
       };
     }
 
@@ -219,7 +246,7 @@ export class PhoneticMatcher {
             original: input,
             matched: bestMatch,
             confidence: 0.9,
-            matchType: 'phonetic_primary',
+            matchType: "phonetic_primary",
           };
         }
       }
@@ -233,7 +260,7 @@ export class PhoneticMatcher {
             original: input,
             matched: bestMatch,
             confidence: 0.85,
-            matchType: 'phonetic_secondary',
+            matchType: "phonetic_secondary",
           };
         }
       }
@@ -243,13 +270,16 @@ export class PhoneticMatcher {
 
     // 4. Levenshtein distance fallback for short names
     if (normalized.length <= 6) {
-      const levenshteinMatch = this.findLevenshteinMatch(normalized, index.names);
+      const levenshteinMatch = this.findLevenshteinMatch(
+        normalized,
+        index.names,
+      );
       if (levenshteinMatch) {
         return {
           original: input,
           matched: levenshteinMatch,
           confidence: 0.75,
-          matchType: 'levenshtein',
+          matchType: "levenshtein",
         };
       }
     }
@@ -260,7 +290,10 @@ export class PhoneticMatcher {
   /**
    * Find the closest matching name from candidates using Levenshtein distance
    */
-  private findClosestMatch(input: string, candidates: Set<string>): string | null {
+  private findClosestMatch(
+    input: string,
+    candidates: Set<string>,
+  ): string | null {
     if (candidates.size === 0) return null;
 
     const candidateArray = Array.from(candidates);
@@ -279,7 +312,10 @@ export class PhoneticMatcher {
    * Find a Levenshtein match in the full name set
    * Only used for short names as fallback
    */
-  private findLevenshteinMatch(input: string, names: Set<string>): string | null {
+  private findLevenshteinMatch(
+    input: string,
+    names: Set<string>,
+  ): string | null {
     // For efficiency, only check names of similar length
     const minLen = Math.max(this.MIN_NAME_LENGTH, input.length - 2);
     const maxLen = input.length + 2;
@@ -313,12 +349,19 @@ export class PhoneticMatcher {
   /**
    * Get index statistics
    */
-  getStats(): { firstNames: number; surnames: number; primaryCodes: number; secondaryCodes: number } {
+  getStats(): {
+    firstNames: number;
+    surnames: number;
+    primaryCodes: number;
+    secondaryCodes: number;
+  } {
     return {
       firstNames: this.firstNameIndex.names.size,
       surnames: this.surnameIndex.names.size,
-      primaryCodes: this.firstNameIndex.primary.size + this.surnameIndex.primary.size,
-      secondaryCodes: this.firstNameIndex.secondary.size + this.surnameIndex.secondary.size,
+      primaryCodes:
+        this.firstNameIndex.primary.size + this.surnameIndex.primary.size,
+      secondaryCodes:
+        this.firstNameIndex.secondary.size + this.surnameIndex.secondary.size,
     };
   }
 }
@@ -340,7 +383,10 @@ export function getPhoneticMatcher(): PhoneticMatcher {
  * Initialize the global matcher with name dictionaries
  * Should be called once at application startup
  */
-export function initializePhoneticMatcher(firstNames: string[], surnames: string[]): void {
+export function initializePhoneticMatcher(
+  firstNames: string[],
+  surnames: string[],
+): void {
   const matcher = getPhoneticMatcher();
   matcher.initialize(firstNames, surnames);
 }

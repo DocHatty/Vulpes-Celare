@@ -17,7 +17,7 @@ export interface PhoneticMatch {
     original: string;
     matched: string;
     confidence: number;
-    matchType: 'exact' | 'phonetic_primary' | 'phonetic_secondary' | 'levenshtein';
+    matchType: "exact" | "phonetic_primary" | "phonetic_secondary" | "levenshtein";
 }
 export declare class PhoneticMatcher {
     private firstNameIndex;

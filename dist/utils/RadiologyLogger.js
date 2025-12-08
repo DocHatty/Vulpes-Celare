@@ -21,6 +21,28 @@ var LogLevel;
     LogLevel[LogLevel["NONE"] = 4] = "NONE";
 })(LogLevel || (exports.LogLevel = LogLevel = {}));
 class RadiologyLogger {
+    static get enabled() {
+        if (this._enabled !== null)
+            return this._enabled;
+        return (!process.env.VULPES_QUIET &&
+            !process.argv.includes("--quiet") &&
+            !process.argv.includes("-q"));
+    }
+    static set enabled(value) {
+        this._enabled = value;
+    }
+    static get logLevel() {
+        if (this._logLevel !== null)
+            return this._logLevel;
+        if (process.env.VULPES_LOG_LEVEL)
+            return parseInt(process.env.VULPES_LOG_LEVEL);
+        if (process.env.VULPES_QUIET)
+            return LogLevel.NONE;
+        return LogLevel.INFO;
+    }
+    static set logLevel(value) {
+        this._logLevel = value;
+    }
     // ============================================================================
     // CONFIGURATION
     // ============================================================================
@@ -329,10 +351,10 @@ class RadiologyLogger {
     }
 }
 exports.RadiologyLogger = RadiologyLogger;
-// ENABLED BY DEFAULT for transparency
-RadiologyLogger.enabled = true;
+// These are checked at runtime via getters to support dynamic changes
+RadiologyLogger._enabled = null;
+RadiologyLogger._logLevel = null;
 RadiologyLogger.suppressErrors = false;
-RadiologyLogger.logLevel = LogLevel.INFO;
 // Statistics tracking
 RadiologyLogger.stats = {
     phiDetected: 0,

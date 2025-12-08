@@ -18,8 +18,8 @@ function copyDir(src, dest) {
         if (entry.isDirectory()) {
             copyDir(srcPath, destPath);
         } else {
-            // Copy .txt and .json files
-            if (entry.name.endsWith('.txt') || entry.name.endsWith('.json')) {
+            // Copy .txt, .json, and .py files
+            if (entry.name.endsWith('.txt') || entry.name.endsWith('.json') || entry.name.endsWith('.py')) {
                 fs.copyFileSync(srcPath, destPath);
                 console.log(`Copied ${entry.name} to ${destPath}`);
             }
@@ -36,6 +36,15 @@ if (fs.existsSync(srcDicts)) {
     copyDir(srcDicts, distDicts);
 } else {
     console.warn('Source dictionaries directory not found:', srcDicts);
+}
+
+// Copy CLI assets (e.g. Python bridge)
+const srcCli = path.join(srcDir, 'cli');
+const distCli = path.join(distDir, 'cli');
+
+if (fs.existsSync(srcCli)) {
+    console.log('Copying CLI assets...');
+    copyDir(srcCli, distCli);
 }
 
 console.log('Assets copied successfully.');

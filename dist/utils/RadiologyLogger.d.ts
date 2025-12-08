@@ -34,9 +34,13 @@ export interface PHIFilteredLog {
     characterEnd?: number;
 }
 export declare class RadiologyLogger {
-    private static enabled;
+    private static _enabled;
+    private static _logLevel;
     private static suppressErrors;
-    private static logLevel;
+    private static get enabled();
+    private static set enabled(value);
+    private static get logLevel();
+    private static set logLevel(value);
     private static stats;
     private static detectionHistory;
     private static filteredHistory;
