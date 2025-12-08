@@ -14,9 +14,10 @@
 | 🎯  | **Sensitivity**       | **99.6%**     | Synthetic corpus* |
 | 🛡️  | **Specificity**       | **96–100%**   | Synthetic corpus* |
 | 📄  | **Documents Tested**  | **7,000+**    | Adversarial synthetic |
+| 🧪  | **External Dataset**  | **60k+ docs** | Parquet analysis ready |
 | ⚡  | **Speed**             | **2–3 ms**    | Benchmarked |
 
-*\*Validated on synthetic data only. i2b2 2014 benchmark validation pending. See [Validation & Benchmarks](#-validation--benchmarks).*
+*\*Primary validation on synthetic data. External dataset analysis (60k docs) available for custom validation. i2b2 2014 benchmark pending. See [Validation & Benchmarks](#-validation--benchmarks).*
 
 > ⚠️ **Development Status:** Validated only against synthetic test data. DO NOT use with real patient data until validated against i2b2 2014 corpus, production-tested, and reviewed by your compliance team. Use synthetic data only. See `tests/master-suite` for generators.
 
@@ -172,6 +173,7 @@ async function analyzeNote(clinicalNote: string) {
 - **Streaming API** - Real-time PHI protection for live dictation ([docs](examples/streaming/STREAMING-API.md))
 - **Policy DSL** - Declarative policies without code changes ([docs](examples/policy-dsl/POLICY-DSL.md))
 - **Cryptographic Provenance** - Immutable audit logs with Merkle-linked chains ([docs](docs/TRUST-BUNDLE.md))
+- **Cortex Intelligence** - Self-learning test system that detects quality drops and recommends improvements ([docs](tests/master-suite/cortex/INTEGRATION-COMPLETE.md))
 
 ## 🔗 Blockchain Audit Trail (Industry-First)
 
@@ -259,6 +261,20 @@ vulpes --help           # Full reference
 
 > 📖 **Full CLI Documentation:** Run `vulpes --help` or see [CLI Guide](docs/CLI.md)
 
+### Cortex Intelligence System
+
+**Self-learning test infrastructure** with pattern recognition and automated improvements:
+
+- **Smart Test Grading:** Learns which failures matter most from historical data
+- **Pattern Recognition:** Identifies recurring issues and suggests targeted fixes
+- **History Consultation:** Compares current performance against past runs
+- **Automated Workflows:** Intelligent triggers for external validation and improvements
+- **Provenance Tracking:** Complete audit trail of all system changes and improvements
+
+The Cortex system continuously monitors Vulpes performance and proactively recommends improvements when it detects quality drops, filter changes, or validation opportunities.
+
+> 📖 **Cortex Documentation:** [Integration Summary](tests/master-suite/cortex/INTEGRATION-COMPLETE.md)
+
 ## 🧪 Validation & Benchmarks
 
 ### Current Validation Status
@@ -315,19 +331,30 @@ Our adversarial test corpus includes:
 npm run test:parquet:quick
 
 # Full analysis (5k-60k documents)
-npm run test:parquet -- --dir /path/to/parquet
+npm run test:parquet
+
+# Automated improvement workflow (analyzes + recommends fixes)
+npm run workflow:improve:dry
 ```
 
-**Features:**
-- ✅ Massive test expansion (from 7k to 60k+ documents)
-- ✅ Missing pattern detection (see exactly what Vulpes missed)
-- ✅ Dictionary expansion (extract thousands of new names/locations)
-- ✅ Adversarial test generation (find rare edge cases)
-- ✅ Benchmark reporting (industry-standard metrics)
+**Capabilities:**
+- ✅ **Massive test expansion** - From 7k to 60k+ documents
+- ✅ **Missing pattern detection** - See exactly what Vulpes missed with examples
+- ✅ **Dictionary expansion** - Extract thousands of new names/locations automatically
+- ✅ **Adversarial test generation** - Find rare edge cases and OCR corruption
+- ✅ **Benchmark reporting** - Industry-standard metrics (sensitivity, precision, F1)
+- ✅ **Automated workflow** - Intelligent system that recommends improvements
 
-**Performance:** Batched processing (100 docs at a time), cached results, ~2-3 minutes for 5k documents.
+**Cortex Intelligence Integration:**
+The system automatically decides when external validation is valuable:
+- Sensitivity drops detected → Triggers analysis
+- New filters added → Validates improvements
+- Weekly validation → Maintains quality
+- User requested → On-demand benchmarking
 
-> 📖 **Full Documentation:** [Parquet Analysis Guide](tests/master-suite/cortex/PARQUET-ANALYSIS.md)
+**Performance:** Batched processing (100 docs at a time), 8 parallel workers, cached results. ~2-3 minutes for 5k documents, ~20 seconds for 100.
+
+> 📖 **Full Documentation:** [Parquet Analysis Guide](tests/master-suite/cortex/PARQUET-ANALYSIS.md) • [Integration Summary](tests/master-suite/cortex/INTEGRATION-COMPLETE.md)
 
 ### Validation Roadmap
 
@@ -373,10 +400,13 @@ Contributions welcome! See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 **Validation Contributions Especially Valued:**
 - Run against i2b2 2014 corpus
+- External dataset analysis (parquet format, labeled data)
 - Pilot deployment feedback
 - Security audit findings
 - Bug reports and edge cases
 - International format support
+
+**Easy to Start:** Use `npm run test:parquet` with your own labeled datasets to find missed patterns and contribute improvements.
 
 **Contributors who help validate will be acknowledged in published benchmarks.**
 
