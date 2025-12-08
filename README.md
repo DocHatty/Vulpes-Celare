@@ -7,14 +7,16 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-Source%20Available-4B32C3?style=for-the-badge)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Experimental-orange?style=for-the-badge)](#-validation)
+[![Status](https://img.shields.io/badge/Status-Validation%20In%20Progress-orange?style=for-the-badge)](#-validation-status)
 
-|     | Metric                | Score         |
-|:---:|:---------------------:|:-------------:|
-| 🎯  | **Sensitivity**       | **99.6%**     |
-| 🛡️  | **Specificity**       | **96–100%**   |
-| 📄  | **Documents Tested**  | **7,000+**    |
-| ⚡  | **Speed**             | **2–3 ms**    |
+|     | Metric                | Score         | Validation        |
+|:---:|:---------------------:|:-------------:|:-----------------:|
+| 🎯  | **Sensitivity**       | **99.6%**     | Synthetic corpus* |
+| 🛡️  | **Specificity**       | **96–100%**   | Synthetic corpus* |
+| 📄  | **Documents Tested**  | **7,000+**    | Adversarial synthetic |
+| ⚡  | **Speed**             | **2–3 ms**    | Benchmarked |
+
+*\*Pending validation against i2b2 2014 clinical corpus. See [Validation Status](#-validation-status).*
 
 ---
 
@@ -103,7 +105,7 @@ console.log(result.redactionCount);  // PHI elements found
 console.log(result.executionTimeMs); // Processing time (~2–3 ms)
 ```
 
-### Policy DSL (NEW ✨)
+### Policy DSL
 
 **Declarative policy language for simplified customization**
 
@@ -124,19 +126,76 @@ policy RESEARCH {
 `;
 
 const compiled = PolicyCompiler.compile(policy);
-// Use compiled policy with redaction engine
 ```
 
-> 📊 **NEW: Comprehensive System Assessment Available**  
-> Want to see how Vulpes Celare compares to industry alternatives? Check out our detailed assessment:
-> - [📋 Quick Summary](docs/ASSESSMENT-SUMMARY.md) - TL;DR with key findings
-> - [📖 Full Assessment](docs/COMPREHENSIVE-ASSESSMENT.md) - In-depth analysis with quality grades
+> 📊 **System Assessment Available**  
+> - [📋 Quick Summary](docs/ASSESSMENT-SUMMARY.md)
+> - [📖 Full Assessment](docs/COMPREHENSIVE-ASSESSMENT.md)
+
+---
+
+## 🧪 Validation Status
+
+> **Transparency builds trust.** We believe in honest disclosure about what's been validated and what hasn't.
+
+### Current Validation
+
+| Aspect | Status | Details |
+|--------|--------|---------|
+| **Sensitivity (99.6%)** | ⚠️ Synthetic Only | 7,000+ adversarial synthetic clinical documents |
+| **Specificity (96-100%)** | ⚠️ Synthetic Only | Same synthetic corpus |
+| **Processing Speed** | ✅ Verified | 2-3ms benchmarked on standard hardware |
+| **HIPAA Safe Harbor** | ✅ 17/18 | Photo/image identifiers pending |
+| **i2b2 2014 Benchmark** | ❌ Not Yet | Industry gold standard - data access pending |
+| **Real Clinical Notes** | ❌ Not Yet | Seeking validation partners |
+| **Production Deployment** | ❌ Not Yet | Seeking pilot deployments |
+
+### What This Means
+
+**Our synthetic test corpus is adversarial**, including:
+- OCR-degraded documents with character substitutions (`0↔O`, `1↔l`, `5↔S`)
+- Edge cases (hyphenated names, international formats, ambiguous dates)
+- Medical context challenges ("Dr. Wilson" vs "Wilson's disease")
+- 7,000+ documents across 28 PHI types
+
+**Limitations of synthetic testing:**
+- Real clinical notes may have patterns we haven't anticipated
+- Production environments introduce unexpected edge cases
+- Industry acceptance requires benchmark validation against the i2b2 2014 corpus
+
+### Validation Roadmap
+
+| Priority | Benchmark | Status | Impact |
+|----------|-----------|--------|--------|
+| 🔴 **High** | i2b2 2014 De-identification Corpus | Awaiting data access | Industry-standard accuracy claims |
+| 🔴 **High** | Pilot deployment (1,000+ real notes) | Seeking partners | Production validation |
+| 🟡 **Medium** | Third-party security audit | Seeking sponsors | Enterprise trust |
+
+### The i2b2 2014 Benchmark
+
+The **i2b2 2014 De-identification Challenge** corpus is the industry gold standard for PHI redaction validation:
+- **1,304 longitudinal clinical narratives** from 296 patients
+- **All 18 HIPAA Safe Harbor categories** annotated with character offsets
+- **Cited in 36+ peer-reviewed studies** (2024 alone)
+- **The benchmark competitors use** (CliniDeID, Philter, NLM Scrubber)
+
+Access is currently restricted through Harvard DBMI. We are actively pursuing data access to provide industry-comparable validation metrics.
+
+### How You Can Help
+
+We're actively seeking:
+- **i2b2 Data Access** — Researchers with existing access who can run comparative benchmarks
+- **Validation Partners** — Healthcare organizations with de-identified test data
+- **Pilot Deployments** — Clinics for real-world validation
+- **Security Auditors** — Third-party review for independent trust
+
+**Interested?** [Open an issue](https://github.com/DocHatty/Vulpes-Celare/issues) or contact us directly.
 
 ---
 
 ## 🔌 Integration Examples
 
-Vulpes Celare works as a **universal preprocessing filter** for any LLM, agent, or AI system. Add one line to your existing pipeline:
+Vulpes Celare works as a **universal preprocessing filter** for any LLM:
 
 ```typescript
 const safeNote = await VulpesCelare.redact(clinicalNote);  // ← Add this line
@@ -158,7 +217,7 @@ async function analyzeNote(clinicalNote: string) {
 }
 ```
 
-### Streaming Redaction (NEW ✨)
+### Streaming Redaction
 
 **Real-time PHI protection for live dictation and scribe applications**
 
@@ -167,17 +226,11 @@ import { StreamingRedactor } from 'vulpes-celare';
 
 const redactor = new StreamingRedactor({
   bufferSize: 100,
-  mode: 'sentence'  // Balance latency and accuracy
+  mode: 'sentence'
 });
 
-// Process live dictation stream
 for await (const chunk of redactor.redactStream(speechToTextStream)) {
-  // Display immediately - PHI already redacted
-  console.log(chunk.text);
-  
-  if (chunk.containsRedactions) {
-    console.log(`🔒 Redacted ${chunk.redactionCount} PHI elements`);
-  }
+  console.log(chunk.text);  // PHI already redacted in real-time
 }
 ```
 
@@ -224,74 +277,123 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 
 ## 🔧 Architecture
 
-**Twenty-six specialized filters run in parallel**, each tuned for specific PHI types:
+**Twenty-eight specialized filters run in parallel**, covering 17 of 18 HIPAA Safe Harbor identifiers:
 
-- **Names:** Titled, formatted, credentialed, family context (`Dr. Smith`, `SMITH, JOHN`, `John Doe, MD`)
-- **IDs:** SSN, MRN, NPI, Medicare/Medicaid (`123-45-6789`, `MRN: 7834921`)
-- **Contact:** Phone, email, address, ZIP code (`(555) 123-4567`, `patient@email.com`)
-- **Temporal:** All date formats, ages 90+ per HIPAA (`03/15/1980`, `92-year-old`)
-- **Financial:** Credit cards with Luhn validation (`4111-1111-1111-1111`)
+### HIPAA Safe Harbor Coverage
 
-**Key Capabilities:**
+| # | Identifier | Filter(s) | Status |
+|---|------------|-----------|--------|
+| 1 | Names | `SmartNameFilter`, `TitledNameFilter`, `FormattedNameFilter`, `FamilyNameFilter` | ✅ |
+| 2 | Geographic | `AddressFilter`, `ZipCodeFilter`, `HospitalFilter` | ✅ |
+| 3 | Dates | `DateFilter` | ✅ |
+| 4 | Phone numbers | `PhoneFilter` | ✅ |
+| 5 | Fax numbers | `FaxNumberFilter` | ✅ |
+| 6 | Email | `EmailFilter` | ✅ |
+| 7 | SSN | `SSNFilter` | ✅ |
+| 8 | MRN | `MRNFilter` | ✅ |
+| 9 | Health plan IDs | `HealthPlanNumberFilter` | ✅ |
+| 10 | Account numbers | `AccountNumberFilter` | ✅ |
+| 11 | License numbers | `LicenseNumberFilter`, `DEAFilter` | ✅ |
+| 12 | Vehicle IDs | `VehicleIdentifierFilter` | ✅ |
+| 13 | Device IDs | `DeviceIdentifierFilter` | ✅ |
+| 14 | URLs | `URLFilter` | ✅ |
+| 15 | IP addresses | `IPAddressFilter` | ✅ |
+| 16 | Biometrics | `BiometricContextFilter` | ✅ |
+| 17 | Photos/images | — | ❌ Planned |
+| 18 | Other unique IDs | `UniqueIdentifierFilter`, `NPIFilter`, `PassportNumberFilter` | ✅ |
+
+**Coverage: 17/18 (94%)** — Photo/image identifier detection planned for future release.
+
+### Key Capabilities
 
 - **Context-Aware Detection** - Knows "Dr. Wilson" is a person but "Wilson's disease" is a medical condition
-- **OCR Error Resilience** - Catches PHI even when scanners corrupt characters (`0`↔`O`, `1`↔`l`, `5`↔`S`)
-- **Smart Overlap Handling** - When multiple filters match the same text, picks the optimal redaction
+- **OCR Error Resilience** - Catches PHI even when scanners corrupt characters
+- **Smart Overlap Handling** - When multiple filters match, picks the optimal redaction
 - **Zero External Calls** - Works completely offline, air-gapped deployment ready
+
+---
+
+## 🆚 Competitive Comparison
+
+### Feature Comparison
+
+| Feature | Vulpes Celare | Presidio | CliniDeID | Philter | AWS Comprehend Medical |
+|---------|--------------|----------|-----------|---------|----------------------|
+| **Open Source** | ✅ AGPL-3.0 | ✅ MIT | ✅ Open | ✅ BSD-3 | ❌ Proprietary |
+| **Air-Gapped** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | ❌ Cloud only |
+| **Streaming API** | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No |
+| **Policy DSL** | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No |
+| **Cryptographic Provenance** | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No |
+| **OCR Error Resilience** | ✅ Built-in | ❌ No | ❌ No | 🟡 Partial | ❌ No |
+| **Trust Bundles** | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No |
+
+### Accuracy Comparison (Honest Assessment)
+
+| Tool | Sensitivity | Speed | Validation Status |
+|------|-------------|-------|-------------------|
+| **Vulpes Celare** | 99.6% | 2-3ms | ⚠️ Synthetic only |
+| **CliniDeID** | 95.9% (names) | ~1 note/sec | ✅ i2b2 validated |
+| **Philter** | 87-96% | ~1.4 notes/sec | ✅ i2b2, 130M+ notes |
+| **Presidio** | ~88% recall | 3-11 sec/7K words | ✅ Multiple corpora |
+| **NLM Scrubber** | 88.1% (names) | 8.6 notes/sec | ✅ i2b2 validated |
+
+### Our Honest Position
+
+**Demonstrable Advantages (Verified):**
+- ⚡ **Speed**: Designed for 1000x+ faster processing
+- 🔄 **Streaming**: Only open-source tool with real-time redaction API
+- 📜 **Policy DSL**: Declarative policies without code changes
+- 🔐 **Provenance**: Cryptographic audit trail no competitor offers
+- 📄 **OCR Resilience**: Built-in tolerance for scanned document artifacts
+
+**Advantages Pending Validation:**
+- 🎯 **Accuracy**: 99.6% sensitivity needs i2b2 2014 validation
+- 🏭 **Production Scale**: Competitors like Philter have processed 130M+ notes
+- 🏥 **Real-World Coverage**: Production deployment reveals true edge cases
+
+> **The Bottom Line:** We have the most comprehensive *feature set* in the open-source PHI redaction space. Our *accuracy claims* await industry-standard validation against the i2b2 2014 corpus. We're transparent about this because we believe it builds trust.
 
 ---
 
 ## 📊 Advanced Analytics
 
-Beyond basic accuracy, Vulpes Celare employs **clinical-grade statistical analysis**:
+**Matthews Correlation Coefficient (MCC):** The gold standard for imbalanced classification. Unlike accuracy or F1, MCC correctly handles the asymmetry between PHI (rare) and non-PHI (common).
 
-**Matthews Correlation Coefficient (MCC):** The gold standard for imbalanced classification. Unlike accuracy or F1, MCC correctly handles the asymmetry between PHI (rare) and non-PHI (common). Our target: MCC ≥ 0.95.
+**F2-Score (Recall-Weighted):** Because missing PHI is catastrophic while over-redacting is merely inconvenient.
 
-**F2-Score (Recall-Weighted):** Because missing PHI is catastrophic while over-redacting is merely inconvenient, we weight recall 2× higher than precision. F2 = (5 × Precision × Recall) / (4 × Precision + Recall).
-
-**Weighted Grading Profiles:**
+**Grading Profiles:**
 
 | Profile | Sensitivity Weight | Use Case |
 |---------|-------------------|----------|
-| `HIPAA_STRICT` | 70% | Production validation - zero tolerance |
-| `DEVELOPMENT` | 60% | Iterative improvement with diminishing penalties |
-| `OCR_TOLERANT` | 55% | Scanned documents with artifact allowances |
-| `RESEARCH` | 50% | Pattern analysis and experimentation |
-
-**Hard Caps:** Sensitivity below 90% caps grade at F regardless of other metrics. Below 95% caps at C. No gaming the system.
-
-**Penalty Scaling:** Diminishing returns on repeated failures - the 50th missed SSN costs less than the 1st, encouraging incremental progress rather than punishing edge cases.
+| `HIPAA_STRICT` | 70% | Production - zero tolerance |
+| `DEVELOPMENT` | 60% | Iterative improvement |
+| `OCR_TOLERANT` | 55% | Scanned documents |
+| `RESEARCH` | 50% | Pattern analysis |
 
 ---
 
 ## 📈 Performance
 
-**Performance by document quality:**
+| Document Quality | Detection Rate |
+|------------------|----------------|
+| Perfect digital text | 99.9% |
+| Minor errors | 99.8% |
+| Light scan artifacts | 99.7% |
+| Bad scans | 98.5% |
+| Barely legible | 97.2% |
 
-- **Perfect digital text:** 99.9% detection rate
-- **Minor errors (typos, extra spaces):** 99.8% detection rate
-- **Scanned documents (light artifacts):** 99.7% detection rate
-- **Bad scans (faded, skewed):** 98.5% detection rate
-- **Worst case (barely legible):** 97.2% detection rate
-
-> Even the worst scans still catch 97%+ of PHI. Performance degrades gracefully, not catastrophically.
+> Performance degrades gracefully, not catastrophically.
 
 ---
 
 ## 🧠 Vulpes Cortex
 
-**Self-learning test intelligence** with autonomous reasoning capabilities that remembers what traditional testing forgets:
+**Self-learning test intelligence** with MCP (Model Context Protocol) integration:
 
 - **Failure Patterns** - Why specific PHI types slip through
 - **Fix History** - What worked, what didn't, and why
-- **Bi-Temporal Tracking** - When bugs existed vs. when you found them
 - **Regression Alerts** - Automatic detection of metric degradation
-
-**Enterprise-Grade Testing Infrastructure:**
-
-- **MCP Protocol Native** - First-class Model Context Protocol integration enables agentic orchestration of test pipelines, live metric queries, and autonomous fix-propose-validate loops
-- **LLM-Augmented Analysis** - Claude, GPT, and Gemini can introspect failure corpuses, synthesize hypotheses, and generate targeted regression suites via structured tool calls
-- **Programmatic API Surface** - RESTful and SDK interfaces expose every metric, filter weight, and grading profile for CI/CD integration, observability dashboards, and custom toolchain composition
+- **LLM-Augmented Analysis** - AI can introspect failures and propose fixes
 
 ```bash
 node tests/master-suite/run.js --count 200 --cortex --cortex-report
@@ -299,68 +401,48 @@ node tests/master-suite/run.js --count 200 --cortex --cortex-report
 
 ---
 
-## ⚡ Power of Symbiotic Integration
-
-Vulpes Celare achieves "symbiotic excellence" by assigning each layer what it does best, creating a system far more powerful than the sum of its parts:
-
-| Component | Role | Superpower |
-|-----------|------|------------|
-| **Redaction API** | **The Muscle** | **Speed & Scale.** Processes 7,000+ docs in seconds. Manages persistence, job queues, and the 26+ specialized regex filters. It does the heavy lifting so the AI doesn't have to. |
-| **MCP Layer** | **The Bridge** | **Safety & Protocol.** Enforces strict contracts (e.g., "Must consult history before fixing"). Acts as the secure nervous system connecting the Brain to the Muscle, preventing hallucinations and ensuring safe execution. |
-| **LLM** | **The Brain** | **Reasoning & Strategy.** It doesn't run the tests - it *interprets* them. It analyzes complex failure patterns, formulates hypotheses, and writes the code fixes that the API validates. |
-| **OCR Engine** | **The Lens** | **Resilience.** Our `OCR_TOLERANT` profiles see through the noise. Where rigid systems fail on `0` vs `O` or scanned artifacts, the engine applies fuzzy logic to ensure compliance even on dirty data. |
-
-**The result?** A self-healing system where the AI diagnoses the problem (LLM), the protocol ensures safety (MCP), and the engine executes the cure (API) with millisecond precision.
-
----
-
-## 🤖 AI Agent Integration
-
-Cortex exposes an **MCP (Model Context Protocol) server** enabling AI agents to autonomously run tests, analyze failures, and propose fixes.
-
-- **AI Agents** - See [`.agent/CLAUDE.md`](./.agent/CLAUDE.md)
-- **Full Docs** - See [`tests/master-suite/cortex/README.md`](./tests/master-suite/cortex/README.md)
-
----
-
-## 🆚 Comparison
-
-**Vulpes Celare:** Proprietary rules engine. Sub-millisecond, air-gapped, zero data exfiltration, OCR-resilient. US-focused.
-
-**Microsoft Presidio:** Rules + ML. Mature, multi-language. Heavier setup, less medical-specific.
-
-**AWS Comprehend Medical:** Cloud ML. High accuracy, maintained. Requires BAA, PHI leaves perimeter.
-
-**Google Cloud DLP:** Cloud ML. Broad coverage. Cost, cloud dependency, data exposure.
-
----
-
-## 🧪 Validation
-
-```bash
-git clone https://github.com/anthropics/vulpes-celare
-cd vulpes-celare && npm install && npm run build && npm test
-```
-
-> **Validation Status:** Metrics derived from 7,000+ adversarial synthetic documents. Zero real patient data used. We welcome independent validation partnerships and real-world pilots.
->
-> **Integration Guidance:** HIPAA compliance is organizational, not purely technical. We recommend pairing with human review for production healthcare deployments.
-
----
-
 ## ⛓️ Cryptographic Provenance
 
-**Trust, but verify.** Vulpes Celare includes a local, immutable blockchain ledger that cryptographically anchors every redaction event.
+**Trust, but verify.** Includes immutable audit logs that cryptographically anchor every redaction event.
 
 | Capability | Description |
 |:---|:---|
-| **Merkle-Linked Audit Log** | Every action is hashed (SHA-256) and cryptographically linked to the previous entry. Tampering with history breaks the chain immediately. |
-| **Redaction Certificates** | Automatically Minted receipts prove that $H_{original} \rightarrow H_{redacted} + H_{manifest}$. Verify compliance mathematically without revealing PHI. |
-| **Verification Portal** | **NEW:** Web UI for non-technical auditors. Drag-and-drop Trust Bundles for instant cryptographic verification. No technical knowledge required. [Learn more →](verification-portal/) |
-| **Zero-Knowledge Architecture** | Designed for ZK-proof verification. Allow third-party auditors to verify protocol adherence without granting them access to patient data. |
-| **Fail-Safe Integrity** | The provenance layer operates asynchronously. Your application speed is never compromised, but your audit trail is always secured. |
+| **Merkle-Linked Audit Log** | Every action hashed and linked. Tampering breaks the chain. |
+| **Redaction Certificates** | Prove compliance mathematically without revealing PHI. |
+| **Verification Portal** | Drag-and-drop Trust Bundles for instant verification. |
+| **Zero-Knowledge Ready** | Designed for ZK-proof verification. |
 
-> **The Ledger Remembers:** Your data stays local, but its integrity is anchored by math. Auditors can verify compliance in seconds using the [Verification Portal](verification-portal/).
+> **The Ledger Remembers:** Your data stays local, but its integrity is anchored by math.
+
+---
+
+## 🧪 Technical Validation
+
+```bash
+git clone https://github.com/DocHatty/Vulpes-Celare
+cd vulpes-celare && npm install && npm run build && npm test
+```
+
+### Validation Matrix
+
+| Type | Status | Details |
+|------|--------|---------|
+| **Synthetic Corpus** | ✅ | 7,000+ adversarial documents |
+| **Unit Tests** | ✅ | Core engine fully tested |
+| **i2b2 2014 Benchmark** | ❌ | Industry gold standard - pending |
+| **Production Pilot** | ❌ | Seeking partners |
+| **Third-Party Audit** | ❌ | Seeking sponsors |
+
+### Integration Guidance
+
+> **HIPAA compliance is organizational, not purely technical.**
+
+For production healthcare deployments, we recommend:
+1. Human review for high-risk documents
+2. Logging and monitoring of all operations
+3. Incident response procedures
+4. BAA review for cloud LLM providers
+5. Legal counsel for compliance attestation
 
 ---
 
@@ -368,25 +450,16 @@ cd vulpes-celare && npm install && npm run build && npm test
 
 **AGPL-3.0 with Commercial Exception** - See [LICENSE](LICENSE)
 
-**You can freely use Vulpes Celare if:**
+**Free use for:**
+- Individuals, researchers, educators
+- Non-profit hospitals and clinics
+- Companies making < $1M/year
+- Open source projects
+- Internal use (not offered as a service)
 
-- You're an individual, researcher, or educator
-- You're a non-profit hospital or clinic (any size)
-- Your company makes less than $1M/year
-- You're building an open source project
-- You're using it internally (not offering as a service or for financial incentive adoption)
-
-**You need a commercial license if:**
-
-- You are a for-profit company and/or make > $1M/year
-- You're offering Vulpes Celare as a managed service
-
-**The AGPL ensures:**
-
-- ✅ Code is always auditable (critical for HIPAA compliance)
-- ✅ Improvements are shared back with the community
-- ✅ Large companies can't take without contributing
-- ✅ Small organizations and researchers use it freely
+**Commercial license required for:**
+- For-profit companies > $1M/year
+- Managed service offerings
 
 For commercial licensing: See [docs/legal/COMMERCIAL_LICENSE.md](docs/legal/COMMERCIAL_LICENSE.md)
 
@@ -394,11 +467,19 @@ For commercial licensing: See [docs/legal/COMMERCIAL_LICENSE.md](docs/legal/COMM
 
 ## 🤝 Contributing
 
-Contributions welcome! See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
+Contributions welcome! See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
-- Read the [Code of Conduct](.github/CODE_OF_CONDUCT.md) before participating
-- Report vulnerabilities via [Security Policy](SECURITY.md) - never share real PHI
-- File issues using provided templates
+### Validation Contributions Especially Welcome
+
+| Contribution | Impact |
+|--------------|--------|
+| **Run against i2b2 2014** | Validate accuracy claims |
+| **Pilot deployment** | Real-world testing |
+| **Security audit** | Enterprise trust |
+| **Bug reports** | Improve coverage |
+| **International formats** | Expand global support |
+
+**Contributors who help validate will be acknowledged in published benchmarks.**
 
 ---
 
