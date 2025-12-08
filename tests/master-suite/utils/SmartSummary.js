@@ -162,6 +162,15 @@ True Negatives:   ${cm.trueNegatives} ✅ (correctly preserved)
     const failures = this.extractFailures(current);
     const prioritized = this.prioritizeFailures(failures);
 
+    // Check if we have detailed failure data
+    const hasDetailedData = Object.keys(current.metrics.byPHIType || {}).length > 0;
+    const totalFailures = current.metrics.confusionMatrix?.falseNegatives || 0;
+
+    // If no detailed data but we have failures from confusion matrix
+    if (prioritized.length === 0 && totalFailures > 0) {
+      return `\n⚠️  **${totalFailures} PHI items missed** (detailed breakdown not available in aggregate mode)\n\nNote: Run individual tests to see failure breakdown by PHI type.`;
+    }
+
     if (prioritized.length === 0) {
       return '🎉 **No failures detected!** All PHI types handled correctly.';
     }

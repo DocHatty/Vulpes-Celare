@@ -555,11 +555,53 @@
       "timestamp": "2025-12-08T18:48:43.093Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219893688",
+      "timestamp": "2025-12-08T18:51:33.688Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219937596",
+      "timestamp": "2025-12-08T18:52:17.596Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219977523",
+      "timestamp": "2025-12-08T18:52:57.523Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220017121",
+      "timestamp": "2025-12-08T18:53:37.121Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220889202",
+      "timestamp": "2025-12-08T19:08:09.202Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220931560",
+      "timestamp": "2025-12-08T19:08:51.560Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220984290",
+      "timestamp": "2025-12-08T19:09:44.290Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 93,
+    "total": 100,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 92
+    "noHistoryFound": 99
   }
 }
