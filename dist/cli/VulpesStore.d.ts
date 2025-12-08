@@ -17,69 +17,15 @@ import { z } from "zod";
 /**
  * API Key configuration schema
  */
-export declare const ApiKeySchema: z.ZodObject<{
-    ANTHROPIC_API_KEY: z.ZodOptional<z.ZodString>;
-    OPENAI_API_KEY: z.ZodOptional<z.ZodString>;
-    OPENROUTER_API_KEY: z.ZodOptional<z.ZodString>;
-    GOOGLE_API_KEY: z.ZodOptional<z.ZodString>;
-}, z.core.$strip>;
+export declare const ApiKeySchema: any;
 /**
  * User preferences schema
  */
-export declare const PreferencesSchema: z.ZodObject<{
-    defaultProvider: z.ZodDefault<z.ZodEnum<{
-        anthropic: "anthropic";
-        openai: "openai";
-        openrouter: "openrouter";
-        ollama: "ollama";
-        custom: "custom";
-        google: "google";
-    }>>;
-    defaultModel: z.ZodOptional<z.ZodString>;
-    theme: z.ZodDefault<z.ZodEnum<{
-        default: "default";
-        minimal: "minimal";
-        colorful: "colorful";
-    }>>;
-    verboseMode: z.ZodDefault<z.ZodBoolean>;
-    subagentsEnabled: z.ZodDefault<z.ZodBoolean>;
-    maxParallelSubagents: z.ZodDefault<z.ZodNumber>;
-}, z.core.$strip>;
+export declare const PreferencesSchema: any;
 /**
  * Full config schema
  */
-export declare const ConfigSchema: z.ZodObject<{
-    apiKeys: z.ZodObject<{
-        ANTHROPIC_API_KEY: z.ZodOptional<z.ZodString>;
-        OPENAI_API_KEY: z.ZodOptional<z.ZodString>;
-        OPENROUTER_API_KEY: z.ZodOptional<z.ZodString>;
-        GOOGLE_API_KEY: z.ZodOptional<z.ZodString>;
-    }, z.core.$strip>;
-    preferences: z.ZodObject<{
-        defaultProvider: z.ZodDefault<z.ZodEnum<{
-            anthropic: "anthropic";
-            openai: "openai";
-            openrouter: "openrouter";
-            ollama: "ollama";
-            custom: "custom";
-            google: "google";
-        }>>;
-        defaultModel: z.ZodOptional<z.ZodString>;
-        theme: z.ZodDefault<z.ZodEnum<{
-            default: "default";
-            minimal: "minimal";
-            colorful: "colorful";
-        }>>;
-        verboseMode: z.ZodDefault<z.ZodBoolean>;
-        subagentsEnabled: z.ZodDefault<z.ZodBoolean>;
-        maxParallelSubagents: z.ZodDefault<z.ZodNumber>;
-    }, z.core.$strip>;
-    lastUsed: z.ZodObject<{
-        provider: z.ZodOptional<z.ZodString>;
-        model: z.ZodOptional<z.ZodString>;
-        timestamp: z.ZodOptional<z.ZodString>;
-    }, z.core.$strip>;
-}, z.core.$strip>;
+export declare const ConfigSchema: any;
 export type VulpesConfig = z.infer<typeof ConfigSchema>;
 export type ApiKeys = z.infer<typeof ApiKeySchema>;
 export type Preferences = z.infer<typeof PreferencesSchema>;
