@@ -1,0 +1,497 @@
+
+> vulpes-celare@1.0.0 test
+> node tests/master-suite/run.js
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                E V O L U T I O N A R Y   T E S T   S U I T E                 ║
+║                                                                              ║
+║           Self-Learning  •  Pattern Recognition  •  Smart Grading            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+[Vulpes Cortex] Initializing...
+[Vulpes Cortex] Initialized successfully
+  ✓ Vulpes Cortex initialized (advanced learning + history consultation)
+
+PHASE 1: Running complete test suite...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                      A S S E S S M E N T   E N G I N E                       ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                         Engine: Vulpes Celare v1.0.0                         ║
+║                          Processing 50 documents...                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+  Progress: 25/50 documents (8x parallel)  Progress: 50/50 documents (8x parallel)
+  Processing complete in 37.82s
+
+
+PHASE 2: Calculating metrics...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         PHASE 2: CALCULATING METRICS                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        TEST SUITE VALIDATION WARNING                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  6/335 (1.8%) expected non-PHI items were NOT FOUND in documents.
+  These items are in ground truth but templates don't include them.
+  This does NOT affect test accuracy - skipped items are excluded from metrics.
+
+  Skipped by type:
+    MEDICATION: 6 items
+      - "Hydrocodone" (Referral Letter)
+      - "Atomoxetine" (Referral Letter)
+      - "Nortriptyline" (Referral Letter)
+
+
+PHASE 3: Deep investigation of failures...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   PHASE 3: DEEP INVESTIGATION OF FAILURES                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+PHASE 4: Smart grading analysis...
+
+
+PHASE 5: Vulpes Cortex analysis (with history consultation)...
+
+  ✓ Pattern analysis complete
+  ✓ History consulted
+  ✓ Insights generated
+  ✓ Top recommendation: HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      VULPES CELARE - ASSESSMENT REPORT                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+ENGINE INFORMATION
+────────────────────────────────────────────────────────────────────────────────
+  Name:            Vulpes Celare
+  Version:         1.0.0
+  Variant:         Hatkoff Redaction Engine
+  Active Filters:  25
+
+TEST CONFIGURATION
+────────────────────────────────────────────────────────────────────────────────
+  Documents:       50
+  Processing Time: 37.82s
+  Avg per Doc:     756.4ms
+
+════════════════════════════════════════════════════════════════════════════════
+                       FINAL GRADE (HIPAA_STRICT profile)                       
+════════════════════════════════════════════════════════════════════════════════
+
+                               ╔═══════════════╗                                
+                               ║       F       ║                                
+                               ║     0/100     ║                                
+                               ╚═══════════════╝                                
+
+                         CRITICAL FAILURE - Do not use                          
+
+════════════════════════════════════════════════════════════════════════════════
+
+CONFUSION MATRIX
+────────────────────────────────────────────────────────────────────────────────
+                          | Actual PHI | Actual Non-PHI |
+  ------------------------+------------+----------------+
+  Predicted PHI (Redacted)|     1674   |         31     |
+  Predicted Non-PHI       |       32   |        298     |
+  ------------------------+------------+----------------+
+  Total                   |     1706   |        329     |
+
+PRIMARY METRICS
+────────────────────────────────────────────────────────────────────────────────
+  SENSITIVITY (Recall):   98.12%  <- PHI correctly redacted
+  SPECIFICITY:            90.58%  <- Non-PHI correctly preserved
+  PRECISION (PPV):        98.18%  <- Redaction accuracy
+  F1 SCORE:               98.15
+  F2 SCORE:               98.14    <- Recall-weighted (HIPAA gold standard)
+  MCC:                    0.8859  <- Gold standard for imbalanced data (-1 to +1)
+
+INTEGRITY CHECK
+────────────────────────────────────────────────────────────────────────────────
+  Expected PHI Items:     1706
+  Counted PHI Items:      1706
+  Integrity Status:       [OK] PASSED
+
+SCORE BREAKDOWN
+────────────────────────────────────────────────────────────────────────────────
+  Raw Score:              96.62
+  Penalties/Bonuses:      -101
+  Final Score:            0
+
+PERFORMANCE BY PHI TYPE
+────────────────────────────────────────────────────────────────────────────────
+  ✗ PHONE              298/300 (99.3%) - 2 MISSED
+  ✗ DATE               195/200 (97.5%) - 5 MISSED
+  ✓ NPI                200/200 (100.0%)
+  ✗ NAME               143/150 (95.3%) - 7 MISSED
+  ✗ SSN                97/100 (97.0%) - 3 MISSED
+  ✓ EMAIL              79/79 (100.0%)
+  ✓ HEALTH_PLAN_ID     72/72 (100.0%)
+  ✗ MRN                45/50 (90.0%) - 5 MISSED
+  ✓ ACCOUNT_NUMBER     50/50 (100.0%)
+  ✗ ADDRESS            49/50 (98.0%) - 1 MISSED
+  ✗ ZIPCODE            49/50 (98.0%) - 1 MISSED
+  ✓ FAX                50/50 (100.0%)
+  ✓ CREDIT_CARD        50/50 (100.0%)
+  ✓ IP                 50/50 (100.0%)
+  ✓ URL                50/50 (100.0%)
+  ✓ DEVICE_ID          50/50 (100.0%)
+  ✓ VIN                50/50 (100.0%)
+  ✗ LICENSE_PLATE      49/50 (98.0%) - 1 MISSED
+  ✗ DEA                44/50 (88.0%) - 6 MISSED
+  ✗ AGE_90_PLUS        4/5 (80.0%) - 1 MISSED
+
+PERFORMANCE BY ERROR LEVEL
+────────────────────────────────────────────────────────────────────────────────
+  NONE       33/34 (97.1%) - 1 missed
+  LOW        578/584 (99.0%) - 6 missed
+  MEDIUM     596/609 (97.9%) - 13 missed
+  HIGH       467/479 (97.5%) - 12 missed
+
+MISSED PHI SAMPLES (32 total, showing first 20)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 2 (Operative Report/medium):
+    DEA: "JA3536485"
+    Source: surgeon_dea
+  Doc 3 (Registration Form/high):
+    NAME: "ALLEN, TAMMOKA"
+    Source: patient
+  Doc 4 (Referral Letter/low):
+    NAME: "ALGERJON FISCHER"
+    Source: patient
+  Doc 8 (Operative Report/medium):
+    DEA: "TL7011434"
+    Source: surgeon_dea
+  Doc 9 (Registration Form/medium):
+    MRN: "630 085I"
+    Source: mrn
+  Doc 9 (Registration Form/medium):
+    LICENSE_PLATE: "PYundefinedZ10"
+    Source: license_plate
+  Doc 12 (Insurance EOB/low):
+    NAME: "Ron ald N. Eriksson"
+    Source: patient
+  Doc 13 (History & Physical/high):
+    DATE: "10/2 5/23"
+    Source: admit_date
+  Doc 13 (History & Physical/high):
+    MRN: "pY: 533440"
+    Source: mrn
+  Doc 14 (Operative Report/low):
+    DEA: "ZX6929094"
+    Source: surgeon_dea
+  Doc 18 (Insurance EOB/medium):
+    NAME: "Wei Daniel Scbwartz"
+    Source: patient
+  Doc 19 (History & Physical/medium):
+    SSN: "40 95 7609"
+    Source: patient_ssn
+  Doc 20 (Operative Report/low):
+    DEA: "TM7847472"
+    Source: surgeon_dea
+  Doc 22 (Referral Letter/high):
+    NAME: "Shaniqua Dainel Singh"
+    Source: patient
+  Doc 22 (Referral Letter/high):
+    AGE_90_PLUS: "97"
+    Source: age
+  Doc 24 (Insurance EOB/medium):
+    ADDRESS: "3280 West Drive"
+    Source: street_address
+  Doc 26 (Operative Report/low):
+    NAME: "Liinda McKenzie"
+    Source: patient
+  Doc 27 (Registration Form/high):
+    PHONE: "3|Q7.02.3B34"
+    Source: emergency_phone3
+  Doc 29 (Pathology Report/high):
+    DATE: "02/o/z1952"
+    Source: dob
+  Doc 33 (Registration Form/high):
+    MRN: "REC8 061900"
+    Source: mrn
+
+OVER-REDACTIONS (31 total, showing first 10)
+────────────────────────────────────────────────────────────────────────────────
+  Doc 2: AGE_UNDER_90 = "34"
+  Doc 4: DIAGNOSIS = "Aplastic Anemia"
+  Doc 7: HOSPITAL = "NewYork-Presbyterian"
+  Doc 7: PROCEDURE = "Pelvic Ultrasound"
+  Doc 8: HOSPITAL = "NYU Langone Health"
+  Doc 8: PROCEDURE = "Pelvic Ultrasound"
+  Doc 8: AGE_UNDER_90 = "53"
+  Doc 12: HOSPITAL = "CommonSpirit Health"
+  Doc 13: DIAGNOSIS = "End Stage Renal Disease"
+  Doc 18: DIAGNOSIS = "Uterine Cancer"
+
+════════════════════════════════════════════════════════════════════════════════
+                               CRITICAL FINDINGS                                
+════════════════════════════════════════════════════════════════════════════════
+
+  [CRITICAL] 3 Social Security Numbers were NOT redacted
+  Impact: HIPAA violation - SSN is a direct identifier
+  Samples: 40 95 7609, ***-* *-6694, 749 0 8599
+
+  [CRITICAL] 7 patient names were NOT redacted
+  Impact: HIPAA violation - Names are direct identifiers
+  Samples: ALLEN, TAMMOKA, ALGERJON FISCHER, Ron ald N. Eriksson
+
+  [HIGH] 3 dates of birth were NOT redacted
+  Impact: HIPAA violation - DOB is a key identifier
+  Samples: 02/o/z1952, /74/81, 117//2009
+
+════════════════════════════════════════════════════════════════════════════════
+                                RECOMMENDATIONS                                 
+════════════════════════════════════════════════════════════════════════════════
+
+  [HIGH] MRN Detection
+  Issue: 5 MRN items missed
+  Suggestions:
+    • Review MRN detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [HIGH] OCR Tolerance
+  Issue: OCR-corrupted values not being detected
+  Suggestions:
+    • Add character substitution patterns to all filters
+    • Implement fuzzy matching with edit distance
+    • Create OCR normalization preprocessing step
+
+  [MEDIUM] DEA Detection
+  Issue: 6 DEA items missed
+  Suggestions:
+    • Review DEA detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] LICENSE_PLATE Detection
+  Issue: 1 LICENSE_PLATE items missed
+  Suggestions:
+    • Review LICENSE_PLATE detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] AGE_90_PLUS Detection
+  Issue: 1 AGE_90_PLUS items missed
+  Suggestions:
+    • Review AGE_90_PLUS detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [LOW] ADDRESS Detection
+  Issue: 1 ADDRESS items missed
+  Suggestions:
+    • Review address detection regex
+    • Add support for apartment/unit variations
+    • Consider multi-line address detection
+
+  [LOW] PHONE Detection
+  Issue: 2 PHONE items missed
+  Suggestions:
+    • Expand phone number format support
+    • Add international phone number patterns
+    • Support extensions and additional notations
+
+  [LOW] ZIPCODE Detection
+  Issue: 1 ZIPCODE items missed
+  Suggestions:
+    • Review ZIPCODE detection patterns
+    • Add OCR-tolerant variations
+    • Check for format variations in real documents
+
+  [CRITICAL] NAME Detection
+  Issue: 7 NAME items missed
+  Suggestions:
+    • Review name pattern regex for edge cases
+    • Add support for additional name formats (hyphenated, apostrophes)
+    • Consider fuzzy matching for OCR-corrupted names
+
+  [CRITICAL] DATE Detection
+  Issue: 5 DATE items missed
+  Suggestions:
+    • Add more date format patterns
+    • Support international date formats
+    • Add OCR-tolerant date patterns
+
+════════════════════════════════════════════════════════════════════════════════
+                                 END OF REPORT                                  
+════════════════════════════════════════════════════════════════════════════════
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                       SMART GRADING REPORT                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PROFILE: DEVELOPMENT - Balanced scoring that rewards progress while noting issues
+
+RAW METRICS
+────────────────────────────────────────────────────────────────────────────────
+  Sensitivity:    98.12%
+  Specificity:    90.58%
+  Precision:      98.18%
+  F1 Score:       98.15
+
+SCORE CALCULATION
+────────────────────────────────────────────────────────────────────────────────
+Base Score (weighted metrics):  96.25
+Penalties (DIMINISHING):      -13.89
+  - ssn: 3 missed
+  - name: 7 missed
+  - dob: 3 missed
+  - address: 1 missed
+  - phone: 2 missed
+  - other: 16 missed
+Bonuses:                       +5.00
+  + Sensitivity above 95%: +5
+────────────────────────────────────
+Final Score:                    87.36
+
+                         ╔═══════════════╗
+                         ║     A-        ║
+                         ║   87.36/100     ║
+                         ╚═══════════════╝
+
+  Good - Acceptable with monitoring
+
+COMPARISON ACROSS PROFILES
+────────────────────────────────────────────────────────────────────────────────
+  HIPAA_STRICT    F   (0/100)
+→ DEVELOPMENT     A-  (87.36/100)
+  RESEARCH        A   (90.77/100)
+  OCR_TOLERANT    B   (73.62/100)
+
+CONTEXT ANALYSIS
+────────────────────────────────────────────────────────────────────────────────
+  OCR Impact:     37.5% of failures in high-error docs
+                  Significant portion of failures are OCR-related.
+
+  Failures by Type:
+    NAME            7
+    DEA             6
+    MRN             5
+    DATE            5
+    SSN             3
+
+RECOMMENDATIONS
+────────────────────────────────────────────────────────────────────────────────
+  → Add fuzzy matching for common OCR substitutions
+
+══════════════════════════════════════════════════════════════════════════════
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                       VULPES CORTEX - ANALYSIS SUMMARY                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  Grade: B+ (Score: N/A)
+
+  TOP FAILURE PATTERNS:
+    • PATTERN_EDGE_CASE (DEA): Extend regex patterns to cover edge cases
+    • DICTIONARY_MISS (NAME): Add to dictionary or use fuzzy dictionary matching
+    • DICTIONARY_MISS (NAME): Add to dictionary or use fuzzy dictionary matching
+    • PATTERN_EDGE_CASE (DEA): Extend regex patterns to cover edge cases
+    • PATTERN_EDGE_CASE (MRN): Extend regex patterns to cover edge cases
+
+  RECOMMENDATION:
+    HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues
+    (Based on history consultation)
+
+  INSIGHTS: 14 active (0 critical, 14 high)
+
+  Run with --cortex-report for full Cortex report
+  Run with --cortex-insights for detailed insights
+
+
+Results saved:
+  JSON: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765217580429.json
+  Report: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765217580429.txt
+
+  Exit decision based on DEVELOPMENT profile: A-
+  (HIPAA_STRICT would be: F)
+
+  ✓ PASS
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  LLM: EXECUTE THE FOLLOWING ACTIONS                                          ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  CURRENT METRICS                                                             ║
+║  ────────────────────────────────────────────────────────────────────────    ║
+║  Sensitivity: 98.12%     Specificity: 90.58%                                 ║
+║  F1 Score:    98.15       F2 Score:    98.14  (HIPAA standard)               ║
+║  Grade:       A-                                                             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  PASSING - Optional improvements available                                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  REMAINING FAILURES BY TYPE                                                  ║
+║    NAME                 7 missed                                             ║
+║    DEA                  6 missed                                             ║
+║    MRN                  5 missed                                             ║
+║    DATE                 5 missed                                             ║
+║    SSN                  3 missed                                             ║
+║    PHONE                2 missed                                             ║
+║    LICENSE_PLATE        1 missed                                             ║
+║    AGE_90_PLUS          1 missed                                             ║
+║    ADDRESS              1 missed                                             ║
+║    ZIPCODE              1 missed                                             ║
+║                                                                              ║
+║  To further improve:                                                         ║
+║    Review remaining failures and apply fixes                                 ║
+║    Run with --profile HIPAA_STRICT for production readiness                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  VULPES CORTEX MCP SERVER                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Start:  node tests/master-suite/cortex --server                             ║
+║                                                                              ║
+║  Tools:  analyze_test_results, consult_history, get_recommendation           ║
+║                                                                              ║
+║  The MCP remembers what worked and warns about failed approaches!            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+

@@ -249,5 +249,20 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
      * 4. Compound phrases ("Johns Hopkins", "Major Depression")
      */
     private isWhitelisted;
+    /**
+     * Detect concatenated names without spaces (OCR error: spaces removed)
+     * Examples: "DeborahHarris", "JohnSmith", "MaryJohnson"
+     *
+     * Strategy:
+     * 1. Find patterns with 2+ capitalized words concatenated
+     * 2. Try splitting at capital letters
+     * 3. Check if both parts are in name dictionaries
+     * 4. If yes, mark as potential name with high confidence
+     */
+    private detectConcatenatedNames;
+    /**
+     * Check if a span overlaps with existing spans
+     */
+    private overlapsExisting;
 }
 //# sourceMappingURL=SmartNameFilterSpan.d.ts.map

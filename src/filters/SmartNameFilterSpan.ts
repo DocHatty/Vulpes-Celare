@@ -145,6 +145,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     // Catches chaotic OCR like "pATriCIA L. jOHNsOn" when preceded by labels
     this.detectChaosAwareLabeledNames(text, spans);
 
+    // Pattern 16: Concatenated names (no space between first and last)
+    // Catches: "DeborahHarris", "JohnSmith", "MaryJohnson"
+    this.detectConcatenatedNames(text, spans);
+
     return spans;
   }
 
@@ -1793,6 +1797,105 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       return true;
     }
 
+    return false;
+  }
+
+  /**
+   * Detect concatenated names without spaces (OCR error: spaces removed)
+   * Examples: "DeborahHarris", "JohnSmith", "MaryJohnson"
+   *
+   * Strategy:
+   * 1. Find patterns with 2+ capitalized words concatenated
+   * 2. Try splitting at capital letters
+   * 3. Check if both parts are in name dictionaries
+   * 4. If yes, mark as potential name with high confidence
+   */
+  private detectConcatenatedNames(text: string, spans: Span[]): void {
+    // Pattern: Two or more capitalized words concatenated (minimum 3 chars each part)
+    // Matches: "DeborahHarris", "JohnSmith", but not "USB" or "MRI"
+    const pattern = /\b([A-Z][a-z]{2,})([A-Z][a-z]{2,}(?:[A-Z][a-z]{2,})?)\b/g;
+    let match;
+
+    while ((match = pattern.exec(text)) !== null) {
+      const fullMatch = match[0];
+      const part1 = match[1]; // First capitalized word
+      const part2 = match[2]; // Second+ capitalized word(s)
+
+      // Check if both parts could be names using dictionary
+      const part1IsName = NameDictionary.isFirstName(part1) || NameDictionary.isSurname(part1);
+      const part2IsName = NameDictionary.isSurname(part2) || NameDictionary.isFirstName(part2);
+
+      if (part1IsName && part2IsName) {
+        // Both parts are in name dictionaries - high confidence this is a name
+        const start = match.index;
+        const end = start + fullMatch.length;
+
+        // Don't overlap with existing spans
+        if (!this.overlapsExisting(start, end, spans)) {
+          const span = new Span({
+            text: fullMatch,
+            originalValue: fullMatch,
+            characterStart: start,
+            characterEnd: end,
+            filterType: FilterType.NAME,
+            confidence: 0.95, // High confidence when both parts in dictionary
+            priority: this.getPriority(),
+            context: this.getContext(text, start, fullMatch.length),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: "Concatenated names (OCR: missing space)",
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          });
+          spans.push(span);
+        }
+      } else if (part1IsName || part2IsName) {
+        // One part is a name - medium confidence
+        // This catches cases where one part is a rare name not in dictionary
+        const start = match.index;
+        const end = start + fullMatch.length;
+
+        if (!this.overlapsExisting(start, end, spans)) {
+          const span = new Span({
+            text: fullMatch,
+            originalValue: fullMatch,
+            characterStart: start,
+            characterEnd: end,
+            filterType: FilterType.NAME,
+            confidence: 0.75, // Medium confidence
+            priority: this.getPriority(),
+            context: this.getContext(text, start, fullMatch.length),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: "Concatenated names (possible OCR: missing space)",
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          });
+          spans.push(span);
+        }
+      }
+    }
+  }
+
+  /**
+   * Check if a span overlaps with existing spans
+   */
+  private overlapsExisting(start: number, end: number, spans: Span[]): boolean {
+    for (const span of spans) {
+      if (
+        (start >= span.characterStart && start < span.characterEnd) ||
+        (end > span.characterStart && end <= span.characterEnd) ||
+        (start <= span.characterStart && end >= span.characterEnd)
+      ) {
+        return true;
+      }
+    }
     return false;
   }
 }
