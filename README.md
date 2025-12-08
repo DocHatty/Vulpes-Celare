@@ -198,8 +198,8 @@ const compiled = PolicyCompiler.compile(policy);
 ```
 
 > 📊 **System Assessment Available**  
-> - [📋 Quick Summary](docs/ASSESSMENT-SUMMARY.md)
-> - [📖 Full Assessment](docs/COMPREHENSIVE-ASSESSMENT.md)
+> - [📋 Quick Summary](docs/internal/ASSESSMENT-SUMMARY.md)
+> - [📖 Full Assessment](docs/internal/COMPREHENSIVE-ASSESSMENT.md)
 
 ---
 
@@ -455,18 +455,108 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 
 ---
 
-## 🧠 Vulpes Cortex
+## 🧠 Vulpes Cortex & CLI System
 
-**Self-learning test intelligence** with MCP (Model Context Protocol) integration:
+Vulpes Celare includes a powerful **intelligent CLI system** that serves as the primary interface for interacting with the redaction engine, managing configurations, and orchestrating multi-agent workflows.
+
+### CLI Architecture
+
+```
+~/.vulpes/                    # Local config directory (auto-created)
+├── config.json              # API keys, preferences, provider settings
+└── vulpes.db                # SQLite: sessions, audit logs, agent memory, HIPAA knowledge
+```
+
+> **Security Note**: The `~/.vulpes/` directory contains sensitive API keys and is excluded from git via `.gitignore`. Never commit this directory.
+
+### Installation & Usage
+
+```bash
+# Install globally
+npm run install-global
+
+# Launch interactive menu
+vulpes
+
+# Direct commands
+vulpes chat         # Native API chat with PHI redaction
+vulpes cc           # Claude Code integration (wrapper)
+vulpes --help       # Full command reference
+```
+
+### Native Chat Features
+
+The native chat (`vulpes chat`) provides:
+
+| Feature | Description |
+|---------|-------------|
+| **Multi-Provider Support** | OpenAI, Anthropic, Google, OpenRouter, Ollama, custom endpoints |
+| **Automatic PHI Redaction** | All messages pass through Vulpes engine before LLM |
+| **Subagent Orchestration** | Intelligent task routing with parallel/serial execution |
+| **Session Persistence** | Conversations stored in SQLite with full audit trail |
+| **HIPAA Knowledge Base** | 989 Q&A pairs with CFR citations for compliance queries |
+
+### Subagent Orchestration
+
+The CLI includes an **intelligent multi-agent system** that automatically detects workflow types and routes tasks:
+
+| Agent | Role | Model |
+|-------|------|-------|
+| **Scout** | Fast PHI scanning and detection | haiku |
+| **Analyst** | Root cause analysis for detection issues | sonnet |
+| **Engineer** | Code fixes for filters and dictionaries | sonnet |
+| **Tester** | Run tests and validate changes | haiku |
+| **Auditor** | HIPAA compliance certification | haiku |
+| **Setup** | System health and MCP status | haiku |
+
+**Workflow Detection:**
+```
+"scan this note"        → Scout agent (parallel scan)
+"fix the SSN filter"    → Engineer → Tester (serial)
+"audit this document"   → Auditor agent
+"why did this fail"     → Analyst agent
+"full review"           → Scout → Analyst → Engineer → Tester → Auditor
+```
+
+### Chat Commands
+
+```bash
+/redact <text>      # Redact PHI from text
+/analyze <text>     # Analyze PHI without redacting
+/info               # Show Vulpes engine info
+/model              # Switch models
+/provider           # Switch providers
+/subagents or /s    # Toggle subagent orchestration
+/orchestrate <task> # Run intelligent workflow
+/history            # View session history
+/clear              # Clear conversation
+```
+
+### Cortex Intelligence
+
+**Self-learning test system** with MCP (Model Context Protocol) integration:
 
 - **Failure Patterns** - Why specific PHI types slip through
 - **Fix History** - What worked, what didn't, and why
 - **Regression Alerts** - Automatic detection of metric degradation
 - **LLM-Augmented Analysis** - AI can introspect failures and propose fixes
+- **HIPAA Knowledge RAG** - 989 compliance Q&A pairs with 254 unique CFR references
 
 ```bash
+# Run tests with Cortex intelligence
 node tests/master-suite/run.js --count 200 --cortex --cortex-report
 ```
+
+### Custom Claude Agents
+
+The project includes specialized Claude Code agents in `.claude/agents/`:
+
+| Agent | Purpose |
+|-------|---------|
+| `phi-auditor.md` | HIPAA Safe Harbor compliance auditing |
+| `filter-engineer.md` | Vulpes filter development and fixes |
+| `test-analyst.md` | Test metrics analysis and recommendations |
+| `hipaa-reviewer.md` | Full CFR-cited compliance review |
 
 ---
 

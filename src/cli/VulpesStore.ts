@@ -258,11 +258,26 @@ function initializeTables(): void {
     )
   `);
 
+  // HIPAA Knowledge Base for RAG
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS hipaa_knowledge (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      question TEXT NOT NULL,
+      answer TEXT NOT NULL,
+      type TEXT NOT NULL,
+      source TEXT,
+      cfr_refs TEXT,
+      embedding_hash TEXT
+    )
+  `);
+
   // Create indexes for common queries
   database.exec(`
     CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id);
     CREATE INDEX IF NOT EXISTS idx_redaction_timestamp ON redaction_log(timestamp);
     CREATE INDEX IF NOT EXISTS idx_agent_memory_type ON agent_memory(task_type);
+    CREATE INDEX IF NOT EXISTS idx_hipaa_type ON hipaa_knowledge(type);
+    CREATE INDEX IF NOT EXISTS idx_hipaa_cfr ON hipaa_knowledge(cfr_refs);
   `);
 }
 
@@ -651,3 +666,197 @@ export function migrateFromOldFormat(): void {
 
 // Run migration on module load
 migrateFromOldFormat();
+
+// ============================================================================
+// HIPAA KNOWLEDGE BASE (RAG)
+// ============================================================================
+
+export interface HipaaKnowledge {
+  id?: number;
+  question: string;
+  answer: string;
+  type: string;
+  source?: string;
+  cfr_refs?: string[];
+}
+
+/**
+ * Add HIPAA knowledge entry
+ */
+export function addHipaaKnowledge(entry: HipaaKnowledge): void {
+  const database = getDatabase();
+  database
+    .prepare(
+      `
+    INSERT INTO hipaa_knowledge (question, answer, type, source, cfr_refs)
+    VALUES (?, ?, ?, ?, ?)
+  `,
+    )
+    .run(
+      entry.question,
+      entry.answer,
+      entry.type,
+      entry.source || null,
+      entry.cfr_refs ? JSON.stringify(entry.cfr_refs) : null,
+    );
+}
+
+/**
+ * Bulk insert HIPAA knowledge
+ */
+export function bulkAddHipaaKnowledge(entries: HipaaKnowledge[]): number {
+  const database = getDatabase();
+  const insert = database.prepare(`
+    INSERT INTO hipaa_knowledge (question, answer, type, source, cfr_refs)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+
+  const insertMany = database.transaction((items: HipaaKnowledge[]) => {
+    for (const entry of items) {
+      insert.run(
+        entry.question,
+        entry.answer,
+        entry.type,
+        entry.source || null,
+        entry.cfr_refs ? JSON.stringify(entry.cfr_refs) : null,
+      );
+    }
+    return items.length;
+  });
+
+  return insertMany(entries);
+}
+
+/**
+ * Search HIPAA knowledge by keyword
+ */
+export function searchHipaaKnowledge(
+  query: string,
+  limit: number = 10,
+): HipaaKnowledge[] {
+  const database = getDatabase();
+  const results = database
+    .prepare(
+      `
+    SELECT id, question, answer, type, source, cfr_refs
+    FROM hipaa_knowledge
+    WHERE question LIKE ? OR answer LIKE ? OR cfr_refs LIKE ?
+    LIMIT ?
+  `,
+    )
+    .all(`%${query}%`, `%${query}%`, `%${query}%`, limit) as any[];
+
+  return results.map((r) => ({
+    id: r.id,
+    question: r.question,
+    answer: r.answer,
+    type: r.type,
+    source: r.source,
+    cfr_refs: r.cfr_refs ? JSON.parse(r.cfr_refs) : [],
+  }));
+}
+
+/**
+ * Search by CFR section
+ */
+export function searchByCfr(cfrSection: string): HipaaKnowledge[] {
+  const database = getDatabase();
+  const results = database
+    .prepare(
+      `
+    SELECT id, question, answer, type, source, cfr_refs
+    FROM hipaa_knowledge
+    WHERE cfr_refs LIKE ?
+  `,
+    )
+    .all(`%${cfrSection}%`) as any[];
+
+  return results.map((r) => ({
+    id: r.id,
+    question: r.question,
+    answer: r.answer,
+    type: r.type,
+    source: r.source,
+    cfr_refs: r.cfr_refs ? JSON.parse(r.cfr_refs) : [],
+  }));
+}
+
+/**
+ * Get HIPAA knowledge by type
+ */
+export function getHipaaByType(
+  type: string,
+  limit: number = 20,
+): HipaaKnowledge[] {
+  const database = getDatabase();
+  const results = database
+    .prepare(
+      `
+    SELECT id, question, answer, type, source, cfr_refs
+    FROM hipaa_knowledge
+    WHERE type = ?
+    LIMIT ?
+  `,
+    )
+    .all(type, limit) as any[];
+
+  return results.map((r) => ({
+    id: r.id,
+    question: r.question,
+    answer: r.answer,
+    type: r.type,
+    source: r.source,
+    cfr_refs: r.cfr_refs ? JSON.parse(r.cfr_refs) : [],
+  }));
+}
+
+/**
+ * Get HIPAA knowledge stats
+ */
+export function getHipaaStats(): {
+  total: number;
+  byType: Record<string, number>;
+  uniqueCfrSections: number;
+} {
+  const database = getDatabase();
+
+  const total = (
+    database
+      .prepare(`SELECT COUNT(*) as count FROM hipaa_knowledge`)
+      .get() as any
+  ).count;
+
+  const byTypeResults = database
+    .prepare(
+      `SELECT type, COUNT(*) as count FROM hipaa_knowledge GROUP BY type`,
+    )
+    .all() as any[];
+
+  const byType: Record<string, number> = {};
+  for (const r of byTypeResults) {
+    byType[r.type] = r.count;
+  }
+
+  // Count unique CFR sections (rough estimate)
+  const cfrResults = database
+    .prepare(
+      `SELECT DISTINCT cfr_refs FROM hipaa_knowledge WHERE cfr_refs IS NOT NULL`,
+    )
+    .all() as any[];
+
+  const uniqueCfr = new Set<string>();
+  for (const r of cfrResults) {
+    try {
+      const refs = JSON.parse(r.cfr_refs);
+      for (const ref of refs) {
+        uniqueCfr.add(ref);
+      }
+    } catch {}
+  }
+
+  return {
+    total,
+    byType,
+    uniqueCfrSections: uniqueCfr.size,
+  };
+}

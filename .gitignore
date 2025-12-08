@@ -27,6 +27,11 @@ npm-debug.log*
 .env.local
 .env.*.local
 
+# Vulpes CLI config (contains API keys and local database)
+.vulpes/
+~/.vulpes/
+**/vulpes-config.json
+
 # Test artifacts
 coverage/
 .nyc_output/
@@ -38,3 +43,7 @@ tmp/
 temp/
 *.tmp
 nul
+
+# Debug logs
+bridge_debug.log
+*.debug.log

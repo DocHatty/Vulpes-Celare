@@ -209,4 +209,40 @@ export declare function clearAllData(): void;
  * Migrate from old api-keys.json format
  */
 export declare function migrateFromOldFormat(): void;
+export interface HipaaKnowledge {
+    id?: number;
+    question: string;
+    answer: string;
+    type: string;
+    source?: string;
+    cfr_refs?: string[];
+}
+/**
+ * Add HIPAA knowledge entry
+ */
+export declare function addHipaaKnowledge(entry: HipaaKnowledge): void;
+/**
+ * Bulk insert HIPAA knowledge
+ */
+export declare function bulkAddHipaaKnowledge(entries: HipaaKnowledge[]): number;
+/**
+ * Search HIPAA knowledge by keyword
+ */
+export declare function searchHipaaKnowledge(query: string, limit?: number): HipaaKnowledge[];
+/**
+ * Search by CFR section
+ */
+export declare function searchByCfr(cfrSection: string): HipaaKnowledge[];
+/**
+ * Get HIPAA knowledge by type
+ */
+export declare function getHipaaByType(type: string, limit?: number): HipaaKnowledge[];
+/**
+ * Get HIPAA knowledge stats
+ */
+export declare function getHipaaStats(): {
+    total: number;
+    byType: Record<string, number>;
+    uniqueCfrSections: number;
+};
 //# sourceMappingURL=VulpesStore.d.ts.map

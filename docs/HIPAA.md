@@ -1,5 +1,7 @@
 # HIPAA Compliance & Safe System Requirements
 
+> **Quick Reference Guide** - For the comprehensive HIPAA compliance mapping with filter implementations and code examples, see [compliance/HIPAA-COMPLIANCE.md](compliance/HIPAA-COMPLIANCE.md).
+
 > **Disclaimer**: This provides a technical overview, not legal advice. Compliance requires legal counsel and organizational policies.
 
 ---
