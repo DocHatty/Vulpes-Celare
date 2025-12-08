@@ -1,11 +1,17 @@
 /**
  * Span Model - Represents a detected PII/PHI entity with rich metadata
  *
+ * PERFORMANCE UPGRADE (v2.0):
+ * - SpanUtils.dropOverlappingSpans now uses IntervalTree for O(n log n) instead of O(n²)
+ * - Composite scoring optimized with cached calculations
+ *
  * Based on Phileas's Span architecture with enhancements for VulpesHIPPA.
  * Tracks character positions, confidence, priority, context, and disambiguation info.
  *
  * @module redaction/models
  */
+
+import { IntervalTreeSpanIndex } from "./IntervalTreeSpanIndex";
 
 export enum FilterType {
   // Identity
@@ -219,6 +225,9 @@ export class Span {
 
 /**
  * Span Utilities - Operations on collections of spans
+ *
+ * PERFORMANCE: Now uses IntervalTree for O(n log n) overlap detection
+ * instead of O(n²) nested loops.
  */
 export class SpanUtils {
   /**
@@ -263,6 +272,16 @@ export class SpanUtils {
     CUSTOM: 20,
   };
 
+  // Performance flag - can be disabled for debugging
+  private static USE_INTERVAL_TREE = true;
+
+  /**
+   * Enable or disable interval tree optimization (for debugging)
+   */
+  static setUseIntervalTree(enabled: boolean): void {
+    SpanUtils.USE_INTERVAL_TREE = enabled;
+  }
+
   /**
    * Calculate composite score for a span
    * Used for tie-breaking when spans have similar characteristics
@@ -270,7 +289,7 @@ export class SpanUtils {
    * @param span - The span to score
    * @returns A composite score (higher = better)
    */
-  private static calculateSpanScore(span: Span): number {
+  static calculateSpanScore(span: Span): number {
     const typeSpecificity =
       this.TYPE_SPECIFICITY[span.filterType as string] || 25;
 
@@ -292,10 +311,26 @@ export class SpanUtils {
    * 1. Composite score (length, confidence, type specificity, priority)
    * 2. Special handling for containment (parent vs child spans)
    * 3. Same-position disambiguation
+   *
+   * PERFORMANCE: O(n log n) using IntervalTree instead of O(n²) nested loops
    */
   static dropOverlappingSpans(spans: Span[]): Span[] {
     if (spans.length === 0) return [];
+    if (spans.length === 1) return spans;
 
+    // Use optimized IntervalTree implementation when enabled
+    if (SpanUtils.USE_INTERVAL_TREE) {
+      return IntervalTreeSpanIndex.dropOverlappingSpans(spans);
+    }
+
+    // Fallback to legacy implementation (for debugging/comparison)
+    return SpanUtils.dropOverlappingSpansLegacy(spans);
+  }
+
+  /**
+   * Legacy O(n²) implementation - kept for backward compatibility and debugging
+   */
+  private static dropOverlappingSpansLegacy(spans: Span[]): Span[] {
     // Calculate scores for all spans
     const scoredSpans = spans.map((span) => ({
       span,
@@ -379,27 +414,21 @@ export class SpanUtils {
    * Returns groups of identical spans (for disambiguation)
    */
   static getIdenticalSpanGroups(spans: Span[]): Span[][] {
-    const groups: Map<string, Span[]> = new Map();
-
-    for (const span of spans) {
-      const key = `${span.characterStart}-${span.characterEnd}`;
-
-      if (!groups.has(key)) {
-        groups.set(key, []);
-      }
-
-      groups.get(key)!.push(span);
-    }
-
-    // Return only groups with multiple spans (ambiguous)
-    return Array.from(groups.values()).filter((group) => group.length > 1);
+    return IntervalTreeSpanIndex.getIdenticalSpanGroups(spans);
   }
 
   /**
    * Merge spans from multiple sources (e.g., regex + NER)
    * Removes duplicates and resolves overlaps
+   *
+   * PERFORMANCE: O(n log n) using IntervalTree
    */
   static mergeSpans(spanArrays: Span[][]): Span[] {
+    if (SpanUtils.USE_INTERVAL_TREE) {
+      return IntervalTreeSpanIndex.mergeSpans(spanArrays);
+    }
+
+    // Legacy implementation
     const allSpans = spanArrays.flat();
 
     // Remove exact duplicates (same position, same type)
@@ -453,5 +482,12 @@ export class SpanUtils {
       }
       return a.characterEnd - b.characterEnd;
     });
+  }
+
+  /**
+   * Get type specificity for a filter type
+   */
+  static getTypeSpecificity(filterType: FilterType | string): number {
+    return this.TYPE_SPECIFICITY[filterType as string] || 25;
   }
 }

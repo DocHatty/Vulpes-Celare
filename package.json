@@ -8,6 +8,10 @@
     "build": "tsc && node scripts/copy-assets.js",
     "build:watch": "tsc --watch",
     "test": "node tests/master-suite/run.js",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
+    "test:bench": "vitest bench",
+    "test:coverage": "vitest run --coverage",
     "clean": "rm -rf dist",
     "rebuild": "npm run clean && npm run build"
   },
@@ -39,6 +43,13 @@
   "devDependencies": {
     "@types/node": "^20.19.25",
     "@types/string-similarity": "^4.0.2",
-    "typescript": "^5.0.0"
+    "@vitest/coverage-v8": "^4.0.15",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.15"
+  },
+  "dependencies": {
+    "@flatten-js/interval-tree": "^2.0.3",
+    "bloom-filters": "^3.0.4",
+    "lru-cache": "^11.2.4"
   }
 }

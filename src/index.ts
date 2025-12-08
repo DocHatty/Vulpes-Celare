@@ -83,6 +83,7 @@ export { FamilyNameFilterSpan } from "./filters/FamilyNameFilterSpan";
 export { SSNFilterSpan } from "./filters/SSNFilterSpan";
 export { PassportNumberFilterSpan } from "./filters/PassportNumberFilterSpan";
 export { LicenseNumberFilterSpan } from "./filters/LicenseNumberFilterSpan";
+export { DEAFilterSpan } from "./filters/DEAFilterSpan";
 
 // ============================================================================
 // CONTACT FILTERS
@@ -131,6 +132,54 @@ export { FilterRegistry } from "./filters/FilterRegistry";
 export { WindowService } from "./services/WindowService";
 export { ConfidenceModifierService } from "./services/ConfidenceModifierService";
 export { ReplacementContextService } from "./services/ReplacementContextService";
+
+// ============================================================================
+// ML & ADVANCED SCORING SYSTEMS
+// ============================================================================
+
+export {
+  MLWeightOptimizer,
+  mlWeightOptimizer,
+  TrainingDocument,
+  GroundTruthLabel,
+  OptimizationResult,
+} from "./core/MLWeightOptimizer";
+
+export {
+  CrossTypeReasoner,
+  crossTypeReasoner,
+  ReasoningResult,
+} from "./core/CrossTypeReasoner";
+
+export {
+  ConfidenceCalibrator,
+  confidenceCalibrator,
+  CalibrationDataPoint,
+  CalibrationMetrics,
+  CalibrationResult,
+} from "./core/ConfidenceCalibrator";
+
+export {
+  WeightedPHIScorer,
+  weightedScorer,
+  ScoringWeights,
+  ScoringResult,
+} from "./core/WeightedPHIScorer";
+
+export {
+  SpanEnhancer,
+  spanEnhancer,
+  EnhancementResult,
+  EnhancementConfig,
+} from "./core/SpanEnhancer";
+
+export {
+  EnsembleVoter,
+  VoteSignal,
+  EnsembleVote,
+  VotingConfig,
+  InterPHIDisambiguator,
+} from "./core/EnsembleVoter";
 
 // ============================================================================
 // DIAGNOSTICS & UTILITIES

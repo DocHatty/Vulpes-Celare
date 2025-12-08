@@ -6,24 +6,51 @@
 
 ## 🎯 Your Job
 
-Help improve PHI detection by running tests via the MCP server and fixing failures.
+Help improve PHI detection by running tests via the MCP/API servers and fixing failures.
 
 ---
 
 ## 🚀 Quick Workflow
 
-### 1. Verify MCP Server
+### 0. Start BOTH Servers (REQUIRED FIRST STEP)
+
+**Two servers must be running:**
+
+| Server | Port | Purpose |
+|--------|------|---------|
+| MCP Server | 3100 | Pattern recognition, hypothesis engine, decision support |
+| REST API | 3101 | Database operations, test streaming, experiments |
+
+**Start both:**
+```bash
+# Windows
+start "MCP" cmd /c "node tests/master-suite/cortex/index.js --server"
+start "API" cmd /c "node tests/master-suite/cortex/api/server.js"
+
+# Unix/Mac
+node tests/master-suite/cortex/index.js --server &
+node tests/master-suite/cortex/api/server.js &
+```
+
+### 1. Verify Servers
 
 ```bash
 curl http://localhost:3100/health
+curl http://localhost:3101/health
 ```
 
-Must see `"status": "running"` before proceeding.
+Both must respond with `"status": "running"` before proceeding.
 
-**If not running:**
+**If MCP not running:**
 
 ```bash
 node tests/master-suite/cortex/index.js --server-window
+```
+
+**If API not running:**
+
+```bash
+node tests/master-suite/cortex/api/server.js
 ```
 
 ### 2. Run Tests
@@ -59,11 +86,16 @@ npm run build && curl -X POST "http://localhost:3100/tool/run_tests" -d "{\"quic
 
 | What | Where |
 |------|-------|
-| Filters | `src/redaction/filters/*.ts` |
-| Dictionaries | `src/redaction/dictionaries/*.json` |
-| Config | `src/redaction/config/` |
-| MCP Server | `tests/master-suite/cortex/index.js` |
+| Filters | `src/filters/*.ts` |
+| Core Scoring | `src/core/WeightedPHIScorer.ts` |
+| Cross-Type Logic | `src/core/CrossTypeReasoner.ts` |
+| Confidence Cal. | `src/core/ConfidenceCalibrator.ts` |
+| ML Optimizer | `src/core/MLWeightOptimizer.ts` |
+| Dictionaries | `src/dictionaries/*.txt` |
+| MCP Server | `tests/master-suite/cortex/index.js` (port 3100) |
+| REST API Server | `tests/master-suite/cortex/api/server.js` (port 3101) |
 | Test Runner | `tests/master-suite/run.js` |
+| Test Results | `tests/results/verbose-*.log` |
 | Cortex Docs | `tests/master-suite/cortex/README.md` |
 
 ---
@@ -79,7 +111,7 @@ npm run build && curl -X POST "http://localhost:3100/tool/run_tests" -d "{\"quic
 
 ---
 
-## 🔧 MCP Tools Available
+## 🔧 MCP Tools Available (Port 3100)
 
 **Primary:**
 
@@ -100,6 +132,20 @@ npm run build && curl -X POST "http://localhost:3100/tool/run_tests" -d "{\"quic
 **Experiment:**
 
 - `create_backup` / `rollback` - Safe experimentation
+
+---
+
+## 🌐 REST API Endpoints (Port 3101)
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/health` | GET | Server health check |
+| `/api/patterns` | GET | Query failure patterns |
+| `/api/metrics` | GET | Get latest metrics |
+| `/api/decisions` | GET | Query past decisions |
+| `/api/tests/run` | POST | Start async test |
+| `/api/experiments` | GET | List experiments |
+| `/api/knowledge/summary` | GET | Full knowledge summary |
 
 ---
 

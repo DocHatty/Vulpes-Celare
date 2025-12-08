@@ -20,6 +20,12 @@ import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
 import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
 import { PostFilterService } from "./filters/PostFilterService";
 import { SpanEnhancer } from "./SpanEnhancer";
+import { CrossTypeReasoner, crossTypeReasoner } from "./CrossTypeReasoner";
+import {
+  ConfidenceCalibrator,
+  confidenceCalibrator,
+} from "./ConfidenceCalibrator";
+import { isWhitelisted } from "../filters/constants/NameFilterConstants";
 
 /**
  * Filter execution result with detailed diagnostics
@@ -343,13 +349,16 @@ export class ParallelRedactionEngine {
     // Applies ensemble voting with dictionary, structure, label, and chaos signals
     // NOTE: Currently only ENHANCING confidence, not filtering - system needs tuning
     const beforeEnsemble = allSpans.length;
-    const spanEnhancer = new SpanEnhancer({ minConfidence: 0.0, modifySpans: true });
+    const spanEnhancer = new SpanEnhancer({
+      minConfidence: 0.0,
+      modifySpans: true,
+    });
     const enhancementAnalysis = spanEnhancer.analyzeSpans(allSpans, text);
-    
+
     // Log enhancement stats but DON'T filter yet - let existing filters handle it
     // Once tuned, we can enable filtering with appropriate threshold
     const ensembleRemoved = 0; // Not filtering yet
-    
+
     RadiologyLogger.pipelineStage(
       "ENSEMBLE",
       `Multi-signal enhancement: ${ensembleRemoved} low-confidence removed, avg change: ${(enhancementAnalysis.averageConfidenceChange * 100).toFixed(1)}%`,
@@ -365,6 +374,42 @@ export class ParallelRedactionEngine {
       `Resolved ambiguous spans: ${beforeDisambiguation} -> ${disambiguatedSpans.length}`,
       disambiguatedSpans.length,
     );
+
+    // STEP 2.8: CROSS-TYPE REASONING - Apply constraint solving across PHI types
+    // Handles mutual exclusion (DATE vs AGE), mutual support (NAME + MRN), document consistency
+    const beforeCrossType = disambiguatedSpans.length;
+    const crossTypeResults = crossTypeReasoner.reason(disambiguatedSpans, text);
+    const crossTypeAdjusted = crossTypeResults.filter(
+      (r) => Math.abs(r.adjustedConfidence - r.originalConfidence) > 0.01,
+    ).length;
+    RadiologyLogger.pipelineStage(
+      "CROSS-TYPE",
+      `Cross-type reasoning: ${crossTypeAdjusted} spans adjusted, ${crossTypeReasoner.getStatistics().totalConstraints} constraints applied`,
+      disambiguatedSpans.length,
+    );
+
+    // STEP 2.9: CONFIDENCE CALIBRATION - Transform raw scores to calibrated probabilities
+    // Uses isotonic regression for monotonic calibration (Zadrozny & Elkan, 2002)
+    if (confidenceCalibrator.isFittedStatus()) {
+      const calibrationResults =
+        confidenceCalibrator.calibrateSpans(disambiguatedSpans);
+      const avgCalibrationChange =
+        calibrationResults.reduce(
+          (sum, r) => sum + Math.abs(r.calibratedConfidence - r.rawConfidence),
+          0,
+        ) / calibrationResults.length;
+      RadiologyLogger.pipelineStage(
+        "CALIBRATION",
+        `Confidence calibration applied: avg change ${(avgCalibrationChange * 100).toFixed(1)}%`,
+        disambiguatedSpans.length,
+      );
+    } else {
+      RadiologyLogger.pipelineStage(
+        "CALIBRATION",
+        "Calibrator not fitted - using raw confidence scores",
+        disambiguatedSpans.length,
+      );
+    }
 
     // STEP 3: Resolve overlaps and deduplicate
     const mergedSpans = SpanUtils.dropOverlappingSpans(disambiguatedSpans);
@@ -565,10 +610,7 @@ export class ParallelRedactionEngine {
    * Removes false positives that match known non-PHI terms
    */
   private static filterUsingDocumentVocabulary(spans: Span[]): Span[] {
-    // Import the shared whitelist function
-    const {
-      isWhitelisted,
-    } = require("../filters/constants/NameFilterConstants");
+    // Using isWhitelisted from NameFilterConstants (imported at top)
 
     // Person titles that indicate the text is a person reference, not a medical term
     const PERSON_TITLES = [

@@ -4,91 +4,61 @@ description: Run the Vulpes Celare test suite with MCP server
 
 # Run Test Suite Workflow
 
-**👉 READ FIRST: [`INSTRUCTIONS_FOR_AI_AGENTS.md`](../../INSTRUCTIONS_FOR_AI_AGENTS.md) at project root for comprehensive guidance!**
-
-This workflow provides quick steps. The comprehensive instructions explain everything in detail.
+> See also: `.agent/CLAUDE.md` for comprehensive AI agent instructions
 
 ---
 
 **MANDATORY: Follow these steps IN ORDER. Do NOT skip any step.**
 
-## Step 0: Locate Project Root
+## Step 0: Start BOTH Servers
 
-**ASK THE USER:**
+**Two servers must be running:**
 
-```text
-"What's the full path to your Vulpes-Celare project directory?"
-```
+| Server | Port | Purpose |
+|--------|------|---------|
+| MCP Server | 3100 | Pattern recognition, hypothesis engine, MCP tools |
+| REST API | 3101 | Database operations, test streaming, experiments |
 
-Once you know `<PROJECT_ROOT>`, use it in all commands below.
-
-**DO NOT HARD-CODE PATHS** - they're different for every user!
-
----
-
-## Step 1: Start MCP Server
-
-### If You Have MCP Access (Claude Desktop with vulpes-cortex configured)
-
-- Check if "vulpes-cortex" is in your connected MCP servers
-- If yes, skip to Step 3
-
-### If Starting Manually
-
+**Start both:**
 ```bash
-cd <PROJECT_ROOT>
-node tests/master-suite/cortex/index.js --server-window
-```
+# Windows
+start "MCP" cmd /c "node tests/master-suite/cortex/index.js --server"
+start "API" cmd /c "node tests/master-suite/cortex/api/server.js"
 
-This opens a **visible terminal window** on port 3100.
-
-**Wait for startup message:**
-
-```text
-╔══════════════════════════════════════════════════════════════╗
-║  VULPES CORTEX MCP SERVER - RUNNING                          ║
-║  Port:        3100                                            ║
-╚══════════════════════════════════════════════════════════════╝
+# Unix/Mac
+node tests/master-suite/cortex/index.js --server &
+node tests/master-suite/cortex/api/server.js &
 ```
 
 ---
 
-## Step 2: Verify Server Health (MANDATORY)
+## Step 1: Verify Server Health (MANDATORY)
 
 ```bash
 curl http://localhost:3100/health
+curl http://localhost:3101/health
 ```
 
-**Expected response:**
+**Both must return `"status": "running"` before proceeding.**
 
-```json
-{
-  "status": "running",
-  "server": "vulpes-cortex",
-  "version": "1.0.0",
-  "uptime": 5.2,
-  "modules": 17
-}
-```
-
-**YOU MUST SEE `"status": "running"` BEFORE PROCEEDING.**
-
-Alternative verification:
-
+**If MCP not running:**
 ```bash
-cd <PROJECT_ROOT>
-node tests/master-suite/cortex/index.js --check
+node tests/master-suite/cortex/index.js --server-window
 ```
 
-**If server isn't running:**
+**If API not running:**
+```bash
+node tests/master-suite/cortex/api/server.js
+```
 
+**Troubleshooting:**
 1. Check Node.js version: `node --version` (need >= 18)
-2. Install dependencies: `cd <PROJECT_ROOT>/tests/master-suite/cortex && npm install`
-3. Look for errors in server window
+2. Install dependencies: `cd tests/master-suite/cortex && npm install`
+3. Check port conflicts: `netstat -ano | findstr :3100`
 
 ---
 
-## Step 3: Run Tests
+## Step 2: Run Tests
 
 ### If You Have MCP Tools (Claude Desktop)
 
@@ -128,7 +98,7 @@ curl -X POST "http://localhost:3100/tool/run_tests" \
 
 ---
 
-## Step 4: Interpret Results
+## Step 3: Interpret Results
 
 The MCP server returns JSON with:
 
@@ -148,7 +118,7 @@ The MCP server returns JSON with:
       {"value": "O'Brien", "context": "...patient O'Brien..."}
     ],
     "fileToEdit": {
-      "path": "src/redaction/filters/NameFilter.ts",
+      "path": "src/filters/SmartNameFilterSpan.ts",
       "description": "Name detection filter"
     },
     "historicalContext": {    // What was tried before
@@ -156,7 +126,7 @@ The MCP server returns JSON with:
       "warnings": ["Compound surnames need special handling"]
     }
   },
-  "action": "Fix NAME detection (23 missed). Edit: src/redaction/filters/NameFilter.ts. Examples: \"O'Brien\", \"McDonald\". Suggested: Add O'prefix pattern."
+  "action": "Fix NAME detection (23 missed). Edit: src/filters/SmartNameFilterSpan.ts. Examples: \"O'Brien\", \"McDonald\". Suggested: Add O'prefix pattern."
 }
 ```
 
@@ -169,7 +139,7 @@ The MCP server returns JSON with:
 
 ---
 
-## Step 5: Execute Fixes (If Improving)
+## Step 4: Execute Fixes (If Improving)
 
 ### The Closed Loop
 
@@ -197,7 +167,7 @@ The MCP server returns JSON with:
 
 **Problem**: NAME filter missed "O'Brien", "McDonald"
 
-**File**: `<PROJECT_ROOT>/src/redaction/filters/NameFilter.ts`
+**File**: `src/filters/SmartNameFilterSpan.ts`
 
 **Fix**: Add compound surname pattern
 
@@ -239,15 +209,18 @@ curl -X POST "http://localhost:3100/tool/run_tests" \
 
 ---
 
-## Key Locations (Relative to <PROJECT_ROOT>)
+## Key Locations
 
 | What | Where |
 |------|-------|
-| Filters | `src/redaction/filters/*.ts` |
-| Dictionaries | `src/redaction/dictionaries/*.json` |
-| Config | `src/redaction/config/` |
-| MCP Server | `tests/master-suite/cortex/index.js` |
-| Test Results | `tests/results/` |
+| Filters | `src/filters/*.ts` |
+| Core Scoring | `src/core/WeightedPHIScorer.ts` |
+| Cross-Type Logic | `src/core/CrossTypeReasoner.ts` |
+| Confidence | `src/core/ConfidenceCalibrator.ts` |
+| Dictionaries | `src/dictionaries/*.txt` |
+| MCP Server | `tests/master-suite/cortex/index.js` (port 3100) |
+| REST API | `tests/master-suite/cortex/api/server.js` (port 3101) |
+| Test Results | `tests/results/verbose-*.log` |
 
 ---
 
@@ -299,8 +272,8 @@ MCP uses stdout for JSON-RPC. ANY non-JSON breaks the protocol.
 
 - Did you ask for `<PROJECT_ROOT>`?
 - Are you using relative paths?
-- Double-check the path exists: `ls <PROJECT_ROOT>/src/redaction/filters/`
+- Double-check the path exists: `ls src/filters/`
 
 ---
 
-**For complete guidance, read [`INSTRUCTIONS_FOR_AI_AGENTS.md`](../../INSTRUCTIONS_FOR_AI_AGENTS.md)**
+**For complete guidance, see `.agent/CLAUDE.md`**

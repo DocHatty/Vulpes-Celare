@@ -48,10 +48,11 @@
  * ║  STEP 5: ITERATE until sensitivity >= 99%                                    ║
  * ║                                                                              ║
  * ║  KEY FILES:                                                                  ║
- * ║    Filters:      src/redaction/filters/*.ts                                  ║
- * ║    Dictionaries: src/redaction/dictionaries/*.json                           ║
- * ║    Test Results: tests/results/                                              ║
- * ║    MCP Server:   tests/master-suite/cortex/                                  ║
+ * ║    Filters:      src/filters/*.ts                                            ║
+ * ║    Dictionaries: src/dictionaries/*.txt                                      ║
+ * ║    Test Results: tests/results/verbose-*.log                                 ║
+ * ║    MCP Server:   tests/master-suite/cortex/ (port 3100)                      ║
+ * ║    REST API:     tests/master-suite/cortex/api/ (port 3101)                  ║
  * ║                                                                              ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
  *
@@ -86,7 +87,7 @@
  * ║  STEP 2: ANALYZE                                                            ║
  * ║    □ Read specific failure examples from the log                            ║
  * ║    □ Identify WHY the pattern is failing (OCR? Format? Missing regex?)      ║
- * ║    □ Find the relevant filter file in src/redaction/filters/                ║
+ * ║    □ Find the relevant filter file in src/filters/                          ║
  * ║    □ Understand the current detection logic                                 ║
  * ║                                                                             ║
  * ║  STEP 3: HYPOTHESIZE                                                        ║
@@ -144,9 +145,9 @@
  * ║    6. Repeat until sensitivity >= 99%                                       ║
  * ║                                                                             ║
  * ║  KEY LOCATIONS:                                                             ║
- * ║    Filters:      src/redaction/filters/*.ts                                 ║
- * ║    Dictionaries: src/redaction/dictionaries/*.json                          ║
- * ║    Config:       src/redaction/config/                                      ║
+ * ║    Filters:      src/filters/*.ts                                           ║
+ * ║    Dictionaries: src/dictionaries/*.txt                                     ║
+ * ║    Core:         src/core/*.ts                                              ║
  * ║                                                                             ║
  * ╚═════════════════════════════════════════════════════════════════════════════╝
  *
@@ -705,8 +706,8 @@ function printLLMActionChecklist(results, smartGradeResults, status) {
     lines.push(pointed("DO THIS NOW:"));
     lines.push(blank);
     lines.push(pointed("1. READ the relevant filter or dictionary"));
-    lines.push(pointed2("Filters:      src/redaction/filters/"));
-    lines.push(pointed2("Dictionaries: src/redaction/dictionaries/"));
+    lines.push(pointed2("Filters:      src/filters/"));
+    lines.push(pointed2("Dictionaries: src/dictionaries/"));
     lines.push(blank);
     lines.push(pointed("2. EDIT the file to catch the missed values"));
     lines.push(pointed2("Add pattern/regex for the formats shown above"));
