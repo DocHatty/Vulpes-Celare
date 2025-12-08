@@ -426,12 +426,15 @@ class APIProvider {
                     `${this.config.authPrefix}${this.apiKey}`;
             }
             const req = protocol.request(options, (res) => {
-                let data = "";
+                // PERFORMANCE FIX: Use Buffer array instead of string concatenation
+                // String concatenation is O(n²) for large responses, Buffer.concat is O(n)
+                const chunks = [];
                 res.on("data", (chunk) => {
-                    data += chunk;
+                    chunks.push(chunk);
                 });
                 res.on("end", () => {
                     try {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         const response = JSON.parse(data);
                         if (response.error) {
                             reject(new Error(response.error.message || "API error"));
@@ -441,6 +444,7 @@ class APIProvider {
                         resolve(this.availableModels);
                     }
                     catch (e) {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         reject(new Error(`Failed to parse models response: ${data.substring(0, 200)}`));
                     }
                 });

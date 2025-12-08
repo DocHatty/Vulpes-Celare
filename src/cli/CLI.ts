@@ -1169,13 +1169,15 @@ export class CLI {
 
   private static async readStdin(): Promise<string> {
     return new Promise((resolve) => {
-      let data = "";
+      // PERFORMANCE FIX: Use array of chunks instead of string concatenation
+      // String concatenation is O(n²), Buffer.concat/join is O(n)
+      const chunks: string[] = [];
       process.stdin.setEncoding("utf-8");
-      process.stdin.on("data", (chunk) => {
-        data += chunk;
+      process.stdin.on("data", (chunk: string) => {
+        chunks.push(chunk);
       });
       process.stdin.on("end", () => {
-        resolve(data);
+        resolve(chunks.join(""));
       });
     });
   }

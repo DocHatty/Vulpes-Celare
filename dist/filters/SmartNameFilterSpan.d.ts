@@ -11,6 +11,18 @@ import { Span } from "../models/Span";
 import { SpanBasedFilter } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 export declare class SmartNameFilterSpan extends SpanBasedFilter {
+    /** Pattern for title prefix at end of lookback text */
+    private static readonly TITLE_PREFIX_PATTERN;
+    /** Pattern for titled name in lookback text */
+    private static readonly TITLED_NAME_LOOKBACK_PATTERN;
+    /** Pattern for name suffixes (Jr., Sr., III, etc.) */
+    private static readonly NAME_SUFFIX_PATTERN;
+    /** Pattern for title before name in text */
+    private static readonly TITLE_BEFORE_NAME_PATTERN;
+    /** Pattern for particle names (van Gogh, de Silva, etc.) */
+    private static readonly PARTICLE_NAME_PATTERN;
+    /** Credential pattern after name */
+    private static readonly CREDENTIAL_AFTER_NAME_PATTERN;
     getType(): string;
     getPriority(): number;
     detect(text: string, config: any, context: RedactionContext): Span[];
@@ -108,9 +120,33 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
      */
     private detectOcrLastFirstNames;
     /**
-     * Normalize OCR errors in names
+     * Pattern 0b: Chaos-Case Last, First with OCR Substitutions
+     *
+     * Catches names that have:
+     * - Chaotic capitalization (any case mix): "gOLdbeeRg", "marTinA"
+     * - OCR character substitutions: "@" for "a", "0" for "o", "1" for "l"
+     * - Comma placement issues: space before comma, space after
+     *
+     * Examples:
+     * - "martinez, l@tonya a."
+     * - "gOLdbeeRg ,marTinA"
+     * - "5mith , j0hn"
+     * - "NAKAMUR@ ,K3VIN"
+     */
+    private detectChaosLastFirstNames;
+    /**
+     * Validate a chaos-case name part (after OCR normalization)
+     */
+    private isValidChaosPart;
+    /**
+     * Normalize OCR errors in names (basic version for validation)
      */
     private normalizeNameOcr;
+    /**
+     * Comprehensive OCR character normalization for name detection
+     * Based on research: common OCR confusions from scanning medical documents
+     */
+    private normalizeOcrChars;
     /**
      * Quick heuristic to check if a string is likely a person name
      */

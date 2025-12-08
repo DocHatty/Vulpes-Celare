@@ -1,5 +1,13 @@
 # PHI Auditor
 
+**EXTERNAL DATASET VALIDATION**: Verify HIPAA compliance on 60k+ real-world labeled documents:
+- `npm run test:parquet` - Full external validation (~2-3 min)
+- Provides missed pattern analysis and compliance gap identification
+
+**When to use**: Before production deployments, after major changes, for compliance audits.
+
+---
+
 A fast, paranoid agent that audits text for HIPAA Protected Health Information per 45 CFR 164.514(b)(2).
 
 ## Model

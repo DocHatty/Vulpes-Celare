@@ -65,18 +65,18 @@ const VulpesCelare_1 = require("../VulpesCelare");
 // THEME (consistent with CLI.ts)
 // ============================================================================
 const theme = {
-    primary: chalk_1.default.hex('#FF6B35'),
-    secondary: chalk_1.default.hex('#4ECDC4'),
-    accent: chalk_1.default.hex('#FFE66D'),
-    success: chalk_1.default.hex('#2ECC71'),
-    warning: chalk_1.default.hex('#F39C12'),
-    error: chalk_1.default.hex('#E74C3C'),
-    info: chalk_1.default.hex('#3498DB'),
-    muted: chalk_1.default.hex('#95A5A6'),
+    primary: chalk_1.default.hex("#FF6B35"),
+    secondary: chalk_1.default.hex("#4ECDC4"),
+    accent: chalk_1.default.hex("#FFE66D"),
+    success: chalk_1.default.hex("#2ECC71"),
+    warning: chalk_1.default.hex("#F39C12"),
+    error: chalk_1.default.hex("#E74C3C"),
+    info: chalk_1.default.hex("#3498DB"),
+    muted: chalk_1.default.hex("#95A5A6"),
     bold: chalk_1.default.bold,
     dim: chalk_1.default.dim,
-    ai: chalk_1.default.hex('#8B5CF6'), // Purple for AI responses
-    redacted: chalk_1.default.hex('#EF4444'), // Red for redacted content
+    ai: chalk_1.default.hex("#8B5CF6"), // Purple for AI responses
+    redacted: chalk_1.default.hex("#EF4444"), // Red for redacted content
 };
 // ============================================================================
 // SAFETY INSTRUCTIONS
@@ -111,19 +111,23 @@ class LLMProviderBase {
     }
 }
 class ClaudeProvider extends LLMProviderBase {
-    getName() { return 'Claude (Anthropic)'; }
-    getDefaultModel() { return 'claude-sonnet-4-20250514'; }
+    getName() {
+        return "Claude (Anthropic)";
+    }
+    getDefaultModel() {
+        return "claude-sonnet-4-20250514";
+    }
     async chat(messages) {
         const apiKey = this.config.apiKey || process.env.ANTHROPIC_API_KEY;
         if (!apiKey) {
-            throw new Error('ANTHROPIC_API_KEY not set. Set it via --api-key or environment variable.');
+            throw new Error("ANTHROPIC_API_KEY not set. Set it via --api-key or environment variable.");
         }
         const model = this.config.model || this.getDefaultModel();
         // Convert messages to Claude format
-        const systemMessage = messages.find(m => m.role === 'system')?.content || '';
+        const systemMessage = messages.find((m) => m.role === "system")?.content || "";
         const conversationMessages = messages
-            .filter(m => m.role !== 'system')
-            .map(m => ({ role: m.role, content: m.content }));
+            .filter((m) => m.role !== "system")
+            .map((m) => ({ role: m.role, content: m.content }));
         const requestBody = {
             model,
             max_tokens: this.config.maxTokens || 4096,
@@ -133,29 +137,34 @@ class ClaudeProvider extends LLMProviderBase {
         return new Promise((resolve, reject) => {
             const postData = JSON.stringify(requestBody);
             const options = {
-                hostname: 'api.anthropic.com',
+                hostname: "api.anthropic.com",
                 port: 443,
-                path: '/v1/messages',
-                method: 'POST',
+                path: "/v1/messages",
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': Buffer.byteLength(postData),
-                    'x-api-key': apiKey,
-                    'anthropic-version': '2023-06-01',
+                    "Content-Type": "application/json",
+                    "Content-Length": Buffer.byteLength(postData),
+                    "x-api-key": apiKey,
+                    "anthropic-version": "2023-06-01",
                 },
             };
             const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
+                // PERFORMANCE FIX: Use Buffer array instead of string concatenation
+                // String concatenation is O(n²) for large responses, Buffer.concat is O(n)
+                const chunks = [];
+                res.on("data", (chunk) => {
+                    chunks.push(chunk);
+                });
+                res.on("end", () => {
                     try {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         const response = JSON.parse(data);
                         if (response.error) {
                             reject(new Error(response.error.message));
                             return;
                         }
                         resolve({
-                            content: response.content[0]?.text || '',
+                            content: response.content[0]?.text || "",
                             model: response.model,
                             usage: {
                                 inputTokens: response.usage?.input_tokens || 0,
@@ -164,31 +173,36 @@ class ClaudeProvider extends LLMProviderBase {
                         });
                     }
                     catch (e) {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         reject(new Error(`Failed to parse response: ${data}`));
                     }
                 });
             });
-            req.on('error', reject);
+            req.on("error", reject);
             req.write(postData);
             req.end();
         });
     }
 }
 class OpenAIProvider extends LLMProviderBase {
-    getName() { return 'OpenAI'; }
-    getDefaultModel() { return 'gpt-4o'; }
+    getName() {
+        return "OpenAI";
+    }
+    getDefaultModel() {
+        return "gpt-4o";
+    }
     async chat(messages) {
         const apiKey = this.config.apiKey || process.env.OPENAI_API_KEY;
         if (!apiKey) {
-            throw new Error('OPENAI_API_KEY not set. Set it via --api-key or environment variable.');
+            throw new Error("OPENAI_API_KEY not set. Set it via --api-key or environment variable.");
         }
         const model = this.config.model || this.getDefaultModel();
-        const baseUrl = this.config.baseUrl || 'api.openai.com';
+        const baseUrl = this.config.baseUrl || "api.openai.com";
         const requestBody = {
             model,
             max_tokens: this.config.maxTokens || 4096,
             temperature: this.config.temperature || 0.7,
-            messages: messages.map(m => ({ role: m.role, content: m.content })),
+            messages: messages.map((m) => ({ role: m.role, content: m.content })),
         };
         return new Promise((resolve, reject) => {
             const postData = JSON.stringify(requestBody);
@@ -197,25 +211,29 @@ class OpenAIProvider extends LLMProviderBase {
                 hostname: url.hostname,
                 port: 443,
                 path: url.pathname,
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': Buffer.byteLength(postData),
-                    'Authorization': `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                    "Content-Length": Buffer.byteLength(postData),
+                    Authorization: `Bearer ${apiKey}`,
                 },
             };
             const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
+                // PERFORMANCE FIX: Use Buffer array instead of string concatenation
+                const chunks = [];
+                res.on("data", (chunk) => {
+                    chunks.push(chunk);
+                });
+                res.on("end", () => {
                     try {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         const response = JSON.parse(data);
                         if (response.error) {
                             reject(new Error(response.error.message));
                             return;
                         }
                         resolve({
-                            content: response.choices[0]?.message?.content || '',
+                            content: response.choices[0]?.message?.content || "",
                             model: response.model,
                             usage: {
                                 inputTokens: response.usage?.prompt_tokens || 0,
@@ -224,58 +242,68 @@ class OpenAIProvider extends LLMProviderBase {
                         });
                     }
                     catch (e) {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         reject(new Error(`Failed to parse response: ${data}`));
                     }
                 });
             });
-            req.on('error', reject);
+            req.on("error", reject);
             req.write(postData);
             req.end();
         });
     }
 }
 class OllamaProvider extends LLMProviderBase {
-    getName() { return 'Ollama (Local)'; }
-    getDefaultModel() { return 'llama2'; }
+    getName() {
+        return "Ollama (Local)";
+    }
+    getDefaultModel() {
+        return "llama2";
+    }
     async chat(messages) {
-        const baseUrl = this.config.baseUrl || 'localhost:11434';
+        const baseUrl = this.config.baseUrl || "localhost:11434";
         const model = this.config.model || this.getDefaultModel();
         const requestBody = {
             model,
-            messages: messages.map(m => ({ role: m.role, content: m.content })),
+            messages: messages.map((m) => ({ role: m.role, content: m.content })),
             stream: false,
         };
         return new Promise((resolve, reject) => {
             const postData = JSON.stringify(requestBody);
             const url = new URL(`http://${baseUrl}/api/chat`);
-            const http = require('http');
+            const http = require("http");
             const options = {
                 hostname: url.hostname,
                 port: url.port || 11434,
                 path: url.pathname,
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': Buffer.byteLength(postData),
+                    "Content-Type": "application/json",
+                    "Content-Length": Buffer.byteLength(postData),
                 },
             };
             const req = http.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
+                // PERFORMANCE FIX: Use Buffer array instead of string concatenation
+                const chunks = [];
+                res.on("data", (chunk) => {
+                    chunks.push(chunk);
+                });
+                res.on("end", () => {
                     try {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         const response = JSON.parse(data);
                         resolve({
-                            content: response.message?.content || '',
+                            content: response.message?.content || "",
                             model: response.model,
                         });
                     }
                     catch (e) {
+                        const data = Buffer.concat(chunks).toString("utf-8");
                         reject(new Error(`Failed to parse response: ${data}`));
                     }
                 });
             });
-            req.on('error', reject);
+            req.on("error", reject);
             req.write(postData);
             req.end();
         });
@@ -286,12 +314,12 @@ class OllamaProvider extends LLMProviderBase {
 // ============================================================================
 function createProvider(config) {
     switch (config.provider) {
-        case 'claude':
+        case "claude":
             return new ClaudeProvider(config);
-        case 'openai':
-        case 'azure':
+        case "openai":
+        case "azure":
             return new OpenAIProvider(config);
-        case 'ollama':
+        case "ollama":
             return new OllamaProvider(config);
         default:
             throw new Error(`Unknown provider: ${config.provider}`);
@@ -315,7 +343,7 @@ class LLMIntegration {
         if (llmConfig.injectSafetyInstructions !== false) {
             const safetyPrompt = llmConfig.systemPrompt || exports.SafetyInstructions.STANDARD;
             this.conversationHistory.push({
-                role: 'system',
+                role: "system",
                 content: safetyPrompt,
             });
         }
@@ -332,14 +360,14 @@ class LLMIntegration {
         this.stats.phiRedacted += phiCount;
         // Add to conversation
         this.conversationHistory.push({
-            role: 'user',
+            role: "user",
             content: redactedMessage,
         });
         // Get LLM response
         const llmResponse = await this.provider.chat(this.conversationHistory);
         // Add response to history
         this.conversationHistory.push({
-            role: 'assistant',
+            role: "assistant",
             content: llmResponse.content,
         });
         // Update stats
@@ -358,10 +386,8 @@ class LLMIntegration {
      * Process a file and send to LLM
      */
     async processFile(filePath, prompt) {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        const fullPrompt = prompt
-            ? `${prompt}\n\n---\n\n${content}`
-            : content;
+        const content = fs.readFileSync(filePath, "utf-8");
+        const fullPrompt = prompt ? `${prompt}\n\n---\n\n${content}` : content;
         const result = await this.sendMessage(fullPrompt);
         return result.response;
     }
@@ -369,22 +395,22 @@ class LLMIntegration {
      * Interactive safe chat mode
      */
     async interactiveChat() {
-        console.log((0, boxen_1.default)(`${theme.bold('Safe Chat Mode')}\n\n` +
-            `${theme.muted('Provider:')} ${theme.secondary(this.provider.getName())}\n` +
-            `${theme.muted('Model:')} ${theme.secondary(this.config.model || this.provider.getDefaultModel())}\n\n` +
+        console.log((0, boxen_1.default)(`${theme.bold("Safe Chat Mode")}\n\n` +
+            `${theme.muted("Provider:")} ${theme.secondary(this.provider.getName())}\n` +
+            `${theme.muted("Model:")} ${theme.secondary(this.config.model || this.provider.getDefaultModel())}\n\n` +
             `${theme.success(figures_1.default.tick)} All messages are automatically redacted before sending\n` +
             `${theme.success(figures_1.default.tick)} PHI is replaced with safe tokens\n` +
             `${theme.success(figures_1.default.tick)} Safety instructions are auto-injected\n\n` +
-            `${theme.muted('Commands:')}\n` +
-            `  ${theme.secondary('.stats')}    Show session statistics\n` +
-            `  ${theme.secondary('.clear')}    Clear conversation history\n` +
-            `  ${theme.secondary('.system')}   Update system prompt\n` +
-            `  ${theme.secondary('.exit')}     Exit safe chat`, {
+            `${theme.muted("Commands:")}\n` +
+            `  ${theme.secondary(".stats")}    Show session statistics\n` +
+            `  ${theme.secondary(".clear")}    Clear conversation history\n` +
+            `  ${theme.secondary(".system")}   Update system prompt\n` +
+            `  ${theme.secondary(".exit")}     Exit safe chat`, {
             padding: 1,
-            borderStyle: 'round',
-            borderColor: '#8B5CF6',
-            title: 'VULPES SAFE CHAT',
-            titleAlignment: 'center',
+            borderStyle: "round",
+            borderColor: "#8B5CF6",
+            title: "VULPES SAFE CHAT",
+            titleAlignment: "center",
         }));
         console.log();
         const rl = readline.createInterface({
@@ -392,40 +418,43 @@ class LLMIntegration {
             output: process.stdout,
         });
         const prompt = () => {
-            rl.question(theme.primary('you') + theme.muted(' > '), async (input) => {
+            rl.question(theme.primary("you") + theme.muted(" > "), async (input) => {
                 input = input.trim();
                 if (!input) {
                     prompt();
                     return;
                 }
                 // Handle commands
-                if (input.startsWith('.')) {
-                    const cmd = input.slice(1).split(' ')[0].toLowerCase();
+                if (input.startsWith(".")) {
+                    const cmd = input.slice(1).split(" ")[0].toLowerCase();
                     switch (cmd) {
-                        case 'exit':
-                        case 'quit':
-                        case 'q':
+                        case "exit":
+                        case "quit":
+                        case "q":
                             this.printStats();
                             console.log(theme.info(`\n${figures_1.default.info} Goodbye! Your conversation was privacy-protected.`));
                             rl.close();
                             process.exit(0);
                             break;
-                        case 'stats':
+                        case "stats":
                             this.printStats();
                             break;
-                        case 'clear':
+                        case "clear":
                             this.conversationHistory = this.conversationHistory.slice(0, 1); // Keep system prompt
                             console.log(theme.success(`${figures_1.default.tick} Conversation cleared`));
                             break;
-                        case 'system':
+                        case "system":
                             const newPrompt = input.slice(8).trim();
                             if (newPrompt) {
-                                this.conversationHistory[0] = { role: 'system', content: newPrompt };
+                                this.conversationHistory[0] = {
+                                    role: "system",
+                                    content: newPrompt,
+                                };
                                 console.log(theme.success(`${figures_1.default.tick} System prompt updated`));
                             }
                             else {
-                                console.log(theme.muted('Current system prompt:'));
-                                console.log(this.conversationHistory[0]?.content || 'None');
+                                console.log(theme.muted("Current system prompt:"));
+                                console.log(this.conversationHistory[0]?.content || "None");
                             }
                             break;
                         default:
@@ -437,9 +466,9 @@ class LLMIntegration {
                 }
                 // Process message
                 const spinner = (0, ora_1.default)({
-                    text: 'Redacting PHI...',
-                    spinner: 'dots12',
-                    color: 'yellow',
+                    text: "Redacting PHI...",
+                    spinner: "dots12",
+                    color: "yellow",
                 }).start();
                 try {
                     // First show redaction
@@ -454,11 +483,13 @@ class LLMIntegration {
                     spinner.stop();
                     // Show what was sent (if PHI was redacted)
                     if (result.phiCount > 0) {
-                        console.log(theme.muted('  [Sent: ') + theme.redacted(this.truncate(result.redactedInput, 80)) + theme.muted(']'));
+                        console.log(theme.muted("  [Sent: ") +
+                            theme.redacted(this.truncate(result.redactedInput, 80)) +
+                            theme.muted("]"));
                     }
                     // Show response
                     console.log();
-                    console.log(theme.ai('assistant') + theme.muted(' > '));
+                    console.log(theme.ai("assistant") + theme.muted(" > "));
                     console.log(this.formatResponse(result.response));
                     // Show token usage
                     if (result.usage) {
@@ -466,7 +497,7 @@ class LLMIntegration {
                     }
                 }
                 catch (error) {
-                    spinner.fail(theme.error('Error: ' + error.message));
+                    spinner.fail(theme.error("Error: " + error.message));
                 }
                 console.log();
                 prompt();
@@ -485,23 +516,23 @@ class LLMIntegration {
     }
     printStats() {
         console.log();
-        console.log(theme.bold('Session Statistics:'));
-        console.log(`  ${theme.muted('Messages processed:')} ${this.stats.messagesProcessed}`);
-        console.log(`  ${theme.muted('PHI instances redacted:')} ${theme.redacted(this.stats.phiRedacted.toString())}`);
-        console.log(`  ${theme.muted('Tokens used:')} ${this.stats.tokensUsed.input} in / ${this.stats.tokensUsed.output} out`);
-        console.log(`  ${theme.muted('Conversation length:')} ${this.conversationHistory.length - 1} messages`);
+        console.log(theme.bold("Session Statistics:"));
+        console.log(`  ${theme.muted("Messages processed:")} ${this.stats.messagesProcessed}`);
+        console.log(`  ${theme.muted("PHI instances redacted:")} ${theme.redacted(this.stats.phiRedacted.toString())}`);
+        console.log(`  ${theme.muted("Tokens used:")} ${this.stats.tokensUsed.input} in / ${this.stats.tokensUsed.output} out`);
+        console.log(`  ${theme.muted("Conversation length:")} ${this.conversationHistory.length - 1} messages`);
     }
     truncate(text, maxLength) {
         if (text.length <= maxLength)
             return text;
-        return text.substring(0, maxLength - 3) + '...';
+        return text.substring(0, maxLength - 3) + "...";
     }
     formatResponse(text) {
         // Add some basic formatting
         return text
-            .split('\n')
-            .map(line => '  ' + line)
-            .join('\n');
+            .split("\n")
+            .map((line) => "  " + line)
+            .join("\n");
     }
 }
 exports.LLMIntegration = LLMIntegration;
@@ -510,13 +541,15 @@ exports.LLMIntegration = LLMIntegration;
 // ============================================================================
 async function handleSafeChat(options) {
     const config = {
-        provider: options.provider || 'claude',
+        provider: options.provider || "claude",
         apiKey: options.apiKey,
         model: options.model,
         baseUrl: options.baseUrl,
         maxTokens: parseInt(options.maxTokens) || 4096,
         temperature: parseFloat(options.temperature) || 0.7,
-        systemPrompt: options.system ? exports.SafetyInstructions[options.system.toUpperCase()] : undefined,
+        systemPrompt: options.system
+            ? exports.SafetyInstructions[options.system.toUpperCase()]
+            : undefined,
         injectSafetyInstructions: !options.noSafetyInstructions,
     };
     const integration = new LLMIntegration(config);
@@ -524,37 +557,37 @@ async function handleSafeChat(options) {
 }
 async function handleQuery(text, options) {
     const config = {
-        provider: options.provider || 'claude',
+        provider: options.provider || "claude",
         apiKey: options.apiKey,
         model: options.model,
         maxTokens: parseInt(options.maxTokens) || 4096,
         injectSafetyInstructions: !options.noSafetyInstructions,
     };
     const spinner = (0, ora_1.default)({
-        text: 'Processing...',
-        spinner: 'dots12',
-        color: 'yellow',
+        text: "Processing...",
+        spinner: "dots12",
+        color: "yellow",
     }).start();
     try {
         const integration = new LLMIntegration(config);
         // Read from file if it's a path
         let input = text;
         if (fs.existsSync(text)) {
-            input = fs.readFileSync(text, 'utf-8');
+            input = fs.readFileSync(text, "utf-8");
         }
-        spinner.text = 'Redacting PHI...';
+        spinner.text = "Redacting PHI...";
         const result = await integration.query(input);
         spinner.succeed(`Redacted ${result.phiCount} PHI instances`);
         if (options.showRedacted) {
-            console.log(theme.muted('\nRedacted input:'));
+            console.log(theme.muted("\nRedacted input:"));
             console.log(theme.dim(result.redactedInput));
             console.log();
         }
-        console.log(theme.bold('\nResponse:'));
+        console.log(theme.bold("\nResponse:"));
         console.log(result.response);
     }
     catch (error) {
-        spinner.fail(theme.error('Error: ' + error.message));
+        spinner.fail(theme.error("Error: " + error.message));
         process.exit(1);
     }
 }

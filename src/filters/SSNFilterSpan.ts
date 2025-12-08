@@ -10,6 +10,7 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { ValidationUtils } from "../utils/ValidationUtils";
 
 export class SSNFilterSpan extends SpanBasedFilter {
   /**
@@ -76,24 +77,38 @@ export class SSNFilterSpan extends SpanBasedFilter {
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
 
-    for (const pattern of SSNFilterSpan.COMPILED_PATTERNS) {
-      pattern.lastIndex = 0; // Reset regex
-      let match;
+    const seen = new Set<string>();
 
-      while ((match = pattern.exec(text)) !== null) {
-        const ssnText = match[0];
+    const processText = (source: string) => {
+      for (const pattern of SSNFilterSpan.COMPILED_PATTERNS) {
+        pattern.lastIndex = 0; // Reset regex
+        let match;
 
-        // Validate SSN
-        if (this.isValidSSN(ssnText)) {
-          const span = this.createSpanFromMatch(
-            text,
-            match,
-            FilterType.SSN,
-            0.95, // High confidence for SSN
-          );
-          spans.push(span);
+        while ((match = pattern.exec(source)) !== null) {
+          const ssnText = match[0];
+          const key = `${match.index}-${ssnText.length}`;
+          if (seen.has(key)) continue;
+
+          if (this.isValidSSN(ssnText)) {
+            const span = this.createSpanFromMatch(
+              text,
+              match,
+              FilterType.SSN,
+              0.95, // High confidence for SSN
+            );
+            spans.push(span);
+            seen.add(key);
+          }
         }
       }
+    };
+
+    processText(text);
+
+    // Run again on OCR-normalized text to catch O/0, l/1, S/5 swaps
+    const normalized = ValidationUtils.normalizeOCR(text);
+    if (normalized !== text) {
+      processText(normalized);
     }
 
     return spans;

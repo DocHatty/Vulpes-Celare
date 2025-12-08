@@ -926,13 +926,15 @@ class CLI {
     // ══════════════════════════════════════════════════════════════════════════
     static async readStdin() {
         return new Promise((resolve) => {
-            let data = "";
+            // PERFORMANCE FIX: Use array of chunks instead of string concatenation
+            // String concatenation is O(n²), Buffer.concat/join is O(n)
+            const chunks = [];
             process.stdin.setEncoding("utf-8");
             process.stdin.on("data", (chunk) => {
-                data += chunk;
+                chunks.push(chunk);
             });
             process.stdin.on("end", () => {
-                resolve(data);
+                resolve(chunks.join(""));
             });
         });
     }

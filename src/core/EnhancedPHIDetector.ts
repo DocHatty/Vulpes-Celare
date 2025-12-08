@@ -14,10 +14,15 @@
 
 import { Span, FilterType } from "../models/Span";
 import { EnsembleVoter, VoteSignal } from "./EnsembleVoter";
-import { DocumentStructureAnalyzer, DocumentProfile, StructuralPosition } from "../context/DocumentStructureAnalyzer";
+import {
+  DocumentStructureAnalyzer,
+  DocumentProfile,
+  StructuralPosition,
+} from "../context/DocumentStructureAnalyzer";
 import { FuzzyDictionaryMatcher } from "../dictionaries/FuzzyDictionaryMatcher";
 import { OcrChaosDetector, ChaosAnalysis } from "../utils/OcrChaosDetector";
 import { NameDictionary } from "../dictionaries/NameDictionary";
+import { LRUCache } from "lru-cache";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -34,7 +39,7 @@ export interface EnhancedDetectionResult {
   candidate: DetectionCandidate;
   signals: VoteSignal[];
   finalConfidence: number;
-  recommendation: 'REDACT' | 'SKIP' | 'UNCERTAIN';
+  recommendation: "REDACT" | "SKIP" | "UNCERTAIN";
   explanation: string;
 }
 
@@ -49,18 +54,29 @@ export interface DetectionContext {
  */
 export class EnhancedPHIDetector {
   private static instance: EnhancedPHIDetector;
-  
+
   private voter: EnsembleVoter;
   private firstNameMatcher: FuzzyDictionaryMatcher | null = null;
   private surnameMatcher: FuzzyDictionaryMatcher | null = null;
   private initialized = false;
-  
-  // Cache for document analysis (avoid re-analyzing same doc)
-  private documentCache: Map<string, { profile: DocumentProfile; chaos: ChaosAnalysis }> = new Map();
-  private readonly MAX_CACHE_SIZE = 50;
+
+  // PERFORMANCE FIX: Use LRUCache instead of manual Map with FIFO eviction
+  // LRUCache provides O(1) eviction of least-recently-used items with TTL support
+  private documentCache: LRUCache<
+    string,
+    { profile: DocumentProfile; chaos: ChaosAnalysis }
+  >;
 
   private constructor() {
     this.voter = new EnsembleVoter();
+
+    // Initialize LRU cache with proper eviction policy
+    this.documentCache = new LRUCache({
+      max: 100, // Max 100 cached documents
+      ttl: 1000 * 60 * 5, // 5 minute TTL
+      updateAgeOnGet: true, // Reset TTL on access
+      allowStale: false, // Don't return stale entries
+    });
   }
 
   static getInstance(): EnhancedPHIDetector {
@@ -78,22 +94,27 @@ export class EnhancedPHIDetector {
 
     try {
       // Load first names for fuzzy matching
-      const firstNamesPath = path.join(__dirname, "../dictionaries/first-names.txt");
+      const firstNamesPath = path.join(
+        __dirname,
+        "../dictionaries/first-names.txt",
+      );
       if (fs.existsSync(firstNamesPath)) {
-        const names = fs.readFileSync(firstNamesPath, "utf-8")
+        const names = fs
+          .readFileSync(firstNamesPath, "utf-8")
           .split("\n")
-          .map(n => n.trim())
-          .filter(n => n.length > 0);
+          .map((n) => n.trim())
+          .filter((n) => n.length > 0);
         this.firstNameMatcher = FuzzyDictionaryMatcher.forFirstNames(names);
       }
 
       // Load surnames for fuzzy matching
       const surnamesPath = path.join(__dirname, "../dictionaries/surnames.txt");
       if (fs.existsSync(surnamesPath)) {
-        const names = fs.readFileSync(surnamesPath, "utf-8")
+        const names = fs
+          .readFileSync(surnamesPath, "utf-8")
           .split("\n")
-          .map(n => n.trim())
-          .filter(n => n.length > 0);
+          .map((n) => n.trim())
+          .filter((n) => n.length > 0);
         this.surnameMatcher = FuzzyDictionaryMatcher.forSurnames(names);
       }
 
@@ -107,12 +128,17 @@ export class EnhancedPHIDetector {
   /**
    * Analyze a document once and cache results
    */
-  analyzeDocument(text: string): { profile: DocumentProfile; chaos: ChaosAnalysis } {
+  analyzeDocument(text: string): {
+    profile: DocumentProfile;
+    chaos: ChaosAnalysis;
+  } {
     // Use first 500 chars as cache key
     const cacheKey = text.substring(0, 500);
-    
-    if (this.documentCache.has(cacheKey)) {
-      return this.documentCache.get(cacheKey)!;
+
+    // PERFORMANCE FIX: LRUCache handles eviction automatically
+    const cached = this.documentCache.get(cacheKey);
+    if (cached) {
+      return cached;
     }
 
     const profile = DocumentStructureAnalyzer.analyzeDocument(text);
@@ -120,11 +146,7 @@ export class EnhancedPHIDetector {
 
     const result = { profile, chaos };
 
-    // Manage cache size
-    if (this.documentCache.size >= this.MAX_CACHE_SIZE) {
-      const firstKey = this.documentCache.keys().next().value;
-      if (firstKey) this.documentCache.delete(firstKey);
-    }
+    // LRUCache automatically evicts least-recently-used entries when max is reached
     this.documentCache.set(cacheKey, result);
 
     return result;
@@ -135,25 +157,28 @@ export class EnhancedPHIDetector {
    */
   evaluate(
     candidate: DetectionCandidate,
-    context: DetectionContext
+    context: DetectionContext,
   ): EnhancedDetectionResult {
     if (!this.initialized) this.init();
 
     const signals: VoteSignal[] = [];
 
     // Get or compute document analysis
-    const docAnalysis = context.documentProfile && context.chaosAnalysis
-      ? { profile: context.documentProfile, chaos: context.chaosAnalysis }
-      : this.analyzeDocument(context.fullText);
+    const docAnalysis =
+      context.documentProfile && context.chaosAnalysis
+        ? { profile: context.documentProfile, chaos: context.chaosAnalysis }
+        : this.analyzeDocument(context.fullText);
 
     // 1. PATTERN SIGNAL - from the original detector
-    signals.push(EnsembleVoter.patternSignal(
-      candidate.baseConfidence,
-      candidate.patternName
-    ));
+    signals.push(
+      EnsembleVoter.patternSignal(
+        candidate.baseConfidence,
+        candidate.patternName,
+      ),
+    );
 
     // 2. DICTIONARY SIGNAL - fuzzy name matching
-    if (candidate.phiType === 'NAME') {
+    if (candidate.phiType === "NAME") {
       const dictSignal = this.getDictionarySignal(candidate.text);
       if (dictSignal) {
         signals.push(dictSignal);
@@ -164,25 +189,32 @@ export class EnhancedPHIDetector {
     const position = DocumentStructureAnalyzer.getPositionContext(
       context.fullText,
       candidate.start,
-      docAnalysis.profile
+      docAnalysis.profile,
     );
-    const structureBoost = DocumentStructureAnalyzer.getContextBoost(position, candidate.phiType);
-    
+    const structureBoost = DocumentStructureAnalyzer.getContextBoost(
+      position,
+      candidate.phiType,
+    );
+
     if (Math.abs(structureBoost) > 0.05) {
-      signals.push(EnsembleVoter.structureSignal(
-        0.5 + structureBoost, // Convert boost to confidence
-        `${position.sectionType}/${position.fieldContext}`
-      ));
+      signals.push(
+        EnsembleVoter.structureSignal(
+          0.5 + structureBoost, // Convert boost to confidence
+          `${position.sectionType}/${position.fieldContext}`,
+        ),
+      );
     }
 
     // 4. LABEL SIGNAL - nearby label context
     if (position.nearestLabel && position.labelDistance < 50) {
-      const labelRelevance = this.getLabelRelevance(position.nearestLabel, candidate.phiType);
+      const labelRelevance = this.getLabelRelevance(
+        position.nearestLabel,
+        candidate.phiType,
+      );
       if (labelRelevance > 0.3) {
-        signals.push(EnsembleVoter.labelSignal(
-          labelRelevance,
-          position.nearestLabel
-        ));
+        signals.push(
+          EnsembleVoter.labelSignal(labelRelevance, position.nearestLabel),
+        );
       }
     }
 
@@ -190,20 +222,16 @@ export class EnhancedPHIDetector {
     const chaosAdjustment = this.getChaosAdjustment(
       candidate.text,
       docAnalysis.chaos,
-      candidate.phiType
+      candidate.phiType,
     );
     if (Math.abs(chaosAdjustment - 0.5) > 0.1) {
-      signals.push(EnsembleVoter.chaosSignal(
-        chaosAdjustment,
-        docAnalysis.chaos.quality
-      ));
+      signals.push(
+        EnsembleVoter.chaosSignal(chaosAdjustment, docAnalysis.chaos.quality),
+      );
     }
 
     // 6. CONTEXT SIGNAL - surrounding text patterns
-    const contextSignal = this.getContextSignal(
-      candidate,
-      context.fullText
-    );
+    const contextSignal = this.getContextSignal(candidate, context.fullText);
     if (contextSignal) {
       signals.push(contextSignal);
     }
@@ -225,7 +253,7 @@ export class EnhancedPHIDetector {
    */
   evaluateBatch(
     candidates: DetectionCandidate[],
-    fullText: string
+    fullText: string,
   ): EnhancedDetectionResult[] {
     // Analyze document once
     const docAnalysis = this.analyzeDocument(fullText);
@@ -235,7 +263,7 @@ export class EnhancedPHIDetector {
       chaosAnalysis: docAnalysis.chaos,
     };
 
-    return candidates.map(candidate => this.evaluate(candidate, context));
+    return candidates.map((candidate) => this.evaluate(candidate, context));
   }
 
   /**
@@ -244,7 +272,7 @@ export class EnhancedPHIDetector {
   shouldRedact(
     candidate: DetectionCandidate,
     fullText: string,
-    threshold: number = 0.65
+    threshold: number = 0.65,
   ): boolean {
     const result = this.evaluate(candidate, { fullText });
     return result.finalConfidence >= threshold;
@@ -257,7 +285,7 @@ export class EnhancedPHIDetector {
       // Fall back to basic NameDictionary
       const confidence = NameDictionary.getNameConfidence(nameText);
       if (confidence > 0) {
-        return EnsembleVoter.dictionarySignal(confidence, 'basic-dict', false);
+        return EnsembleVoter.dictionarySignal(confidence, "basic-dict", false);
       }
       return null;
     }
@@ -279,27 +307,30 @@ export class EnhancedPHIDetector {
     if (firstMatch.matched && lastMatch.matched) {
       // Both matched
       confidence = (firstMatch.confidence + lastMatch.confidence) / 2;
-      isFuzzy = firstMatch.matchType !== 'EXACT' || lastMatch.matchType !== 'EXACT';
+      isFuzzy =
+        firstMatch.matchType !== "EXACT" || lastMatch.matchType !== "EXACT";
     } else if (firstMatch.matched) {
       // Only first name matched
       confidence = firstMatch.confidence * 0.7;
-      isFuzzy = firstMatch.matchType !== 'EXACT';
+      isFuzzy = firstMatch.matchType !== "EXACT";
     } else if (lastMatch.matched) {
       // Only last name matched
       confidence = lastMatch.confidence * 0.5;
-      isFuzzy = lastMatch.matchType !== 'EXACT';
+      isFuzzy = lastMatch.matchType !== "EXACT";
     }
 
     if (confidence > 0.3) {
       const matchTypes = [
         firstMatch.matched ? firstMatch.matchType : null,
         lastMatch.matched ? lastMatch.matchType : null,
-      ].filter(Boolean).join('+');
-      
+      ]
+        .filter(Boolean)
+        .join("+");
+
       return EnsembleVoter.dictionarySignal(
         confidence,
         `fuzzy-dict (${matchTypes})`,
-        isFuzzy
+        isFuzzy,
       );
     }
 
@@ -310,29 +341,19 @@ export class EnhancedPHIDetector {
     const lowerLabel = label.toLowerCase();
 
     const labelPatterns: { [key: string]: RegExp[] } = {
-      'NAME': [
+      NAME: [
         /\b(name|patient|member|client|contact|guardian|parent|spouse|emergency)\b/,
         /\b(first|last|middle|full|legal)\s*name\b/,
       ],
-      'DATE': [
+      DATE: [
         /\b(date|dob|birth|born|admission|discharge|visit|service)\b/,
         /\b(effective|expires?|issued)\b/,
       ],
-      'SSN': [
-        /\b(ssn|social|security|ss#)\b/,
-      ],
-      'PHONE': [
-        /\b(phone|tel|telephone|cell|mobile|contact|fax)\b/,
-      ],
-      'ADDRESS': [
-        /\b(address|street|city|state|zip|residence|location)\b/,
-      ],
-      'MRN': [
-        /\b(mrn|medical\s*record|patient\s*id|chart|account)\b/,
-      ],
-      'EMAIL': [
-        /\b(email|e-mail|electronic\s*mail)\b/,
-      ],
+      SSN: [/\b(ssn|social|security|ss#)\b/],
+      PHONE: [/\b(phone|tel|telephone|cell|mobile|contact|fax)\b/],
+      ADDRESS: [/\b(address|street|city|state|zip|residence|location)\b/],
+      MRN: [/\b(mrn|medical\s*record|patient\s*id|chart|account)\b/],
+      EMAIL: [/\b(email|e-mail|electronic\s*mail)\b/],
     };
 
     const patterns = labelPatterns[phiType] || [];
@@ -353,40 +374,45 @@ export class EnhancedPHIDetector {
   private getChaosAdjustment(
     text: string,
     chaos: ChaosAnalysis,
-    phiType: string
+    phiType: string,
   ): number {
     // In chaotic documents, be more lenient with detection
     // In clean documents, be stricter
-    
+
     const weights = OcrChaosDetector.getConfidenceWeights(chaos.score);
     const casePattern = OcrChaosDetector.classifyCasePattern(text);
-    
-    let adjustment = weights[casePattern.toLowerCase() as keyof typeof weights] || 0.7;
-    
+
+    let adjustment =
+      weights[casePattern.toLowerCase() as keyof typeof weights] || 0.7;
+
     // PHI types that are more resilient to OCR errors
-    const ocrResilientTypes = ['SSN', 'PHONE', 'MRN', 'EMAIL']; // Structured patterns
+    const ocrResilientTypes = ["SSN", "PHONE", "MRN", "EMAIL"]; // Structured patterns
     if (ocrResilientTypes.includes(phiType)) {
       // Don't penalize as much for chaos
       adjustment = Math.max(0.6, adjustment);
     }
-    
+
     return adjustment;
   }
 
   private getContextSignal(
     candidate: DetectionCandidate,
-    fullText: string
+    fullText: string,
   ): VoteSignal | null {
     const { start, end, phiType, text } = candidate;
-    
+
     // Get surrounding context (100 chars before and after)
     const contextStart = Math.max(0, start - 100);
     const contextEnd = Math.min(fullText.length, end + 100);
-    const surroundingText = fullText.substring(contextStart, contextEnd).toLowerCase();
+    const surroundingText = fullText
+      .substring(contextStart, contextEnd)
+      .toLowerCase();
 
     // PHI-specific context patterns
-    const contextPatterns: { [key: string]: { positive: RegExp[]; negative: RegExp[] } } = {
-      'NAME': {
+    const contextPatterns: {
+      [key: string]: { positive: RegExp[]; negative: RegExp[] };
+    } = {
+      NAME: {
         positive: [
           /\b(patient|member|client|contact|mr\.?|mrs\.?|ms\.?)\b/,
           /\b(signed|witnessed|certified|authorized)\s+by\b/,
@@ -398,7 +424,7 @@ export class EnhancedPHIDetector {
           /\b(dr\.?|doctor|physician|nurse|provider)\s+/i, // Provider context
         ],
       },
-      'DATE': {
+      DATE: {
         positive: [
           /\b(born|birth|dob|admission|discharge|visit|service)\b/,
           /\b(effective|expires?|issued|signed|dated)\b/,
@@ -408,7 +434,7 @@ export class EnhancedPHIDetector {
           /\b(copyright|published)\b/,
         ],
       },
-      'SSN': {
+      SSN: {
         positive: [
           /\b(social|security|ssn|ss#)\b/,
           /\b(identification|identity|verify)\b/,
@@ -435,11 +461,11 @@ export class EnhancedPHIDetector {
     }
 
     const netScore = positiveScore - negativeScore;
-    
+
     if (Math.abs(netScore) > 0.1) {
       return EnsembleVoter.contextSignal(
         0.5 + netScore, // Center around 0.5, adjust by net score
-        netScore > 0 ? 'positive-context' : 'negative-context'
+        netScore > 0 ? "positive-context" : "negative-context",
       );
     }
 

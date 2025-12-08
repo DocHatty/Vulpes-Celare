@@ -13,6 +13,7 @@ exports.DateFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const SharedPatterns_1 = require("../patterns/SharedPatterns");
+const ValidationUtils_1 = require("../utils/ValidationUtils");
 class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "DATE";
@@ -22,14 +23,26 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const spans = [];
-        // Apply all date patterns
-        for (const pattern of DateFilterSpan.COMPILED_PATTERNS) {
-            pattern.lastIndex = 0; // Reset regex
-            let match;
-            while ((match = pattern.exec(text)) !== null) {
-                const span = this.createSpanFromMatch(text, match, Span_1.FilterType.DATE, 0.95);
-                spans.push(span);
+        const seen = new Set();
+        const processText = (source) => {
+            for (const pattern of DateFilterSpan.COMPILED_PATTERNS) {
+                pattern.lastIndex = 0; // Reset regex
+                let match;
+                while ((match = pattern.exec(source)) !== null) {
+                    const key = `${match.index}-${match[0].length}`;
+                    if (seen.has(key))
+                        continue;
+                    const span = this.createSpanFromMatch(text, match, Span_1.FilterType.DATE, 0.95);
+                    spans.push(span);
+                    seen.add(key);
+                }
             }
+        };
+        processText(text);
+        // OCR-normalized pass to catch O/0, l/1, S/5 swaps that dodge regexes
+        const normalized = ValidationUtils_1.ValidationUtils.normalizeOCR(text);
+        if (normalized !== text) {
+            processText(normalized);
         }
         return spans;
     }

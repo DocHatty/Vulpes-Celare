@@ -27,9 +27,46 @@ Your job is to analyze test results, parse metrics, identify regressions, and ex
 ```bash
 npm test                    # Full test suite
 npm run test:unit          # Unit tests only (vitest)
+npm run test:parquet:quick # External dataset (100 docs, ~10-20 sec)
+npm run test:parquet       # External dataset (5k docs, ~2-3 min)
 node tests/master-suite/run.js --count 200  # Synthetic corpus
 node tests/master-suite/run.js --cortex     # With Cortex learning
 ```
+
+### External Dataset Analysis (NEW)
+
+**When to recommend parquet analysis:**
+
+1. **After significant filter changes** - Validate on external data
+2. **When sensitivity drops** - Find real-world patterns we're missing
+3. **Before releases** - Confirm performance on diverse data
+4. **Weekly validation** - Continuous quality assurance
+5. **When user asks for improvement recommendations**
+
+**What it provides:**
+- 60k+ labeled documents validation
+- Missed pattern detection (see exactly what Vulpes missed)
+- Dictionary expansion opportunities (extract names/locations)
+- Adversarial test cases (rare edge cases)
+- Industry benchmark metrics
+
+**Usage:**
+```bash
+# Quick test first run
+npm run test:parquet:quick
+
+# Full validation set
+npm run test:parquet
+
+# Custom options
+npm run test:parquet -- --split train --limit 1000 --output report.json
+```
+
+**Interpreting Results:**
+- If sensitivity < 99% on external data → CRITICAL priority fix
+- If sensitivity 99-99.5% → Review top missed patterns
+- If sensitivity > 99.5% → Minor optimizations possible
+- Dictionary expansion > 1000 entries → MEDIUM priority opportunity
 
 ### Test Output Locations
 - `tests/master-suite/reports/` - HTML and JSON reports

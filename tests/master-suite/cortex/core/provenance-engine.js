@@ -1,4 +1,43 @@
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+
+const KEY_DIR = path.join(__dirname, "..", "storage");
+const PRIVATE_KEY_PATH = path.join(KEY_DIR, "ed25519-private.pem");
+const PUBLIC_KEY_PATH = path.join(KEY_DIR, "ed25519-public.pem");
+
+function ensureKeypair() {
+    if (fs.existsSync(PRIVATE_KEY_PATH) && fs.existsSync(PUBLIC_KEY_PATH)) {
+        return {
+            privateKey: fs.readFileSync(PRIVATE_KEY_PATH, "utf8"),
+            publicKey: fs.readFileSync(PUBLIC_KEY_PATH, "utf8"),
+        };
+    }
+
+    if (!fs.existsSync(KEY_DIR)) {
+        fs.mkdirSync(KEY_DIR, { recursive: true });
+    }
+
+    const { privateKey, publicKey } = crypto.generateKeyPairSync("ed25519", {
+        privateKeyEncoding: { format: "pem", type: "pkcs8" },
+        publicKeyEncoding: { format: "pem", type: "spki" },
+    });
+
+    fs.writeFileSync(PRIVATE_KEY_PATH, privateKey);
+    fs.writeFileSync(PUBLIC_KEY_PATH, publicKey);
+
+    return { privateKey, publicKey };
+}
+
+function signFingerprint(payload) {
+    const { privateKey } = ensureKeypair();
+    return crypto.sign(null, Buffer.from(payload, "utf8"), privateKey).toString("base64");
+}
+
+function verifySignature(payload, signature) {
+    const { publicKey } = ensureKeypair();
+    return crypto.verify(null, Buffer.from(payload, "utf8"), publicKey, Buffer.from(signature, "base64"));
+}
 
 /**
  * REDACTION PROVENANCE ENGINE
@@ -26,6 +65,8 @@ class ProvenanceEngine {
         const hashOriginal = this.sha256(originalContent);
         const hashRedacted = this.sha256(redactedContent);
         const hashManifest = this.sha256(JSON.stringify(manifest));
+        const fingerprint = `${hashOriginal}|${hashRedacted}|${hashManifest}`;
+        const signature = signFingerprint(fingerprint);
 
         // 2. Log to Audit Chain (Tier 1)
         // We log the fact that a redaction job occurred, linking the manifest hash
@@ -62,7 +103,7 @@ class ProvenanceEngine {
             hashManifest,
             zkProofStub,
             auditEntry.id,
-            "mock_signature" // In real world, signed by a private key
+            signature
         );
 
         return {
@@ -75,7 +116,8 @@ class ProvenanceEngine {
                 manifest: hashManifest
             },
             auditLogId: auditEntry.id,
-            merkleRoot: auditEntry.hash
+            merkleRoot: auditEntry.hash,
+            signature
         };
     }
 
@@ -89,6 +131,10 @@ class ProvenanceEngine {
 
         // Get the linked audit log entry to prove chain inclusion
         const auditEntry = this.merkleLog.verify(job.audit_log_id);
+        const payload = `${job.hash_original}|${job.hash_redacted}|${job.hash_manifest}`;
+        const signatureValid = job.signature
+            ? verifySignature(payload, job.signature)
+            : false;
 
         return {
             valid: !!auditEntry.valid,
@@ -107,7 +153,8 @@ class ProvenanceEngine {
                 merkleRoot: auditEntry.merkle_root,
                 onChainHash: auditEntry.hash
             },
-            zkProof: job.zk_proof
+            zkProof: job.zk_proof,
+            signatureValid
         };
     }
 

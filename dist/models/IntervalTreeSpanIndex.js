@@ -180,8 +180,21 @@ class IntervalTreeSpanIndex {
             return [];
         if (spans.length === 1)
             return spans;
-        // Score all spans
-        const scoredSpans = spans.map((span) => ({
+        // STEP 1: Remove exact duplicates (same position + type)
+        // This handles filters that generate multiple matches for the same text
+        const uniqueMap = new Map();
+        for (const span of spans) {
+            const key = `${span.characterStart}-${span.characterEnd}-${span.filterType}`;
+            const existing = uniqueMap.get(key);
+            if (!existing || existing.confidence < span.confidence) {
+                uniqueMap.set(key, span);
+            }
+        }
+        const uniqueSpans = Array.from(uniqueMap.values());
+        if (uniqueSpans.length === 1)
+            return uniqueSpans;
+        // STEP 2: Score all spans
+        const scoredSpans = uniqueSpans.map((span) => ({
             span,
             score: IntervalTreeSpanIndex.calculateSpanScore(span),
         }));
@@ -194,22 +207,19 @@ class IntervalTreeSpanIndex {
             }
             return b.span.length - a.span.length;
         });
-        // Use interval tree for efficient overlap checking
-        const resultTree = new IntervalTreeSpanIndex();
+        // STEP 3: Greedy overlap removal with containment logic
         const kept = [];
         for (const { span } of scoredSpans) {
-            const overlaps = resultTree.findOverlaps(span.characterStart, span.characterEnd);
-            if (overlaps.length === 0) {
-                // No overlaps - keep this span
-                resultTree.insert(span);
-                kept.push(span);
-                continue;
-            }
-            // Check overlap resolution rules
             let shouldKeep = true;
-            let spanToReplace = null;
-            for (const existing of overlaps) {
-                // Check containment relationships
+            let indexToReplace = -1;
+            for (let i = 0; i < kept.length; i++) {
+                const existing = kept[i];
+                // Check for overlap
+                const noOverlap = span.characterEnd <= existing.characterStart ||
+                    span.characterStart >= existing.characterEnd;
+                if (noOverlap)
+                    continue;
+                // There IS an overlap - determine what to do
                 const spanContainsExisting = span.characterStart <= existing.characterStart &&
                     span.characterEnd >= existing.characterEnd;
                 const existingContainsSpan = existing.characterStart <= span.characterStart &&
@@ -217,18 +227,23 @@ class IntervalTreeSpanIndex {
                 const spanSpec = TYPE_SPECIFICITY[span.filterType] || 25;
                 const existSpec = TYPE_SPECIFICITY[existing.filterType] || 25;
                 if (spanContainsExisting) {
-                    // New span contains existing - check if existing is more specific
-                    if (existSpec > spanSpec && existing.confidence >= 0.9) {
+                    // New span contains existing
+                    // If same type or existing is more specific with high confidence, reject new span
+                    if (spanSpec <= existSpec) {
+                        // Same or more specific type in existing - keep existing, reject new
                         shouldKeep = false;
                         break;
                     }
+                    // New span is more specific - this is rare but could happen with different types
                 }
                 else if (existingContainsSpan) {
-                    // Existing contains new span - check if new is more specific
+                    // Existing contains new span
                     if (spanSpec > existSpec && span.confidence >= 0.9) {
-                        spanToReplace = existing;
+                        // New span is more specific with high confidence - replace existing
+                        indexToReplace = i;
                         break;
                     }
+                    // Same type or existing is more specific - reject new span
                     shouldKeep = false;
                     break;
                 }
@@ -238,17 +253,10 @@ class IntervalTreeSpanIndex {
                     break;
                 }
             }
-            if (spanToReplace) {
-                // Replace existing with new more specific span
-                resultTree.remove(spanToReplace);
-                const idx = kept.indexOf(spanToReplace);
-                if (idx >= 0)
-                    kept.splice(idx, 1);
-                resultTree.insert(span);
-                kept.push(span);
+            if (indexToReplace >= 0) {
+                kept[indexToReplace] = span;
             }
             else if (shouldKeep) {
-                resultTree.insert(span);
                 kept.push(span);
             }
         }

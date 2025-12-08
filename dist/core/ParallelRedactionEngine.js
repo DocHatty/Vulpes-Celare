@@ -78,54 +78,54 @@ class ParallelRedactionEngine {
             RadiologyLogger_1.RadiologyLogger.info("REDACTION", "Text too short for redaction, skipping");
             return text;
         }
-        // STEP 1: Execute only enabled filters in parallel
-        const filterPromises = enabledFilters.map(async (filter) => {
-            const filterStartTime = Date.now();
+        // STEP 1: Execute all filters in parallel using Promise.all
+        // Note: This is single-threaded concurrency (event loop), not true CPU parallelism.
+        // For CPU-bound work like regex matching, this still provides good performance
+        // by allowing I/O operations to interleave. True parallelism would require
+        // worker_threads with shared dictionary memory (future optimization).
+        const executionResults = await Promise.all(enabledFilters.map(async (filter) => {
+            const filterStart = Date.now();
             const filterType = filter.getType();
             const filterName = filter.constructor.name;
-            const result = {
-                filterName,
-                filterType,
-                success: false,
-                spansDetected: 0,
-                executionTimeMs: 0,
-                enabled: true,
-            };
+            const config = policy.identifiers?.[filterType];
             try {
-                const config = policy.identifiers?.[filterType];
                 const spans = await Promise.resolve(filter.detect(text, config, context));
-                result.success = true;
-                result.spansDetected = spans.length;
-                result.executionTimeMs = Date.now() - filterStartTime;
-                filterResults.push(result);
+                const executionTimeMs = Date.now() - filterStart;
+                // Log completion
                 RadiologyLogger_1.RadiologyLogger.filterComplete({
                     filterName,
                     filterType,
                     spansDetected: spans.length,
-                    executionTimeMs: result.executionTimeMs,
+                    executionTimeMs,
                     success: true,
                 });
-                return spans;
-            }
-            catch (error) {
-                result.success = false;
-                result.error =
-                    error instanceof Error ? error : new Error(String(error));
-                result.executionTimeMs = Date.now() - filterStartTime;
-                filterResults.push(result);
-                RadiologyLogger_1.RadiologyLogger.filterComplete({
+                // Add to execution report
+                filterResults.push({
                     filterName,
                     filterType,
-                    spansDetected: 0,
-                    executionTimeMs: result.executionTimeMs,
-                    success: false,
-                    error: result.error,
+                    success: true,
+                    spansDetected: spans.length,
+                    executionTimeMs,
+                    enabled: true,
                 });
-                return [];
+                return { filter, spans, executionTimeMs };
             }
-        });
-        const allSpanArrays = await Promise.all(filterPromises);
-        let allSpans = allSpanArrays.flat();
+            catch (error) {
+                const executionTimeMs = Date.now() - filterStart;
+                RadiologyLogger_1.RadiologyLogger.error("REDACTION", `Filter ${filterName} failed: ${error}`);
+                filterResults.push({
+                    filterName,
+                    filterType,
+                    success: false,
+                    spansDetected: 0,
+                    executionTimeMs,
+                    error: error instanceof Error ? error : new Error(String(error)),
+                    enabled: true,
+                });
+                return { filter, spans: [], executionTimeMs };
+            }
+        }));
+        let allSpans = executionResults.flatMap((r) => r.spans);
         RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Total spans detected: ${allSpans.length} (before filtering)`);
         // STEP 1.5: Field Context Detection (PRE-PASS)
         // Detect field labels and their expected value types

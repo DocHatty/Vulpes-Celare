@@ -10,6 +10,7 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { ValidationUtils } from "../utils/ValidationUtils";
 
 export class PhoneFilterSpan extends SpanBasedFilter {
   /**
@@ -156,60 +157,73 @@ export class PhoneFilterSpan extends SpanBasedFilter {
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
+    const seen = new Set<string>();
 
-    // Apply all phone patterns (using pre-compiled patterns)
-    for (const pattern of PhoneFilterSpan.COMPILED_PATTERNS) {
-      pattern.lastIndex = 0; // Reset regex
+    const processText = (source: string) => {
+      for (const pattern of PhoneFilterSpan.COMPILED_PATTERNS) {
+        pattern.lastIndex = 0; // Reset regex
 
-      let match;
-      while ((match = pattern.exec(text)) !== null) {
-        const phone = match[0];
-        const offset = match.index!;
+        let match;
+        while ((match = pattern.exec(source)) !== null) {
+          const phone = match[0];
+          const offset = match.index!;
+          const key = `${offset}-${match[0].length}`;
+          if (seen.has(key)) continue;
 
-        // Skip if preceding label indicates this is an NPI
-        const windowStart = Math.max(0, offset - 20);
-        const labelWindow = text.substring(windowStart, offset).toLowerCase();
-        if (labelWindow.includes("npi")) {
-          continue;
-        }
-
-        // Validate minimum digit count (7 digits minimum for most formats)
-        // For vanity numbers, letters count as digits (e.g., 555-TEETH = 7 chars)
-        const digitCount = (phone.match(/\d/g) || []).length;
-        const letterCount = (phone.match(/[A-Za-z]/g) || []).length;
-        const totalAlphanumeric = digitCount + letterCount;
-
-        // Vanity numbers: if there are letters, use combined count
-        // Regular numbers: must have at least 7 digits
-        if (letterCount > 0) {
-          // Vanity number - need at least 10 alphanumeric (area code + exchange + suffix)
-          if (totalAlphanumeric < 10) {
+          // Skip if preceding label indicates this is an NPI
+          const windowStart = Math.max(0, offset - 20);
+          const labelWindow = source.substring(windowStart, offset).toLowerCase();
+          if (labelWindow.includes("npi")) {
             continue;
           }
-        } else {
-          // Regular number - need at least 7 digits
-          if (digitCount < 7) {
-            continue;
+
+          // Validate minimum digit count (7 digits minimum for most formats)
+          // For vanity numbers, letters count as digits (e.g., 555-TEETH = 7 chars)
+          const digitCount = (phone.match(/\d/g) || []).length;
+          const letterCount = (phone.match(/[A-Za-z]/g) || []).length;
+          const totalAlphanumeric = digitCount + letterCount;
+
+          // Vanity numbers: if there are letters, use combined count
+          // Regular numbers: must have at least 7 digits
+          if (letterCount > 0) {
+            // Vanity number - need at least 10 alphanumeric (area code + exchange + suffix)
+            if (totalAlphanumeric < 10) {
+              continue;
+            }
+          } else {
+            // Regular number - need at least 7 digits
+            if (digitCount < 7) {
+              continue;
+            }
           }
-        }
 
-        // Determine confidence based on pattern specificity
-        let confidence = 0.9;
-        if (phone.startsWith("+")) {
-          confidence = 0.95; // International format is more specific
-        }
-        if (/ext|extension/i.test(phone)) {
-          confidence = 0.95; // Extensions increase confidence
-        }
+          // Determine confidence based on pattern specificity
+          let confidence = 0.9;
+          if (phone.startsWith("+")) {
+            confidence = 0.95; // International format is more specific
+          }
+          if (/ext|extension/i.test(phone)) {
+            confidence = 0.95; // Extensions increase confidence
+          }
 
-        const span = this.createSpanFromMatch(
-          text,
-          match,
-          FilterType.PHONE,
-          confidence,
-        );
-        spans.push(span);
+          const span = this.createSpanFromMatch(
+            text,
+            match,
+            FilterType.PHONE,
+            confidence,
+          );
+          spans.push(span);
+          seen.add(key);
+        }
       }
+    };
+
+    processText(text);
+
+    // Second pass on OCR-normalized text to catch substitutions like O/0, l/1, S/5.
+    const normalized = ValidationUtils.normalizeOCR(text);
+    if (normalized !== text) {
+      processText(normalized);
     }
 
     return spans;

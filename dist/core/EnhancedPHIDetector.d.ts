@@ -26,7 +26,7 @@ export interface EnhancedDetectionResult {
     candidate: DetectionCandidate;
     signals: VoteSignal[];
     finalConfidence: number;
-    recommendation: 'REDACT' | 'SKIP' | 'UNCERTAIN';
+    recommendation: "REDACT" | "SKIP" | "UNCERTAIN";
     explanation: string;
 }
 export interface DetectionContext {
@@ -44,7 +44,6 @@ export declare class EnhancedPHIDetector {
     private surnameMatcher;
     private initialized;
     private documentCache;
-    private readonly MAX_CACHE_SIZE;
     private constructor();
     static getInstance(): EnhancedPHIDetector;
     /**

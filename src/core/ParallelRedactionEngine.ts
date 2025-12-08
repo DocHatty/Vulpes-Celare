@@ -129,62 +129,67 @@ export class ParallelRedactionEngine {
       return text;
     }
 
-    // STEP 1: Execute only enabled filters in parallel
-    const filterPromises = enabledFilters.map(async (filter) => {
-      const filterStartTime = Date.now();
-      const filterType = filter.getType();
-      const filterName = filter.constructor.name;
-
-      const result: FilterExecutionResult = {
-        filterName,
-        filterType,
-        success: false,
-        spansDetected: 0,
-        executionTimeMs: 0,
-        enabled: true,
-      };
-
-      try {
+    // STEP 1: Execute all filters in parallel using Promise.all
+    // Note: This is single-threaded concurrency (event loop), not true CPU parallelism.
+    // For CPU-bound work like regex matching, this still provides good performance
+    // by allowing I/O operations to interleave. True parallelism would require
+    // worker_threads with shared dictionary memory (future optimization).
+    const executionResults = await Promise.all(
+      enabledFilters.map(async (filter) => {
+        const filterStart = Date.now();
+        const filterType = filter.getType();
+        const filterName = filter.constructor.name;
         const config = policy.identifiers?.[filterType];
 
-        const spans = await Promise.resolve(
-          filter.detect(text, config, context),
-        );
+        try {
+          const spans = await Promise.resolve(
+            filter.detect(text, config, context),
+          );
+          const executionTimeMs = Date.now() - filterStart;
 
-        result.success = true;
-        result.spansDetected = spans.length;
-        result.executionTimeMs = Date.now() - filterStartTime;
-        filterResults.push(result);
+          // Log completion
+          RadiologyLogger.filterComplete({
+            filterName,
+            filterType,
+            spansDetected: spans.length,
+            executionTimeMs,
+            success: true,
+          });
 
-        RadiologyLogger.filterComplete({
-          filterName,
-          filterType,
-          spansDetected: spans.length,
-          executionTimeMs: result.executionTimeMs,
-          success: true,
-        });
-        return spans;
-      } catch (error) {
-        result.success = false;
-        result.error =
-          error instanceof Error ? error : new Error(String(error));
-        result.executionTimeMs = Date.now() - filterStartTime;
-        filterResults.push(result);
+          // Add to execution report
+          filterResults.push({
+            filterName,
+            filterType,
+            success: true,
+            spansDetected: spans.length,
+            executionTimeMs,
+            enabled: true,
+          });
 
-        RadiologyLogger.filterComplete({
-          filterName,
-          filterType,
-          spansDetected: 0,
-          executionTimeMs: result.executionTimeMs,
-          success: false,
-          error: result.error,
-        });
-        return [];
-      }
-    });
+          return { filter, spans, executionTimeMs };
+        } catch (error) {
+          const executionTimeMs = Date.now() - filterStart;
+          RadiologyLogger.error(
+            "REDACTION",
+            `Filter ${filterName} failed: ${error}`,
+          );
 
-    const allSpanArrays = await Promise.all(filterPromises);
-    let allSpans = allSpanArrays.flat();
+          filterResults.push({
+            filterName,
+            filterType,
+            success: false,
+            spansDetected: 0,
+            executionTimeMs,
+            error: error instanceof Error ? error : new Error(String(error)),
+            enabled: true,
+          });
+
+          return { filter, spans: [] as Span[], executionTimeMs };
+        }
+      }),
+    );
+
+    let allSpans = executionResults.flatMap((r) => r.spans);
 
     RadiologyLogger.info(
       "REDACTION",
@@ -653,13 +658,19 @@ export class ParallelRedactionEngine {
 
       // INSURANCE CHECK - catches Aetna, Cigna, Blue Cross, etc.
       if (DocumentVocabulary.isInsuranceTerm(text)) {
-        RadiologyLogger.debug("PRESERVED", `Excluding insurance company: "${text}"`);
+        RadiologyLogger.debug(
+          "PRESERVED",
+          `Excluding insurance company: "${text}"`,
+        );
         return false;
       }
 
       // HOSPITAL CHECK - catches Beth Israel, Johns Hopkins, UT Southwestern, etc.
       if (DocumentVocabulary.isHospitalName(text)) {
-        RadiologyLogger.debug("PRESERVED", `Excluding hospital name: "${text}"`);
+        RadiologyLogger.debug(
+          "PRESERVED",
+          `Excluding hospital name: "${text}"`,
+        );
         return false;
       }
 
@@ -673,15 +684,24 @@ export class ParallelRedactionEngine {
       const words = text.split(/[\s,]+/).filter((w) => w.length > 2);
       for (const word of words) {
         if (DocumentVocabulary.isInsuranceTerm(word)) {
-          RadiologyLogger.debug("PRESERVED", `Excluding span with insurance term "${word}": "${text}"`);
+          RadiologyLogger.debug(
+            "PRESERVED",
+            `Excluding span with insurance term "${word}": "${text}"`,
+          );
           return false;
         }
         if (DocumentVocabulary.isHospitalName(word)) {
-          RadiologyLogger.debug("PRESERVED", `Excluding span with hospital term "${word}": "${text}"`);
+          RadiologyLogger.debug(
+            "PRESERVED",
+            `Excluding span with hospital term "${word}": "${text}"`,
+          );
           return false;
         }
         if (DocumentVocabulary.isNonPHI(word)) {
-          RadiologyLogger.debug("PRESERVED", `Excluding span with non-PHI word "${word}": "${text}"`);
+          RadiologyLogger.debug(
+            "PRESERVED",
+            `Excluding span with non-PHI word "${word}": "${text}"`,
+          );
           return false;
         }
       }
@@ -759,7 +779,10 @@ export class ParallelRedactionEngine {
 
       // Check full text first
       if (DocumentVocabulary.isMedicalTerm(text)) {
-        RadiologyLogger.debug("PRESERVED", `Excluding NAME matching medical term: "${text}"`);
+        RadiologyLogger.debug(
+          "PRESERVED",
+          `Excluding NAME matching medical term: "${text}"`,
+        );
         return false;
       }
 
@@ -768,7 +791,10 @@ export class ParallelRedactionEngine {
         HospitalDictionary.isHospital(text) ||
         HospitalDictionary.isPartOfHospitalName(text, text)
       ) {
-        RadiologyLogger.debug("PRESERVED", `Excluding NAME matching hospital: "${text}"`);
+        RadiologyLogger.debug(
+          "PRESERVED",
+          `Excluding NAME matching hospital: "${text}"`,
+        );
         return false;
       }
 

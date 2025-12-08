@@ -4,6 +4,9 @@ export declare function findBestMatch(s: string, arr: string[]): {
         target: string;
         rating: number;
     };
-    ratings: never[];
+    ratings: {
+        target: string;
+        rating: number;
+    }[];
 };
 //# sourceMappingURL=string-similarity.d.ts.map

@@ -17,14 +17,14 @@
  *
  * @module redaction/core
  */
-import { Span, FilterType } from '../models/Span';
+import { Span, FilterType } from "../models/Span";
 /**
  * Constraint between two PHI types
  */
 interface TypeConstraint {
     type1: FilterType;
     type2: FilterType;
-    relationship: 'EXCLUSIVE' | 'SUPPORTIVE' | 'NEUTRAL';
+    relationship: "EXCLUSIVE" | "SUPPORTIVE" | "NEUTRAL";
     strength: number;
     contextRequired?: RegExp;
     reason: string;
@@ -64,6 +64,11 @@ export declare class CrossTypeReasoner {
      * Apply cross-type reasoning to a set of spans
      */
     reason(spans: Span[], fullText: string): ReasoningResult[];
+    /**
+     * Clear entity tracker - call this between documents in batch processing
+     * or when done with a processing session
+     */
+    clearEntityTracker(): void;
     /**
      * Build map of entity occurrences across document
      */

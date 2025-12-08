@@ -10,16 +10,26 @@ const { executeTool } = require('./mcp/tools');
 const { handshakeManager } = require('./mcp/handshake');
 const assert = require('assert');
 
-// Mock modules for testing
-const mockModules = {
-    temporalIndex: { getLatestMetrics: () => ({ sensitivity: 99.5 }) },
-    patternRecognizer: { getStats: () => ({ totalFailurePatterns: 15 }) },
-    historyConsultant: {
-        consult: async () => ({ relatedFailures: [], suggestedApproach: "Fix filter" })
+// Load real modules/fixtures instead of mocks
+const { PatternRecognizer } = require("./learning/pattern-recognizer");
+const { HistoryConsultant } = require("./decision/history-consultant");
+const { InterventionTracker } = require("./learning/intervention-tracker");
+const fixtures = require("./fixtures/mcp-fixtures.json");
+
+const patternRecognizer = new PatternRecognizer();
+const interventionTracker = new InterventionTracker();
+const historyConsultant = new HistoryConsultant({
+    patternRecognizer,
+    interventionTracker,
+});
+
+const moduleBundle = {
+    temporalIndex: {
+        getLatestMetrics: () => fixtures.latestMetrics
     },
-    interventionTracker: {
-        recordIntervention: async () => ({ id: "int-123" })
-    }
+    patternRecognizer,
+    historyConsultant,
+    interventionTracker
 };
 
 async function runValidation() {
@@ -33,7 +43,7 @@ async function runValidation() {
     const blockedResponse = await executeTool(
         'record_intervention',
         { type: 'FILTER_MODIFICATION', description: 'Test' },
-        mockModules
+        moduleBundle
     );
 
     console.log("Response:", JSON.stringify(blockedResponse, null, 2));
@@ -54,7 +64,7 @@ async function runValidation() {
     const historyResponse = await executeTool(
         'consult_history',
         { query: "How to fix NAME filter" },
-        mockModules
+        moduleBundle
     );
 
     console.log("History Response:", JSON.stringify(historyResponse.reaffirmation, null, 2));
@@ -76,7 +86,7 @@ async function runValidation() {
     const allowedResponse = await executeTool(
         'record_intervention',
         { type: 'FILTER_MODIFICATION', description: 'Test' },
-        mockModules
+        moduleBundle
     );
 
     try {

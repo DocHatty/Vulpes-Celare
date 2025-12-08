@@ -12,8 +12,8 @@
  * - Instruction Injection: Auto-inject safety instructions
  * - Multi-provider support: Claude, OpenAI, Azure, local models
  */
-import { VulpesCelareConfig } from '../VulpesCelare';
-export type LLMProvider = 'claude' | 'openai' | 'azure' | 'ollama' | 'custom';
+import { VulpesCelareConfig } from "../VulpesCelare";
+export type LLMProvider = "claude" | "openai" | "azure" | "ollama" | "custom";
 export interface LLMConfig {
     provider: LLMProvider;
     apiKey?: string;
@@ -25,7 +25,7 @@ export interface LLMConfig {
     injectSafetyInstructions?: boolean;
 }
 export interface ChatMessage {
-    role: 'user' | 'assistant' | 'system';
+    role: "user" | "assistant" | "system";
     content: string;
 }
 export interface LLMResponse {

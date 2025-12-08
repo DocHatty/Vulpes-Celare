@@ -64,6 +64,9 @@ async function run() {
         if (!receipt.jobId || !receipt.merkleRoot) {
             throw new Error("Invalid receipt received");
         }
+        if (!receipt.signature) {
+            throw new Error("Receipt missing signature");
+        }
         console.log("  ✓ Job recorded successfully");
 
         // 3. Verify Job
@@ -74,6 +77,9 @@ async function run() {
         if (!verification.valid) throw new Error("Verification failed (valid=false)");
         if (verification.fingerprints.hashOriginal !== receipt.hashes.original) {
             throw new Error("Hash mismatch");
+        }
+        if (!verification.signatureValid) {
+            throw new Error("Signature validation failed");
         }
         console.log("  ✓ Job verified via API");
 

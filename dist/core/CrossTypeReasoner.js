@@ -42,75 +42,75 @@ class CrossTypeReasoner {
         this.constraints.push({
             type1: Span_1.FilterType.DATE,
             type2: Span_1.FilterType.AGE,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.9,
-            reason: 'Date and age are mutually exclusive interpretations',
+            reason: "Date and age are mutually exclusive interpretations",
         });
         // NAME vs MEDICATION - "Wilson" could be name or Wilson's disease
         this.constraints.push({
             type1: Span_1.FilterType.NAME,
             type2: Span_1.FilterType.CUSTOM, // Used for MEDICATION
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.85,
             contextRequired: /\b(mg|mcg|tablet|daily|prn|prescribed)\b/i,
-            reason: 'Name vs medication context conflict',
+            reason: "Name vs medication context conflict",
         });
         // SSN vs PHONE - Both are digit sequences
         this.constraints.push({
             type1: Span_1.FilterType.SSN,
             type2: Span_1.FilterType.PHONE,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.95,
-            reason: 'SSN and phone are mutually exclusive formats',
+            reason: "SSN and phone are mutually exclusive formats",
         });
         // MRN vs ZIPCODE - Both can be 5-digit numbers
         this.constraints.push({
             type1: Span_1.FilterType.MRN,
             type2: Span_1.FilterType.ZIPCODE,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.8,
-            reason: 'MRN and zipcode format overlap',
+            reason: "MRN and zipcode format overlap",
         });
         // PHONE vs FAX - Often same format
         this.constraints.push({
             type1: Span_1.FilterType.PHONE,
             type2: Span_1.FilterType.FAX,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.7,
-            reason: 'Phone and fax share format',
+            reason: "Phone and fax share format",
         });
         // DATE vs MRN - Dates can look like MRN numbers
         this.constraints.push({
             type1: Span_1.FilterType.DATE,
             type2: Span_1.FilterType.MRN,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.75,
-            reason: 'Date and MRN format overlap',
+            reason: "Date and MRN format overlap",
         });
         // NAME vs ADDRESS - Street names can look like person names
         this.constraints.push({
             type1: Span_1.FilterType.NAME,
             type2: Span_1.FilterType.ADDRESS,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.7,
             contextRequired: /\b(street|st|ave|avenue|road|rd|drive|dr|lane|ln|blvd|way)\b/i,
-            reason: 'Name vs street address context',
+            reason: "Name vs street address context",
         });
         // ACCOUNT vs CREDIT_CARD - Both are long digit sequences
         this.constraints.push({
             type1: Span_1.FilterType.ACCOUNT,
             type2: Span_1.FilterType.CREDIT_CARD,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.85,
-            reason: 'Account and credit card format overlap',
+            reason: "Account and credit card format overlap",
         });
         // IP vs PHONE - Both can have similar digit patterns
         this.constraints.push({
             type1: Span_1.FilterType.IP,
             type2: Span_1.FilterType.PHONE,
-            relationship: 'EXCLUSIVE',
+            relationship: "EXCLUSIVE",
             strength: 0.9,
-            reason: 'IP address and phone format distinction',
+            reason: "IP address and phone format distinction",
         });
         // ═══════════════════════════════════════════════════════════════════════
         // MUTUAL SUPPORT CONSTRAINTS
@@ -120,60 +120,60 @@ class CrossTypeReasoner {
         this.constraints.push({
             type1: Span_1.FilterType.NAME,
             type2: Span_1.FilterType.DATE,
-            relationship: 'SUPPORTIVE',
+            relationship: "SUPPORTIVE",
             strength: 0.3,
             contextRequired: /\b(dob|date of birth|born|birthday)\b/i,
-            reason: 'Name near DOB reinforces both',
+            reason: "Name near DOB reinforces both",
         });
         // NAME + MRN (patient context)
         this.constraints.push({
             type1: Span_1.FilterType.NAME,
             type2: Span_1.FilterType.MRN,
-            relationship: 'SUPPORTIVE',
+            relationship: "SUPPORTIVE",
             strength: 0.35,
             contextRequired: /\b(patient|mrn|medical record|chart)\b/i,
-            reason: 'Name near MRN reinforces patient identity',
+            reason: "Name near MRN reinforces patient identity",
         });
         // ADDRESS + ZIPCODE
         this.constraints.push({
             type1: Span_1.FilterType.ADDRESS,
             type2: Span_1.FilterType.ZIPCODE,
-            relationship: 'SUPPORTIVE',
+            relationship: "SUPPORTIVE",
             strength: 0.4,
-            reason: 'Address and zipcode typically co-occur',
+            reason: "Address and zipcode typically co-occur",
         });
         // PHONE + NAME (contact context)
         this.constraints.push({
             type1: Span_1.FilterType.PHONE,
             type2: Span_1.FilterType.NAME,
-            relationship: 'SUPPORTIVE',
+            relationship: "SUPPORTIVE",
             strength: 0.25,
             contextRequired: /\b(contact|call|phone|reach)\b/i,
-            reason: 'Phone near name in contact context',
+            reason: "Phone near name in contact context",
         });
         // EMAIL + NAME
         this.constraints.push({
             type1: Span_1.FilterType.EMAIL,
             type2: Span_1.FilterType.NAME,
-            relationship: 'SUPPORTIVE',
+            relationship: "SUPPORTIVE",
             strength: 0.3,
-            reason: 'Email and name typically co-occur',
+            reason: "Email and name typically co-occur",
         });
         // SSN + NAME + DATE (identity triple)
         this.constraints.push({
             type1: Span_1.FilterType.SSN,
             type2: Span_1.FilterType.NAME,
-            relationship: 'SUPPORTIVE',
+            relationship: "SUPPORTIVE",
             strength: 0.4,
-            reason: 'SSN near name strongly indicates identity section',
+            reason: "SSN near name strongly indicates identity section",
         });
         // PROVIDER_NAME + NPI
         this.constraints.push({
             type1: Span_1.FilterType.PROVIDER_NAME,
             type2: Span_1.FilterType.NPI,
-            relationship: 'SUPPORTIVE',
+            relationship: "SUPPORTIVE",
             strength: 0.5,
-            reason: 'Provider name and NPI reinforce healthcare provider identity',
+            reason: "Provider name and NPI reinforce healthcare provider identity",
         });
     }
     /**
@@ -187,20 +187,35 @@ class CrossTypeReasoner {
      */
     reason(spans, fullText) {
         const results = [];
-        // Reset entity tracker for this document
+        // MEMORY LEAK FIX: Always clear entity tracker at start AND use try/finally
+        // to ensure cleanup even if an error occurs during processing
         this.entityTracker.clear();
-        // Phase 1: Build entity occurrence map
-        this.buildEntityMap(spans);
-        // Phase 2: Apply document-level consistency
-        this.applyDocumentConsistency(spans);
-        // Phase 3: Apply pairwise constraints
-        for (const span of spans) {
-            const result = this.applyConstraints(span, spans, fullText);
-            results.push(result);
+        try {
+            // Phase 1: Build entity occurrence map
+            this.buildEntityMap(spans);
+            // Phase 2: Apply document-level consistency
+            this.applyDocumentConsistency(spans);
+            // Phase 3: Apply pairwise constraints
+            for (const span of spans) {
+                const result = this.applyConstraints(span, spans, fullText);
+                results.push(result);
+            }
+            // Phase 4: Resolve remaining conflicts
+            this.resolveConflicts(results, fullText);
+            return results;
         }
-        // Phase 4: Resolve remaining conflicts
-        this.resolveConflicts(results, fullText);
-        return results;
+        finally {
+            // MEMORY LEAK FIX: Always clear after processing to prevent
+            // accumulation in long-running processes
+            this.entityTracker.clear();
+        }
+    }
+    /**
+     * Clear entity tracker - call this between documents in batch processing
+     * or when done with a processing session
+     */
+    clearEntityTracker() {
+        this.entityTracker.clear();
     }
     /**
      * Build map of entity occurrences across document
@@ -250,7 +265,7 @@ class CrossTypeReasoner {
                 const thisCount = entity.types.get(span.filterType) || 0;
                 // If dominant type is much more common, penalize this span
                 if (dominantCount > thisCount * 2) {
-                    span.confidence *= (1 - CrossTypeReasoner.CONFLICT_PENALTY);
+                    span.confidence *= 1 - CrossTypeReasoner.CONFLICT_PENALTY;
                 }
             }
             else {
@@ -277,7 +292,7 @@ class CrossTypeReasoner {
             constraintsApplied: [],
         };
         // Find nearby spans
-        const nearbySpans = allSpans.filter(other => {
+        const nearbySpans = allSpans.filter((other) => {
             if (other === span)
                 return false;
             const distance = Math.min(Math.abs(other.characterStart - span.characterEnd), Math.abs(span.characterStart - other.characterEnd));
@@ -292,7 +307,7 @@ class CrossTypeReasoner {
                 continue;
             const otherType = isType1 ? constraint.type2 : constraint.type1;
             // Find matching nearby spans
-            const matchingNearby = nearbySpans.filter(s => s.filterType === otherType);
+            const matchingNearby = nearbySpans.filter((s) => s.filterType === otherType);
             if (matchingNearby.length === 0)
                 continue;
             // Check context requirement if specified
@@ -304,14 +319,14 @@ class CrossTypeReasoner {
                     continue;
             }
             // Apply constraint
-            if (constraint.relationship === 'EXCLUSIVE') {
+            if (constraint.relationship === "EXCLUSIVE") {
                 // Mutual exclusion: lower confidence of both
                 const penalty = constraint.strength * CrossTypeReasoner.CONFLICT_PENALTY;
                 result.adjustedConfidence -= penalty;
                 result.constraintsApplied.push(`EXCLUSIVE(${constraint.type1}/${constraint.type2})`);
                 result.reasoning.push(constraint.reason);
             }
-            else if (constraint.relationship === 'SUPPORTIVE') {
+            else if (constraint.relationship === "SUPPORTIVE") {
                 // Mutual support: boost confidence
                 const boost = constraint.strength * CrossTypeReasoner.CONSISTENCY_BOOST;
                 result.adjustedConfidence += boost;
@@ -336,7 +351,7 @@ class CrossTypeReasoner {
             // Find overlapping groups
             let foundGroup = false;
             for (const [groupKey, group] of positionGroups.entries()) {
-                const [groupStart, groupEnd] = groupKey.split('-').map(Number);
+                const [groupStart, groupEnd] = groupKey.split("-").map(Number);
                 if (this.overlaps(result.span.characterStart, result.span.characterEnd, groupStart, groupEnd)) {
                     group.push(result);
                     foundGroup = true;
@@ -374,13 +389,13 @@ class CrossTypeReasoner {
      * Normalize text for entity matching
      */
     normalizeText(text) {
-        return text.toLowerCase().trim().replace(/\s+/g, ' ');
+        return text.toLowerCase().trim().replace(/\s+/g, " ");
     }
     /**
      * Get applicable constraints for a type pair
      */
     getConstraints(type1, type2) {
-        return this.constraints.filter(c => (c.type1 === type1 && c.type2 === type2) ||
+        return this.constraints.filter((c) => (c.type1 === type1 && c.type2 === type2) ||
             (c.type1 === type2 && c.type2 === type1));
     }
     /**
@@ -397,12 +412,14 @@ class CrossTypeReasoner {
                 continue;
             }
             // Score each span in the group
-            const scored = group.map(span => {
+            const scored = group.map((span) => {
                 let score = span.confidence;
                 // Apply type-specific context scoring
                 const contextStart = Math.max(0, span.characterStart - 150);
                 const contextEnd = Math.min(fullText.length, span.characterEnd + 150);
-                const context = fullText.substring(contextStart, contextEnd).toLowerCase();
+                const context = fullText
+                    .substring(contextStart, contextEnd)
+                    .toLowerCase();
                 // DATE scoring
                 if (span.filterType === Span_1.FilterType.DATE) {
                     if (/\b(dob|date|born|on|dated|effective|expires?)\b/.test(context)) {
@@ -472,14 +489,13 @@ class CrossTypeReasoner {
     isTypeChangeValid(span, newType, nearbySpans) {
         // Check exclusive constraints
         for (const constraint of this.constraints) {
-            if (constraint.relationship !== 'EXCLUSIVE')
+            if (constraint.relationship !== "EXCLUSIVE")
                 continue;
             if ((constraint.type1 === newType || constraint.type2 === newType) &&
-                nearbySpans.some(s => s.filterType === constraint.type1 || s.filterType === constraint.type2)) {
-                const conflictingType = constraint.type1 === newType
-                    ? constraint.type2
-                    : constraint.type1;
-                if (nearbySpans.some(s => s.filterType === conflictingType)) {
+                nearbySpans.some((s) => s.filterType === constraint.type1 ||
+                    s.filterType === constraint.type2)) {
+                const conflictingType = constraint.type1 === newType ? constraint.type2 : constraint.type1;
+                if (nearbySpans.some((s) => s.filterType === conflictingType)) {
                     return {
                         valid: false,
                         reason: `Type ${newType} conflicts with nearby ${conflictingType}: ${constraint.reason}`,
@@ -487,7 +503,7 @@ class CrossTypeReasoner {
                 }
             }
         }
-        return { valid: true, reason: 'No constraint violations' };
+        return { valid: true, reason: "No constraint violations" };
     }
     /**
      * Get reasoning statistics
@@ -495,8 +511,8 @@ class CrossTypeReasoner {
     getStatistics() {
         return {
             totalConstraints: this.constraints.length,
-            exclusiveConstraints: this.constraints.filter(c => c.relationship === 'EXCLUSIVE').length,
-            supportiveConstraints: this.constraints.filter(c => c.relationship === 'SUPPORTIVE').length,
+            exclusiveConstraints: this.constraints.filter((c) => c.relationship === "EXCLUSIVE").length,
+            supportiveConstraints: this.constraints.filter((c) => c.relationship === "SUPPORTIVE").length,
             trackedEntities: this.entityTracker.size,
         };
     }
@@ -505,7 +521,7 @@ exports.CrossTypeReasoner = CrossTypeReasoner;
 // Reasoning parameters
 CrossTypeReasoner.CONSISTENCY_BOOST = 0.15;
 CrossTypeReasoner.CONFLICT_PENALTY = 0.25;
-CrossTypeReasoner.MIN_CONFIDENCE_THRESHOLD = 0.30;
+CrossTypeReasoner.MIN_CONFIDENCE_THRESHOLD = 0.3;
 CrossTypeReasoner.PROXIMITY_WINDOW = 200; // characters
 // Export singleton for convenience
 exports.crossTypeReasoner = new CrossTypeReasoner();

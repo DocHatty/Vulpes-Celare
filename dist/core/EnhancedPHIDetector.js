@@ -52,6 +52,7 @@ const DocumentStructureAnalyzer_1 = require("../context/DocumentStructureAnalyze
 const FuzzyDictionaryMatcher_1 = require("../dictionaries/FuzzyDictionaryMatcher");
 const OcrChaosDetector_1 = require("../utils/OcrChaosDetector");
 const NameDictionary_1 = require("../dictionaries/NameDictionary");
+const lru_cache_1 = require("lru-cache");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 /**
@@ -62,10 +63,14 @@ class EnhancedPHIDetector {
         this.firstNameMatcher = null;
         this.surnameMatcher = null;
         this.initialized = false;
-        // Cache for document analysis (avoid re-analyzing same doc)
-        this.documentCache = new Map();
-        this.MAX_CACHE_SIZE = 50;
         this.voter = new EnsembleVoter_1.EnsembleVoter();
+        // Initialize LRU cache with proper eviction policy
+        this.documentCache = new lru_cache_1.LRUCache({
+            max: 100, // Max 100 cached documents
+            ttl: 1000 * 60 * 5, // 5 minute TTL
+            updateAgeOnGet: true, // Reset TTL on access
+            allowStale: false, // Don't return stale entries
+        });
     }
     static getInstance() {
         if (!EnhancedPHIDetector.instance) {
@@ -83,19 +88,21 @@ class EnhancedPHIDetector {
             // Load first names for fuzzy matching
             const firstNamesPath = path.join(__dirname, "../dictionaries/first-names.txt");
             if (fs.existsSync(firstNamesPath)) {
-                const names = fs.readFileSync(firstNamesPath, "utf-8")
+                const names = fs
+                    .readFileSync(firstNamesPath, "utf-8")
                     .split("\n")
-                    .map(n => n.trim())
-                    .filter(n => n.length > 0);
+                    .map((n) => n.trim())
+                    .filter((n) => n.length > 0);
                 this.firstNameMatcher = FuzzyDictionaryMatcher_1.FuzzyDictionaryMatcher.forFirstNames(names);
             }
             // Load surnames for fuzzy matching
             const surnamesPath = path.join(__dirname, "../dictionaries/surnames.txt");
             if (fs.existsSync(surnamesPath)) {
-                const names = fs.readFileSync(surnamesPath, "utf-8")
+                const names = fs
+                    .readFileSync(surnamesPath, "utf-8")
                     .split("\n")
-                    .map(n => n.trim())
-                    .filter(n => n.length > 0);
+                    .map((n) => n.trim())
+                    .filter((n) => n.length > 0);
                 this.surnameMatcher = FuzzyDictionaryMatcher_1.FuzzyDictionaryMatcher.forSurnames(names);
             }
             this.initialized = true;
@@ -111,18 +118,15 @@ class EnhancedPHIDetector {
     analyzeDocument(text) {
         // Use first 500 chars as cache key
         const cacheKey = text.substring(0, 500);
-        if (this.documentCache.has(cacheKey)) {
-            return this.documentCache.get(cacheKey);
+        // PERFORMANCE FIX: LRUCache handles eviction automatically
+        const cached = this.documentCache.get(cacheKey);
+        if (cached) {
+            return cached;
         }
         const profile = DocumentStructureAnalyzer_1.DocumentStructureAnalyzer.analyzeDocument(text);
         const chaos = OcrChaosDetector_1.OcrChaosDetector.analyze(text);
         const result = { profile, chaos };
-        // Manage cache size
-        if (this.documentCache.size >= this.MAX_CACHE_SIZE) {
-            const firstKey = this.documentCache.keys().next().value;
-            if (firstKey)
-                this.documentCache.delete(firstKey);
-        }
+        // LRUCache automatically evicts least-recently-used entries when max is reached
         this.documentCache.set(cacheKey, result);
         return result;
     }
@@ -140,7 +144,7 @@ class EnhancedPHIDetector {
         // 1. PATTERN SIGNAL - from the original detector
         signals.push(EnsembleVoter_1.EnsembleVoter.patternSignal(candidate.baseConfidence, candidate.patternName));
         // 2. DICTIONARY SIGNAL - fuzzy name matching
-        if (candidate.phiType === 'NAME') {
+        if (candidate.phiType === "NAME") {
             const dictSignal = this.getDictionarySignal(candidate.text);
             if (dictSignal) {
                 signals.push(dictSignal);
@@ -191,7 +195,7 @@ class EnhancedPHIDetector {
             documentProfile: docAnalysis.profile,
             chaosAnalysis: docAnalysis.chaos,
         };
-        return candidates.map(candidate => this.evaluate(candidate, context));
+        return candidates.map((candidate) => this.evaluate(candidate, context));
     }
     /**
      * Quick filter: Should this candidate be redacted?
@@ -206,7 +210,7 @@ class EnhancedPHIDetector {
             // Fall back to basic NameDictionary
             const confidence = NameDictionary_1.NameDictionary.getNameConfidence(nameText);
             if (confidence > 0) {
-                return EnsembleVoter_1.EnsembleVoter.dictionarySignal(confidence, 'basic-dict', false);
+                return EnsembleVoter_1.EnsembleVoter.dictionarySignal(confidence, "basic-dict", false);
             }
             return null;
         }
@@ -224,23 +228,26 @@ class EnhancedPHIDetector {
         if (firstMatch.matched && lastMatch.matched) {
             // Both matched
             confidence = (firstMatch.confidence + lastMatch.confidence) / 2;
-            isFuzzy = firstMatch.matchType !== 'EXACT' || lastMatch.matchType !== 'EXACT';
+            isFuzzy =
+                firstMatch.matchType !== "EXACT" || lastMatch.matchType !== "EXACT";
         }
         else if (firstMatch.matched) {
             // Only first name matched
             confidence = firstMatch.confidence * 0.7;
-            isFuzzy = firstMatch.matchType !== 'EXACT';
+            isFuzzy = firstMatch.matchType !== "EXACT";
         }
         else if (lastMatch.matched) {
             // Only last name matched
             confidence = lastMatch.confidence * 0.5;
-            isFuzzy = lastMatch.matchType !== 'EXACT';
+            isFuzzy = lastMatch.matchType !== "EXACT";
         }
         if (confidence > 0.3) {
             const matchTypes = [
                 firstMatch.matched ? firstMatch.matchType : null,
                 lastMatch.matched ? lastMatch.matchType : null,
-            ].filter(Boolean).join('+');
+            ]
+                .filter(Boolean)
+                .join("+");
             return EnsembleVoter_1.EnsembleVoter.dictionarySignal(confidence, `fuzzy-dict (${matchTypes})`, isFuzzy);
         }
         return null;
@@ -248,29 +255,19 @@ class EnhancedPHIDetector {
     getLabelRelevance(label, phiType) {
         const lowerLabel = label.toLowerCase();
         const labelPatterns = {
-            'NAME': [
+            NAME: [
                 /\b(name|patient|member|client|contact|guardian|parent|spouse|emergency)\b/,
                 /\b(first|last|middle|full|legal)\s*name\b/,
             ],
-            'DATE': [
+            DATE: [
                 /\b(date|dob|birth|born|admission|discharge|visit|service)\b/,
                 /\b(effective|expires?|issued)\b/,
             ],
-            'SSN': [
-                /\b(ssn|social|security|ss#)\b/,
-            ],
-            'PHONE': [
-                /\b(phone|tel|telephone|cell|mobile|contact|fax)\b/,
-            ],
-            'ADDRESS': [
-                /\b(address|street|city|state|zip|residence|location)\b/,
-            ],
-            'MRN': [
-                /\b(mrn|medical\s*record|patient\s*id|chart|account)\b/,
-            ],
-            'EMAIL': [
-                /\b(email|e-mail|electronic\s*mail)\b/,
-            ],
+            SSN: [/\b(ssn|social|security|ss#)\b/],
+            PHONE: [/\b(phone|tel|telephone|cell|mobile|contact|fax)\b/],
+            ADDRESS: [/\b(address|street|city|state|zip|residence|location)\b/],
+            MRN: [/\b(mrn|medical\s*record|patient\s*id|chart|account)\b/],
+            EMAIL: [/\b(email|e-mail|electronic\s*mail)\b/],
         };
         const patterns = labelPatterns[phiType] || [];
         for (const pattern of patterns) {
@@ -291,7 +288,7 @@ class EnhancedPHIDetector {
         const casePattern = OcrChaosDetector_1.OcrChaosDetector.classifyCasePattern(text);
         let adjustment = weights[casePattern.toLowerCase()] || 0.7;
         // PHI types that are more resilient to OCR errors
-        const ocrResilientTypes = ['SSN', 'PHONE', 'MRN', 'EMAIL']; // Structured patterns
+        const ocrResilientTypes = ["SSN", "PHONE", "MRN", "EMAIL"]; // Structured patterns
         if (ocrResilientTypes.includes(phiType)) {
             // Don't penalize as much for chaos
             adjustment = Math.max(0.6, adjustment);
@@ -303,10 +300,12 @@ class EnhancedPHIDetector {
         // Get surrounding context (100 chars before and after)
         const contextStart = Math.max(0, start - 100);
         const contextEnd = Math.min(fullText.length, end + 100);
-        const surroundingText = fullText.substring(contextStart, contextEnd).toLowerCase();
+        const surroundingText = fullText
+            .substring(contextStart, contextEnd)
+            .toLowerCase();
         // PHI-specific context patterns
         const contextPatterns = {
-            'NAME': {
+            NAME: {
                 positive: [
                     /\b(patient|member|client|contact|mr\.?|mrs\.?|ms\.?)\b/,
                     /\b(signed|witnessed|certified|authorized)\s+by\b/,
@@ -318,7 +317,7 @@ class EnhancedPHIDetector {
                     /\b(dr\.?|doctor|physician|nurse|provider)\s+/i, // Provider context
                 ],
             },
-            'DATE': {
+            DATE: {
                 positive: [
                     /\b(born|birth|dob|admission|discharge|visit|service)\b/,
                     /\b(effective|expires?|issued|signed|dated)\b/,
@@ -328,7 +327,7 @@ class EnhancedPHIDetector {
                     /\b(copyright|published)\b/,
                 ],
             },
-            'SSN': {
+            SSN: {
                 positive: [
                     /\b(social|security|ssn|ss#)\b/,
                     /\b(identification|identity|verify)\b/,
@@ -355,7 +354,7 @@ class EnhancedPHIDetector {
         const netScore = positiveScore - negativeScore;
         if (Math.abs(netScore) > 0.1) {
             return EnsembleVoter_1.EnsembleVoter.contextSignal(0.5 + netScore, // Center around 0.5, adjust by net score
-            netScore > 0 ? 'positive-context' : 'negative-context');
+            netScore > 0 ? "positive-context" : "negative-context");
         }
         return null;
     }

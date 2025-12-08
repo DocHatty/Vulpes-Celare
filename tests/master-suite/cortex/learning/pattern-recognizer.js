@@ -553,10 +553,55 @@ class PatternRecognizer {
   isInDictionary(text) {
     if (!text || typeof text !== "string") return false;
 
-    // TODO: Connect to actual dictionary service
-    // For now, return true for common names
-    const commonNames = ["john", "jane", "smith", "johnson", "williams"];
-    return commonNames.includes(text.toLowerCase());
+    if (!this._dictionaryCache) {
+      this._dictionaryCache = new Map();
+    }
+
+    const normalized = text.trim().toLowerCase();
+    if (this._dictionaryCache.has(normalized)) {
+      return this._dictionaryCache.get(normalized);
+    }
+
+    let NameDictionary;
+    try {
+      // Use compiled dictionaries to avoid TS transpilation at runtime
+      ({ NameDictionary } = require("../../../../dist/dictionaries/NameDictionary"));
+    } catch (e) {
+      // Fall back gracefully if dist isn't built
+      this._dictionaryCache.set(normalized, false);
+      return false;
+    }
+
+    // Attempt to short-circuit with phrase-level confidence
+    const words = normalized.split(/\s+/).filter(Boolean);
+    let inDict = false;
+
+    if (words.length >= 2) {
+      const phrase = words.join(" ");
+      try {
+        inDict = NameDictionary.isLikelyRealName(phrase);
+      } catch {
+        inDict = false;
+      }
+    } else if (words.length === 1) {
+      const candidate = words[0];
+      try {
+        inDict =
+          NameDictionary.isFirstName(candidate) ||
+          NameDictionary.isSurname(candidate) ||
+          (NameDictionary.getNameConfidence(candidate) ?? 0) >= 0.8;
+      } catch {
+        inDict = false;
+      }
+    }
+
+    // Cache result (keep cache small)
+    if (this._dictionaryCache.size > 500) {
+      const firstKey = this._dictionaryCache.keys().next().value;
+      this._dictionaryCache.delete(firstKey);
+    }
+    this._dictionaryCache.set(normalized, inDict);
+    return inDict;
   }
 
   isContextDependent(phiType, text) {

@@ -1,5 +1,14 @@
 # HIPAA Compliance Reviewer
 
+**COMPLIANCE VALIDATION TOOL**: External dataset analysis for regulatory confidence:
+- `npm run test:parquet` - Validate against 60k+ labeled documents
+- Identifies compliance gaps, missed patterns, and improvement opportunities
+- Industry-standard benchmarking for regulatory submissions
+
+**Critical for**: Compliance documentation, regulatory submissions, audit preparation.
+
+---
+
 Expert in HIPAA Safe Harbor compliance verification with authoritative CFR citations.
 
 ## Model

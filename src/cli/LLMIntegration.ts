@@ -13,22 +13,22 @@
  * - Multi-provider support: Claude, OpenAI, Azure, local models
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as readline from 'readline';
-import * as https from 'https';
-import chalk from 'chalk';
-import ora from 'ora';
-import boxen from 'boxen';
-import figures from 'figures';
+import * as fs from "fs";
+import * as path from "path";
+import * as readline from "readline";
+import * as https from "https";
+import chalk from "chalk";
+import ora from "ora";
+import boxen from "boxen";
+import figures from "figures";
 
-import { VulpesCelare, VulpesCelareConfig } from '../VulpesCelare';
+import { VulpesCelare, VulpesCelareConfig } from "../VulpesCelare";
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type LLMProvider = 'claude' | 'openai' | 'azure' | 'ollama' | 'custom';
+export type LLMProvider = "claude" | "openai" | "azure" | "ollama" | "custom";
 
 export interface LLMConfig {
   provider: LLMProvider;
@@ -42,7 +42,7 @@ export interface LLMConfig {
 }
 
 export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   content: string;
 }
 
@@ -60,18 +60,18 @@ export interface LLMResponse {
 // ============================================================================
 
 const theme = {
-  primary: chalk.hex('#FF6B35'),
-  secondary: chalk.hex('#4ECDC4'),
-  accent: chalk.hex('#FFE66D'),
-  success: chalk.hex('#2ECC71'),
-  warning: chalk.hex('#F39C12'),
-  error: chalk.hex('#E74C3C'),
-  info: chalk.hex('#3498DB'),
-  muted: chalk.hex('#95A5A6'),
+  primary: chalk.hex("#FF6B35"),
+  secondary: chalk.hex("#4ECDC4"),
+  accent: chalk.hex("#FFE66D"),
+  success: chalk.hex("#2ECC71"),
+  warning: chalk.hex("#F39C12"),
+  error: chalk.hex("#E74C3C"),
+  info: chalk.hex("#3498DB"),
+  muted: chalk.hex("#95A5A6"),
   bold: chalk.bold,
   dim: chalk.dim,
-  ai: chalk.hex('#8B5CF6'),       // Purple for AI responses
-  redacted: chalk.hex('#EF4444'), // Red for redacted content
+  ai: chalk.hex("#8B5CF6"), // Purple for AI responses
+  redacted: chalk.hex("#EF4444"), // Red for redacted content
 };
 
 // ============================================================================
@@ -120,22 +120,29 @@ abstract class LLMProviderBase {
 }
 
 class ClaudeProvider extends LLMProviderBase {
-  getName(): string { return 'Claude (Anthropic)'; }
-  getDefaultModel(): string { return 'claude-sonnet-4-20250514'; }
+  getName(): string {
+    return "Claude (Anthropic)";
+  }
+  getDefaultModel(): string {
+    return "claude-sonnet-4-20250514";
+  }
 
   async chat(messages: ChatMessage[]): Promise<LLMResponse> {
     const apiKey = this.config.apiKey || process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      throw new Error('ANTHROPIC_API_KEY not set. Set it via --api-key or environment variable.');
+      throw new Error(
+        "ANTHROPIC_API_KEY not set. Set it via --api-key or environment variable.",
+      );
     }
 
     const model = this.config.model || this.getDefaultModel();
 
     // Convert messages to Claude format
-    const systemMessage = messages.find(m => m.role === 'system')?.content || '';
+    const systemMessage =
+      messages.find((m) => m.role === "system")?.content || "";
     const conversationMessages = messages
-      .filter(m => m.role !== 'system')
-      .map(m => ({ role: m.role, content: m.content }));
+      .filter((m) => m.role !== "system")
+      .map((m) => ({ role: m.role, content: m.content }));
 
     const requestBody = {
       model,
@@ -148,30 +155,35 @@ class ClaudeProvider extends LLMProviderBase {
       const postData = JSON.stringify(requestBody);
 
       const options = {
-        hostname: 'api.anthropic.com',
+        hostname: "api.anthropic.com",
         port: 443,
-        path: '/v1/messages',
-        method: 'POST',
+        path: "/v1/messages",
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData),
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(postData),
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
         },
       };
 
       const req = https.request(options, (res) => {
-        let data = '';
-        res.on('data', (chunk) => { data += chunk; });
-        res.on('end', () => {
+        // PERFORMANCE FIX: Use Buffer array instead of string concatenation
+        // String concatenation is O(n²) for large responses, Buffer.concat is O(n)
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+        res.on("end", () => {
           try {
+            const data = Buffer.concat(chunks).toString("utf-8");
             const response = JSON.parse(data);
             if (response.error) {
               reject(new Error(response.error.message));
               return;
             }
             resolve({
-              content: response.content[0]?.text || '',
+              content: response.content[0]?.text || "",
               model: response.model,
               usage: {
                 inputTokens: response.usage?.input_tokens || 0,
@@ -179,12 +191,13 @@ class ClaudeProvider extends LLMProviderBase {
               },
             });
           } catch (e) {
+            const data = Buffer.concat(chunks).toString("utf-8");
             reject(new Error(`Failed to parse response: ${data}`));
           }
         });
       });
 
-      req.on('error', reject);
+      req.on("error", reject);
       req.write(postData);
       req.end();
     });
@@ -192,23 +205,29 @@ class ClaudeProvider extends LLMProviderBase {
 }
 
 class OpenAIProvider extends LLMProviderBase {
-  getName(): string { return 'OpenAI'; }
-  getDefaultModel(): string { return 'gpt-4o'; }
+  getName(): string {
+    return "OpenAI";
+  }
+  getDefaultModel(): string {
+    return "gpt-4o";
+  }
 
   async chat(messages: ChatMessage[]): Promise<LLMResponse> {
     const apiKey = this.config.apiKey || process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY not set. Set it via --api-key or environment variable.');
+      throw new Error(
+        "OPENAI_API_KEY not set. Set it via --api-key or environment variable.",
+      );
     }
 
     const model = this.config.model || this.getDefaultModel();
-    const baseUrl = this.config.baseUrl || 'api.openai.com';
+    const baseUrl = this.config.baseUrl || "api.openai.com";
 
     const requestBody = {
       model,
       max_tokens: this.config.maxTokens || 4096,
       temperature: this.config.temperature || 0.7,
-      messages: messages.map(m => ({ role: m.role, content: m.content })),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
     };
 
     return new Promise((resolve, reject) => {
@@ -219,26 +238,30 @@ class OpenAIProvider extends LLMProviderBase {
         hostname: url.hostname,
         port: 443,
         path: url.pathname,
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData),
-          'Authorization': `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(postData),
+          Authorization: `Bearer ${apiKey}`,
         },
       };
 
       const req = https.request(options, (res) => {
-        let data = '';
-        res.on('data', (chunk) => { data += chunk; });
-        res.on('end', () => {
+        // PERFORMANCE FIX: Use Buffer array instead of string concatenation
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+        res.on("end", () => {
           try {
+            const data = Buffer.concat(chunks).toString("utf-8");
             const response = JSON.parse(data);
             if (response.error) {
               reject(new Error(response.error.message));
               return;
             }
             resolve({
-              content: response.choices[0]?.message?.content || '',
+              content: response.choices[0]?.message?.content || "",
               model: response.model,
               usage: {
                 inputTokens: response.usage?.prompt_tokens || 0,
@@ -246,12 +269,13 @@ class OpenAIProvider extends LLMProviderBase {
               },
             });
           } catch (e) {
+            const data = Buffer.concat(chunks).toString("utf-8");
             reject(new Error(`Failed to parse response: ${data}`));
           }
         });
       });
 
-      req.on('error', reject);
+      req.on("error", reject);
       req.write(postData);
       req.end();
     });
@@ -259,52 +283,61 @@ class OpenAIProvider extends LLMProviderBase {
 }
 
 class OllamaProvider extends LLMProviderBase {
-  getName(): string { return 'Ollama (Local)'; }
-  getDefaultModel(): string { return 'llama2'; }
+  getName(): string {
+    return "Ollama (Local)";
+  }
+  getDefaultModel(): string {
+    return "llama2";
+  }
 
   async chat(messages: ChatMessage[]): Promise<LLMResponse> {
-    const baseUrl = this.config.baseUrl || 'localhost:11434';
+    const baseUrl = this.config.baseUrl || "localhost:11434";
     const model = this.config.model || this.getDefaultModel();
 
     const requestBody = {
       model,
-      messages: messages.map(m => ({ role: m.role, content: m.content })),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
       stream: false,
     };
 
     return new Promise((resolve, reject) => {
       const postData = JSON.stringify(requestBody);
       const url = new URL(`http://${baseUrl}/api/chat`);
-      const http = require('http');
+      const http = require("http");
 
       const options = {
         hostname: url.hostname,
         port: url.port || 11434,
         path: url.pathname,
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData),
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(postData),
         },
       };
 
       const req = http.request(options, (res: any) => {
-        let data = '';
-        res.on('data', (chunk: any) => { data += chunk; });
-        res.on('end', () => {
+        // PERFORMANCE FIX: Use Buffer array instead of string concatenation
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+        res.on("end", () => {
           try {
+            const data = Buffer.concat(chunks).toString("utf-8");
             const response = JSON.parse(data);
             resolve({
-              content: response.message?.content || '',
+              content: response.message?.content || "",
               model: response.model,
             });
           } catch (e) {
+            const data = Buffer.concat(chunks).toString("utf-8");
             reject(new Error(`Failed to parse response: ${data}`));
           }
         });
       });
 
-      req.on('error', reject);
+      req.on("error", reject);
       req.write(postData);
       req.end();
     });
@@ -317,12 +350,12 @@ class OllamaProvider extends LLMProviderBase {
 
 function createProvider(config: LLMConfig): LLMProviderBase {
   switch (config.provider) {
-    case 'claude':
+    case "claude":
       return new ClaudeProvider(config);
-    case 'openai':
-    case 'azure':
+    case "openai":
+    case "azure":
       return new OpenAIProvider(config);
-    case 'ollama':
+    case "ollama":
       return new OllamaProvider(config);
     default:
       throw new Error(`Unknown provider: ${config.provider}`);
@@ -351,9 +384,10 @@ export class LLMIntegration {
 
     // Initialize with system prompt
     if (llmConfig.injectSafetyInstructions !== false) {
-      const safetyPrompt = llmConfig.systemPrompt || SafetyInstructions.STANDARD;
+      const safetyPrompt =
+        llmConfig.systemPrompt || SafetyInstructions.STANDARD;
       this.conversationHistory.push({
-        role: 'system',
+        role: "system",
         content: safetyPrompt,
       });
     }
@@ -378,7 +412,7 @@ export class LLMIntegration {
 
     // Add to conversation
     this.conversationHistory.push({
-      role: 'user',
+      role: "user",
       content: redactedMessage,
     });
 
@@ -387,7 +421,7 @@ export class LLMIntegration {
 
     // Add response to history
     this.conversationHistory.push({
-      role: 'assistant',
+      role: "assistant",
       content: llmResponse.content,
     });
 
@@ -409,10 +443,8 @@ export class LLMIntegration {
    * Process a file and send to LLM
    */
   async processFile(filePath: string, prompt?: string): Promise<string> {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const fullPrompt = prompt
-      ? `${prompt}\n\n---\n\n${content}`
-      : content;
+    const content = fs.readFileSync(filePath, "utf-8");
+    const fullPrompt = prompt ? `${prompt}\n\n---\n\n${content}` : content;
 
     const result = await this.sendMessage(fullPrompt);
     return result.response;
@@ -422,26 +454,28 @@ export class LLMIntegration {
    * Interactive safe chat mode
    */
   async interactiveChat(): Promise<void> {
-    console.log(boxen(
-      `${theme.bold('Safe Chat Mode')}\n\n` +
-      `${theme.muted('Provider:')} ${theme.secondary(this.provider.getName())}\n` +
-      `${theme.muted('Model:')} ${theme.secondary(this.config.model || this.provider.getDefaultModel())}\n\n` +
-      `${theme.success(figures.tick)} All messages are automatically redacted before sending\n` +
-      `${theme.success(figures.tick)} PHI is replaced with safe tokens\n` +
-      `${theme.success(figures.tick)} Safety instructions are auto-injected\n\n` +
-      `${theme.muted('Commands:')}\n` +
-      `  ${theme.secondary('.stats')}    Show session statistics\n` +
-      `  ${theme.secondary('.clear')}    Clear conversation history\n` +
-      `  ${theme.secondary('.system')}   Update system prompt\n` +
-      `  ${theme.secondary('.exit')}     Exit safe chat`,
-      {
-        padding: 1,
-        borderStyle: 'round',
-        borderColor: '#8B5CF6',
-        title: 'VULPES SAFE CHAT',
-        titleAlignment: 'center',
-      }
-    ));
+    console.log(
+      boxen(
+        `${theme.bold("Safe Chat Mode")}\n\n` +
+          `${theme.muted("Provider:")} ${theme.secondary(this.provider.getName())}\n` +
+          `${theme.muted("Model:")} ${theme.secondary(this.config.model || this.provider.getDefaultModel())}\n\n` +
+          `${theme.success(figures.tick)} All messages are automatically redacted before sending\n` +
+          `${theme.success(figures.tick)} PHI is replaced with safe tokens\n` +
+          `${theme.success(figures.tick)} Safety instructions are auto-injected\n\n` +
+          `${theme.muted("Commands:")}\n` +
+          `  ${theme.secondary(".stats")}    Show session statistics\n` +
+          `  ${theme.secondary(".clear")}    Clear conversation history\n` +
+          `  ${theme.secondary(".system")}   Update system prompt\n` +
+          `  ${theme.secondary(".exit")}     Exit safe chat`,
+        {
+          padding: 1,
+          borderStyle: "round",
+          borderColor: "#8B5CF6",
+          title: "VULPES SAFE CHAT",
+          titleAlignment: "center",
+        },
+      ),
+    );
 
     console.log();
 
@@ -451,7 +485,7 @@ export class LLMIntegration {
     });
 
     const prompt = () => {
-      rl.question(theme.primary('you') + theme.muted(' > '), async (input) => {
+      rl.question(theme.primary("you") + theme.muted(" > "), async (input) => {
         input = input.trim();
 
         if (!input) {
@@ -460,36 +494,47 @@ export class LLMIntegration {
         }
 
         // Handle commands
-        if (input.startsWith('.')) {
-          const cmd = input.slice(1).split(' ')[0].toLowerCase();
+        if (input.startsWith(".")) {
+          const cmd = input.slice(1).split(" ")[0].toLowerCase();
 
           switch (cmd) {
-            case 'exit':
-            case 'quit':
-            case 'q':
+            case "exit":
+            case "quit":
+            case "q":
               this.printStats();
-              console.log(theme.info(`\n${figures.info} Goodbye! Your conversation was privacy-protected.`));
+              console.log(
+                theme.info(
+                  `\n${figures.info} Goodbye! Your conversation was privacy-protected.`,
+                ),
+              );
               rl.close();
               process.exit(0);
               break;
 
-            case 'stats':
+            case "stats":
               this.printStats();
               break;
 
-            case 'clear':
+            case "clear":
               this.conversationHistory = this.conversationHistory.slice(0, 1); // Keep system prompt
-              console.log(theme.success(`${figures.tick} Conversation cleared`));
+              console.log(
+                theme.success(`${figures.tick} Conversation cleared`),
+              );
               break;
 
-            case 'system':
+            case "system":
               const newPrompt = input.slice(8).trim();
               if (newPrompt) {
-                this.conversationHistory[0] = { role: 'system', content: newPrompt };
-                console.log(theme.success(`${figures.tick} System prompt updated`));
+                this.conversationHistory[0] = {
+                  role: "system",
+                  content: newPrompt,
+                };
+                console.log(
+                  theme.success(`${figures.tick} System prompt updated`),
+                );
               } else {
-                console.log(theme.muted('Current system prompt:'));
-                console.log(this.conversationHistory[0]?.content || 'None');
+                console.log(theme.muted("Current system prompt:"));
+                console.log(this.conversationHistory[0]?.content || "None");
               }
               break;
 
@@ -504,9 +549,9 @@ export class LLMIntegration {
 
         // Process message
         const spinner = ora({
-          text: 'Redacting PHI...',
-          spinner: 'dots12',
-          color: 'yellow',
+          text: "Redacting PHI...",
+          spinner: "dots12",
+          color: "yellow",
         }).start();
 
         try {
@@ -524,21 +569,28 @@ export class LLMIntegration {
 
           // Show what was sent (if PHI was redacted)
           if (result.phiCount > 0) {
-            console.log(theme.muted('  [Sent: ') + theme.redacted(this.truncate(result.redactedInput, 80)) + theme.muted(']'));
+            console.log(
+              theme.muted("  [Sent: ") +
+                theme.redacted(this.truncate(result.redactedInput, 80)) +
+                theme.muted("]"),
+            );
           }
 
           // Show response
           console.log();
-          console.log(theme.ai('assistant') + theme.muted(' > '));
+          console.log(theme.ai("assistant") + theme.muted(" > "));
           console.log(this.formatResponse(result.response));
 
           // Show token usage
           if (result.usage) {
-            console.log(theme.dim(`  [${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens]`));
+            console.log(
+              theme.dim(
+                `  [${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens]`,
+              ),
+            );
           }
-
         } catch (error: any) {
-          spinner.fail(theme.error('Error: ' + error.message));
+          spinner.fail(theme.error("Error: " + error.message));
         }
 
         console.log();
@@ -552,7 +604,9 @@ export class LLMIntegration {
   /**
    * One-shot query with redaction
    */
-  async query(text: string): Promise<{ response: string; redactedInput: string; phiCount: number }> {
+  async query(
+    text: string,
+  ): Promise<{ response: string; redactedInput: string; phiCount: number }> {
     return this.sendMessage(text);
   }
 
@@ -562,24 +616,32 @@ export class LLMIntegration {
 
   private printStats(): void {
     console.log();
-    console.log(theme.bold('Session Statistics:'));
-    console.log(`  ${theme.muted('Messages processed:')} ${this.stats.messagesProcessed}`);
-    console.log(`  ${theme.muted('PHI instances redacted:')} ${theme.redacted(this.stats.phiRedacted.toString())}`);
-    console.log(`  ${theme.muted('Tokens used:')} ${this.stats.tokensUsed.input} in / ${this.stats.tokensUsed.output} out`);
-    console.log(`  ${theme.muted('Conversation length:')} ${this.conversationHistory.length - 1} messages`);
+    console.log(theme.bold("Session Statistics:"));
+    console.log(
+      `  ${theme.muted("Messages processed:")} ${this.stats.messagesProcessed}`,
+    );
+    console.log(
+      `  ${theme.muted("PHI instances redacted:")} ${theme.redacted(this.stats.phiRedacted.toString())}`,
+    );
+    console.log(
+      `  ${theme.muted("Tokens used:")} ${this.stats.tokensUsed.input} in / ${this.stats.tokensUsed.output} out`,
+    );
+    console.log(
+      `  ${theme.muted("Conversation length:")} ${this.conversationHistory.length - 1} messages`,
+    );
   }
 
   private truncate(text: string, maxLength: number): string {
     if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength - 3) + '...';
+    return text.substring(0, maxLength - 3) + "...";
   }
 
   private formatResponse(text: string): string {
     // Add some basic formatting
     return text
-      .split('\n')
-      .map(line => '  ' + line)
-      .join('\n');
+      .split("\n")
+      .map((line) => "  " + line)
+      .join("\n");
   }
 }
 
@@ -589,13 +651,17 @@ export class LLMIntegration {
 
 export async function handleSafeChat(options: any): Promise<void> {
   const config: LLMConfig = {
-    provider: options.provider || 'claude',
+    provider: options.provider || "claude",
     apiKey: options.apiKey,
     model: options.model,
     baseUrl: options.baseUrl,
     maxTokens: parseInt(options.maxTokens) || 4096,
     temperature: parseFloat(options.temperature) || 0.7,
-    systemPrompt: options.system ? SafetyInstructions[options.system.toUpperCase() as keyof typeof SafetyInstructions] : undefined,
+    systemPrompt: options.system
+      ? SafetyInstructions[
+          options.system.toUpperCase() as keyof typeof SafetyInstructions
+        ]
+      : undefined,
     injectSafetyInstructions: !options.noSafetyInstructions,
   };
 
@@ -605,7 +671,7 @@ export async function handleSafeChat(options: any): Promise<void> {
 
 export async function handleQuery(text: string, options: any): Promise<void> {
   const config: LLMConfig = {
-    provider: options.provider || 'claude',
+    provider: options.provider || "claude",
     apiKey: options.apiKey,
     model: options.model,
     maxTokens: parseInt(options.maxTokens) || 4096,
@@ -613,9 +679,9 @@ export async function handleQuery(text: string, options: any): Promise<void> {
   };
 
   const spinner = ora({
-    text: 'Processing...',
-    spinner: 'dots12',
-    color: 'yellow',
+    text: "Processing...",
+    spinner: "dots12",
+    color: "yellow",
   }).start();
 
   try {
@@ -624,25 +690,24 @@ export async function handleQuery(text: string, options: any): Promise<void> {
     // Read from file if it's a path
     let input = text;
     if (fs.existsSync(text)) {
-      input = fs.readFileSync(text, 'utf-8');
+      input = fs.readFileSync(text, "utf-8");
     }
 
-    spinner.text = 'Redacting PHI...';
+    spinner.text = "Redacting PHI...";
     const result = await integration.query(input);
 
     spinner.succeed(`Redacted ${result.phiCount} PHI instances`);
 
     if (options.showRedacted) {
-      console.log(theme.muted('\nRedacted input:'));
+      console.log(theme.muted("\nRedacted input:"));
       console.log(theme.dim(result.redactedInput));
       console.log();
     }
 
-    console.log(theme.bold('\nResponse:'));
+    console.log(theme.bold("\nResponse:"));
     console.log(result.response);
-
   } catch (error: any) {
-    spinner.fail(theme.error('Error: ' + error.message));
+    spinner.fail(theme.error("Error: " + error.message));
     process.exit(1);
   }
 }

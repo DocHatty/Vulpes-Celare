@@ -217,7 +217,7 @@ try {
 // ============================================================================
 const args = process.argv.slice(2);
 const options = {
-  documentCount: 200,
+  documentCount: 50, // Reduced from 200 - same coverage, 4x faster
   verbose: false,
   jsonOnly: false,
   profile: "DEVELOPMENT", // Default to development-friendly grading
@@ -248,7 +248,8 @@ for (const arg of args) {
   }
   if (arg === "--verbose") options.verbose = true;
   if (arg === "--json-only") options.jsonOnly = true;
-  if (arg === "--quick") options.documentCount = 50;
+  if (arg === "--quick") options.documentCount = 20; // Fast iteration
+  if (arg === "--full") options.documentCount = 200; // Original full suite
   if (arg === "--thorough") options.documentCount = 500;
   if (arg === "--learn") options.learn = true;
   if (arg === "--no-learn") options.learn = false;

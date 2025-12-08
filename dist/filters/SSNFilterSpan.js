@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SSNFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
+const ValidationUtils_1 = require("../utils/ValidationUtils");
 class SSNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return Span_1.FilterType.SSN;
@@ -20,17 +21,29 @@ class SSNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const spans = [];
-        for (const pattern of SSNFilterSpan.COMPILED_PATTERNS) {
-            pattern.lastIndex = 0; // Reset regex
-            let match;
-            while ((match = pattern.exec(text)) !== null) {
-                const ssnText = match[0];
-                // Validate SSN
-                if (this.isValidSSN(ssnText)) {
-                    const span = this.createSpanFromMatch(text, match, Span_1.FilterType.SSN, 0.95);
-                    spans.push(span);
+        const seen = new Set();
+        const processText = (source) => {
+            for (const pattern of SSNFilterSpan.COMPILED_PATTERNS) {
+                pattern.lastIndex = 0; // Reset regex
+                let match;
+                while ((match = pattern.exec(source)) !== null) {
+                    const ssnText = match[0];
+                    const key = `${match.index}-${ssnText.length}`;
+                    if (seen.has(key))
+                        continue;
+                    if (this.isValidSSN(ssnText)) {
+                        const span = this.createSpanFromMatch(text, match, Span_1.FilterType.SSN, 0.95);
+                        spans.push(span);
+                        seen.add(key);
+                    }
                 }
             }
+        };
+        processText(text);
+        // Run again on OCR-normalized text to catch O/0, l/1, S/5 swaps
+        const normalized = ValidationUtils_1.ValidationUtils.normalizeOCR(text);
+        if (normalized !== text) {
+            processText(normalized);
         }
         return spans;
     }

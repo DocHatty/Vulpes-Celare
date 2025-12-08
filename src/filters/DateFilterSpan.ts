@@ -12,6 +12,7 @@ import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { PatternStrings } from "../patterns/SharedPatterns";
+import { ValidationUtils } from "../utils/ValidationUtils";
 
 export class DateFilterSpan extends SpanBasedFilter {
   /**
@@ -210,21 +211,35 @@ export class DateFilterSpan extends SpanBasedFilter {
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
+    const seen = new Set<string>();
 
-    // Apply all date patterns
-    for (const pattern of DateFilterSpan.COMPILED_PATTERNS) {
-      pattern.lastIndex = 0; // Reset regex
-      let match;
+    const processText = (source: string) => {
+      for (const pattern of DateFilterSpan.COMPILED_PATTERNS) {
+        pattern.lastIndex = 0; // Reset regex
+        let match;
 
-      while ((match = pattern.exec(text)) !== null) {
-        const span = this.createSpanFromMatch(
-          text,
-          match,
-          FilterType.DATE,
-          0.95, // High confidence for dates
-        );
-        spans.push(span);
+        while ((match = pattern.exec(source)) !== null) {
+          const key = `${match.index}-${match[0].length}`;
+          if (seen.has(key)) continue;
+
+          const span = this.createSpanFromMatch(
+            text,
+            match,
+            FilterType.DATE,
+            0.95, // High confidence for dates
+          );
+          spans.push(span);
+          seen.add(key);
+        }
       }
+    };
+
+    processText(text);
+
+    // OCR-normalized pass to catch O/0, l/1, S/5 swaps that dodge regexes
+    const normalized = ValidationUtils.normalizeOCR(text);
+    if (normalized !== text) {
+      processText(normalized);
     }
 
     return spans;

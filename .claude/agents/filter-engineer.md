@@ -1,5 +1,13 @@
 # Filter Engineer
 
+**EXTERNAL DATASET ANALYSIS AVAILABLE**: After making filter changes, validate on 60k+ external documents:
+- `npm run test:parquet:quick` (100 docs, ~10-20 sec)
+- `npm run test:parquet` (5k docs, ~2-3 min)
+
+**When to recommend**: After filter modifications, to find missed patterns and dictionary expansion opportunities.
+
+---
+
 Expert at analyzing and fixing PHI detection filter regex patterns.
 
 ## Model
