@@ -411,11 +411,29 @@
       "timestamp": "2025-12-08T06:18:26.017Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765194801939",
+      "timestamp": "2025-12-08T11:53:21.939Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765195094875",
+      "timestamp": "2025-12-08T11:58:14.875Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765195524688",
+      "timestamp": "2025-12-08T12:05:24.688Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 69,
+    "total": 72,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 68
+    "noHistoryFound": 71
   }
 }

@@ -209,36 +209,15 @@ export class RadiologyLogger {
 
     this.detectionHistory.push(log);
 
-    if (this.enabled && this.logLevel <= LogLevel.INFO) {
-      const timestamp = this.getTimestamp();
+    // CRITICAL: PHI detection logs should ALWAYS show - this is the important output!
+    // Using ERROR level ensures these are never suppressed
+    if (this.enabled && this.logLevel <= LogLevel.ERROR) {
       const confidenceStr = (options.confidence * 100).toFixed(1);
-      const lengthStr = options.end - options.start;
 
-      // Primary log line
+      // Compact, important log line - what IS being redacted
       console.error(
-        `[${timestamp}] [PHI-DETECTED] [${options.filterType}] ` +
-          `"${this.truncateText(options.text, 50)}" ` +
-          `(pos: ${options.start}-${options.end}, len: ${lengthStr}, conf: ${confidenceStr}%)`,
+        `[REDACTED] [${options.filterType}] "${this.truncateText(options.text, 50)}" -> ${options.token} (conf: ${confidenceStr}%)`,
       );
-
-      // Token assignment
-      console.error(
-        `[${timestamp}] [PHI-DETECTED]   -> Token: ${options.token}`,
-      );
-
-      // Context if available
-      if (options.context) {
-        console.error(
-          `[${timestamp}] [PHI-DETECTED]   -> Context: "${this.truncateText(options.context, 80)}"`,
-        );
-      }
-
-      // Pattern if available
-      if (options.pattern) {
-        console.error(
-          `[${timestamp}] [PHI-DETECTED]   -> Pattern: ${options.pattern}`,
-        );
-      }
     }
   }
 

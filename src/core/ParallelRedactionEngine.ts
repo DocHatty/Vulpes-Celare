@@ -653,19 +653,19 @@ export class ParallelRedactionEngine {
 
       // INSURANCE CHECK - catches Aetna, Cigna, Blue Cross, etc.
       if (DocumentVocabulary.isInsuranceTerm(text)) {
-        console.error(`[INSURANCE] Filtering insurance company: "${text}"`);
+        RadiologyLogger.debug("PRESERVED", `Excluding insurance company: "${text}"`);
         return false;
       }
 
       // HOSPITAL CHECK - catches Beth Israel, Johns Hopkins, UT Southwestern, etc.
       if (DocumentVocabulary.isHospitalName(text)) {
-        console.error(`[HOSPITAL] Filtering hospital name: "${text}"`);
+        RadiologyLogger.debug("PRESERVED", `Excluding hospital name: "${text}"`);
         return false;
       }
 
       // MASTER NON-PHI CHECK - catches medical terms, geographic terms, field labels, etc.
       if (DocumentVocabulary.isNonPHI(text)) {
-        console.error(`[NON-PHI] Filtering non-PHI term: "${text}"`);
+        RadiologyLogger.debug("PRESERVED", `Excluding non-PHI term: "${text}"`);
         return false;
       }
 
@@ -673,21 +673,15 @@ export class ParallelRedactionEngine {
       const words = text.split(/[\s,]+/).filter((w) => w.length > 2);
       for (const word of words) {
         if (DocumentVocabulary.isInsuranceTerm(word)) {
-          console.error(
-            `[INSURANCE-WORD] Filtering span with insurance term "${word}": "${text}"`,
-          );
+          RadiologyLogger.debug("PRESERVED", `Excluding span with insurance term "${word}": "${text}"`);
           return false;
         }
         if (DocumentVocabulary.isHospitalName(word)) {
-          console.error(
-            `[HOSPITAL-WORD] Filtering span with hospital term "${word}": "${text}"`,
-          );
+          RadiologyLogger.debug("PRESERVED", `Excluding span with hospital term "${word}": "${text}"`);
           return false;
         }
         if (DocumentVocabulary.isNonPHI(word)) {
-          console.error(
-            `[NON-PHI-WORD] Filtering span with non-PHI word "${word}": "${text}"`,
-          );
+          RadiologyLogger.debug("PRESERVED", `Excluding span with non-PHI word "${word}": "${text}"`);
           return false;
         }
       }
@@ -745,7 +739,7 @@ export class ParallelRedactionEngine {
           if (lower.includes(term)) {
             RadiologyLogger.debug(
               "ParallelRedactionEngine",
-              `[Structure] Filtering titled/suffixed NAME with structure term: "${text}"`,
+              `Excluding titled/suffixed NAME with structure term: "${text}"`,
             );
             return false;
           }
@@ -758,16 +752,14 @@ export class ParallelRedactionEngine {
       if (isWhitelisted(text)) {
         RadiologyLogger.debug(
           "ParallelRedactionEngine",
-          `[Whitelist] Filtering whitelisted NAME: "${text}"`,
+          `Excluding whitelisted NAME: "${text}"`,
         );
         return false;
       }
 
       // Check full text first
       if (DocumentVocabulary.isMedicalTerm(text)) {
-        console.error(
-          `[DocumentVocabulary] Filtering NAME matching medical term: "${text}"`,
-        );
+        RadiologyLogger.debug("PRESERVED", `Excluding NAME matching medical term: "${text}"`);
         return false;
       }
 
@@ -776,9 +768,7 @@ export class ParallelRedactionEngine {
         HospitalDictionary.isHospital(text) ||
         HospitalDictionary.isPartOfHospitalName(text, text)
       ) {
-        console.error(
-          `[HospitalDictionary] Filtering NAME matching hospital: "${text}"`,
-        );
+        RadiologyLogger.debug("PRESERVED", `Excluding NAME matching hospital: "${text}"`);
         return false;
       }
 
@@ -797,7 +787,7 @@ export class ParallelRedactionEngine {
       if (DocumentVocabulary.isNonPHI(text)) {
         RadiologyLogger.debug(
           "ParallelRedactionEngine",
-          `[DocumentVocabulary] Filtering non-PHI NAME: "${text}"`,
+          `Excluding non-PHI NAME: "${text}"`,
         );
         return false;
       }
@@ -806,7 +796,7 @@ export class ParallelRedactionEngine {
       if (DocumentVocabulary.containsNonPHIIndicator(text)) {
         RadiologyLogger.debug(
           "ParallelRedactionEngine",
-          `[DocumentVocabulary] Filtering NAME with non-PHI indicator: "${text}"`,
+          `Excluding NAME with non-PHI indicator: "${text}"`,
         );
         return false;
       }
@@ -910,7 +900,7 @@ export class ParallelRedactionEngine {
           ) {
             RadiologyLogger.debug(
               "ParallelRedactionEngine",
-              `[AllCapsFilter] Filtering NAME in ALL CAPS heading: "${span.text}" (line: "${capsLine}")`,
+              `Excluding NAME in ALL CAPS heading: "${span.text}" (line: "${capsLine}")`,
             );
             return false;
           }

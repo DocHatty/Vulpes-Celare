@@ -6,7 +6,10 @@
       "Bash(cat:*)",
       "Bash(dir \"C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\")",
       "Bash(curl:*)",
-      "Bash(timeout /t 3 /nobreak)"
+      "Bash(timeout /t 3 /nobreak)",
+      "Bash(npm test)",
+      "mcp__vulpes__redact_text",
+      "Bash(timeout /t 10 /nobreak)"
     ],
     "deny": [],
     "ask": []
