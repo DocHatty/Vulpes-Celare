@@ -3769,6 +3769,46 @@
         "t_valid_from": "2025-12-08T19:09:44.281Z",
         "t_valid_until": null
       }
+    },
+    "run_1765226818072_8diwspbtg": {
+      "id": "run_1765226818072_8diwspbtg",
+      "timestamp": "2025-12-08T20:46:58.072Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.2353,
+        "specificity": 91.358,
+        "precision": 98.351,
+        "f1Score": 98.2931,
+        "mcc": 0.8937
+      },
+      "confusionMatrix": {
+        "tp": 1670,
+        "tn": 296,
+        "fp": 28,
+        "fn": 30,
+        "total": 2024,
+        "actualPositive": 1700,
+        "actualNegative": 324
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.3%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-08T20:46:58.072Z",
+        "t_occurred": "2025-12-08T20:46:58.072Z",
+        "t_valid_from": "2025-12-08T20:46:58.072Z",
+        "t_valid_until": null
+      }
     }
   },
   "Intervention": {

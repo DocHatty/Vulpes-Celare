@@ -151,27 +151,30 @@ async function showMainMenu() {
     console.log(theme.muted("  • /subagents         - Enable parallel AI workers"));
     console.log(theme.muted("  • /orchestrate       - Delegate complex tasks\n"));
     console.log(theme.muted("  [q] Quit\n"));
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-    rl.question(theme.secondary("  Your choice: "), async (answer) => {
-        rl.close();
-        const choice = answer.trim().toLowerCase();
-        if (choice === "q" || choice === "quit" || choice === "exit") {
-            console.log(theme.info("\n  Goodbye!\n"));
-            process.exit(0);
-        }
-        const option = MENU_OPTIONS.find((o) => o.key === choice);
-        if (option) {
-            console.log();
-            await option.action();
-        }
-        else {
-            console.log(theme.error(`\n  Invalid choice: ${choice}`));
-            await pressEnterToContinue();
-            await showMainMenu();
-        }
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        rl.question(theme.secondary("  Your choice: "), async (answer) => {
+            rl.close();
+            const choice = answer.trim().toLowerCase();
+            if (choice === "q" || choice === "quit" || choice === "exit") {
+                console.log(theme.info("\n  Goodbye!\n"));
+                process.exit(0);
+            }
+            const option = MENU_OPTIONS.find((o) => o.key === choice);
+            if (option) {
+                console.log();
+                await option.action();
+            }
+            else {
+                console.log(theme.error(`\n  Invalid choice: ${choice}`));
+                await pressEnterToContinue();
+                await showMainMenu();
+            }
+            resolve();
+        });
     });
 }
 // ============================================================================
@@ -221,28 +224,36 @@ async function showAgentSubmenu() {
         console.log();
     }
     console.log(theme.muted("  [b] Back to main menu\n"));
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-    rl.question(theme.secondary("  Your choice: "), async (answer) => {
-        rl.close();
-        const choice = answer.trim().toLowerCase();
-        if (choice === "b" || choice === "back") {
-            await showMainMenu();
-            return;
-        }
-        const backend = backends.find((b) => b.key === choice);
-        if (backend) {
-            // Auto-vulpesify before launching agent
-            await silentVulpesify();
-            await (0, Agent_1.handleAgent)({ mode: "dev", backend: backend.name, verbose: false });
-        }
-        else {
-            console.log(theme.error(`\n  Invalid choice: ${choice}`));
-            await pressEnterToContinue();
-            await showAgentSubmenu();
-        }
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        rl.question(theme.secondary("  Your choice: "), async (answer) => {
+            rl.close();
+            const choice = answer.trim().toLowerCase();
+            if (choice === "b" || choice === "back") {
+                await showMainMenu();
+                resolve();
+                return;
+            }
+            const backend = backends.find((b) => b.key === choice);
+            if (backend) {
+                // Auto-vulpesify before launching agent
+                await silentVulpesify();
+                await (0, Agent_1.handleAgent)({
+                    mode: "dev",
+                    backend: backend.name,
+                    verbose: false,
+                });
+            }
+            else {
+                console.log(theme.error(`\n  Invalid choice: ${choice}`));
+                await pressEnterToContinue();
+                await showAgentSubmenu();
+            }
+            resolve();
+        });
     });
 }
 // ============================================================================

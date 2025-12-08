@@ -298,22 +298,60 @@ class VulpesAgent {
     // ══════════════════════════════════════════════════════════════════════════
     // COPILOT - INTEGRATION
     // ══════════════════════════════════════════════════════════════════════════
+    /**
+     * Check if GitHub Copilot CLI is installed
+     * The new @github/copilot package provides the 'copilot' command
+     */
+    isCopilotInstalled() {
+        try {
+            (0, child_process_1.execSync)("copilot --version", {
+                encoding: "utf-8",
+                stdio: ["pipe", "pipe", "pipe"],
+            });
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
     async startCopilot() {
+        // Check if copilot CLI is installed
+        if (!this.isCopilotInstalled()) {
+            console.log(theme.error("\n  GitHub Copilot CLI is not installed.\n"));
+            console.log(theme.info("  To install (same pattern as Claude & Codex):"));
+            console.log(theme.muted("  ─".repeat(28)));
+            console.log();
+            console.log(theme.accent("    npm install -g @github/copilot"));
+            console.log();
+            console.log(theme.muted("  ─".repeat(28)));
+            console.log(theme.info("\n  Then authenticate on first run:"));
+            console.log(theme.muted("  ─".repeat(28)));
+            console.log();
+            console.log(theme.accent("    copilot"));
+            console.log(theme.muted("    # Type: /login"));
+            console.log();
+            console.log(theme.muted("  ─".repeat(28)));
+            console.log(theme.muted("\n  Requires an active GitHub Copilot subscription."));
+            console.log(theme.muted("  (Copilot Pro, Pro+, Business, or Enterprise)\n"));
+            process.exit(1);
+        }
         const args = [];
-        // Model selection
-        args.push("--model", this.config.model || "claude-sonnet-4");
-        // DEEP INTEGRATION: Use file-based prompt to avoid command line length limits
-        // Copilot doesn't have --system-prompt-file, so we use a short inline prompt
-        // and rely on CLAUDE.md/project context for details
-        args.push("-p", "You are VULPESIFIED - a PHI redaction assistant. Use 'vulpes' CLI commands for redaction. See project CLAUDE.md for full capabilities.");
+        // Model selection - Copilot CLI defaults to Claude Sonnet 4.5
+        // Use /model command inside to switch models
+        if (this.config.model) {
+            args.push("--model", this.config.model);
+        }
         const env = {
             ...process.env,
             VULPES_AGENT_MODE: this.config.mode,
             VULPES_WORKING_DIR: this.config.workingDir,
+            VULPES_VERSION: index_1.VERSION,
         };
-        console.log(theme.info(`\n  Starting GitHub Copilot with Vulpes context...\n`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Vulpes context injected`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Use 'vulpes' CLI for redaction\n`));
+        console.log(theme.info(`\n  Starting GitHub Copilot CLI with Vulpes integration...\n`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Copilot CLI detected`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Vulpes context available`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Use 'vulpes' CLI for PHI redaction`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Type /login if not authenticated\n`));
         await this.spawnAgent("copilot", args, env);
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -385,6 +423,10 @@ class VulpesAgent {
             }
             else if (cmd === "codex") {
                 console.log(theme.muted("  Install: npm install -g @openai/codex"));
+            }
+            else if (cmd === "copilot") {
+                console.log(theme.muted("  Install: npm install -g @githubnext/github-copilot-cli"));
+                console.log(theme.muted("  Or use: gh extension install github/gh-copilot"));
             }
             process.exit(1);
         });

@@ -61,6 +61,11 @@ export declare class VulpesAgent {
     private ensureVulpesified;
     private startClaudeCode;
     private startCodex;
+    /**
+     * Check if GitHub Copilot CLI is installed
+     * The new @github/copilot package provides the 'copilot' command
+     */
+    private isCopilotInstalled;
     private startCopilot;
     private startNativeAgent;
     private spawnAgent;

@@ -5,7 +5,6 @@
  */
 
 const { VulpesCelare } = require('../VulpesCelare');
-const readline = require('readline');
 
 const vulpes = new VulpesCelare();
 
@@ -53,15 +52,16 @@ const TOOLS = {
   }
 };
 
-// Handle MCP protocol
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false
-});
+// Format MCP responses with Content-Length framing
+function writeMessage(message) {
+  const payload = JSON.stringify(message);
+  const contentLength = Buffer.byteLength(payload, "utf8");
+  process.stdout.write(`Content-Length: ${contentLength}\r\n\r\n${payload}`);
+}
 
+// Handle MCP requests
 async function handleRequest(request) {
-  const { method, params, id } = request;
+  const { method, params = {}, id } = request;
 
   switch (method) {
     case "initialize":
@@ -73,6 +73,13 @@ async function handleRequest(request) {
           serverInfo: { name: "vulpes-celare", version: "1.0.0" },
           capabilities: { tools: {} }
         }
+      };
+
+    case "ping":
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: null
       };
 
     case "tools/list":
@@ -149,19 +156,60 @@ async function handleRequest(request) {
   }
 }
 
-rl.on('line', async (line) => {
-  try {
-    const request = JSON.parse(line);
-    const response = await handleRequest(request);
-    console.log(JSON.stringify(response));
-  } catch (e) {
-    console.log(JSON.stringify({
-      jsonrpc: "2.0",
-      error: { code: -32700, message: "Parse error: " + e.message }
-    }));
+// Buffer and parse MCP framed messages
+let buffer = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", async (chunk) => {
+  buffer += chunk;
+
+  while (true) {
+    const headerEnd = buffer.indexOf("\r\n\r\n");
+    if (headerEnd === -1) break;
+
+    const headers = buffer.slice(0, headerEnd);
+    const lengthMatch = headers.match(/Content-Length:\s*(\d+)/i);
+
+    if (!lengthMatch) {
+      buffer = buffer.slice(headerEnd + 4);
+      continue;
+    }
+
+    const messageLength = parseInt(lengthMatch[1], 10);
+    const messageStart = headerEnd + 4;
+
+    if (buffer.length < messageStart + messageLength) break;
+
+    const message = buffer.slice(messageStart, messageStart + messageLength);
+    buffer = buffer.slice(messageStart + messageLength);
+
+    let request;
+
+    try {
+      request = JSON.parse(message);
+    } catch (error) {
+      writeMessage({
+        jsonrpc: "2.0",
+        id: null,
+        error: { code: -32700, message: "Parse error: " + error.message }
+      });
+      continue;
+    }
+
+    try {
+      const response = await handleRequest(request);
+      if (response) {
+        writeMessage(response);
+      }
+    } catch (error) {
+      writeMessage({
+        jsonrpc: "2.0",
+        id: request?.id ?? null,
+        error: { code: -32000, message: "Internal error: " + error.message }
+      });
+    }
   }
 });
 
-// Handle notifications (no response needed)
-process.on('SIGINT', () => process.exit(0));
-process.on('SIGTERM', () => process.exit(0));
+process.stdin.on("close", () => process.exit(0));
+process.on("SIGINT", () => process.exit(0));
+process.on("SIGTERM", () => process.exit(0));

@@ -1,0 +1,8 @@
+#
+# MCP configuration for the Vulpes MCP server. Increase startup_timeout_sec to
+# give the server enough time to boot before the client times out.
+[mcp_servers.vulpes]
+command = "node"
+args = ["C:/Users/docto/Documents/Programs/Vulpes-Celare/dist/mcp/server.js"]
+transport = "stdio"
+startup_timeout_sec = 60
