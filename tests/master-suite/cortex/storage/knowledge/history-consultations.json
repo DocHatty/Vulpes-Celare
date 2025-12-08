@@ -519,11 +519,47 @@
       "timestamp": "2025-12-08T18:13:00.421Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218417860",
+      "timestamp": "2025-12-08T18:26:57.860Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218461037",
+      "timestamp": "2025-12-08T18:27:41.037Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218502704",
+      "timestamp": "2025-12-08T18:28:22.704Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218546262",
+      "timestamp": "2025-12-08T18:29:06.262Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219682543",
+      "timestamp": "2025-12-08T18:48:02.543Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219723093",
+      "timestamp": "2025-12-08T18:48:43.093Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 87,
+    "total": 93,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 86
+    "noHistoryFound": 92
   }
 }

@@ -1,0 +1,668 @@
+
+> vulpes-celare@1.0.0 test:aggregate:200
+> node tests/master-suite/run-aggregate.js --batches 4 --size 50
+
+
+╔══════════════════════════════════════════════════════════════════════╗
+║   VULPES AGGREGATE TEST RUNNER                                       ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+Running 4 batches of 50 documents = 200 total
+
+
+======================================================================
+BATCH 1/4 - Processing 50 documents
+======================================================================
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                E V O L U T I O N A R Y   T E S T   S U I T E                 ║
+║                                                                              ║
+║           Self-Learning  •  Pattern Recognition  •  Smart Grading            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+[Vulpes Cortex] Initializing...
+[Vulpes Cortex] Initialized successfully
+  ✓ Vulpes Cortex initialized (advanced learning + history consultation)
+
+PHASE 1: Running complete test suite...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                      A S S E S S M E N T   E N G I N E                       ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                         Engine: Vulpes Celare v1.0.0                         ║
+║                          Processing 50 documents...                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+  Progress: 25/50 documents (8x parallel)  Progress: 50/50 documents (8x parallel)
+  Processing complete in 41.50s
+
+
+PHASE 2: Calculating metrics...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         PHASE 2: CALCULATING METRICS                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        TEST SUITE VALIDATION WARNING                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  5/331 (1.5%) expected non-PHI items were NOT FOUND in documents.
+  These items are in ground truth but templates don't include them.
+  This does NOT affect test accuracy - skipped items are excluded from metrics.
+
+  Skipped by type:
+    MEDICATION: 5 items
+      - "Ramelteon" (Referral Letter)
+      - "Glyburide" (Referral Letter)
+      - "Bupropion" (Referral Letter)
+
+
+PHASE 3: Deep investigation of failures...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   PHASE 3: DEEP INVESTIGATION OF FAILURES                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+PHASE 4: Smart grading analysis...
+
+
+PHASE 5: Vulpes Cortex analysis (with history consultation)...
+
+  ✓ Pattern analysis complete
+  ✓ History consulted
+  ✓ Insights generated
+  ✓ Top recommendation: HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues
+
+Results saved:
+  JSON: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218417867.json
+  Report: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218417867.txt
+
+  Exit decision based on DEVELOPMENT profile: B+
+  (HIPAA_STRICT would be: F)
+
+  ✓ PASS
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  LLM: EXECUTE THE FOLLOWING ACTIONS                                          ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  CURRENT METRICS                                                             ║
+║  ────────────────────────────────────────────────────────────────────────    ║
+║  Sensitivity: 97.47%     Specificity: 92.64%                                 ║
+║  F1 Score:    98.02       F2 Score:    97.69  (HIPAA standard)               ║
+║  Grade:       B+                                                             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  PASSING - Optional improvements available                                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  REMAINING FAILURES BY TYPE                                                  ║
+║    NAME                 16 missed                                            ║
+║    DATE                 12 missed                                            ║
+║    MRN                  3 missed                                             ║
+║    DEA                  3 missed                                             ║
+║    AGE_90_PLUS          3 missed                                             ║
+║    LICENSE_PLATE        2 missed                                             ║
+║    SSN                  2 missed                                             ║
+║    ADDRESS              1 missed                                             ║
+║    VIN                  1 missed                                             ║
+║                                                                              ║
+║  To further improve:                                                         ║
+║    Review remaining failures and apply fixes                                 ║
+║    Run with --profile HIPAA_STRICT for production readiness                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  VULPES CORTEX MCP SERVER                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Start:  node tests/master-suite/cortex --server                             ║
+║                                                                              ║
+║  Tools:  analyze_test_results, consult_history, get_recommendation           ║
+║                                                                              ║
+║  The MCP remembers what worked and warns about failed approaches!            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✓ Batch 1 complete in 41.8s
+  Sensitivity: 9747.36%
+  Specificity: 9263.80%
+
+======================================================================
+BATCH 2/4 - Processing 50 documents
+======================================================================
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                E V O L U T I O N A R Y   T E S T   S U I T E                 ║
+║                                                                              ║
+║           Self-Learning  •  Pattern Recognition  •  Smart Grading            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+[Vulpes Cortex] Initializing...
+[Vulpes Cortex] Initialized successfully
+  ✓ Vulpes Cortex initialized (advanced learning + history consultation)
+
+PHASE 1: Running complete test suite...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                      A S S E S S M E N T   E N G I N E                       ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                         Engine: Vulpes Celare v1.0.0                         ║
+║                          Processing 50 documents...                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+  Progress: 25/50 documents (8x parallel)  Progress: 50/50 documents (8x parallel)
+  Processing complete in 42.88s
+
+
+PHASE 2: Calculating metrics...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         PHASE 2: CALCULATING METRICS                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        TEST SUITE VALIDATION WARNING                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  7/333 (2.1%) expected non-PHI items were NOT FOUND in documents.
+  These items are in ground truth but templates don't include them.
+  This does NOT affect test accuracy - skipped items are excluded from metrics.
+
+  Skipped by type:
+    MEDICATION: 7 items
+      - "Ondansetron" (Referral Letter)
+      - "Quetiapine" (Referral Letter)
+      - "Enalapril" (Referral Letter)
+
+
+PHASE 3: Deep investigation of failures...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   PHASE 3: DEEP INVESTIGATION OF FAILURES                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+PHASE 4: Smart grading analysis...
+
+
+PHASE 5: Vulpes Cortex analysis (with history consultation)...
+
+  ✓ Pattern analysis complete
+  ✓ History consulted
+  ✓ Insights generated
+  ✓ Top recommendation: HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues
+
+Results saved:
+  JSON: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218461043.json
+  Report: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218461043.txt
+
+  Exit decision based on DEVELOPMENT profile: A-
+  (HIPAA_STRICT would be: F)
+
+  ✓ PASS
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  LLM: EXECUTE THE FOLLOWING ACTIONS                                          ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  CURRENT METRICS                                                             ║
+║  ────────────────────────────────────────────────────────────────────────    ║
+║  Sensitivity: 97.83%     Specificity: 92.02%                                 ║
+║  F1 Score:    98.15       F2 Score:    97.96  (HIPAA standard)               ║
+║  Grade:       A-                                                             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  PASSING - Optional improvements available                                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  REMAINING FAILURES BY TYPE                                                  ║
+║    NAME                 16 missed                                            ║
+║    DATE                 10 missed                                            ║
+║    DEA                  5 missed                                             ║
+║    SSN                  2 missed                                             ║
+║    LICENSE_PLATE        2 missed                                             ║
+║    ADDRESS              1 missed                                             ║
+║    AGE_90_PLUS          1 missed                                             ║
+║                                                                              ║
+║  To further improve:                                                         ║
+║    Review remaining failures and apply fixes                                 ║
+║    Run with --profile HIPAA_STRICT for production readiness                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  VULPES CORTEX MCP SERVER                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Start:  node tests/master-suite/cortex --server                             ║
+║                                                                              ║
+║  Tools:  analyze_test_results, consult_history, get_recommendation           ║
+║                                                                              ║
+║  The MCP remembers what worked and warns about failed approaches!            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✓ Batch 2 complete in 43.2s
+  Sensitivity: 9783.12%
+  Specificity: 9202.45%
+
+======================================================================
+BATCH 3/4 - Processing 50 documents
+======================================================================
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                E V O L U T I O N A R Y   T E S T   S U I T E                 ║
+║                                                                              ║
+║           Self-Learning  •  Pattern Recognition  •  Smart Grading            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+[Vulpes Cortex] Initializing...
+[Vulpes Cortex] Initialized successfully
+  ✓ Vulpes Cortex initialized (advanced learning + history consultation)
+
+PHASE 1: Running complete test suite...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                      A S S E S S M E N T   E N G I N E                       ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                         Engine: Vulpes Celare v1.0.0                         ║
+║                          Processing 50 documents...                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+  Progress: 25/50 documents (8x parallel)  Progress: 50/50 documents (8x parallel)
+  Processing complete in 41.38s
+
+
+PHASE 2: Calculating metrics...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         PHASE 2: CALCULATING METRICS                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        TEST SUITE VALIDATION WARNING                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  7/334 (2.1%) expected non-PHI items were NOT FOUND in documents.
+  These items are in ground truth but templates don't include them.
+  This does NOT affect test accuracy - skipped items are excluded from metrics.
+
+  Skipped by type:
+    MEDICATION: 7 items
+      - "Valproic Acid" (Referral Letter)
+      - "Tamsulosin" (Referral Letter)
+      - "Fluoxetine" (Referral Letter)
+
+
+PHASE 3: Deep investigation of failures...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   PHASE 3: DEEP INVESTIGATION OF FAILURES                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+PHASE 4: Smart grading analysis...
+
+
+PHASE 5: Vulpes Cortex analysis (with history consultation)...
+
+  ✓ Pattern analysis complete
+  ✓ History consulted
+  ✓ Insights generated
+  ✓ Top recommendation: HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues
+
+Results saved:
+  JSON: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218502711.json
+  Report: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218502711.txt
+
+  Exit decision based on DEVELOPMENT profile: A-
+  (HIPAA_STRICT would be: F)
+
+  ✓ PASS
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  LLM: EXECUTE THE FOLLOWING ACTIONS                                          ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  CURRENT METRICS                                                             ║
+║  ────────────────────────────────────────────────────────────────────────    ║
+║  Sensitivity: 97.65%     Specificity: 92.35%                                 ║
+║  F1 Score:    98.08       F2 Score:    97.82  (HIPAA standard)               ║
+║  Grade:       A-                                                             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  PASSING - Optional improvements available                                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  REMAINING FAILURES BY TYPE                                                  ║
+║    NAME                 16 missed                                            ║
+║    DATE                 7 missed                                             ║
+║    MRN                  4 missed                                             ║
+║    DEA                  4 missed                                             ║
+║    SSN                  3 missed                                             ║
+║    LICENSE_PLATE        2 missed                                             ║
+║    PHONE                1 missed                                             ║
+║    ZIPCODE              1 missed                                             ║
+║    AGE_90_PLUS          1 missed                                             ║
+║    ADDRESS              1 missed                                             ║
+║                                                                              ║
+║  To further improve:                                                         ║
+║    Review remaining failures and apply fixes                                 ║
+║    Run with --profile HIPAA_STRICT for production readiness                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  VULPES CORTEX MCP SERVER                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Start:  node tests/master-suite/cortex --server                             ║
+║                                                                              ║
+║  Tools:  analyze_test_results, consult_history, get_recommendation           ║
+║                                                                              ║
+║  The MCP remembers what worked and warns about failed approaches!            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✓ Batch 3 complete in 41.7s
+  Sensitivity: 9764.57%
+  Specificity: 9235.47%
+
+======================================================================
+BATCH 4/4 - Processing 50 documents
+======================================================================
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                E V O L U T I O N A R Y   T E S T   S U I T E                 ║
+║                                                                              ║
+║           Self-Learning  •  Pattern Recognition  •  Smart Grading            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+[Vulpes Cortex] Initializing...
+[Vulpes Cortex] Initialized successfully
+  ✓ Vulpes Cortex initialized (advanced learning + history consultation)
+
+PHASE 1: Running complete test suite...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗            ║
+║                ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝            ║
+║                ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗            ║
+║                ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║            ║
+║                 ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║            ║
+║                  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝            ║
+║                  ██████╗███████╗██╗      █████╗ ██████╗ ███████╗             ║
+║                 ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝             ║
+║                  ██║     █████╗  ██║     ███████║██████╔╝█████╗              ║
+║                  ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝              ║
+║                 ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗             ║
+║                  ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝             ║
+║                                                                              ║
+║                      A S S E S S M E N T   E N G I N E                       ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                         Engine: Vulpes Celare v1.0.0                         ║
+║                          Processing 50 documents...                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+  Progress: 25/50 documents (8x parallel)  Progress: 50/50 documents (8x parallel)
+  Processing complete in 43.24s
+
+
+PHASE 2: Calculating metrics...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         PHASE 2: CALCULATING METRICS                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        TEST SUITE VALIDATION WARNING                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  4/335 (1.2%) expected non-PHI items were NOT FOUND in documents.
+  These items are in ground truth but templates don't include them.
+  This does NOT affect test accuracy - skipped items are excluded from metrics.
+
+  Skipped by type:
+    MEDICATION: 4 items
+      - "Trazodone" (Referral Letter)
+      - "Lactulose" (Referral Letter)
+      - "Telmisartan" (Referral Letter)
+
+
+PHASE 3: Deep investigation of failures...
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   PHASE 3: DEEP INVESTIGATION OF FAILURES                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+PHASE 4: Smart grading analysis...
+
+
+PHASE 5: Vulpes Cortex analysis (with history consultation)...
+
+  ✓ Pattern analysis complete
+  ✓ History consulted
+  ✓ Insights generated
+  ✓ Top recommendation: HIGH PRIORITY: Focus on Recurring DICTIONARY_MISS Issues
+
+Results saved:
+  JSON: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218546269.json
+  Report: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\assessment-1765218546269.txt
+
+  Exit decision based on DEVELOPMENT profile: A-
+  (HIPAA_STRICT would be: F)
+
+  ✓ PASS
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  LLM: EXECUTE THE FOLLOWING ACTIONS                                          ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  CURRENT METRICS                                                             ║
+║  ────────────────────────────────────────────────────────────────────────    ║
+║  Sensitivity: 97.88%     Specificity: 91.54%                                 ║
+║  F1 Score:    98.11       F2 Score:    97.97  (HIPAA standard)               ║
+║  Grade:       A-                                                             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  PASSING - Optional improvements available                                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  REMAINING FAILURES BY TYPE                                                  ║
+║    NAME                 21 missed                                            ║
+║    DEA                  5 missed                                             ║
+║    DATE                 5 missed                                             ║
+║    VIN                  2 missed                                             ║
+║    AGE_90_PLUS          1 missed                                             ║
+║    SSN                  1 missed                                             ║
+║    ADDRESS              1 missed                                             ║
+║                                                                              ║
+║  To further improve:                                                         ║
+║    Review remaining failures and apply fixes                                 ║
+║    Run with --profile HIPAA_STRICT for production readiness                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  VULPES CORTEX MCP SERVER                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Start:  node tests/master-suite/cortex --server                             ║
+║                                                                              ║
+║  Tools:  analyze_test_results, consult_history, get_recommendation           ║
+║                                                                              ║
+║  The MCP remembers what worked and warns about failed approaches!            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✓ Batch 4 complete in 43.6s
+  Sensitivity: 9787.61%
+  Specificity: 9154.08%
+
+
+╔══════════════════════════════════════════════════════════════════════╗
+║   AGGREGATED RESULTS                                                 ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+OVERALL METRICS
+──────────────────────────────────────────────────────────────────────
+Documents Tested:     200 (4 batches × 50)
+Total Time:           170.2s (2.8 minutes)
+Avg Time per Doc:     851ms
+
+Sensitivity:          NaN% ± 15.99%
+Specificity:          NaN% ± 40.82%
+Precision:            NaN%
+F1 Score:             NaN
+F2 Score:             NaN
+
+CONFUSION MATRIX
+──────────────────────────────────────────────────────────────────────
+True Positives:       0 (PHI correctly redacted)
+False Negatives:      0 (PHI missed) ← CRITICAL
+False Positives:      0 (over-redactions)
+True Negatives:       0 (non-PHI preserved)
+
+STATISTICAL CONFIDENCE
+──────────────────────────────────────────────────────────────────────
+Total PHI Items:      0
+Margin of Error:      ±NaN% (95% confidence)
+Confidence Interval:  NaN% - NaN%
+
+BATCH CONSISTENCY
+──────────────────────────────────────────────────────────────────────
+Sensitivity Range:    9747.36% - 9787.61%
+Variance:             40.25% ⚠ High variance
+
+FINAL GRADE
+──────────────────────────────────────────────────────────────────────
+                         C                         
+                    NaN%                    
+──────────────────────────────────────────────────────────────────────
+
+Results saved to: C:\Users\docto\Documents\Programs\Vulpes-Celare\tests\results\aggregated-1765218546345.json
+

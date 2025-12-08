@@ -212,6 +212,15 @@ try {
   // Cortex not available - will fall back to basic learning
 }
 
+// Try to load SmartSummary (LLM-friendly output)
+let SmartSummary = null;
+try {
+  const smartSummaryModule = require("./utils/SmartSummary");
+  SmartSummary = smartSummaryModule.SmartSummary;
+} catch (e) {
+  // SmartSummary not available - will skip smart summary
+}
+
 // ============================================================================
 // PARSE COMMAND LINE ARGUMENTS
 // ============================================================================
@@ -515,6 +524,31 @@ async function main() {
       // Legacy learning/evolution report
       if (learningEngine && !cortex) {
         log(learningEngine.generateReport());
+      }
+
+      // Smart summary for LLMs (always show, provides TL;DR and comparison)
+      if (SmartSummary) {
+        try {
+          const smartSummary = new SmartSummary();
+          const summaryResults = {
+            metrics: assessment.results.metrics,
+            documents: options.documentCount,
+            processingTime: `${assessment.results.processingTime || 'N/A'}`
+          };
+
+          log('\n' + fmt.separator('═'));
+          log(fmt.headerBox('SMART SUMMARY (LLM-OPTIMIZED)'));
+          log(fmt.separator('═') + '\n');
+          log(smartSummary.generate(summaryResults, {
+            compact: false,
+            showComparison: true,
+            showRecommendations: true
+          }));
+          log('\n');
+        } catch (e) {
+          // Gracefully skip if SmartSummary fails
+          console.warn(`  ⚠ SmartSummary generation failed: ${e.message}`);
+        }
       }
     }
 

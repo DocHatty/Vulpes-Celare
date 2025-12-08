@@ -5,9 +5,10 @@ This project uses **Vulpes Celare** for HIPAA-compliant PHI redaction.
 ## Critical Rules
 
 1. **PHI Sensitivity First**: Never miss Protected Health Information. Missing PHI = HIPAA violation.
-2. **Test After Changes**: Always run `npm run build && npm test` after code modifications.
+2. **Test After Changes**: Always run `npm run build && npm run test:aggregate:200` after code modifications.
 3. **One Change at a Time**: Make incremental changes and validate each one.
 4. **NEVER** commit unredacted PHI to version control.
+5. **Minimum 200 Documents**: ALWAYS test with 200+ documents for final grading (50 is insufficient).
 
 ## Quick Commands
 
@@ -15,8 +16,10 @@ This project uses **Vulpes Celare** for HIPAA-compliant PHI redaction.
 # Build the project
 npm run build
 
-# Run all tests
-npm test
+# Run tests - ALWAYS use aggregate for final grading
+npm test                      # Quick test (50 docs) - rapid iteration ONLY
+npm run test:aggregate:200    # ✅ Final grading (200 docs) - USE THIS
+npm run test:aggregate:500    # Production validation (500 docs)
 
 # Redact PHI from text
 vulpes redact "Patient John Smith SSN 123-45-6789"
@@ -24,6 +27,33 @@ vulpes redact "Patient John Smith SSN 123-45-6789"
 # Interactive redaction mode
 vulpes interactive
 ```
+
+## Testing Best Practices (REQUIRED)
+
+**All LLMs MUST follow these practices:**
+
+1. **Document Count**: ALWAYS test with minimum 200 documents for final grading
+   - 50 docs = ±2.4% margin of error (too high)
+   - 200 docs = ±1.2% margin of error (acceptable)
+   - Use `npm run test:aggregate:200` as default
+
+2. **Progress Indicators**: All tests show real-time progress
+   - Progress bars with percentage completion
+   - ETA (Estimated Time Remaining)
+   - Batch-by-batch status updates
+   - Example: `Overall Progress: [████████░░░░] 75% (3/4) ETA: 42s`
+
+3. **Smart Summaries**: Tests automatically provide
+   - TL;DR at the top (most important info first)
+   - Comparison with previous run (delta indicators)
+   - Prioritized action items (what to fix first)
+   - Impact estimates ("Will improve sensitivity by ~0.5%")
+
+4. **Always Report**:
+   - Document count tested (e.g., "Tested 200 documents")
+   - Sensitivity with confidence interval
+   - Top 3 failure types with examples
+   - Comparison delta vs. previous run
 
 ## Available MCP Tools
 
