@@ -20,6 +20,21 @@
 
 ---
 
+> **IMPORTANT DISCLAIMER: DEVELOPMENT STATUS**
+>
+> Vulpes Celare is currently in active development and has been validated only against **synthetic test data**. 
+>
+> **DO NOT use real patient data** until the system has been:
+> - Validated against the i2b2 2014 benchmark corpus
+> - Tested in a production pilot deployment
+> - Reviewed by your organization's compliance team
+>
+> **For development and testing:** Use only synthetic/fake patient data. The `tests/master-suite` includes synthetic document generators you can use.
+>
+> **The developers assume no liability** for PHI exposure resulting from use of this software prior to production validation. Users are solely responsible for ensuring HIPAA compliance within their organizations.
+
+---
+
 ## Why Vulpes Celare?
 
 Clinical documentation drives medical education, research, and innovation - but safely sharing it remains a persistent challenge.
@@ -110,6 +125,33 @@ vulpes cc           # Claude CLI chat (no API key needed)
 vulpes chat         # Native API chat
 vulpes --help       # All options
 ```
+
+### Vulpes CLI Modes
+
+| Mode | Description | API Key |
+|------|-------------|---------|
+| **Native API Chat** | Direct chat with OpenAI, Anthropic, Google, OpenRouter, or local models. Supports subagent orchestration for complex PHI tasks. | Required |
+| **Agent Mode** | Launch Claude Code or GitHub Copilot with Vulpes integration (CLAUDE.md, slash commands, MCP). | Varies |
+
+**Native Chat Commands:**
+- `/redact <text>` - Redact PHI from text
+- `/analyze <text>` - Analyze PHI without redacting
+- `/info` - Show Vulpes engine info
+- `/model` - Switch models
+- `/provider` - Switch providers
+- `/subagents` or `/s` - Toggle subagent orchestration
+- `/orchestrate <task>` - Run intelligent workflow
+
+**Subagent Orchestration:**
+The CLI includes an intelligent multi-agent system that automatically routes tasks:
+- **Scout** - Fast PHI scanning and detection
+- **Analyst** - Root cause analysis for detection issues
+- **Engineer** - Code fixes for filters and dictionaries
+- **Tester** - Run tests and validate changes
+- **Auditor** - HIPAA compliance certification
+- **Setup** - System health and MCP status
+
+Workflows are automatically detected and executed in parallel or serial based on task dependencies.
 
 ### Library Usage
 

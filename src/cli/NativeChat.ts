@@ -1001,12 +1001,12 @@ export class NativeChat {
       console.log();
 
       // Display subagent results if any
-      if (result.subagentResults && result.subagentResults.length > 0) {
+      if (result.results && result.results.length > 0) {
         console.log(theme.info.bold("  SUBAGENT RESULTS"));
         console.log(theme.muted("  " + "─".repeat(50)));
 
         let totalTime = 0;
-        for (const subResult of result.subagentResults) {
+        for (const subResult of result.results) {
           const statusIcon = subResult.success
             ? theme.success(figures.tick)
             : theme.error(figures.cross);
@@ -1034,7 +1034,7 @@ export class NativeChat {
         console.log();
         console.log(
           theme.muted(
-            `  Total subagent time: ${totalTime}ms | Tasks: ${result.subagentResults.length}`,
+            `  Total subagent time: ${totalTime}ms | Tasks: ${result.results.length}`,
           ),
         );
       }

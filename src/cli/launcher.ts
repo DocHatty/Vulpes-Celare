@@ -63,8 +63,7 @@ const MENU_OPTIONS: MenuOption[] = [
       "Built-in: /redact, /interactive, /info, /subagents",
     ],
     action: async () => {
-      // Auto-vulpesify before starting
-      await silentVulpesify();
+      // Note: Vulpesify runs on Agent mode only (creates CLAUDE.md etc)
       await handleNativeChat({ mode: "dev", verbose: false });
     },
   },

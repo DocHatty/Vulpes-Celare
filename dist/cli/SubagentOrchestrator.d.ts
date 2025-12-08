@@ -1,77 +1,92 @@
 /**
  * ============================================================================
- * VULPES CELARE - SUBAGENT ORCHESTRATION SYSTEM
+ * VULPES CELARE - INTELLIGENT SUBAGENT ORCHESTRATION SYSTEM
  * ============================================================================
  *
- * A multi-agent architecture specifically designed for PHI redaction workflows.
- * The main orchestrator LLM delegates to specialized subagents that run in
- * parallel for maximum efficiency.
+ * A workflow-aware multi-agent architecture with DYNAMIC parallel/serial
+ * execution based on task dependencies and intelligent routing.
  *
- * ARCHITECTURE:
- * ┌─────────────────────────────────────────────────────────────────────────┐
- * │                        ORCHESTRATOR (Main LLM)                          │
- * │  Your chosen model - Full Vulpes system prompt                          │
- * │  Analyzes requests, delegates tasks, synthesizes results                │
- * └─────────────────────────────────────────────────────────────────────────┘
- *                                    │
- *      ┌──────────────┬──────────────┼──────────────┬──────────────┐
- *      ▼              ▼              ▼              ▼              ▼
- * ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
- * │  PHI     │  │  FILTER  │  │  TEST    │  │  DICT    │  │  AUDIT   │
- * │  SCANNER │  │  ENGINEER│  │  RUNNER  │  │  CURATOR │  │  AGENT   │
- * │          │  │          │  │          │  │          │  │          │
- * │ Analyze  │  │ Fix/tune │  │ Run &    │  │ Manage   │  │ Check    │
- * │ documents│  │ filters  │  │ validate │  │ entries  │  │ quality  │
- * └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
- *      │              │              │              │              │
- *      └──────────────┴──────────────┴──────────────┴──────────────┘
- *                                    ▼
- *                         ┌────────────────────┐
- *                         │  SYNTHESIZED RESULT│
- *                         │  Back to User      │
- *                         └────────────────────┘
+ * KEY INNOVATION: The orchestrator understands Vulpes workflows and
+ * automatically determines optimal execution strategy.
  *
- * VULPES SUBAGENT ROLES:
+ * WORKFLOW PATTERNS (Auto-detected):
  *
- * 1. PHI_SCANNER - Scans documents for PHI patterns
- *    - Fast parallel document analysis
- *    - Identifies what PHI types are present
- *    - Spots potential issues (false positives/negatives)
- *    - Batch processing for multiple files
+ * 1. PHI LEAK FIX WORKFLOW (Serial - dependency chain)
+ *    ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
+ *    │ SCOUT   │ → │ ANALYST │ → │ ENGINEER│ → │ TESTER  │ → │ AUDITOR │
+ *    │(scan)   │   │(diagnose│   │(fix)    │   │(verify) │   │(certify)│
+ *    └─────────┘   └─────────┘   └─────────┘   └─────────┘   └─────────┘
  *
- * 2. FILTER_ENGINEER - Analyzes and fixes filter code
- *    - Reads filter implementations
- *    - Identifies regex/logic issues
- *    - Writes specific code fixes
- *    - Can modify filters to fix leaks
+ * 2. BATCH DOCUMENT SCAN (Parallel - independent)
+ *    ┌─────────┐
+ *    │ SCOUT-1 │──┐
+ *    └─────────┘  │   ┌─────────────┐
+ *    ┌─────────┐  ├──→│ AGGREGATOR  │
+ *    │ SCOUT-2 │──┤   │ (combine)   │
+ *    └─────────┘  │   └─────────────┘
+ *    ┌─────────┐  │
+ *    │ SCOUT-N │──┘
+ *    └─────────┘
  *
- * 3. TEST_RUNNER - Executes tests and validates changes
- *    - Runs test suites
- *    - Compares before/after metrics
- *    - Identifies regressions
- *    - Validates fixes work
+ * 3. REGRESSION HUNT (Hybrid - parallel scan, serial fix)
+ *    ┌──────────────────────────┐
+ *    │    PARALLEL PHASE        │
+ *    │  ┌───────┐ ┌───────┐    │    ┌─────────┐   ┌─────────┐
+ *    │  │SCOUT  │ │ANALYST│    │ →  │ENGINEER │ → │ TESTER  │
+ *    │  └───────┘ └───────┘    │    │(fix)    │   │(verify) │
+ *    └──────────────────────────┘    └─────────┘   └─────────┘
  *
- * 4. DICT_CURATOR - Manages dictionary entries
- *    - Searches dictionaries
- *    - Adds missing names/locations
- *    - Removes false positive triggers
- *    - Cross-references databases
+ * SUBAGENT ROLES (Redesigned for Vulpes workflows):
  *
- * 5. AUDIT_AGENT - Quality and compliance checking
- *    - Reviews redaction completeness
- *    - Checks HIPAA compliance
- *    - Assesses risk levels
- *    - Generates reports
+ * 1. SCOUT - Fast reconnaissance
+ *    - Quick document scanning
+ *    - PHI detection
+ *    - Pattern identification
+ *    - Returns structured findings
+ *
+ * 2. ANALYST - Deep investigation
+ *    - Root cause analysis
+ *    - Filter behavior analysis
+ *    - Dictionary coverage gaps
+ *    - Detailed diagnostics
+ *
+ * 3. ENGINEER - Code modifications
+ *    - Filter fixes
+ *    - Regex improvements
+ *    - Dictionary updates
+ *    - Returns precise diffs
+ *
+ * 4. TESTER - Validation
+ *    - Run test suites
+ *    - Metric comparison
+ *    - Regression detection
+ *    - Pass/fail verdicts
+ *
+ * 5. AUDITOR - Compliance & quality
+ *    - HIPAA compliance check
+ *    - Risk assessment
+ *    - Quality certification
+ *    - Final sign-off
+ *
+ * 6. SETUP - Environment preparation
+ *    - MCP server status
+ *    - API connectivity
+ *    - Cortex initialization
+ *    - Returns readiness report
  */
 import { APIProvider, Message, Tool } from "./APIProvider";
-export type SubagentRole = "phi_scanner" | "filter_engineer" | "test_runner" | "dict_curator" | "audit_agent";
+export type SubagentRole = "scout" | "analyst" | "engineer" | "tester" | "auditor" | "setup";
+export type WorkflowType = "phi_leak_fix" | "batch_scan" | "regression_hunt" | "compliance_audit" | "dictionary_update" | "quick_scan" | "system_check" | "custom";
+export type ExecutionMode = "parallel" | "serial" | "hybrid";
 export interface SubagentTask {
     id: string;
     role: SubagentRole;
     prompt: string;
     context?: Record<string, any>;
-    priority?: "high" | "normal" | "low";
+    priority?: "critical" | "high" | "normal" | "low";
     timeout?: number;
+    dependsOn?: string[];
+    phase?: number;
 }
 export interface SubagentResult {
     taskId: string;
@@ -84,6 +99,14 @@ export interface SubagentResult {
         input: number;
         output: number;
     };
+    findings?: any;
+}
+export interface WorkflowPlan {
+    type: WorkflowType;
+    mode: ExecutionMode;
+    phases: SubagentTask[][];
+    estimatedTime?: string;
+    description: string;
 }
 export interface OrchestratorConfig {
     mainProvider?: string;
@@ -96,43 +119,54 @@ export interface OrchestratorConfig {
     workingDir?: string;
     mode?: "dev" | "qa" | "production";
     verbose?: boolean;
+    autoRoute?: boolean;
 }
+declare function detectWorkflow(userMessage: string): WorkflowType;
+declare const WORKFLOW_TEMPLATES: Record<WorkflowType, (context: any) => Partial<WorkflowPlan>>;
 declare const SUBAGENT_PROMPTS: Record<SubagentRole, string>;
 declare const SUBAGENT_TOOLS: Record<SubagentRole, Tool[]>;
 export declare class SubagentOrchestrator {
     private config;
     private mainProvider;
-    private subagents;
+    private subagentProvider;
     private vulpes;
+    private taskQueue;
     constructor(config: OrchestratorConfig, mainProvider: APIProvider);
+    setSubagentProvider(provider: APIProvider): void;
     /**
-     * Initialize a subagent for a specific role
+     * Analyze user request and create optimal workflow plan
      */
-    initializeSubagent(role: SubagentRole, provider: APIProvider): void;
+    planWorkflow(userMessage: string, context?: any): WorkflowPlan;
     /**
-     * Delegate a single task to a subagent
+     * Execute a workflow plan with intelligent parallel/serial handling
+     * Uses p-queue for rate limiting and records results to agent memory
      */
-    delegateTask(task: SubagentTask): Promise<SubagentResult>;
+    executeWorkflow(plan: WorkflowPlan): Promise<{
+        results: SubagentResult[];
+        summary: string;
+    }>;
+    private logResult;
     /**
-     * Delegate multiple tasks in parallel (respecting maxParallel limit)
-     */
-    delegateParallel(tasks: SubagentTask[]): Promise<SubagentResult[]>;
-    /**
-     * Main orchestration - let the main LLM decide how to handle a request
+     * Main orchestration entry point - auto-routes to optimal workflow
      */
     orchestrate(userMessage: string, conversationHistory: Message[]): Promise<{
         response: string;
-        subagentResults?: SubagentResult[];
+        workflow?: WorkflowPlan;
+        results?: SubagentResult[];
     }>;
     /**
-     * Get available subagent roles
+     * Quick scan shortcut - runs scout only
      */
-    getAvailableRoles(): SubagentRole[];
+    quickScan(text: string): Promise<SubagentResult>;
     /**
-     * Get the main provider
+     * Full audit shortcut - runs compliance workflow
      */
+    fullAudit(text: string): Promise<{
+        results: SubagentResult[];
+        summary: string;
+    }>;
     getMainProvider(): APIProvider;
 }
 export declare function createOrchestrator(config: OrchestratorConfig): SubagentOrchestrator;
-export { SUBAGENT_PROMPTS, SUBAGENT_TOOLS };
+export { SUBAGENT_PROMPTS, SUBAGENT_TOOLS, WORKFLOW_TEMPLATES, detectWorkflow };
 //# sourceMappingURL=SubagentOrchestrator.d.ts.map

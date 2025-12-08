@@ -65,6 +65,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VulpesAgent = void 0;
 exports.handleAgent = handleAgent;
 const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const os = __importStar(require("os"));
 const readline = __importStar(require("readline"));
 const child_process_1 = require("child_process");
 const chalk_1 = __importDefault(require("chalk"));
@@ -246,28 +248,9 @@ class VulpesAgent {
         if (this.config.model) {
             args.push("--model", this.config.model);
         }
-        // DEEP INTEGRATION: Append comprehensive Vulpes system prompt
-        const fullSystemPrompt = this.buildFullSystemPrompt();
-        args.push("--append-system-prompt", fullSystemPrompt);
-        // DEEP INTEGRATION: Allow all Vulpes-related tools
-        const allowedTools = [
-            // Standard Claude Code tools
-            "Bash",
-            "Read",
-            "Write",
-            "Edit",
-            "Glob",
-            "Grep",
-            "Task",
-            // Vulpes MCP tools (if MCP server running)
-            "mcp__vulpes__redact_text",
-            "mcp__vulpes__analyze_redaction",
-            "mcp__vulpes__get_system_info",
-            "mcp__vulpes__run_tests",
-        ];
-        if (this.config.mode === "dev") {
-            args.push("--allowedTools", allowedTools.join(","));
-        }
+        // DEEP INTEGRATION: Use short append-system-prompt (CLAUDE.md has full context)
+        // Note: --system-prompt-file only works in print mode, not interactive
+        args.push("--append-system-prompt", "You are VULPESIFIED. This project uses Vulpes Celare for HIPAA PHI redaction. See CLAUDE.md for full capabilities. Commands: /vulpes-redact, /vulpes-analyze, /vulpes-info");
         // DEEP INTEGRATION: Set environment for hooks
         const env = {
             ...process.env,
@@ -279,9 +262,8 @@ class VulpesAgent {
                 "C:\\Program Files\\Git\\bin\\bash.exe",
         };
         console.log(theme.info(`\n  Starting Claude Code with Vulpes integration...\n`));
-        console.log(theme.muted(`  ${figures_1.default.tick} System prompt injected`));
-        console.log(theme.muted(`  ${figures_1.default.tick} ${allowedTools.length} tools allowed`));
-        console.log(theme.muted(`  ${figures_1.default.tick} CLAUDE.md loaded (if present)`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Vulpes context injected`));
+        console.log(theme.muted(`  ${figures_1.default.tick} CLAUDE.md provides full context`));
         console.log(theme.muted(`  ${figures_1.default.tick} Slash commands: /vulpes-redact, /vulpes-analyze, /vulpes-info\n`));
         await this.spawnAgent("claude", args, env);
     }
@@ -319,15 +301,18 @@ class VulpesAgent {
         const args = [];
         // Model selection
         args.push("--model", this.config.model || "claude-sonnet-4");
-        // DEEP INTEGRATION: Inject Vulpes context via -p flag
-        const systemPrompt = this.buildFullSystemPrompt();
-        args.push("-p", `${systemPrompt}\n\nReady to help with Vulpes Celare PHI redaction development.`);
+        // DEEP INTEGRATION: Use file-based prompt to avoid command line length limits
+        // Copilot doesn't have --system-prompt-file, so we use a short inline prompt
+        // and rely on CLAUDE.md/project context for details
+        args.push("-p", "You are VULPESIFIED - a PHI redaction assistant. Use 'vulpes' CLI commands for redaction. See project CLAUDE.md for full capabilities.");
         const env = {
             ...process.env,
             VULPES_AGENT_MODE: this.config.mode,
             VULPES_WORKING_DIR: this.config.workingDir,
         };
         console.log(theme.info(`\n  Starting GitHub Copilot with Vulpes context...\n`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Vulpes context injected`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Use 'vulpes' CLI for redaction\n`));
         await this.spawnAgent("copilot", args, env);
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -404,6 +389,16 @@ class VulpesAgent {
         const basePrompt = (0, SystemPrompts_1.getSystemPrompt)(this.config.mode);
         // Add the Vulpes injection prompt with quick reference
         return `${basePrompt}\n\n${VULPES_INJECTION_PROMPT}`;
+    }
+    /**
+     * Write system prompt to a temp file to avoid command line length limits
+     * Returns the path to the temp file
+     */
+    writePromptToFile() {
+        const promptContent = this.buildFullSystemPrompt();
+        const promptFile = path.join(os.tmpdir(), `vulpes-prompt-${Date.now()}.md`);
+        fs.writeFileSync(promptFile, promptContent, "utf-8");
+        return promptFile;
     }
     // ══════════════════════════════════════════════════════════════════════════
     // DOCUMENT TESTING

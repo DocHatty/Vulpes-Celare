@@ -826,11 +826,11 @@ class NativeChat {
             spinner.succeed("Orchestration complete");
             console.log();
             // Display subagent results if any
-            if (result.subagentResults && result.subagentResults.length > 0) {
+            if (result.results && result.results.length > 0) {
                 console.log(theme.info.bold("  SUBAGENT RESULTS"));
                 console.log(theme.muted("  " + "─".repeat(50)));
                 let totalTime = 0;
-                for (const subResult of result.subagentResults) {
+                for (const subResult of result.results) {
                     const statusIcon = subResult.success
                         ? theme.success(figures_1.default.tick)
                         : theme.error(figures_1.default.cross);
@@ -848,7 +848,7 @@ class NativeChat {
                     totalTime += subResult.executionTimeMs;
                 }
                 console.log();
-                console.log(theme.muted(`  Total subagent time: ${totalTime}ms | Tasks: ${result.subagentResults.length}`));
+                console.log(theme.muted(`  Total subagent time: ${totalTime}ms | Tasks: ${result.results.length}`));
             }
             // Display the orchestrator's synthesized response
             console.log();

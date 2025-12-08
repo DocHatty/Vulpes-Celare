@@ -65,6 +65,11 @@ export declare class VulpesAgent {
     private startNativeAgent;
     private spawnAgent;
     private buildFullSystemPrompt;
+    /**
+     * Write system prompt to a temp file to avoid command line length limits
+     * Returns the path to the temp file
+     */
+    private writePromptToFile;
     testDocument(text: string): Promise<RedactionComparison>;
     private printComparison;
     private formatDocument;
