@@ -131,7 +131,7 @@ const result = await engine.process(note);
 ✅ **Implementation**:
 - Every document has cryptographic fingerprint
 - Tampering detection via hash verification
-- Merkle tree provides immutable audit trail
+- Merkle tree provides tamper-evident audit trail
 
 ### Transmission Security (§ 164.312(e)(1))
 

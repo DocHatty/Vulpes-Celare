@@ -46,7 +46,7 @@
 | Access Control | **Mandatory** | Unique IDs, RBAC, auto-logoff |
 | MFA | **Mandatory** | Required for ALL ePHI access |
 | Encryption | **Mandatory** | AES-256 at rest, TLS 1.2+ in transit |
-| Audit Logs | **Mandatory** | Log all access, immutable logs |
+| Audit Logs | **Mandatory** | Log all access, tamper-evident logs |
 | Risk Analysis | Annual | Formal assessment |
 | Vulnerability Scan | Every 6 months | |
 | Penetration Test | Annual | |

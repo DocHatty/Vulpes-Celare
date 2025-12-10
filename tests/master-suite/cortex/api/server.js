@@ -462,7 +462,7 @@ app.get("/api/audit/verify/:id", (req, res) => {
     }
 });
 
-// GET /api/audit/head - Get current immutable head
+// GET /api/audit/head - Get current tamper-evident head
 app.get("/api/audit/head", (req, res) => {
     try {
         const { MerkleLog } = require("../core/merkle-log");

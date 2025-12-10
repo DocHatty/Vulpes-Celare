@@ -144,7 +144,7 @@ The **i2b2 2014 De-identification Challenge** is the industry gold standard:
    - No coding required for customization
 
 4. **Cryptographic Provenance:** Audit trail no competitor offers
-   - Merkle-linked immutable logs
+   - Merkle-linked tamper-evident logs
    - Trust bundles for compliance
    - Zero-knowledge proof ready
 
