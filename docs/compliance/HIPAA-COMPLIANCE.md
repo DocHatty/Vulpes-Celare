@@ -102,7 +102,7 @@ const result = await engine.process(note, {
 
 | Requirement | Implementation | Location |
 |-------------|----------------|----------|
-| **Hardware, software, procedural mechanisms** | Immutable audit log with Merkle chain | `tests/master-suite/cortex/core/merkle-log.js` |
+| **Hardware, software, procedural mechanisms** | Tamper-evident audit log with Merkle chain | `tests/master-suite/cortex/core/merkle-log.js` |
 | **Record and examine activity** | Every redaction logged with timestamp, actor, and hash | `provenance-engine.js` |
 
 ✅ **Implementation**: Cryptographic provenance layer
