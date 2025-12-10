@@ -198,7 +198,7 @@ Documented by: [NAME-2] on [DATE-4] at [TIME-1]
 
 ### 4. provenance-log.json
 
-Excerpt from the immutable audit log showing this operation in the chain.
+Excerpt from the tamper-evident audit log showing this operation in the chain.
 
 ```json
 {
@@ -257,7 +257,7 @@ Excerpt from the immutable audit log showing this operation in the chain.
 
 ### 5. merkle-proof.json
 
-Cryptographic proof that this redaction is part of the immutable chain.
+Cryptographic proof that this redaction is part of the hash-linked chain.
 
 ```json
 {
@@ -386,7 +386,7 @@ vulpes-celare verify-cert certificate.json
 ### Step 3: Verify Merkle Chain
 
 ```bash
-# Verify inclusion in the immutable audit log
+# Verify inclusion in the tamper-evident audit log
 vulpes-celare verify-merkle merkle-proof.json
 ```
 
@@ -409,7 +409,7 @@ sha256sum redacted-document.txt
 ✅ **Policy Compliance**: The specified policy (usually HIPAA Safe Harbor) was followed
 ✅ **Chain of Custody**: Unbroken audit trail from original to redacted
 ✅ **Temporal Proof**: Exact timestamp of when redaction occurred
-✅ **Immutability**: Redaction event is permanently recorded in blockchain
+✅ **Tamper Evidence**: Redaction event is hash-linked in verifiable audit chain
 
 ## What You Cannot Prove (By Design)
 

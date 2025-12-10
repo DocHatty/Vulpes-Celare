@@ -3,7 +3,7 @@
  * ║   VULPES CORTEX - MERKLE LOG (BLOCKCHAIN TIER 1)                              ║
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  *
- * This module provides the "Fast Path" for immutable audit logging.
+ * This module provides the "Fast Path" for tamper-evident audit logging.
  * It implements a Linear Hash Chain (Blockchain) where every entry is cryptographically
  * linked to the previous one.
  *
@@ -24,7 +24,7 @@ class MerkleLog {
     }
 
     /**
-     * Append a new entry to the immutable log
+     * Append a new entry to the tamper-evident log
      * @param {string} eventType - Type of event (e.g., "ACCESS", "REDACTION")
      * @param {string} actorId - ID of user/system performing action
      * @param {Object} data - Payload data (will be stringified)

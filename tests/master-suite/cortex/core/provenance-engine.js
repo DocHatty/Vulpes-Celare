@@ -51,7 +51,7 @@ class ProvenanceEngine {
 
     /**
      * Create a new redaction job record.
-     * Calculates hashes, generates manifest hash, and logs to blockchain.
+     * Calculates hashes, generates manifest hash, and logs to hash chain.
      * 
      * @param {string} docId - ID of the document being redacted
      * @param {string} originalContent - Raw partial or full content (will be hashed, not stored)

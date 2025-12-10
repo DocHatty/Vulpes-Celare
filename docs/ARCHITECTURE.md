@@ -235,7 +235,7 @@ for await (const chunk of redactor.redactStream(stream)) {
 
 ### Merkle-Linked Audit Logs
 
-Every redaction event creates an immutable audit entry:
+Every redaction event creates a tamper-evident audit entry:
 
 ```
 ┌─────────────────────┐

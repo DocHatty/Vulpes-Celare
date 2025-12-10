@@ -2,12 +2,12 @@
 
 ## 1. Executive Summary
 
-The Redaction Provenance Layer (RPL) is a cryptographic audit spine designed to provide comprehensive, immutable proof of PHI redaction without ever exposing the original PHI. It serves as the compliance backbone for Vulpes-Celare, ensuring that every exported document has a verifiable chain of custody and proof of correct redaction.
+The Redaction Provenance Layer (RPL) is a cryptographic audit spine designed to provide comprehensive, tamper-evident proof of PHI redaction without ever exposing the original PHI. It serves as the compliance backbone for Vulpes-Celare, ensuring that every exported document has a verifiable chain of custody and proof of correct redaction.
 
 ## 2. Core Principles
 
-1. **Zero PHI on Chain**: The blockchain/audit log never sees original text or redacted segments. It only stores cryptographic hashes and proofs.
-2. **Immutable History**: Every redaction event is cryptographically linked to the previous one (Merkle Chain).
+1. **Zero PHI on Chain**: The hash chain/audit log never sees original text or redacted segments. It only stores cryptographic hashes and proofs.
+2. **Tamper-Evident History**: Every redaction event is cryptographically linked to the previous one (Merkle Chain).
 3. **Verifiable Correctness**: Validators can mathematically prove that `Hash(Original) + Manifest == Hash(Redacted)` without seeing the content (via ZK Proofs or authorized audit of hashes).
 
 ## 3. Data Architecture

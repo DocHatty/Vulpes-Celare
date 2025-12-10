@@ -16,7 +16,7 @@ async function runValidation() {
     const log = new MerkleLog(db); // Pass the CortexDatabase wrapper
 
     try {
-        // 2. Test Immutability (Append)
+        // 2. Test Tamper Evidence (Append)
         console.log("\n[TEST 1] Appending Events...");
         const e1 = log.append("ACCESS", "user_1", { doc: "A" });
         console.log(`  Entry 1: ${e1.hash.substring(0, 16)}... (Prev: ${e1.prevHash.substring(0, 16)}...)`);

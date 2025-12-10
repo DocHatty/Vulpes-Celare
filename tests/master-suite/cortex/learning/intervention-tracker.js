@@ -24,7 +24,7 @@ const { random } = require("../../generators/seeded-random");
  *
  * FUNDAMENTAL PRINCIPLE: No change should ever be forgotten.
  *
- * This module maintains an immutable log of:
+ * This module maintains a tamper-evident log of:
  *
  * 1. WHAT changed (filter, dictionary, config, code)
  * 2. WHEN it changed (bi-temporal tracking)

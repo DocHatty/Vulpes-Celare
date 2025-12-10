@@ -186,13 +186,13 @@ async function analyzeNote(clinicalNote: string) {
 - ✅ When it happened (timestamped)
 - ✅ Which policy was used (HIPAA Safe Harbor)
 - ✅ Document hasn't been altered (SHA-256 hashes match)
-- ✅ Chain of custody intact (blockchain-style Merkle log)
+- ✅ Chain of custody intact (hash-linked Merkle log)
 
 **Think FedEx tracking, but for compliance.** Auditors verify in 30 seconds—no technical knowledge needed.
 
 ### Why This Matters
 
-| Without Blockchain | With Vulpes Blockchain |
+| Without Audit Trail | With Vulpes Audit Trail |
 |-------------------|----------------------|
 | 🤷 "We think we redacted it" | 📜 Cryptographic proof in hand |
 | ⚖️ Pray auditors believe you | ⚖️ Math proves it (no trust required) |
@@ -201,11 +201,11 @@ async function analyzeNote(clinicalNote: string) {
 
 **Real scenario:** Data breach investigation. *"Did PHI leave your network?"*
 - Without: "We can't prove what was redacted."
-- With: "Here's the immutable audit log. Hash-verified. Certificate signed."
+- With: "Here's the tamper-evident audit log. Hash-verified. Certificate signed."
 
 ### What's Built (Production-Ready)
 
-✅ Merkle-linked blockchain (like Bitcoin, but for compliance)
+✅ Hash-linked Merkle chain (like Git, but for compliance)
 ✅ Trust Bundles (`.red` files with cryptographic certificates)
 ✅ One-click verification portal for auditors
 ✅ Zero cost (runs on your infrastructure, no fees)

@@ -201,7 +201,7 @@ class VulpesCortex {
   // ==========================================================================
 
   /**
-   * Log an event to the immutable audit blockchain
+   * Log an event to the tamper-evident audit chain
    */
   async logAudit(eventType, actorId, data) {
     await this.ensureInitialized();
