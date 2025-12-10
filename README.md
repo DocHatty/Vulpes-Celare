@@ -172,10 +172,10 @@ async function analyzeNote(clinicalNote: string) {
 - **Zero External Calls** - Works completely offline, air-gapped deployment ready
 - **Streaming API** - Real-time PHI protection for live dictation ([docs](examples/streaming/STREAMING-API.md))
 - **Policy DSL** - Declarative policies without code changes ([docs](examples/policy-dsl/POLICY-DSL.md))
-- **Cryptographic Provenance** - Immutable audit logs with Merkle-linked chains ([docs](docs/TRUST-BUNDLE.md))
+- **Cryptographic Provenance** - Tamper-evident audit logs with Merkle-linked chains ([docs](docs/TRUST-BUNDLE.md))
 - **Cortex Intelligence** - Self-learning test system that detects quality drops and recommends improvements ([docs](tests/master-suite/cortex/INTEGRATION-COMPLETE.md))
 
-## 🔗 Blockchain Audit Trail (Industry-First)
+## 🔗 Cryptographic Audit Trail (Industry-First)
 
 **The problem:** When OCR audits you, how do you *prove* you redacted PHI before sending data to AI?
 
