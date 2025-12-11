@@ -20,6 +20,7 @@ desktop.ini
 
 # Logs
 logs/
+*.log
 npm-debug.log*
 
 # Environment
@@ -44,6 +45,23 @@ temp/
 *.tmp
 nul
 
-# Debug logs
+# Debug and test output
 bridge_debug.log
 *.debug.log
+*-test.log
+*-output.log
+test-output*.log
+aggregate-*.log
+
+# Extracted content
+*_extracted*.txt
+
+# Models cache (download fresh)
+models/hf_cache/
+
+# AI tooling (internal use only)
+.claude/
+.agent/
+AGENTS.md
+CLAUDE.md
+

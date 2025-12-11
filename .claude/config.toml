@@ -1,6 +1,0 @@
-# MCP configuration for the Vulpes MCP server (project-scoped copy).
-[mcp_servers.vulpes]
-command = "node"
-args = ["C:/Users/docto/Documents/Programs/Vulpes-Celare/dist/mcp/server.js"]
-transport = "stdio"
-startup_timeout_sec = 60
