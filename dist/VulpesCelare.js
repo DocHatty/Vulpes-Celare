@@ -21,9 +21,10 @@
  * @author Hatkoff
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.VulpesCelare = void 0;
+exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.VulpesCelare = void 0;
 const ParallelRedactionEngine_1 = require("./core/ParallelRedactionEngine");
 const RedactionContext_1 = require("./context/RedactionContext");
+const images_1 = require("./core/images");
 // ============================================================================
 // FILTER IMPORTS - Organized by Category
 // ============================================================================
@@ -73,6 +74,44 @@ class VulpesCelare {
     }
     static async redactWithDetails(text, config) {
         return new VulpesCelare(config).process(text);
+    }
+    /**
+     * Redact PHI from an image buffer.
+     * Detects faces, extracts text via OCR, and applies black-box redaction.
+     *
+     * @param imageBuffer - PNG/JPEG image buffer
+     * @param options - Optional configuration
+     * @returns Redacted image buffer and metadata
+     */
+    static async redactImage(imageBuffer, options) {
+        const redactor = new images_1.ImageRedactor(options?.policy);
+        await redactor.initialize();
+        return redactor.redact(imageBuffer, {
+            knownIdentifiers: options?.knownIdentifiers,
+        });
+    }
+    /**
+     * Create an ImageRedactor instance with optional VulpesCelare text integration.
+     * The returned redactor can be reused for multiple images.
+     */
+    static async createImageRedactor(policy) {
+        const redactor = new images_1.ImageRedactor(policy);
+        await redactor.initialize();
+        // Integrate text redaction
+        redactor.setTextRedactor(async (text) => {
+            const result = await VulpesCelare.redactWithDetails(text);
+            const matches = [];
+            // Extract matched text from report
+            if (result.report) {
+                for (const fr of result.report.filterResults) {
+                    if (fr.spansDetected > 0) {
+                        matches.push(...Array(fr.spansDetected).fill(fr.filterType));
+                    }
+                }
+            }
+            return { redacted: result.text, matches };
+        });
+        return redactor;
     }
     async process(text) {
         const startTime = Date.now();
@@ -204,5 +243,20 @@ Object.defineProperty(exports, "WebSocketRedactionHandler", { enumerable: true, 
 var PolicyDSL_1 = require("./PolicyDSL");
 Object.defineProperty(exports, "PolicyCompiler", { enumerable: true, get: function () { return PolicyDSL_1.PolicyCompiler; } });
 Object.defineProperty(exports, "PolicyTemplates", { enumerable: true, get: function () { return PolicyDSL_1.PolicyTemplates; } });
+// Export image redaction services (Step 17: Photo/Image PHI)
+var images_2 = require("./core/images");
+Object.defineProperty(exports, "ImageRedactor", { enumerable: true, get: function () { return images_2.ImageRedactor; } });
+var images_3 = require("./core/images");
+Object.defineProperty(exports, "OCRService", { enumerable: true, get: function () { return images_3.OCRService; } });
+var images_4 = require("./core/images");
+Object.defineProperty(exports, "VisualDetector", { enumerable: true, get: function () { return images_4.VisualDetector; } });
+// Export DICOM services (The "DICOM Firewall")
+var dicom_1 = require("./core/dicom");
+Object.defineProperty(exports, "DicomStreamTransformer", { enumerable: true, get: function () { return dicom_1.DicomStreamTransformer; } });
+Object.defineProperty(exports, "HIPAA_DICOM_TAGS", { enumerable: true, get: function () { return dicom_1.HIPAA_DICOM_TAGS; } });
+Object.defineProperty(exports, "anonymizeDicomBuffer", { enumerable: true, get: function () { return dicom_1.anonymizeDicomBuffer; } });
+// Export Cortex Python Bridge (The "Brain")
+var CortexPythonBridge_1 = require("./core/cortex/python/CortexPythonBridge");
+Object.defineProperty(exports, "CortexPythonBridge", { enumerable: true, get: function () { return CortexPythonBridge_1.CortexPythonBridge; } });
 exports.default = VulpesCelare;
 //# sourceMappingURL=VulpesCelare.js.map

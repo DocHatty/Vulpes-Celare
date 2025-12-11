@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfidenceCalibrator = exports.crossTypeReasoner = exports.CrossTypeReasoner = exports.mlWeightOptimizer = exports.MLWeightOptimizer = exports.ReplacementContextService = exports.ConfidenceModifierService = exports.WindowService = exports.FilterRegistry = exports.UniqueIdentifierFilterSpan = exports.BiometricContextFilterSpan = exports.VehicleIdentifierFilterSpan = exports.DeviceIdentifierFilterSpan = exports.URLFilterSpan = exports.IPAddressFilterSpan = exports.AccountNumberFilterSpan = exports.CreditCardFilterSpan = exports.DateFilterSpan = exports.AgeFilterSpan = exports.HealthPlanNumberFilterSpan = exports.NPIFilterSpan = exports.MRNFilterSpan = exports.ZipCodeFilterSpan = exports.AddressFilterSpan = exports.EmailFilterSpan = exports.FaxNumberFilterSpan = exports.PhoneFilterSpan = exports.DEAFilterSpan = exports.LicenseNumberFilterSpan = exports.PassportNumberFilterSpan = exports.SSNFilterSpan = exports.FamilyNameFilterSpan = exports.TitledNameFilterSpan = exports.FormattedNameFilterSpan = exports.SmartNameFilterSpan = exports.DocumentVocabulary = exports.RedactionContext = exports.FilterType = exports.SpanUtils = exports.Span = exports.PostFilterService = exports.FieldLabelWhitelist = exports.FieldContextDetector = exports.FilterAdapter = exports.SpanFactory = exports.FilterPriority = exports.SpanBasedFilter = exports.ParallelRedactionEngine = exports.default = exports.VulpesCelare = void 0;
-exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.TRUST_BUNDLE_EXTENSION = exports.TRUST_BUNDLE_VERSION = exports.TrustBundleExporter = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.PolicyLoader = exports.TokenManager = exports.StatisticsTracker = exports.FilterHealthCheck = exports.FAMILY_RELATIONSHIP_KEYWORDS = exports.NON_PERSON_STRUCTURE_TERMS = exports.PROVIDER_CREDENTIALS = exports.PROVIDER_TITLE_PREFIXES = exports.NameDetectionUtils = exports.ValidationUtils = exports.InterPHIDisambiguator = exports.EnsembleVoter = exports.spanEnhancer = exports.SpanEnhancer = exports.weightedScorer = exports.WeightedPHIScorer = exports.confidenceCalibrator = void 0;
+exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.TRUST_BUNDLE_EXTENSION = exports.TRUST_BUNDLE_VERSION = exports.TrustBundleExporter = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.PolicyLoader = exports.TokenManager = exports.StatisticsTracker = exports.FilterHealthCheck = exports.FAMILY_RELATIONSHIP_KEYWORDS = exports.NON_PERSON_STRUCTURE_TERMS = exports.PROVIDER_CREDENTIALS = exports.PROVIDER_TITLE_PREFIXES = exports.NameDetectionUtils = exports.ValidationUtils = exports.InterPHIDisambiguator = exports.EnsembleVoter = exports.spanEnhancer = exports.SpanEnhancer = exports.weightedScorer = exports.WeightedPHIScorer = exports.confidenceCalibrator = void 0;
 // ============================================================================
 // MAIN ORCHESTRATOR - Start Here!
 // ============================================================================
@@ -205,6 +205,35 @@ var TrustBundleExporter_1 = require("./provenance/TrustBundleExporter");
 Object.defineProperty(exports, "TrustBundleExporter", { enumerable: true, get: function () { return TrustBundleExporter_1.TrustBundleExporter; } });
 Object.defineProperty(exports, "TRUST_BUNDLE_VERSION", { enumerable: true, get: function () { return TrustBundleExporter_1.TRUST_BUNDLE_VERSION; } });
 Object.defineProperty(exports, "TRUST_BUNDLE_EXTENSION", { enumerable: true, get: function () { return TrustBundleExporter_1.TRUST_BUNDLE_EXTENSION; } });
+// ============================================================================
+// IMAGE REDACTION (Step 17: Photo/Image PHI)
+// ============================================================================
+var images_1 = require("./core/images");
+Object.defineProperty(exports, "ImageRedactor", { enumerable: true, get: function () { return images_1.ImageRedactor; } });
+var images_2 = require("./core/images");
+Object.defineProperty(exports, "OCRService", { enumerable: true, get: function () { return images_2.OCRService; } });
+var images_3 = require("./core/images");
+Object.defineProperty(exports, "VisualDetector", { enumerable: true, get: function () { return images_3.VisualDetector; } });
+// Image Service Logging & Debugging
+var images_4 = require("./core/images");
+Object.defineProperty(exports, "ImageServiceLogger", { enumerable: true, get: function () { return images_4.ImageServiceLogger; } });
+Object.defineProperty(exports, "getLogger", { enumerable: true, get: function () { return images_4.getLogger; } });
+Object.defineProperty(exports, "withErrorBoundary", { enumerable: true, get: function () { return images_4.withErrorBoundary; } });
+Object.defineProperty(exports, "withRetry", { enumerable: true, get: function () { return images_4.withRetry; } });
+Object.defineProperty(exports, "withTimeout", { enumerable: true, get: function () { return images_4.withTimeout; } });
+Object.defineProperty(exports, "LogLevel", { enumerable: true, get: function () { return images_4.LogLevel; } });
+// ============================================================================
+// DICOM ANONYMIZATION (The "DICOM Firewall")
+// ============================================================================
+var dicom_1 = require("./core/dicom");
+Object.defineProperty(exports, "DicomStreamTransformer", { enumerable: true, get: function () { return dicom_1.DicomStreamTransformer; } });
+Object.defineProperty(exports, "HIPAA_DICOM_TAGS", { enumerable: true, get: function () { return dicom_1.HIPAA_DICOM_TAGS; } });
+Object.defineProperty(exports, "anonymizeDicomBuffer", { enumerable: true, get: function () { return dicom_1.anonymizeDicomBuffer; } });
+// ============================================================================
+// PYTHON INTELLIGENCE BRIDGE (The "Cortex Brain")
+// ============================================================================
+var CortexPythonBridge_1 = require("./core/cortex/python/CortexPythonBridge");
+Object.defineProperty(exports, "CortexPythonBridge", { enumerable: true, get: function () { return CortexPythonBridge_1.CortexPythonBridge; } });
 // ============================================================================
 // VERSION INFO
 // ============================================================================

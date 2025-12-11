@@ -21,6 +21,7 @@
  */
 import { RedactionExecutionReport } from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
+import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
 export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "npi" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "unique_id" | "zip" | "fax" | "age";
 export type ReplacementStyle = "brackets" | "asterisks" | "empty";
 export interface VulpesCelareConfig {
@@ -48,6 +49,23 @@ export declare class VulpesCelare {
     constructor(config?: VulpesCelareConfig);
     static redact(text: string): Promise<string>;
     static redactWithDetails(text: string, config?: VulpesCelareConfig): Promise<RedactionResult>;
+    /**
+     * Redact PHI from an image buffer.
+     * Detects faces, extracts text via OCR, and applies black-box redaction.
+     *
+     * @param imageBuffer - PNG/JPEG image buffer
+     * @param options - Optional configuration
+     * @returns Redacted image buffer and metadata
+     */
+    static redactImage(imageBuffer: Buffer, options?: {
+        policy?: Partial<VisualPolicy>;
+        knownIdentifiers?: string[];
+    }): Promise<ImageRedactionResult>;
+    /**
+     * Create an ImageRedactor instance with optional VulpesCelare text integration.
+     * The returned redactor can be reused for multiple images.
+     */
+    static createImageRedactor(policy?: Partial<VisualPolicy>): Promise<ImageRedactor>;
     process(text: string): Promise<RedactionResult>;
     processBatch(texts: string[]): Promise<RedactionResult[]>;
     getConfig(): VulpesCelareConfig;
@@ -60,5 +78,12 @@ export { StreamingRedactor, WebSocketRedactionHandler } from './StreamingRedacto
 export type { StreamingRedactorConfig, StreamingChunk } from './StreamingRedactor';
 export { PolicyCompiler, PolicyTemplates } from './PolicyDSL';
 export type { PolicyRule, PolicyDefinition, CompiledPolicy } from './PolicyDSL';
+export { ImageRedactor, ImageRedactionResult, RedactionRegion, VisualPolicy } from './core/images';
+export { OCRService, OCRResult } from './core/images';
+export { VisualDetector, VisualDetection } from './core/images';
+export { DicomStreamTransformer, HIPAA_DICOM_TAGS, anonymizeDicomBuffer } from './core/dicom';
+export type { DicomAnonymizationRule, DicomTransformerConfig } from './core/dicom';
+export { CortexPythonBridge } from './core/cortex/python/CortexPythonBridge';
+export type { CortexTask, CortexTaskRequest, CortexTaskResponse } from './core/cortex/python/CortexPythonBridge';
 export default VulpesCelare;
 //# sourceMappingURL=VulpesCelare.d.ts.map

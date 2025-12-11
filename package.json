@@ -73,6 +73,8 @@
     "cli-table3": "^0.6.5",
     "commander": "^14.0.2",
     "conf": "^15.0.2",
+    "dcmjs": "^0.45.0",
+    "dicom-parser": "^1.8.21",
     "double-metaphone": "^2.0.1",
     "execa": "^9.6.1",
     "fastest-levenshtein": "^1.0.16",
@@ -80,8 +82,10 @@
     "lru-cache": "^11.2.4",
     "marked": "^15.0.12",
     "marked-terminal": "^7.3.0",
+    "onnxruntime-node": "^1.23.2",
     "ora": "^9.0.0",
     "p-queue": "^9.0.1",
+    "sharp": "^0.34.5",
     "zod": "^4.1.13"
   }
 }

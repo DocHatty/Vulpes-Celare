@@ -137,6 +137,43 @@ async function analyzeNote(clinicalNote: string) {
 
 > More examples: [OpenAI](examples/integrations/LLM-INTEGRATIONS.md) • [Anthropic](examples/integrations/LLM-INTEGRATIONS.md) • [Streaming](examples/streaming/STREAMING-API.md) • [LangChain](examples/integrations/LLM-INTEGRATIONS.md)
 
+### Image Redaction (NEW)
+
+Detect and redact faces, OCR-extracted text, and visual PHI from images:
+
+```typescript
+import { VulpesCelare } from 'vulpes-celare';
+import * as fs from 'fs';
+
+// One-liner for images
+const imageBuffer = fs.readFileSync('patient-scan.png');
+const result = await VulpesCelare.redactImage(imageBuffer);
+fs.writeFileSync('safe-scan.png', result.buffer);
+
+console.log(`Redacted ${result.redactions.length} regions`);
+// Faces: auto-detected with UltraFace ONNX
+// Text: extracted with PaddleOCR, matched against PHI patterns
+```
+
+### DICOM Anonymization (NEW)
+
+Anonymize DICOM files with HIPAA-compliant tag removal and pseudonymization:
+
+```typescript
+import { DicomStreamTransformer, anonymizeDicomBuffer } from 'vulpes-celare';
+import * as fs from 'fs';
+
+// Quick buffer processing
+const dicom = fs.readFileSync('patient.dcm');
+const anonymized = await anonymizeDicomBuffer(dicom);
+fs.writeFileSync('anonymous.dcm', anonymized);
+
+// Streaming for large files
+fs.createReadStream('large-study.dcm')
+    .pipe(new DicomStreamTransformer())
+    .pipe(fs.createWriteStream('anonymous-study.dcm'));
+```
+
 ## ✨ Features
 
 ### HIPAA Safe Harbor Coverage
@@ -159,10 +196,10 @@ async function analyzeNote(clinicalNote: string) {
 | 14 | URLs | `URLFilter` | ✅ |
 | 15 | IP addresses | `IPAddressFilter` | ✅ |
 | 16 | Biometrics | `BiometricContextFilter` | ✅ |
-| 17 | Photos/images | — | ❌ Planned |
+| 17 | Photos/images | `ImageRedactor`, `OCRService`, `VisualDetector` | ✅ |
 | 18 | Other unique IDs | `UniqueIdentifierFilter`, `NPIFilter`, `PassportNumberFilter` | ✅ |
 
-**Coverage: 17/18 (94%)** — Photo/image identifier detection planned.
+**Coverage: 18/18 (100%)** — Full HIPAA Safe Harbor compliance.
 
 ### Key Capabilities
 
@@ -173,7 +210,8 @@ async function analyzeNote(clinicalNote: string) {
 - **Streaming API** - Real-time PHI protection for live dictation ([docs](examples/streaming/STREAMING-API.md))
 - **Policy DSL** - Declarative policies without code changes ([docs](examples/policy-dsl/POLICY-DSL.md))
 - **Cryptographic Provenance** - Tamper-evident audit logs with Merkle-linked chains ([docs](docs/TRUST-BUNDLE.md))
-- **Cortex Intelligence** - Self-learning test system that detects quality drops and recommends improvements ([docs](tests/master-suite/cortex/INTEGRATION-COMPLETE.md))
+- **Image & DICOM Redaction** - Face detection, OCR text extraction, DICOM metadata anonymization (NEW)
+- **Python Cortex Intelligence** - Offline analytics, threshold calibration, model fine-tuning (NEW)
 
 ## 🔗 Cryptographic Audit Trail (Industry-First)
 
@@ -284,7 +322,7 @@ The Cortex system continuously monitors Vulpes performance and proactively recom
 | **Sensitivity (99.6%)** | ⚠️ Synthetic Only | 7,000+ adversarial synthetic clinical documents |
 | **Specificity (96-100%)** | ⚠️ Synthetic Only | Same synthetic corpus |
 | **Processing Speed** | ✅ Verified | 2-3ms benchmarked on standard hardware |
-| **HIPAA Safe Harbor** | ✅ 17/18 | Photo/image identifiers pending |
+| **HIPAA Safe Harbor** | ✅ 18/18 | Full coverage including image/photo redaction |
 | **i2b2 2014 Benchmark** | ❌ Not Yet | Industry gold standard - data access pending |
 | **Real Clinical Notes** | ❌ Not Yet | Seeking validation partners |
 

@@ -1,110 +1,157 @@
 {
   "active": [
     {
-      "id": "HYP-1764931731445-0hgp14en9",
+      "id": "HYP-1765414629314-72rfu13nk",
       "pattern": "OCR_CONFUSION",
-      "affectedCount": 52,
+      "affectedCount": 13,
       "hypothesis": "Add character substitution patterns",
-      "confidence": 0.5668269230769232,
-      "reasoning": "Identified 52 failures matching OCR_CONFUSION pattern.",
+      "confidence": 0.5019230769230769,
+      "reasoning": "Identified 13 failures matching OCR_CONFUSION pattern.",
       "priority": "HIGH",
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "xxx-xx-6o75",
-          "type": "SSN",
-          "evidence": "5↔S confusion possible"
+          "value": "charles r. robinson",
+          "type": "NAME",
+          "evidence": "1↔l↔I confusion possible"
         },
         {
-          "value": "0/92 7/23",
+          "value": "2/1 1/92",
           "type": "DATE",
-          "evidence": "0↔O confusion possible; 2↔Z confusion possible"
+          "evidence": "1↔l↔I confusion possible; 2↔Z confusion possible"
         },
         {
-          "value": "8991 Eighth Pike",
-          "type": "ADDRESS",
-          "evidence": "1↔l↔I confusion possible; 8↔B confusion possible"
+          "value": "HX3644827",
+          "type": "DEA",
+          "evidence": "8↔B confusion possible; 2↔Z confusion possible"
         }
       ]
     },
     {
-      "id": "HYP-1764931731445-qqexd2z14",
+      "id": "HYP-1765414629314-oexfnrlsr",
       "pattern": "OCR_CONFUSION",
-      "affectedCount": 52,
+      "affectedCount": 13,
       "hypothesis": "Implement fuzzy matching",
-      "confidence": 0.5668269230769232,
-      "reasoning": "Identified 52 failures matching OCR_CONFUSION pattern.",
+      "confidence": 0.5019230769230769,
+      "reasoning": "Identified 13 failures matching OCR_CONFUSION pattern.",
       "priority": "HIGH",
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "xxx-xx-6o75",
-          "type": "SSN",
-          "evidence": "5↔S confusion possible"
+          "value": "charles r. robinson",
+          "type": "NAME",
+          "evidence": "1↔l↔I confusion possible"
         },
         {
-          "value": "0/92 7/23",
+          "value": "2/1 1/92",
           "type": "DATE",
-          "evidence": "0↔O confusion possible; 2↔Z confusion possible"
+          "evidence": "1↔l↔I confusion possible; 2↔Z confusion possible"
         },
         {
-          "value": "8991 Eighth Pike",
-          "type": "ADDRESS",
-          "evidence": "1↔l↔I confusion possible; 8↔B confusion possible"
+          "value": "HX3644827",
+          "type": "DEA",
+          "evidence": "8↔B confusion possible; 2↔Z confusion possible"
         }
       ]
     },
     {
-      "id": "HYP-1764931731445-scl6rvorf",
+      "id": "HYP-1765414629314-p3m3rwe75",
+      "pattern": "SPACING_ISSUES",
+      "affectedCount": 3,
+      "hypothesis": "Add specific pattern for: Special character \" \" appears frequently",
+      "confidence": 0.6,
+      "reasoning": "Detected recurring pattern in 3 failures: \"carLOS  C. wortingTon-smYTHe\"",
+      "priority": "MEDIUM",
+      "isNovel": true,
+      "samples": [
+        "carLOS  C. wortingTon-smYTHe"
+      ]
+    },
+    {
+      "id": "HYP-1765414629314-cugikzxbg",
+      "pattern": "SPACING_ISSUES",
+      "affectedCount": 1,
+      "hypothesis": "Normalize whitespace",
+      "confidence": 0.55,
+      "reasoning": "Identified 1 failures matching SPACING_ISSUES pattern.",
+      "priority": "LOW",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "carLOS  C. wortingTon-smYTHe",
+          "type": "NAME",
+          "evidence": "Unusual spacing in: \"carLOS  C. wortingTon-smYTHe\""
+        }
+      ]
+    },
+    {
+      "id": "HYP-1765414629314-dfynot9a3",
+      "pattern": "SPACING_ISSUES",
+      "affectedCount": 1,
+      "hypothesis": "Allow flexible spacing in patterns",
+      "confidence": 0.55,
+      "reasoning": "Identified 1 failures matching SPACING_ISSUES pattern.",
+      "priority": "LOW",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "carLOS  C. wortingTon-smYTHe",
+          "type": "NAME",
+          "evidence": "Unusual spacing in: \"carLOS  C. wortingTon-smYTHe\""
+        }
+      ]
+    },
+    {
+      "id": "HYP-1765414629313-jnv7z50da",
       "pattern": "CASE_VARIATION",
-      "affectedCount": 11,
+      "affectedCount": 5,
       "hypothesis": "Add case-insensitive matching",
-      "confidence": 0.6,
-      "reasoning": "Identified 11 failures matching CASE_VARIATION pattern.",
-      "priority": "MEDIUM",
+      "confidence": 0.5,
+      "reasoning": "Identified 5 failures matching CASE_VARIATION pattern.",
+      "priority": "LOW",
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "ISahelLA GonzaleZ",
+          "value": "Emily AgarwaI",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"ISahelLA GonzaleZ\""
+          "evidence": "Mixed case pattern: \"Emily AgarwaI\""
         },
         {
-          "value": "PaUl SHAH",
+          "value": "carLOS  C. wortingTon-smYTHe",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"PaUl SHAH\""
+          "evidence": "Mixed case pattern: \"carLOS  C. wortingTon-smYTHe\""
         },
         {
-          "value": "kTAYA MOORe",
+          "value": "DANIELA BuI",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"kTAYA MOORe\""
+          "evidence": "Mixed case pattern: \"DANIELA BuI\""
         }
       ]
     },
     {
-      "id": "HYP-1764931731445-ur2kxzgan",
+      "id": "HYP-1765414629313-v17c69gg2",
       "pattern": "CASE_VARIATION",
-      "affectedCount": 11,
+      "affectedCount": 5,
       "hypothesis": "Normalize before matching",
-      "confidence": 0.6,
-      "reasoning": "Identified 11 failures matching CASE_VARIATION pattern.",
-      "priority": "MEDIUM",
+      "confidence": 0.5,
+      "reasoning": "Identified 5 failures matching CASE_VARIATION pattern.",
+      "priority": "LOW",
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "ISahelLA GonzaleZ",
+          "value": "Emily AgarwaI",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"ISahelLA GonzaleZ\""
+          "evidence": "Mixed case pattern: \"Emily AgarwaI\""
         },
         {
-          "value": "PaUl SHAH",
+          "value": "carLOS  C. wortingTon-smYTHe",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"PaUl SHAH\""
+          "evidence": "Mixed case pattern: \"carLOS  C. wortingTon-smYTHe\""
         },
         {
-          "value": "kTAYA MOORe",
+          "value": "DANIELA BuI",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"kTAYA MOORe\""
+          "evidence": "Mixed case pattern: \"DANIELA BuI\""
         }
       ]
     }

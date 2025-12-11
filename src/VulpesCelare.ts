@@ -26,6 +26,7 @@ import {
 } from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
 import { RedactionContext } from "./context/RedactionContext";
+import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
 
 // ============================================================================
 // FILTER IMPORTS - Organized by Category
@@ -169,6 +170,56 @@ export class VulpesCelare {
     return new VulpesCelare(config).process(text);
   }
 
+  /**
+   * Redact PHI from an image buffer.
+   * Detects faces, extracts text via OCR, and applies black-box redaction.
+   * 
+   * @param imageBuffer - PNG/JPEG image buffer
+   * @param options - Optional configuration
+   * @returns Redacted image buffer and metadata
+   */
+  static async redactImage(
+    imageBuffer: Buffer,
+    options?: {
+      policy?: Partial<VisualPolicy>;
+      knownIdentifiers?: string[];
+    }
+  ): Promise<ImageRedactionResult> {
+    const redactor = new ImageRedactor(options?.policy);
+    await redactor.initialize();
+    return redactor.redact(imageBuffer, {
+      knownIdentifiers: options?.knownIdentifiers,
+    });
+  }
+
+  /**
+   * Create an ImageRedactor instance with optional VulpesCelare text integration.
+   * The returned redactor can be reused for multiple images.
+   */
+  static async createImageRedactor(
+    policy?: Partial<VisualPolicy>
+  ): Promise<ImageRedactor> {
+    const redactor = new ImageRedactor(policy);
+    await redactor.initialize();
+
+    // Integrate text redaction
+    redactor.setTextRedactor(async (text: string) => {
+      const result = await VulpesCelare.redactWithDetails(text);
+      const matches: string[] = [];
+      // Extract matched text from report
+      if (result.report) {
+        for (const fr of result.report.filterResults) {
+          if (fr.spansDetected > 0) {
+            matches.push(...Array(fr.spansDetected).fill(fr.filterType));
+          }
+        }
+      }
+      return { redacted: result.text, matches };
+    });
+
+    return redactor;
+  }
+
   async process(text: string): Promise<RedactionResult> {
     const startTime = Date.now();
     const context = new RedactionContext();
@@ -272,5 +323,18 @@ export type { StreamingRedactorConfig, StreamingChunk } from './StreamingRedacto
 // Export policy DSL
 export { PolicyCompiler, PolicyTemplates } from './PolicyDSL';
 export type { PolicyRule, PolicyDefinition, CompiledPolicy } from './PolicyDSL';
+
+// Export image redaction services (Step 17: Photo/Image PHI)
+export { ImageRedactor, ImageRedactionResult, RedactionRegion, VisualPolicy } from './core/images';
+export { OCRService, OCRResult } from './core/images';
+export { VisualDetector, VisualDetection } from './core/images';
+
+// Export DICOM services (The "DICOM Firewall")
+export { DicomStreamTransformer, HIPAA_DICOM_TAGS, anonymizeDicomBuffer } from './core/dicom';
+export type { DicomAnonymizationRule, DicomTransformerConfig } from './core/dicom';
+
+// Export Cortex Python Bridge (The "Brain")
+export { CortexPythonBridge } from './core/cortex/python/CortexPythonBridge';
+export type { CortexTask, CortexTaskRequest, CortexTaskResponse } from './core/cortex/python/CortexPythonBridge';
 
 export default VulpesCelare;

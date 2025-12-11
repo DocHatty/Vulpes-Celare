@@ -5478,118 +5478,1885 @@
           }
         ]
       }
+    },
+    {
+      "id": "RUN-1765411955475",
+      "timestamp": "2025-12-11T00:12:35.475Z",
+      "metrics": {
+        "confusionMatrix": {
+          "truePositives": 1653,
+          "falseNegatives": 42,
+          "trueNegatives": 296,
+          "falsePositives": 28,
+          "totalPHI": 1695,
+          "totalNonPHI": 324
+        },
+        "sensitivity": 97.5221,
+        "specificity": 91.358,
+        "precision": 98.3343,
+        "recall": 97.5221,
+        "f1Score": 97.9265,
+        "f2Score": 97.6835,
+        "mcc": 0.8738,
+        "integrityCheck": {
+          "expectedPHI": 1695,
+          "countedPHI": 1695,
+          "passed": true
+        },
+        "rawScore": 96.37,
+        "penalties": -198,
+        "finalScore": 0,
+        "grade": "F",
+        "gradeDescription": "CRITICAL FAILURE - Do not use",
+        "profile": "HIPAA_STRICT",
+        "byPHIType": {
+          "NAME": {
+            "tp": 129,
+            "fn": 21,
+            "total": 150
+          },
+          "SSN": {
+            "tp": 98,
+            "fn": 2,
+            "total": 100
+          },
+          "DATE": {
+            "tp": 190,
+            "fn": 10,
+            "total": 200
+          },
+          "MRN": {
+            "tp": 47,
+            "fn": 3,
+            "total": 50
+          },
+          "ACCOUNT_NUMBER": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "ADDRESS": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "ZIPCODE": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "PHONE": {
+            "tp": 300,
+            "fn": 0,
+            "total": 300
+          },
+          "FAX": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "EMAIL": {
+            "tp": 72,
+            "fn": 0,
+            "total": 72
+          },
+          "HEALTH_PLAN_ID": {
+            "tp": 62,
+            "fn": 0,
+            "total": 62
+          },
+          "CREDIT_CARD": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "IP": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "URL": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "DEVICE_ID": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "VIN": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "LICENSE_PLATE": {
+            "tp": 48,
+            "fn": 2,
+            "total": 50
+          },
+          "NPI": {
+            "tp": 200,
+            "fn": 0,
+            "total": 200
+          },
+          "DEA": {
+            "tp": 46,
+            "fn": 4,
+            "total": 50
+          },
+          "AGE_90_PLUS": {
+            "tp": 11,
+            "fn": 0,
+            "total": 11
+          }
+        },
+        "byErrorLevel": {
+          "medium": {
+            "tp": 724,
+            "fn": 21,
+            "tn": 141,
+            "fp": 9
+          },
+          "high": {
+            "tp": 364,
+            "fn": 10,
+            "tn": 60,
+            "fp": 11
+          },
+          "low": {
+            "tp": 397,
+            "fn": 9,
+            "tn": 56,
+            "fp": 7
+          },
+          "none": {
+            "tp": 135,
+            "fn": 1,
+            "tn": 27,
+            "fp": 1
+          },
+          "extreme": {
+            "tp": 33,
+            "fn": 1,
+            "tn": 12,
+            "fp": 0
+          }
+        },
+        "byTemplate": {
+          "History & Physical": {
+            "tp": 299,
+            "fn": 9,
+            "tn": 101,
+            "fp": 6
+          },
+          "Operative Report": {
+            "tp": 297,
+            "fn": 5,
+            "tn": 51,
+            "fp": 11
+          },
+          "Registration Form": {
+            "tp": 262,
+            "fn": 12,
+            "tn": 27,
+            "fp": 2
+          },
+          "Referral Letter": {
+            "tp": 262,
+            "fn": 8,
+            "tn": 46,
+            "fp": 8
+          },
+          "Pathology Report": {
+            "tp": 263,
+            "fn": 3,
+            "tn": 39,
+            "fp": 1
+          },
+          "Insurance EOB": {
+            "tp": 270,
+            "fn": 5,
+            "tn": 32,
+            "fp": 0
+          }
+        },
+        "testValidation": {
+          "totalExpectedNonPHI": 331,
+          "skippedNonPHI": 7,
+          "skippedPercentage": 2.1,
+          "skippedByType": {
+            "MEDICATION": {
+              "count": 7,
+              "examples": [
+                {
+                  "value": "Eszopiclone",
+                  "template": "Referral Letter"
+                },
+                {
+                  "value": "Minocycline",
+                  "template": "Referral Letter"
+                },
+                {
+                  "value": "Losartan",
+                  "template": "Referral Letter"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failures": [
+        {
+          "docId": 3,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "DANIEP HADDAD",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     DANIEP HADDAD Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 3,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "SSN",
+          "value": "XXX-XX2-624",
+          "source": "guarantor_ssn",
+          "context": "Parent SSN:                                 XXX-XX2-624 Phone:                               6514594995"
+        },
+        {
+          "docId": 4,
+          "templateName": "Referral Letter",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "AAPIYAH WH ITE",
+          "source": "patient",
+          "context": "73 Second Court, Boston, MA 74933  RE:   Patient: AAPIYAH WH ITE       DOB: 07//07 /1985       MRN: PAR3237771  De"
+        },
+        {
+          "docId": 5,
+          "templateName": "Pathology Report",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "6/1 1/23",
+          "source": "admit_date",
+          "context": "ived:           04/26/23 Date of Report:          6/1 1/23 Requesting Physician:    Rev. Charles Ibn Saud, R"
+        },
+        {
+          "docId": 6,
+          "templateName": "Insurance EOB",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "Wilfred Charles Sjzuki",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Wilfred Charles Sjzuki Member ID:               JWundefined196630178 Gro"
+        },
+        {
+          "docId": 7,
+          "templateName": "History & Physical",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "wi nASsar",
+          "source": "patient",
+          "context": "───────────────────────── Name:                   wi nASsar Date of Birth:          06-07-1g52 Medical Record"
+        },
+        {
+          "docId": 7,
+          "templateName": "History & Physical",
+          "errorLevel": "high",
+          "phiType": "MRN",
+          "value": "MR:N 8523337",
+          "source": "mrn",
+          "context": "irth:          06-07-1g52 Medical Record #:       MR:N 8523337 Social Security #:      42275188G Admission Date:"
+        },
+        {
+          "docId": 8,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "phiType": "DEA",
+          "value": "SV6451275",
+          "source": "surgeon_dea",
+          "context": "NPI: 3679764216                         DEA: SV6451275  First Assistant:        Sir Lisa Khoury Anesthes"
+        },
+        {
+          "docId": 9,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "LICENSE_PLATE",
+          "value": "NYFundefined60",
+          "source": "license_plate",
+          "context": "Silver License Plate:                       NYFundefined60 State:                               AK VIN (for"
+        },
+        {
+          "docId": 10,
+          "templateName": "Referral Letter",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "Minh P. Girard",
+          "source": "patient",
+          "context": "6 Front Commons, Dallas, MI 70313  RE:   Patient: Minh P. Girard       DOB: 11/7/1981       MRN: MED: 3Z9389  Dear"
+        },
+        {
+          "docId": 12,
+          "templateName": "Insurance EOB",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "ANDERSSON, FATIMA ELIZABETH",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             ANDERSSON, FATIMA ELIZABETH Member ID:               LWB532612353 Group Numbe"
+        },
+        {
+          "docId": 15,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "Leewis , Layla",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Leewis , Layla Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 16,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "and rea patrick harris",
+          "source": "patient",
+          "context": "herry Avenue, San Diego, MA 88311  RE:   Patient: and rea patrick harris       DOB: 5/9 /77       MRN: REC8803236  Dear Dr"
+        },
+        {
+          "docId": 16,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "2/1 0/23",
+          "source": "admit_date",
+          "context": "'s Hospital Department of Gastroenterology  Date: 2/1 0/23  Dr. Valentina Kowalski Specialty Associates 3006"
+        },
+        {
+          "docId": 17,
+          "templateName": "Pathology Report",
+          "errorLevel": "low",
+          "phiType": "DATE",
+          "value": "12--2!-ZO21",
+          "source": "surgery_date_1",
+          "context": "════════════════════════ Date of Collection:      12--2!-ZO21 Date Received:           12--2!-ZO21 Date of Repo"
+        },
+        {
+          "docId": 19,
+          "templateName": "History & Physical",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "Ivqn Johnson",
+          "source": "patient",
+          "context": "───────────────────────── Name:                   Ivqn Johnson Date of Birth:          110-27-1939 Medical Recor"
+        },
+        {
+          "docId": 20,
+          "templateName": "Operative Report",
+          "errorLevel": "high",
+          "phiType": "DATE",
+          "value": "/10/221",
+          "source": "surgery_date_1",
+          "context": "Birth:          07/18/91 Date of Surgery:        /10/221 Account Number:         ACCT: 44836264  ═════════"
+        },
+        {
+          "docId": 21,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "vALENTINA lYNN aL-fAESI",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     vALENTINA lYNN aL-fAESI Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 24,
+          "templateName": "Insurance EOB",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "GukiS(hmidt",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             GukiS(hmidt Member ID:               TVundefined933600583 Gro"
+        },
+        {
+          "docId": 25,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "MARTINA AMrIN",
+          "source": "patient",
+          "context": "───────────────────────── Name:                   MARTINA AMrIN Date of Birth:          12/1 3/64 Medical Record"
+        },
+        {
+          "docId": 25,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "12/1 3/64",
+          "source": "dob",
+          "context": "MARTINA AMrIN Date of Birth:          12/1 3/64 Medical Record #:       PAT: 202 4267 Social Secu"
+        },
+        {
+          "docId": 25,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "phiType": "MRN",
+          "value": "PAT: 202 4267",
+          "source": "mrn",
+          "context": "Birth:          12/1 3/64 Medical Record #:       PAT: 202 4267 Social Security #:      861-7 8-2706 Admission Da"
+        },
+        {
+          "docId": 26,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "phiType": "DEA",
+          "value": "ZJ4693718",
+          "source": "surgeon_dea",
+          "context": "NPI: 3345267357                         DEA: ZJ4693718  First Assistant:        Dame Algernon Weber Anes"
+        },
+        {
+          "docId": 27,
+          "templateName": "Registration Form",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "WILFRED JOHANSSN-SCHMIDT",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     WILFRED JOHANSSN-SCHMIDT Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 28,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "ARJUN WILSON",
+          "source": "patient",
+          "context": "6 Lee Place, Sacramento, KS 42309  RE:   Patient: ARJUN WILSON       DOB: 03/26/64       MRN: ID 2021-6246848  D"
+        },
+        {
+          "docId": 30,
+          "templateName": "Insurance EOB",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "SANTIAGO GARCIA-LOPEZ",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             SANTIAGO GARCIA-LOPEZ Member ID:               CYD589686581 Group Numbe"
+        },
+        {
+          "docId": 31,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "archibald mckenzie",
+          "source": "patient",
+          "context": "───────────────────────── Name:                   archibald mckenzie Date of Birth:          11977-05-15 Medical Recor"
+        },
+        {
+          "docId": 32,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "phiType": "DEA",
+          "value": "KM7537795",
+          "source": "surgeon_dea",
+          "context": "NPI: 6189063074                         DEA: KM7537795  First Assistant:        Dame Marcus Lefebvre Ane"
+        },
+        {
+          "docId": 33,
+          "templateName": "Registration Form",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "AHforD-CROss, REgiNALd",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     AHforD-CROss, REgiNALd Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 34,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "449//24",
+          "source": "admit_date",
+          "context": "Penn Medicine Department of Dermatology  Date: 449//24  Rev. Miguel Haddad Medical Group 6892 Meadow Run"
+        },
+        {
+          "docId": 35,
+          "templateName": "Pathology Report",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "07/2 6/49",
+          "source": "dob",
+          "context": "MED :2021-y197632 Date of Birth:           07/2 6/49 Age:                     76 years Sex:"
+        },
+        {
+          "docId": 37,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "11/0 9/23",
+          "source": "admit_date",
+          "context": "urity #:      XXX-XX-7685 Admission Date:         11/0 9/23 Attending Physician:    Prof. Ming Yang Primary C"
+        },
+        {
+          "docId": 39,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "TIO, IVAN",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     TIO, IVAN Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 39,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "SSN",
+          "value": "XXX-X -X6992",
+          "source": "patient_ssn",
+          "context": "07-14-1963 Social Security Number:              XXX-X -X6992 Age:                                 104 years  S"
+        },
+        {
+          "docId": 39,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "LICENSE_PLATE",
+          "value": "Nundefinedundefined-3827",
+          "source": "license_plate",
+          "context": "Silver License Plate:                       Nundefinedundefined-3827 State:                               MO VIN (for"
+        },
+        {
+          "docId": 40,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "OLGA NAS5AR",
+          "source": "patient",
+          "context": "untain Pike, Burlington, AZ 93858  RE:   Patient: OLGA NAS5AR       DOB: 1961- 05-26       MRN: PT2018-2928655"
+        },
+        {
+          "docId": 43,
+          "templateName": "History & Physical",
+          "errorLevel": "extreme",
+          "phiType": "DATE",
+          "value": "|1/324",
+          "source": "admit_date",
+          "context": "urity #:      ***-**-1972 Admission Date:         |1/324 Attending Physician:    Mrs. Aisha Lefebvre Prima"
+        },
+        {
+          "docId": 45,
+          "templateName": "Registration Form",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "minh gARVia-Lopez",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     minh gARVia-Lopez Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 45,
+          "templateName": "Registration Form",
+          "errorLevel": "high",
+          "phiType": "DATE",
+          "value": "061i/23",
+          "source": "admit_date",
+          "context": "orm ID: REG-1765411950963-6528 Registration Date: 061i/23  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        },
+        {
+          "docId": 46,
+          "templateName": "Referral Letter",
+          "errorLevel": "high",
+          "phiType": "MRN",
+          "value": "me: 5009657",
+          "source": "mrn",
+          "context": "ARVIA,SARA GRACE       DOB: 09-14-1934       MRN: me: 5009657  Dear Dr. Natasha Al-Farsi,  Thank you for referr"
+        },
+        {
+          "docId": 48,
+          "templateName": "Insurance EOB",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "Li, Richard Vniceent",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             Li, Richard Vniceent Member ID:               YBE595105256 Group Numbe"
+        },
+        {
+          "docId": 50,
+          "templateName": "Operative Report",
+          "errorLevel": "none",
+          "phiType": "DEA",
+          "value": "VP7735105",
+          "source": "surgeon_dea",
+          "context": "NPI: 8589201826                         DEA: VP7735105  First Assistant:        Prof. Ronald Mehta Anest"
+        }
+      ],
+      "overRedactions": [
+        {
+          "docId": 1,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "CKD Stage 4",
+          "source": "diagnosis3"
+        },
+        {
+          "docId": 2,
+          "templateName": "Operative Report",
+          "errorLevel": "high",
+          "type": "HOSPITAL",
+          "value": "NYU Langone Health",
+          "source": "hospital"
+        },
+        {
+          "docId": 2,
+          "templateName": "Operative Report",
+          "errorLevel": "high",
+          "type": "PROCEDURE",
+          "value": "Abdominal Ultrasound",
+          "source": "procedure1"
+        },
+        {
+          "docId": 2,
+          "templateName": "Operative Report",
+          "errorLevel": "high",
+          "type": "AGE_UNDER_90",
+          "value": "72",
+          "source": "age"
+        },
+        {
+          "docId": 4,
+          "templateName": "Referral Letter",
+          "errorLevel": "high",
+          "type": "HOSPITAL",
+          "value": "NewYork-Presbyterian",
+          "source": "hospital"
+        },
+        {
+          "docId": 4,
+          "templateName": "Referral Letter",
+          "errorLevel": "high",
+          "type": "DIAGNOSIS",
+          "value": "Acute Asthma Exacerbation",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 4,
+          "templateName": "Referral Letter",
+          "errorLevel": "high",
+          "type": "DIAGNOSIS",
+          "value": "Pulmonary Hypertension",
+          "source": "diagnosis3"
+        },
+        {
+          "docId": 7,
+          "templateName": "History & Physical",
+          "errorLevel": "high",
+          "type": "PROCEDURE",
+          "value": "Mechanical Ventilation",
+          "source": "procedure1"
+        },
+        {
+          "docId": 10,
+          "templateName": "Referral Letter",
+          "errorLevel": "low",
+          "type": "DIAGNOSIS",
+          "value": "Lewy Body Dementia",
+          "source": "diagnosis1"
+        },
+        {
+          "docId": 14,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "HOSPITAL",
+          "value": "NewYork-Presbyterian",
+          "source": "hospital"
+        },
+        {
+          "docId": 14,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "AGE_UNDER_90",
+          "value": "49",
+          "source": "age"
+        },
+        {
+          "docId": 15,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "type": "HOSPITAL",
+          "value": "MD Anderson Cancer Center",
+          "source": "hospital"
+        },
+        {
+          "docId": 19,
+          "templateName": "History & Physical",
+          "errorLevel": "high",
+          "type": "HOSPITAL",
+          "value": "NewYork-Presbyterian",
+          "source": "hospital"
+        },
+        {
+          "docId": 19,
+          "templateName": "History & Physical",
+          "errorLevel": "high",
+          "type": "PROCEDURE",
+          "value": "PICC Line Placement",
+          "source": "procedure1"
+        },
+        {
+          "docId": 20,
+          "templateName": "Operative Report",
+          "errorLevel": "high",
+          "type": "AGE_UNDER_90",
+          "value": "57",
+          "source": "age"
+        },
+        {
+          "docId": 22,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "HOSPITAL",
+          "value": "MD Anderson Cancer Center",
+          "source": "hospital"
+        },
+        {
+          "docId": 23,
+          "templateName": "Pathology Report",
+          "errorLevel": "none",
+          "type": "HOSPITAL",
+          "value": "Dana-Farber Cancer Institute",
+          "source": "hospital"
+        },
+        {
+          "docId": 25,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "VRE Infection",
+          "source": "diagnosis3"
+        },
+        {
+          "docId": 26,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "PROCEDURE",
+          "value": "Abdominal Ultrasound",
+          "source": "procedure1"
+        },
+        {
+          "docId": 26,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "AGE_UNDER_90",
+          "value": "88",
+          "source": "age"
+        },
+        {
+          "docId": 28,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "Gastroesophageal Reflux Disease",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 28,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "COVID-19",
+          "source": "diagnosis3"
+        },
+        {
+          "docId": 32,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "AGE_UNDER_90",
+          "value": "35",
+          "source": "age"
+        },
+        {
+          "docId": 34,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "Obsessive-Compulsive Disorder",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 37,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "type": "PROCEDURE",
+          "value": "Trigger Finger Release",
+          "source": "procedure1"
+        },
+        {
+          "docId": 38,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "type": "AGE_UNDER_90",
+          "value": "68",
+          "source": "age"
+        },
+        {
+          "docId": 44,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "AGE_UNDER_90",
+          "value": "56",
+          "source": "age"
+        },
+        {
+          "docId": 45,
+          "templateName": "Registration Form",
+          "errorLevel": "high",
+          "type": "HOSPITAL",
+          "value": "MD Anderson Cancer Center",
+          "source": "hospital"
+        }
+      ],
+      "failureCount": 42,
+      "documentCount": 50,
+      "smartGrade": {
+        "baseScore": 96.1,
+        "penalties": {
+          "byCriticality": {
+            "ssn": {
+              "count": 2,
+              "penalty": 3.41
+            },
+            "name": {
+              "count": 21,
+              "penalty": 7.81
+            },
+            "dob": {
+              "count": 2,
+              "penalty": 1.71
+            },
+            "address": {
+              "count": 0,
+              "penalty": 0
+            },
+            "phone": {
+              "count": 0,
+              "penalty": 0
+            },
+            "other": {
+              "count": 17,
+              "penalty": 1.73
+            }
+          },
+          "byErrorLevel": {
+            "medium": {
+              "count": 21,
+              "penalty": 0
+            },
+            "high": {
+              "count": 10,
+              "penalty": 0
+            },
+            "low": {
+              "count": 9,
+              "penalty": 0
+            },
+            "extreme": {
+              "count": 1,
+              "penalty": 0
+            },
+            "none": {
+              "count": 1,
+              "penalty": 0
+            }
+          },
+          "total": 14.66,
+          "mode": "DIMINISHING"
+        },
+        "bonuses": {
+          "items": [
+            {
+              "reason": "Sensitivity above 95%",
+              "points": 5
+            },
+            {
+              "reason": "Improved by 1.50%",
+              "points": 5
+            },
+            {
+              "reason": "No sensitivity regression",
+              "points": 3
+            }
+          ],
+          "total": 13
+        },
+        "finalScore": 94.44,
+        "grade": "A",
+        "gradeDescription": "Very Good - Meets clinical standards",
+        "breakdown": "Base Score (weighted metrics):  96.10\nPenalties (DIMINISHING):      -14.66\n  - ssn: 2 missed\n  - name: 21 missed\n  - dob: 2 missed\n  - other: 17 missed\nBonuses:                       +13.00\n  + Sensitivity above 95%: +5\n  + Improved by 1.50%: +5\n  + No sensitivity regression: +3\n────────────────────────────────────\nFinal Score:                    94.44"
+      },
+      "comparisonToPrevious": {
+        "sensitivityDelta": 1.5009999999999906,
+        "specificityDelta": -2.8911999999999978,
+        "f1Delta": 0.47990000000000066,
+        "failureCountDelta": -26,
+        "trend": "IMPROVING",
+        "improved": [
+          {
+            "type": "NAME",
+            "delta": 0.026666666666666616
+          },
+          {
+            "type": "SSN",
+            "delta": 0.030000000000000027
+          },
+          {
+            "type": "DATE",
+            "delta": 0.029999999999999916
+          },
+          {
+            "type": "ADDRESS",
+            "delta": 0.12
+          },
+          {
+            "type": "VIN",
+            "delta": 0.020000000000000018
+          },
+          {
+            "type": "DEA",
+            "delta": 0.06000000000000005
+          },
+          {
+            "type": "AGE_90_PLUS",
+            "delta": 0.2857142857142857
+          }
+        ],
+        "regressed": [
+          {
+            "type": "MRN",
+            "delta": -0.020000000000000018
+          },
+          {
+            "type": "LICENSE_PLATE",
+            "delta": -0.020000000000000018
+          }
+        ]
+      }
+    },
+    {
+      "id": "RUN-1765414629310",
+      "timestamp": "2025-12-11T00:57:09.310Z",
+      "metrics": {
+        "confusionMatrix": {
+          "truePositives": 1668,
+          "falseNegatives": 29,
+          "trueNegatives": 298,
+          "falsePositives": 29,
+          "totalPHI": 1697,
+          "totalNonPHI": 327
+        },
+        "sensitivity": 98.2911,
+        "specificity": 91.1315,
+        "precision": 98.2911,
+        "recall": 98.2911,
+        "f1Score": 98.2911,
+        "f2Score": 98.2911,
+        "mcc": 0.8942,
+        "integrityCheck": {
+          "expectedPHI": 1697,
+          "countedPHI": 1697,
+          "passed": true
+        },
+        "rawScore": 96.86,
+        "penalties": -140,
+        "finalScore": 0,
+        "grade": "F",
+        "gradeDescription": "CRITICAL FAILURE - Do not use",
+        "profile": "HIPAA_STRICT",
+        "byPHIType": {
+          "NAME": {
+            "tp": 135,
+            "fn": 15,
+            "total": 150
+          },
+          "SSN": {
+            "tp": 99,
+            "fn": 1,
+            "total": 100
+          },
+          "DATE": {
+            "tp": 194,
+            "fn": 6,
+            "total": 200
+          },
+          "MRN": {
+            "tp": 49,
+            "fn": 1,
+            "total": 50
+          },
+          "ACCOUNT_NUMBER": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "ADDRESS": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "ZIPCODE": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "PHONE": {
+            "tp": 300,
+            "fn": 0,
+            "total": 300
+          },
+          "FAX": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "EMAIL": {
+            "tp": 70,
+            "fn": 0,
+            "total": 70
+          },
+          "HEALTH_PLAN_ID": {
+            "tp": 68,
+            "fn": 0,
+            "total": 68
+          },
+          "CREDIT_CARD": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "IP": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "URL": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "DEVICE_ID": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "VIN": {
+            "tp": 50,
+            "fn": 0,
+            "total": 50
+          },
+          "LICENSE_PLATE": {
+            "tp": 48,
+            "fn": 2,
+            "total": 50
+          },
+          "NPI": {
+            "tp": 200,
+            "fn": 0,
+            "total": 200
+          },
+          "DEA": {
+            "tp": 47,
+            "fn": 3,
+            "total": 50
+          },
+          "AGE_90_PLUS": {
+            "tp": 8,
+            "fn": 1,
+            "total": 9
+          }
+        },
+        "byErrorLevel": {
+          "low": {
+            "tp": 568,
+            "fn": 8,
+            "tn": 118,
+            "fp": 13
+          },
+          "medium": {
+            "tp": 697,
+            "fn": 18,
+            "tn": 124,
+            "fp": 8
+          },
+          "high": {
+            "tp": 268,
+            "fn": 3,
+            "tn": 34,
+            "fp": 5
+          },
+          "none": {
+            "tp": 101,
+            "fn": 0,
+            "tn": 19,
+            "fp": 2
+          },
+          "extreme": {
+            "tp": 34,
+            "fn": 0,
+            "tn": 3,
+            "fp": 1
+          }
+        },
+        "byTemplate": {
+          "History & Physical": {
+            "tp": 299,
+            "fn": 6,
+            "tn": 101,
+            "fp": 6
+          },
+          "Operative Report": {
+            "tp": 301,
+            "fn": 5,
+            "tn": 53,
+            "fp": 8
+          },
+          "Registration Form": {
+            "tp": 264,
+            "fn": 8,
+            "tn": 29,
+            "fp": 1
+          },
+          "Referral Letter": {
+            "tp": 266,
+            "fn": 4,
+            "tn": 49,
+            "fp": 9
+          },
+          "Pathology Report": {
+            "tp": 271,
+            "fn": 1,
+            "tn": 37,
+            "fp": 2
+          },
+          "Insurance EOB": {
+            "tp": 267,
+            "fn": 5,
+            "tn": 29,
+            "fp": 3
+          }
+        },
+        "testValidation": {
+          "totalExpectedNonPHI": 332,
+          "skippedNonPHI": 5,
+          "skippedPercentage": 1.5,
+          "skippedByType": {
+            "MEDICATION": {
+              "count": 5,
+              "examples": [
+                {
+                  "value": "Dabigatran",
+                  "template": "Referral Letter"
+                },
+                {
+                  "value": "Furosemide",
+                  "template": "Referral Letter"
+                },
+                {
+                  "value": "Ibuprofen",
+                  "template": "Referral Letter"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failures": [
+        {
+          "docId": 1,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "Emily AgarwaI",
+          "source": "patient",
+          "context": "───────────────────────── Name:                   Emily AgarwaI Date of Birth:          1974- 09-05 Medical Recor"
+        },
+        {
+          "docId": 3,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "LICENSE_PLATE",
+          "value": "undefinedBR-3996",
+          "source": "license_plate",
+          "context": "White License Plate:                       undefinedBR-3996 State:                               PA VIN (for"
+        },
+        {
+          "docId": 4,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "Keisha J. Fischer",
+          "source": "patient",
+          "context": "Second Circle, Trenton, MS 81279  RE:   Patient: Keisha J. Fischer       DOB: 725/1965       MRN: MED: 2723850  Dear"
+        },
+        {
+          "docId": 6,
+          "templateName": "Insurance EOB",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "carLOS  C. wortingTon-smYTHe",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             carLOS  C. wortingTon-smYTHe Member ID:               undefinedKW853403247 Gro"
+        },
+        {
+          "docId": 13,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "phiType": "AGE_90_PLUS",
+          "value": "99",
+          "source": "age",
+          "context": "───────────────────────── Age:                    99 years old Sex:                    Male Race:"
+        },
+        {
+          "docId": 14,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "Jumg Ma lik",
+          "source": "patient",
+          "context": "════════════════════════  Patient Name:           Jumg Ma lik Medical Record #:       8063090 Date of Birth:"
+        },
+        {
+          "docId": 15,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "DANIELA BuI",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     DANIELA BuI Preferred Name:                      Daniela Date"
+        },
+        {
+          "docId": 18,
+          "templateName": "Insurance EOB",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "charles r. robinson",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             charles r. robinson Member ID:               BWV986277892 Group Numbe"
+        },
+        {
+          "docId": 19,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "Kaplan, Destiny L.",
+          "source": "patient",
+          "context": "───────────────────────── Name:                   Kaplan, Destiny L. Date of Birth:          88/6/68 Medical Record #:"
+        },
+        {
+          "docId": 20,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "2/1 1/92",
+          "source": "dob",
+          "context": "cord #:       ACC:8456808 Date of Birth:          2/1 1/92 Date of Surgery:        02/112/0 Account Number:"
+        },
+        {
+          "docId": 20,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "phiType": "DEA",
+          "value": "HX3644827",
+          "source": "surgeon_dea",
+          "context": "NPI: 4391403543                         DEA: HX3644827  First Assistant:        Mr. Irina Sato Anesthesi"
+        },
+        {
+          "docId": 21,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "Rodriguez , Dmitri",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Rodriguez , Dmitri Preferred Name:                      Dmitri Date"
+        },
+        {
+          "docId": 21,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "SSN",
+          "value": "xxx-xx-is75",
+          "source": "guarantor_ssn",
+          "context": "Guardian SSN:                                 xxx-xx-is75 Phone:                               422-59 2-738"
+        },
+        {
+          "docId": 21,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "09/4p/24",
+          "source": "admit_date",
+          "context": "orm ID: REG-1765414607903-9756 Registration Date: 09/4p/24  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        },
+        {
+          "docId": 22,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "PZULA NAIR",
+          "source": "patient",
+          "context": "nut Heights, Fort Worth, RI 94278  RE:   Patient: PZULA NAIR       DOB: 1/10/51       MRN: REC-2021-7218553  D"
+        },
+        {
+          "docId": 23,
+          "templateName": "Pathology Report",
+          "errorLevel": "low",
+          "phiType": "DATE",
+          "value": "9/2 3/23",
+          "source": "admit_date",
+          "context": "ed:           2022-05-24 Date of Report:          9/2 3/23 Requesting Physician:    Mr. Paul Nguyen, MSN"
+        },
+        {
+          "docId": 24,
+          "templateName": "Insurance EOB",
+          "errorLevel": "high",
+          "phiType": "DATE",
+          "value": "02-10 --1945",
+          "source": "dob",
+          "context": "er:            GRP-21458 Date of Birth:           02-10 --1945 Member Address:          6949 Fifth Court, Floor"
+        },
+        {
+          "docId": 26,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "phiType": "DEA",
+          "value": "ZT4755855",
+          "source": "surgeon_dea",
+          "context": "NPI: 1334054187                         DEA: ZT4755855  First Assistant:        Mrs. Ronald McKenzie Ane"
+        },
+        {
+          "docId": 30,
+          "templateName": "Insurance EOB",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "n0or jack50n",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             n0or jack50n Member ID:               NaN605431167 Group Numbe"
+        },
+        {
+          "docId": 31,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "phiType": "DATE",
+          "value": "02/1 2/20",
+          "source": "surgery_date_1",
+          "context": "───────────────────────────── 1. Port Placement - 02/1 2/20 2. Cholecystectomy - 01/18/18  MEDICATIONS ──────"
+        },
+        {
+          "docId": 32,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "phiType": "DEA",
+          "value": "EU5441968",
+          "source": "surgeon_dea",
+          "context": "NPI: 9489925564                         DEA: EU5441968  First Assistant:        Dr. Sanjay Yoon Anesthes"
+        },
+        {
+          "docId": 33,
+          "templateName": "Registration Form",
+          "errorLevel": "high",
+          "phiType": "NAME",
+          "value": "jOOHNs9N , tAtiANa",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     jOOHNs9N , tAtiANa Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 36,
+          "templateName": "Insurance EOB",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "sANJAUjOSEPH wEBER",
+          "source": "patient",
+          "context": "━━━━━━━━━━━━━━━━━━━━━━━  Member Name:             sANJAUjOSEPH wEBER Member ID:               undefinedXD919413811 Gro"
+        },
+        {
+          "docId": 39,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "NAME",
+          "value": "Johansson , Katya",
+          "source": "patient",
+          "context": "━━━━━━━━━━━  Legal Name (Last, First Middle):     Johansson , Katya Preferred Name:                      N/A Date of"
+        },
+        {
+          "docId": 39,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "phiType": "LICENSE_PLATE",
+          "value": "undefinedGKY26",
+          "source": "license_plate",
+          "context": "White License Plate:                       undefinedGKY26 State:                               ME VIN (for"
+        },
+        {
+          "docId": 40,
+          "templateName": "Referral Letter",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "Hortense Jones",
+          "source": "patient",
+          "context": "fferson Square, Hoboken, WA 48212  RE:   Patient: Hortense Jones       DOB: 04/15/95       MRN: PAT-2021-670624  D"
+        },
+        {
+          "docId": 43,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "phiType": "DATE",
+          "value": "/11/23",
+          "source": "admit_date",
+          "context": "curity #:      06-5G-7099 Admission Date:         /11/23 Attending Physician:    Prof. Olga Martinez Prima"
+        },
+        {
+          "docId": 46,
+          "templateName": "Referral Letter",
+          "errorLevel": "low",
+          "phiType": "NAME",
+          "value": "SARA RICHARD SINGH",
+          "source": "patient",
+          "context": "5897 Lee Square, Camden, HI 20643  RE:   Patient: SARA RICHARD SINGH       DOB: 04/21/1998       MRN: MED: 2023-545672"
+        },
+        {
+          "docId": 49,
+          "templateName": "History & Physical",
+          "errorLevel": "medium",
+          "phiType": "MRN",
+          "value": "5534 qG0",
+          "source": "mrn",
+          "context": "irth:          03-06-1954 Medical Record #:       5534 qG0 Social Security #:      ***-**-3788 Admission Dat"
+        }
+      ],
+      "overRedactions": [
+        {
+          "docId": 2,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "HOSPITAL",
+          "value": "NYU Langone Health",
+          "source": "hospital"
+        },
+        {
+          "docId": 2,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "AGE_UNDER_90",
+          "value": "61",
+          "source": "age"
+        },
+        {
+          "docId": 4,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "Cervical Radiculopathy",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 8,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "AGE_UNDER_90",
+          "value": "40",
+          "source": "age"
+        },
+        {
+          "docId": 12,
+          "templateName": "Insurance EOB",
+          "errorLevel": "high",
+          "type": "DIAGNOSIS",
+          "value": "Rectal Cancer",
+          "source": "diagnosis1"
+        },
+        {
+          "docId": 13,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "type": "PROCEDURE",
+          "value": "CT Scan of Chest",
+          "source": "procedure1"
+        },
+        {
+          "docId": 14,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "type": "AGE_UNDER_90",
+          "value": "40",
+          "source": "age"
+        },
+        {
+          "docId": 19,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "type": "DIAGNOSIS",
+          "value": "Pituitary Adenoma",
+          "source": "diagnosis1"
+        },
+        {
+          "docId": 22,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "HOSPITAL",
+          "value": "UT Southwestern",
+          "source": "hospital"
+        },
+        {
+          "docId": 22,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "Ascites",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 25,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "type": "DIAGNOSIS",
+          "value": "End Stage Renal Disease",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 26,
+          "templateName": "Operative Report",
+          "errorLevel": "low",
+          "type": "AGE_UNDER_90",
+          "value": "68",
+          "source": "age"
+        },
+        {
+          "docId": 28,
+          "templateName": "Referral Letter",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "Colorectal Cancer",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 31,
+          "templateName": "History & Physical",
+          "errorLevel": "low",
+          "type": "PROCEDURE",
+          "value": "Port Placement",
+          "source": "procedure1"
+        },
+        {
+          "docId": 34,
+          "templateName": "Referral Letter",
+          "errorLevel": "high",
+          "type": "HOSPITAL",
+          "value": "UT Southwestern",
+          "source": "hospital"
+        },
+        {
+          "docId": 34,
+          "templateName": "Referral Letter",
+          "errorLevel": "high",
+          "type": "DIAGNOSIS",
+          "value": "Pleural Effusion",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 36,
+          "templateName": "Insurance EOB",
+          "errorLevel": "medium",
+          "type": "DIAGNOSIS",
+          "value": "CKD Stage 4",
+          "source": "diagnosis1"
+        },
+        {
+          "docId": 37,
+          "templateName": "History & Physical",
+          "errorLevel": "none",
+          "type": "MEDICATION",
+          "value": "Amoxicillin-Clavulanate",
+          "source": "medication2"
+        },
+        {
+          "docId": 37,
+          "templateName": "History & Physical",
+          "errorLevel": "none",
+          "type": "MEDICATION",
+          "value": "Isosorbide Dinitrate",
+          "source": "medication3"
+        },
+        {
+          "docId": 38,
+          "templateName": "Operative Report",
+          "errorLevel": "medium",
+          "type": "AGE_UNDER_90",
+          "value": "83",
+          "source": "age"
+        },
+        {
+          "docId": 39,
+          "templateName": "Registration Form",
+          "errorLevel": "medium",
+          "type": "HOSPITAL",
+          "value": "UT Southwestern",
+          "source": "hospital"
+        },
+        {
+          "docId": 41,
+          "templateName": "Pathology Report",
+          "errorLevel": "low",
+          "type": "HOSPITAL",
+          "value": "NewYork-Presbyterian",
+          "source": "hospital"
+        },
+        {
+          "docId": 44,
+          "templateName": "Operative Report",
+          "errorLevel": "high",
+          "type": "HOSPITAL",
+          "value": "HCA Healthcare",
+          "source": "hospital"
+        },
+        {
+          "docId": 44,
+          "templateName": "Operative Report",
+          "errorLevel": "high",
+          "type": "AGE_UNDER_90",
+          "value": "58",
+          "source": "age"
+        },
+        {
+          "docId": 46,
+          "templateName": "Referral Letter",
+          "errorLevel": "low",
+          "type": "DIAGNOSIS",
+          "value": "Central Sleep Apnea",
+          "source": "diagnosis2"
+        },
+        {
+          "docId": 46,
+          "templateName": "Referral Letter",
+          "errorLevel": "low",
+          "type": "DIAGNOSIS",
+          "value": "Renal Cell Carcinoma",
+          "source": "diagnosis3"
+        },
+        {
+          "docId": 46,
+          "templateName": "Referral Letter",
+          "errorLevel": "low",
+          "type": "MEDICATION",
+          "value": "Trimethoprim-Sulfamethoxazole",
+          "source": "medication1"
+        },
+        {
+          "docId": 47,
+          "templateName": "Pathology Report",
+          "errorLevel": "low",
+          "type": "DIAGNOSIS",
+          "value": "Glioblastoma",
+          "source": "diagnosis1"
+        },
+        {
+          "docId": 48,
+          "templateName": "Insurance EOB",
+          "errorLevel": "extreme",
+          "type": "HOSPITAL",
+          "value": "NewYork-Presbyterian",
+          "source": "hospital"
+        }
+      ],
+      "failureCount": 29,
+      "documentCount": 50,
+      "smartGrade": {
+        "baseScore": 96.5,
+        "penalties": {
+          "byCriticality": {
+            "ssn": {
+              "count": 1,
+              "penalty": 2
+            },
+            "name": {
+              "count": 15,
+              "penalty": 6.41
+            },
+            "dob": {
+              "count": 2,
+              "penalty": 1.71
+            },
+            "address": {
+              "count": 0,
+              "penalty": 0
+            },
+            "phone": {
+              "count": 0,
+              "penalty": 0
+            },
+            "other": {
+              "count": 11,
+              "penalty": 1.33
+            }
+          },
+          "byErrorLevel": {
+            "low": {
+              "count": 8,
+              "penalty": 0
+            },
+            "medium": {
+              "count": 18,
+              "penalty": 0
+            },
+            "high": {
+              "count": 3,
+              "penalty": 0
+            }
+          },
+          "total": 11.45,
+          "mode": "DIMINISHING"
+        },
+        "bonuses": {
+          "items": [
+            {
+              "reason": "Sensitivity above 95%",
+              "points": 5
+            },
+            {
+              "reason": "Improved by 0.77%",
+              "points": 5
+            },
+            {
+              "reason": "No sensitivity regression",
+              "points": 3
+            }
+          ],
+          "total": 13
+        },
+        "finalScore": 98.05,
+        "grade": "A+",
+        "gradeDescription": "Excellent - Exceeds clinical standards",
+        "breakdown": "Base Score (weighted metrics):  96.50\nPenalties (DIMINISHING):      -11.45\n  - ssn: 1 missed\n  - name: 15 missed\n  - dob: 2 missed\n  - other: 11 missed\nBonuses:                       +13.00\n  + Sensitivity above 95%: +5\n  + Improved by 0.77%: +5\n  + No sensitivity regression: +3\n────────────────────────────────────\nFinal Score:                    98.05"
+      },
+      "comparisonToPrevious": {
+        "sensitivityDelta": 0.7690000000000055,
+        "specificityDelta": -0.22650000000000148,
+        "f1Delta": 0.3645999999999958,
+        "failureCountDelta": -13,
+        "trend": "IMPROVING",
+        "improved": [
+          {
+            "type": "NAME",
+            "delta": 0.040000000000000036
+          },
+          {
+            "type": "DATE",
+            "delta": 0.020000000000000018
+          },
+          {
+            "type": "MRN",
+            "delta": 0.040000000000000036
+          },
+          {
+            "type": "DEA",
+            "delta": 0.019999999999999907
+          }
+        ],
+        "regressed": [
+          {
+            "type": "AGE_90_PLUS",
+            "delta": -0.11111111111111116
+          }
+        ]
+      }
     }
   ],
   "summary": {
-    "totalRuns": 5,
+    "totalRuns": 7,
     "firstRun": "2025-12-05T04:58:30.704Z",
-    "latestRun": "2025-12-05T10:48:51.441Z",
-    "currentSensitivity": 96.0211,
-    "currentSpecificity": 94.2492,
-    "currentF1": 97.4466,
+    "latestRun": "2025-12-11T00:57:09.310Z",
+    "currentSensitivity": 98.2911,
+    "currentSpecificity": 91.1315,
+    "currentF1": 98.2911,
     "currentGrade": "F",
-    "totalSensitivityGain": -0.07880000000000109,
-    "totalSpecificityGain": 2.2620000000000005,
-    "recentTrend": "DECLINING",
-    "bestSensitivity": 97.4087,
+    "totalSensitivityGain": 2.191199999999995,
+    "totalSpecificityGain": -0.8556999999999988,
+    "recentTrend": "STRONGLY_IMPROVING",
+    "bestSensitivity": 98.2911,
     "bestSpecificity": 94.2492,
-    "bestF1": 98.1602,
+    "bestF1": 98.2911,
     "persistentIssues": [
       {
         "type": "NAME",
         "source": "patient",
-        "occurrences": 61,
-        "persistenceRate": 12.2
+        "occurrences": 74,
+        "persistenceRate": 14.8
       },
       {
         "type": "DEA",
         "source": "surgeon_dea",
-        "occurrences": 30,
-        "persistenceRate": 6
-      },
-      {
-        "type": "NAME",
-        "source": "emergency_contact_1",
-        "occurrences": 29,
-        "persistenceRate": 5.8
-      },
-      {
-        "type": "DATE",
-        "source": "dob",
-        "occurrences": 29,
-        "persistenceRate": 5.8
-      },
-      {
-        "type": "ADDRESS",
-        "source": "street_address",
-        "occurrences": 24,
-        "persistenceRate": 4.8
+        "occurrences": 27,
+        "persistenceRate": 5.4
       },
       {
         "type": "DATE",
         "source": "admit_date",
-        "occurrences": 24,
-        "persistenceRate": 4.8
+        "occurrences": 23,
+        "persistenceRate": 4.6
+      },
+      {
+        "type": "DATE",
+        "source": "dob",
+        "occurrences": 20,
+        "persistenceRate": 4
+      },
+      {
+        "type": "NAME",
+        "source": "emergency_contact_1",
+        "occurrences": 18,
+        "persistenceRate": 3.6
+      },
+      {
+        "type": "ADDRESS",
+        "source": "street_address",
+        "occurrences": 15,
+        "persistenceRate": 3
       },
       {
         "type": "DATE",
         "source": "surgery_date_1",
-        "occurrences": 17,
-        "persistenceRate": 3.4
+        "occurrences": 14,
+        "persistenceRate": 2.8
       },
       {
         "type": "NAME",
         "source": "emergency_contact_2",
-        "occurrences": 16,
-        "persistenceRate": 3.2
+        "occurrences": 11,
+        "persistenceRate": 2.2
       },
       {
         "type": "MRN",
         "source": "mrn",
-        "occurrences": 10,
-        "persistenceRate": 2
+        "occurrences": 9,
+        "persistenceRate": 1.8
       },
       {
         "type": "LICENSE_PLATE",
         "source": "license_plate",
-        "occurrences": 9,
-        "persistenceRate": 1.8
+        "occurrences": 8,
+        "persistenceRate": 1.6
       },
       {
         "type": "AGE_90_PLUS",
         "source": "age",
-        "occurrences": 9,
-        "persistenceRate": 1.8
-      },
-      {
-        "type": "SSN",
-        "source": "patient_ssn",
         "occurrences": 7,
         "persistenceRate": 1.4
       },
       {
-        "type": "PHONE",
-        "source": "phone",
-        "occurrences": 4,
-        "persistenceRate": 0.8
-      },
-      {
-        "type": "VIN",
-        "source": "vin",
+        "type": "SSN",
+        "source": "patient_ssn",
         "occurrences": 4,
         "persistenceRate": 0.8
       },
       {
         "type": "SSN",
         "source": "guarantor_ssn",
-        "occurrences": 3,
-        "persistenceRate": 0.6
-      },
-      {
-        "type": "DATE",
-        "source": "surgery_date_2",
-        "occurrences": 3,
-        "persistenceRate": 0.6
+        "occurrences": 4,
+        "persistenceRate": 0.8
       },
       {
         "type": "PHONE",

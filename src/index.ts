@@ -238,6 +238,72 @@ export {
 } from "./provenance/TrustBundleExporter";
 
 // ============================================================================
+// IMAGE REDACTION (Step 17: Photo/Image PHI)
+// ============================================================================
+
+export {
+  ImageRedactor,
+  ImageRedactionResult,
+  RedactionRegion,
+  VisualPolicy,
+} from './core/images';
+
+export {
+  OCRService,
+  OCRResult,
+  TextBox,
+  OCRServiceConfig,
+} from './core/images';
+
+export {
+  VisualDetector,
+  VisualDetection,
+  VisualBox,
+  VisualDetectorConfig,
+} from './core/images';
+
+// Image Service Logging & Debugging
+export {
+  ImageServiceLogger,
+  getLogger,
+  withErrorBoundary,
+  withRetry,
+  withTimeout,
+  LogLevel,
+  LogEntry,
+  ServiceHealth,
+  OperationMetrics,
+} from './core/images';
+
+// ============================================================================
+// DICOM ANONYMIZATION (The "DICOM Firewall")
+// ============================================================================
+
+export {
+  DicomStreamTransformer,
+  HIPAA_DICOM_TAGS,
+  anonymizeDicomBuffer,
+} from './core/dicom';
+
+export type {
+  DicomAnonymizationRule,
+  DicomTransformerConfig,
+} from './core/dicom';
+
+// ============================================================================
+// PYTHON INTELLIGENCE BRIDGE (The "Cortex Brain")
+// ============================================================================
+
+export { CortexPythonBridge } from './core/cortex/python/CortexPythonBridge';
+
+export type {
+  CortexTask,
+  CortexTaskRequest,
+  CortexTaskResponse,
+  CortexBridgeConfig,
+} from './core/cortex/python/CortexPythonBridge';
+
+// ============================================================================
 // VERSION INFO
 // ============================================================================
 
