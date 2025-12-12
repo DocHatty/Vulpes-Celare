@@ -1,121 +1,190 @@
 {
   "active": [
     {
-      "id": "HYP-1765507733996-qnt7j1vq9",
+      "id": "HYP-1765507867370-emwnq5hql",
       "pattern": "OCR_CONFUSION",
-      "affectedCount": 16,
+      "affectedCount": 26,
       "hypothesis": "Add character substitution patterns",
-      "confidence": 0.5468749999999999,
-      "reasoning": "Identified 16 failures matching OCR_CONFUSION pattern.",
+      "confidence": 0.5567307692307691,
+      "reasoning": "Identified 26 failures matching OCR_CONFUSION pattern.",
       "priority": "HIGH",
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "HJ7351832",
+          "value": "VC5360733",
           "type": "DEA",
-          "evidence": "1↔l↔I confusion possible; 5↔S confusion possible; 8↔B confusion possible; 2↔Z confusion possible"
+          "evidence": "0↔O confusion possible; 5↔S confusion possible"
         },
         {
-          "value": "KM7153722",
-          "type": "DEA",
-          "evidence": "1↔l↔I confusion possible; 5↔S confusion possible; 2↔Z confusion possible"
+          "value": "887 3Hill C0ut",
+          "type": "ADDRESS",
+          "evidence": "0↔O confusion possible; 1↔l↔I confusion possible; 8↔B confusion possible"
         },
         {
-          "value": "09/2 5/23",
-          "type": "DATE",
-          "evidence": "0↔O confusion possible; 5↔S confusion possible; 2↔Z confusion possible"
+          "value": "aNDREA fIZTGERALD",
+          "type": "NAME",
+          "evidence": "1↔l↔I confusion possible; 2↔Z confusion possible"
         }
       ]
     },
     {
-      "id": "HYP-1765507733996-lja6e1981",
+      "id": "HYP-1765507867370-jqvfon0bn",
       "pattern": "OCR_CONFUSION",
-      "affectedCount": 16,
+      "affectedCount": 26,
       "hypothesis": "Implement fuzzy matching",
-      "confidence": 0.5468749999999999,
-      "reasoning": "Identified 16 failures matching OCR_CONFUSION pattern.",
+      "confidence": 0.5567307692307691,
+      "reasoning": "Identified 26 failures matching OCR_CONFUSION pattern.",
       "priority": "HIGH",
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "HJ7351832",
+          "value": "VC5360733",
           "type": "DEA",
-          "evidence": "1↔l↔I confusion possible; 5↔S confusion possible; 8↔B confusion possible; 2↔Z confusion possible"
+          "evidence": "0↔O confusion possible; 5↔S confusion possible"
         },
         {
-          "value": "KM7153722",
-          "type": "DEA",
-          "evidence": "1↔l↔I confusion possible; 5↔S confusion possible; 2↔Z confusion possible"
+          "value": "887 3Hill C0ut",
+          "type": "ADDRESS",
+          "evidence": "0↔O confusion possible; 1↔l↔I confusion possible; 8↔B confusion possible"
         },
         {
-          "value": "09/2 5/23",
+          "value": "aNDREA fIZTGERALD",
+          "type": "NAME",
+          "evidence": "1↔l↔I confusion possible; 2↔Z confusion possible"
+        }
+      ]
+    },
+    {
+      "id": "HYP-1765507867371-qssh7pwzj",
+      "pattern": "FORMAT_VARIATION",
+      "affectedCount": 1,
+      "hypothesis": "Add format patterns",
+      "confidence": 0.4,
+      "reasoning": "Identified 1 failures matching FORMAT_VARIATION pattern.",
+      "priority": "HIGH",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "Keiko P. De laa Cruz",
+          "type": "NAME",
+          "evidence": "Multi-part name: \"Keiko P. De laa Cruz\""
+        }
+      ]
+    },
+    {
+      "id": "HYP-1765507867371-p3wz4jhzo",
+      "pattern": "FORMAT_VARIATION",
+      "affectedCount": 1,
+      "hypothesis": "Use more flexible regex",
+      "confidence": 0.4,
+      "reasoning": "Identified 1 failures matching FORMAT_VARIATION pattern.",
+      "priority": "HIGH",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "Keiko P. De laa Cruz",
+          "type": "NAME",
+          "evidence": "Multi-part name: \"Keiko P. De laa Cruz\""
+        }
+      ]
+    },
+    {
+      "id": "HYP-1765507867371-9lndhlxff",
+      "pattern": "SPACING_ISSUES",
+      "affectedCount": 4,
+      "hypothesis": "Add specific pattern for: Special character \" \" appears frequently",
+      "confidence": 0.6,
+      "reasoning": "Detected recurring pattern in 4 failures: \"wALMER  jAMAL\"",
+      "priority": "MEDIUM",
+      "isNovel": true,
+      "samples": [
+        "wALMER  jAMAL",
+        "1/2  0/95"
+      ]
+    },
+    {
+      "id": "HYP-1765507867371-hy930sfx6",
+      "pattern": "SPACING_ISSUES",
+      "affectedCount": 4,
+      "hypothesis": "Add specific pattern for: Special character \"/\" appears frequently",
+      "confidence": 0.6,
+      "reasoning": "Detected recurring pattern in 4 failures: \"1/2  0/95\"",
+      "priority": "MEDIUM",
+      "isNovel": true,
+      "samples": [
+        "1/2  0/95",
+        "9/1/62o23"
+      ]
+    },
+    {
+      "id": "HYP-1765507867371-maasdytfs",
+      "pattern": "FORMAT_VARIATION",
+      "affectedCount": 4,
+      "hypothesis": "Add specific pattern for: Special character \" \" appears frequently",
+      "confidence": 0.6,
+      "reasoning": "Detected recurring pattern in 4 failures: \"Keiko P. De laa Cruz\"",
+      "priority": "MEDIUM",
+      "isNovel": true,
+      "samples": [
+        "Keiko P. De laa Cruz"
+      ]
+    },
+    {
+      "id": "HYP-1765507867371-ydsbxxblx",
+      "pattern": "SPACING_ISSUES",
+      "affectedCount": 3,
+      "hypothesis": "Normalize whitespace",
+      "confidence": 0.55,
+      "reasoning": "Identified 3 failures matching SPACING_ISSUES pattern.",
+      "priority": "LOW",
+      "previouslySuccessful": false,
+      "samples": [
+        {
+          "value": "wALMER  jAMAL",
+          "type": "NAME",
+          "evidence": "Unusual spacing in: \"wALMER  jAMAL\""
+        },
+        {
+          "value": "1/2  0/95",
           "type": "DATE",
-          "evidence": "0↔O confusion possible; 5↔S confusion possible; 2↔Z confusion possible"
+          "evidence": "Unusual spacing in: \"1/2  0/95\""
+        },
+        {
+          "value": "9/1/62o23",
+          "type": "DATE",
+          "evidence": "Date with spaces: \"9/1/62o23\""
         }
       ]
     },
     {
-      "id": "HYP-1765507733996-quc9jijnf",
-      "pattern": "TRUNCATION",
-      "affectedCount": 1,
-      "hypothesis": "Detect partial matches",
-      "confidence": 0.44999999999999996,
-      "reasoning": "Identified 1 failures matching TRUNCATION pattern.",
-      "priority": "HIGH",
+      "id": "HYP-1765507867371-mddu4pobx",
+      "pattern": "SPACING_ISSUES",
+      "affectedCount": 3,
+      "hypothesis": "Allow flexible spacing in patterns",
+      "confidence": 0.55,
+      "reasoning": "Identified 3 failures matching SPACING_ISSUES pattern.",
+      "priority": "LOW",
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "***-**-590",
-          "type": "SSN",
-          "evidence": "SSN not 9 digits: \"***-**-590\""
-        }
-      ]
-    },
-    {
-      "id": "HYP-1765507733996-p5hxxp6d8",
-      "pattern": "TRUNCATION",
-      "affectedCount": 1,
-      "hypothesis": "Use prefix/suffix matching",
-      "confidence": 0.44999999999999996,
-      "reasoning": "Identified 1 failures matching TRUNCATION pattern.",
-      "priority": "HIGH",
-      "previouslySuccessful": false,
-      "samples": [
+          "value": "wALMER  jAMAL",
+          "type": "NAME",
+          "evidence": "Unusual spacing in: \"wALMER  jAMAL\""
+        },
         {
-          "value": "***-**-590",
-          "type": "SSN",
-          "evidence": "SSN not 9 digits: \"***-**-590\""
+          "value": "1/2  0/95",
+          "type": "DATE",
+          "evidence": "Unusual spacing in: \"1/2  0/95\""
+        },
+        {
+          "value": "9/1/62o23",
+          "type": "DATE",
+          "evidence": "Date with spaces: \"9/1/62o23\""
         }
       ]
     },
     {
-      "id": "HYP-1765507733996-yg4e56f3s",
-      "pattern": "TRUNCATION",
-      "affectedCount": 5,
-      "hypothesis": "Add specific pattern for: Special character \"*\" appears frequently",
-      "confidence": 0.6,
-      "reasoning": "Detected recurring pattern in 5 failures: \"***-**-590\"",
-      "priority": "MEDIUM",
-      "isNovel": true,
-      "samples": [
-        "***-**-590"
-      ]
-    },
-    {
-      "id": "HYP-1765507733996-y7990n98s",
-      "pattern": "TRUNCATION",
-      "affectedCount": 2,
-      "hypothesis": "Add specific pattern for: Special character \"-\" appears frequently",
-      "confidence": 0.6,
-      "reasoning": "Detected recurring pattern in 2 failures: \"***-**-590\"",
-      "priority": "MEDIUM",
-      "isNovel": true,
-      "samples": [
-        "***-**-590"
-      ]
-    },
-    {
-      "id": "HYP-1765507733995-1gq8btphk",
+      "id": "HYP-1765507867371-c7azngjhs",
       "pattern": "CASE_VARIATION",
       "affectedCount": 4,
       "hypothesis": "Add case-insensitive matching",
@@ -125,24 +194,24 @@
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "RicardoLouise Brown",
+          "value": "aNDREA fIZTGERALD",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"RicardoLouise Brown\""
+          "evidence": "Mixed case pattern: \"aNDREA fIZTGERALD\""
         },
         {
-          "value": "Jackson, mOar",
+          "value": "wALMER  jAMAL",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"Jackson, mOar\""
+          "evidence": "Mixed case pattern: \"wALMER  jAMAL\""
         },
         {
-          "value": "Noo rRose Cho",
+          "value": "an6HONY bEnJaMIn FiScHER",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"Noo rRose Cho\""
+          "evidence": "Mixed case pattern: \"an6HONY bEnJaMIn FiScHER\""
         }
       ]
     },
     {
-      "id": "HYP-1765507733996-29pd3vyrs",
+      "id": "HYP-1765507867371-z5ojo4kv4",
       "pattern": "CASE_VARIATION",
       "affectedCount": 4,
       "hypothesis": "Normalize before matching",
@@ -152,19 +221,19 @@
       "previouslySuccessful": false,
       "samples": [
         {
-          "value": "RicardoLouise Brown",
+          "value": "aNDREA fIZTGERALD",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"RicardoLouise Brown\""
+          "evidence": "Mixed case pattern: \"aNDREA fIZTGERALD\""
         },
         {
-          "value": "Jackson, mOar",
+          "value": "wALMER  jAMAL",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"Jackson, mOar\""
+          "evidence": "Mixed case pattern: \"wALMER  jAMAL\""
         },
         {
-          "value": "Noo rRose Cho",
+          "value": "an6HONY bEnJaMIn FiScHER",
           "type": "NAME",
-          "evidence": "Mixed case pattern: \"Noo rRose Cho\""
+          "evidence": "Mixed case pattern: \"an6HONY bEnJaMIn FiScHER\""
         }
       ]
     }

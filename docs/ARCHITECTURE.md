@@ -4,6 +4,15 @@
 
 Vulpes Celare uses a **parallel filter architecture** where 28 specialized filters process clinical text simultaneously. Each filter is independently testable, inspectable, and optimized for specific PHI types.
 
+### Native Rust Ferrari Core
+
+In addition to the TypeScript/Node.js text pipeline described here, Vulpes Celare ships a Rust native addon (`src/rust/`) for compute‑heavy vision tasks:
+
+- PaddleOCR ONNX inference (text detection + recognition)
+- UltraFace ONNX inference (face detection)
+
+The JS layer orchestrates policies, streaming, and trust bundles; the Rust core accelerates image workloads via NAPI.
+
 ## Processing Pipeline
 
 ```
@@ -392,9 +401,21 @@ const engine = new VulpesCelare({ policy: compiled });
 
 - **Runtime:** Node.js 16+
 - **Memory:** ~50MB baseline, +10MB per 1,000 cached entries
-- **CPU:** Single-threaded, optimized for modern V8
+- **CPU:** Single-threaded text pipeline, optimized for modern V8
 - **Storage:** No persistent storage required (unless using audit logs)
 - **Network:** None (completely offline)
+
+### ONNX Runtime Requirements (Vision)
+
+The Rust vision core uses the `ort` crate and requires ONNX Runtime **1.22.x**. Windows releases bundle a compatible CPU DLL at `native/onnxruntime.dll`.
+
+To use an alternate runtime (CUDA/DirectML), set one of these before importing Vulpes:
+
+```bash
+set VULPES_ORT_PATH=C:\path\to\onnxruntime.dll
+# or
+set ORT_DYLIB_PATH=C:\path\to\onnxruntime.dll
+```
 
 ## Integration Patterns
 
