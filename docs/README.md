@@ -9,7 +9,7 @@
 | [ROADMAP.md](ROADMAP.md) | Implementation roadmap and feature status |
 | [provenance-spec.md](provenance-spec.md) | Cryptographic provenance layer specification |
 
-For the Rust Ferrari Core (OCR + face detection) and ONNX Runtime configuration, see the main `README.md` Native Rust Core section.
+For the Rust native core (OCR + face detection) and ONNX Runtime configuration, see the main `README.md` Native Rust Core section.
 
 ## Compliance
 

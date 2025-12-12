@@ -115,7 +115,7 @@ const clean = await anonymizeDicomBuffer(dicomData);
 
 - **Context-Aware** - Distinguishes "Dr. Wilson" (person) from "Wilson's disease" (condition)
 - **OCR Resilient** - Catches PHI through scanner corruption (`0↔O`, `1↔l`)
-- **Rust Ferrari Core** - High‑performance OCR + face detection in Rust via NAPI
+- **Rust Native Core** - High‑performance OCR + face detection in Rust via NAPI
 - **Image & DICOM** - Face detection, OCR text extraction, metadata anonymization
 - **Streaming** - Real-time redaction for live dictation
 - **Policy DSL** - Declarative policies without code changes

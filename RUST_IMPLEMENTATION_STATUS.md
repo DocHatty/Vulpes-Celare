@@ -1,4 +1,4 @@
-# Vulpes Celare - Rust "Ferrari" Engine Implementation Status
+# Vulpes Celare - Rust Engine Implementation Status
 
 **Last Updated:** 2025-12-11  
 **Status:** 🔴 BLOCKED - DLL Conflict
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-We are building a high-performance Rust core ("Ferrari Engine") for Vulpes Celare using NAPI-RS to replace slow JavaScript-based ONNX inference. The OCR engine is **fully implemented** in Rust but we hit a **critical runtime DLL conflict** that blocks integration testing.
+We are building a high-performance Rust core for Vulpes Celare using NAPI-RS to replace slow JavaScript-based ONNX inference. The OCR engine is **fully implemented** in Rust but we hit a **critical runtime DLL conflict** that blocks integration testing.
 
 ---
 
@@ -91,7 +91,7 @@ thread '<unnamed>' panicked at 'ort 2.0.0-rc.10 is not compatible with the ONNX 
 
 ## The Solution (NOT YET IMPLEMENTED)
 
-### "Pure Ferrari" Strategy
+### Pure Rust Strategy
 
 **Eliminate `onnxruntime-node` entirely.** Move ALL ONNX inference to Rust.
 

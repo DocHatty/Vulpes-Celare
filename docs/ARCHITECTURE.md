@@ -4,7 +4,7 @@
 
 Vulpes Celare uses a **parallel filter architecture** where 28 specialized filters process clinical text simultaneously. Each filter is independently testable, inspectable, and optimized for specific PHI types.
 
-### Native Rust Ferrari Core
+### Native Rust Core
 
 In addition to the TypeScript/Node.js text pipeline described here, Vulpes Celare ships a Rust native addon (`src/rust/`) for compute‑heavy vision tasks:
 
