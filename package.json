@@ -82,7 +82,6 @@
     "lru-cache": "^11.2.4",
     "marked": "^15.0.12",
     "marked-terminal": "^7.3.0",
-    "onnxruntime-node": "^1.23.2",
     "ora": "^9.0.0",
     "p-queue": "^9.0.1",
     "sharp": "^0.34.5",

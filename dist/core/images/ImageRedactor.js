@@ -4,7 +4,7 @@
  *
  * This is the orchestrator for image-based PHI redaction. It coordinates:
  * - OCR text extraction (via OCRService)
- * - Visual PHI detection (via VisualDetector)
+ * - Visual PHI detection (via Rust UltraFace)
  * - Text-based PHI matching (via VulpesCelare core)
  * - Pixel-level redaction (via Sharp)
  *
@@ -15,22 +15,59 @@
  *
  * @module core/images/ImageRedactor
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImageRedactor = void 0;
 const sharp_1 = __importDefault(require("sharp"));
+const path = __importStar(require("path"));
 const OCRService_1 = require("./OCRService");
-const VisualDetector_1 = require("./VisualDetector");
+const VulpesNative_1 = require("../../VulpesNative");
 const logger_1 = require("./logger");
+const DEFAULT_FACE_MODEL_PATH = path.join(__dirname, "../../../models/vision/ultraface.onnx");
 const DEFAULT_POLICY = {
     redactFaces: true,
     faceConfidenceThreshold: 0.7,
+    faceModelPath: DEFAULT_FACE_MODEL_PATH,
+    faceNmsThreshold: 0.3,
     redactTextPHI: true,
     textConfidenceThreshold: 0.5,
     enableMultiModalVerification: true,
-    redactionStyle: 'BLACK_BOX',
+    redactionStyle: "BLACK_BOX",
     redactionPadding: 5,
 };
 /**
@@ -62,10 +99,9 @@ class ImageRedactor {
         this.ocrService = new OCRService_1.OCRService({
             confidenceThreshold: this.policy.textConfidenceThreshold,
         });
-        this.visualDetector = new VisualDetector_1.VisualDetector({
-            confidenceThreshold: this.policy.faceConfidenceThreshold,
+        this.logger.debug("ImageRedactor", "constructor", "Created with policy", {
+            policy: this.policy,
         });
-        this.logger.debug('ImageRedactor', 'constructor', 'Created with policy', { policy: this.policy });
     }
     /**
      * Initialize all sub-services
@@ -76,27 +112,25 @@ class ImageRedactor {
         // Prevent race conditions
         if (this.initializing) {
             while (this.initializing) {
-                await new Promise(resolve => setTimeout(resolve, 50));
+                await new Promise((resolve) => setTimeout(resolve, 50));
             }
             if (this.initError)
                 throw this.initError;
             return;
         }
         this.initializing = true;
-        const complete = this.logger.startOperation('ImageRedactor', 'initialize');
+        const complete = this.logger.startOperation("ImageRedactor", "initialize");
         try {
-            await Promise.all([
-                this.ocrService.initialize(),
-                this.visualDetector.initialize(),
-            ]);
+            await this.ocrService.initialize();
             this.initialized = true;
             complete(true);
-            this.logger.info('ImageRedactor', 'initialize', 'Initialized successfully');
+            this.logger.info("ImageRedactor", "initialize", "Initialized successfully");
         }
         catch (error) {
-            this.initError = error instanceof Error ? error : new Error(String(error));
+            this.initError =
+                error instanceof Error ? error : new Error(String(error));
             complete(false, this.initError.message);
-            this.logger.error('ImageRedactor', 'initialize', 'Initialization failed', this.initError);
+            this.logger.error("ImageRedactor", "initialize", "Initialization failed", this.initError);
             throw this.initError;
         }
         finally {
@@ -126,13 +160,20 @@ class ImageRedactor {
         const metadata = await (0, sharp_1.default)(imageBuffer).metadata();
         const width = metadata.width || 0;
         const height = metadata.height || 0;
+        const faceModelPath = policy.faceModelPath ?? DEFAULT_FACE_MODEL_PATH;
+        const faceNmsThreshold = policy.faceNmsThreshold ?? 0.3;
         // Run detection in parallel
         const [ocrResults, visualDetections] = await Promise.all([
             policy.redactTextPHI
                 ? this.ocrService.extractText(imageBuffer, width, height)
                 : Promise.resolve([]),
             policy.redactFaces
-                ? this.visualDetector.detect(imageBuffer, width, height)
+                ? Promise.resolve()
+                    .then(() => VulpesNative_1.VulpesNative.detectFaces(imageBuffer, faceModelPath, policy.faceConfidenceThreshold, faceNmsThreshold))
+                    .catch((err) => {
+                    this.logger.error("ImageRedactor", "redact", "Rust face detection failed", err);
+                    return [];
+                })
                 : Promise.resolve([]),
         ]);
         // Build redaction regions
@@ -141,10 +182,10 @@ class ImageRedactor {
         const extractedText = [];
         // Process visual detections (faces, etc.)
         for (const detection of visualDetections) {
-            if (detection.type === 'FACE' && policy.redactFaces) {
+            if (detection.type === "FACE" && policy.redactFaces) {
                 redactions.push({
                     box: detection.box,
-                    reason: 'FACE',
+                    reason: "FACE",
                     confidence: detection.confidence,
                     autoRedacted: detection.confidence >= policy.faceConfidenceThreshold,
                 });
@@ -158,7 +199,7 @@ class ImageRedactor {
             if (isPHI.match) {
                 const region = {
                     box: ocrResult.box,
-                    reason: 'TEXT_PHI',
+                    reason: "TEXT_PHI",
                     matchedContent: ocrResult.text,
                     confidence: Math.min(ocrResult.confidence, isPHI.confidence),
                     autoRedacted: isPHI.confidence >= 0.8,
@@ -203,7 +244,7 @@ class ImageRedactor {
                 }
             }
             catch (error) {
-                console.warn('[ImageRedactor] Text redactor error:', error);
+                console.warn("[ImageRedactor] Text redactor error:", error);
             }
         }
         // Basic heuristics for common PHI patterns
@@ -232,21 +273,25 @@ class ImageRedactor {
         const width = metadata.width || 0;
         const height = metadata.height || 0;
         // Create overlay SVG for black boxes
-        if (policy.redactionStyle === 'BLACK_BOX') {
-            const rects = redactions.map(r => {
+        if (policy.redactionStyle === "BLACK_BOX") {
+            const rects = redactions
+                .map((r) => {
                 const pad = policy.redactionPadding;
                 const x = Math.max(0, r.box.x - pad);
                 const y = Math.max(0, r.box.y - pad);
                 const w = Math.min(width - x, r.box.width + pad * 2);
                 const h = Math.min(height - y, r.box.height + pad * 2);
                 return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="black"/>`;
-            }).join('');
+            })
+                .join("");
             const svg = `<svg width="${width}" height="${height}">${rects}</svg>`;
-            image = image.composite([{
+            image = image.composite([
+                {
                     input: Buffer.from(svg),
                     top: 0,
                     left: 0,
-                }]);
+                },
+            ]);
         }
         // BLUR and PIXELATE would require different approaches
         // (extracting regions, blurring, compositing back)
@@ -262,10 +307,7 @@ class ImageRedactor {
      * Release resources
      */
     async dispose() {
-        await Promise.all([
-            this.ocrService.dispose(),
-            this.visualDetector.dispose(),
-        ]);
+        await this.ocrService.dispose();
         this.initialized = false;
     }
 }

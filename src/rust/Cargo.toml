@@ -1,0 +1,48 @@
+[package]
+name = "vulpes-core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# NAPI-RS: The Bridge
+napi = { version = "2.16", default-features = false, features = ["napi4", "async", "tokio_rt"] }
+napi-derive = "2.16"
+
+# Deep Learning Inference
+ort = { version = "=2.0.0-rc.10", features = ["load-dynamic", "ndarray"] }
+
+# Image Processing
+image = "0.25"
+imageproc = "0.25"
+
+# Logic Engine Support
+tokenizers = { version = "0.19", default-features = false, features = ["onig"] }
+once_cell = "1.19"
+
+# Numerical Computing
+ndarray = "0.16"
+
+# Parallelism
+rayon = "1.10"
+
+# Logging & Diagnostics
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+tokio = { version = "1", features = ["full"] }
+
+[profile.dev]
+incremental = false
+
+[profile.release]
+incremental = false
+
+[build-dependencies]
+napi-build = "2.1.3"

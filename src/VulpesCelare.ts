@@ -26,7 +26,11 @@ import {
 } from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
 import { RedactionContext } from "./context/RedactionContext";
-import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
+import {
+  ImageRedactor,
+  ImageRedactionResult,
+  VisualPolicy,
+} from "./core/images";
 
 // ============================================================================
 // FILTER IMPORTS - Organized by Category
@@ -173,7 +177,7 @@ export class VulpesCelare {
   /**
    * Redact PHI from an image buffer.
    * Detects faces, extracts text via OCR, and applies black-box redaction.
-   * 
+   *
    * @param imageBuffer - PNG/JPEG image buffer
    * @param options - Optional configuration
    * @returns Redacted image buffer and metadata
@@ -183,7 +187,7 @@ export class VulpesCelare {
     options?: {
       policy?: Partial<VisualPolicy>;
       knownIdentifiers?: string[];
-    }
+    },
   ): Promise<ImageRedactionResult> {
     const redactor = new ImageRedactor(options?.policy);
     await redactor.initialize();
@@ -197,7 +201,7 @@ export class VulpesCelare {
    * The returned redactor can be reused for multiple images.
    */
   static async createImageRedactor(
-    policy?: Partial<VisualPolicy>
+    policy?: Partial<VisualPolicy>,
   ): Promise<ImageRedactor> {
     const redactor = new ImageRedactor(policy);
     await redactor.initialize();
@@ -317,24 +321,46 @@ export class VulpesCelare {
 }
 
 // Export streaming redactor
-export { StreamingRedactor, WebSocketRedactionHandler } from './StreamingRedactor';
-export type { StreamingRedactorConfig, StreamingChunk } from './StreamingRedactor';
+export {
+  StreamingRedactor,
+  WebSocketRedactionHandler,
+} from "./StreamingRedactor";
+export type {
+  StreamingRedactorConfig,
+  StreamingChunk,
+} from "./StreamingRedactor";
 
 // Export policy DSL
-export { PolicyCompiler, PolicyTemplates } from './PolicyDSL';
-export type { PolicyRule, PolicyDefinition, CompiledPolicy } from './PolicyDSL';
+export { PolicyCompiler, PolicyTemplates } from "./PolicyDSL";
+export type { PolicyRule, PolicyDefinition, CompiledPolicy } from "./PolicyDSL";
 
 // Export image redaction services (Step 17: Photo/Image PHI)
-export { ImageRedactor, ImageRedactionResult, RedactionRegion, VisualPolicy } from './core/images';
-export { OCRService, OCRResult } from './core/images';
-export { VisualDetector, VisualDetection } from './core/images';
+export {
+  ImageRedactor,
+  ImageRedactionResult,
+  RedactionRegion,
+  VisualPolicy,
+} from "./core/images";
+export { OCRService, OCRResult } from "./core/images";
+export type { VisualDetection } from "./core/images";
 
 // Export DICOM services (The "DICOM Firewall")
-export { DicomStreamTransformer, HIPAA_DICOM_TAGS, anonymizeDicomBuffer } from './core/dicom';
-export type { DicomAnonymizationRule, DicomTransformerConfig } from './core/dicom';
+export {
+  DicomStreamTransformer,
+  HIPAA_DICOM_TAGS,
+  anonymizeDicomBuffer,
+} from "./core/dicom";
+export type {
+  DicomAnonymizationRule,
+  DicomTransformerConfig,
+} from "./core/dicom";
 
 // Export Cortex Python Bridge (The "Brain")
-export { CortexPythonBridge } from './core/cortex/python/CortexPythonBridge';
-export type { CortexTask, CortexTaskRequest, CortexTaskResponse } from './core/cortex/python/CortexPythonBridge';
+export { CortexPythonBridge } from "./core/cortex/python/CortexPythonBridge";
+export type {
+  CortexTask,
+  CortexTaskRequest,
+  CortexTaskResponse,
+} from "./core/cortex/python/CortexPythonBridge";
 
 export default VulpesCelare;

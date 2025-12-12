@@ -5,12 +5,10 @@
  * @module core/images
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.ImageRedactor = exports.VisualDetector = exports.OCRService = void 0;
+exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.ImageRedactor = exports.OCRService = void 0;
 // Services
 var OCRService_1 = require("./OCRService");
 Object.defineProperty(exports, "OCRService", { enumerable: true, get: function () { return OCRService_1.OCRService; } });
-var VisualDetector_1 = require("./VisualDetector");
-Object.defineProperty(exports, "VisualDetector", { enumerable: true, get: function () { return VisualDetector_1.VisualDetector; } });
 var ImageRedactor_1 = require("./ImageRedactor");
 Object.defineProperty(exports, "ImageRedactor", { enumerable: true, get: function () { return ImageRedactor_1.ImageRedactor; } });
 // Logging & Error Handling

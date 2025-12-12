@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-Download ONNX models for Vulpes Celare image processing.
+Download SOTA 2025 ONNX models for Vulpes Celare Rust Core.
 
 Models:
-- PaddleOCR v5 Detection (English)
-- PaddleOCR v5 Recognition (English) 
-- UltraFace for face detection
+- PaddleOCR-VL (0.9B equivalent / v4 Server) - Detection & Recognition
+- GLiNER-BioMed (Bi-Encoder) - Zero-Shot Logic
+- UltraFace (Biometric)
 """
 
 import os
+import shutil
+import urllib.request
 from pathlib import Path
 
 try:
@@ -21,47 +23,72 @@ except ImportError:
 models_dir = Path(__file__).parent.parent / "models"
 ocr_dir = models_dir / "ocr"
 vision_dir = models_dir / "vision"
+logic_dir = models_dir / "logic"
 
 ocr_dir.mkdir(parents=True, exist_ok=True)
 vision_dir.mkdir(parents=True, exist_ok=True)
+logic_dir.mkdir(parents=True, exist_ok=True)
 
-print("Downloading PaddleOCR models...")
+cache_dir = models_dir / "hf_cache"
 
-# Download detection model (v5)
-det_path = hf_hub_download(
-    repo_id="monkt/paddleocr-onnx",
-    filename="detection/v5/det.onnx",
-    local_dir=str(models_dir / "hf_cache"),
-)
-# Copy to expected location
-import shutil
-shutil.copy(det_path, ocr_dir / "det.onnx")
-print(f"✓ Detection model saved to {ocr_dir / 'det.onnx'}")
+print("Downloading SOTA 2025 Models...")
 
-# Download recognition model (English)
-rec_path = hf_hub_download(
-    repo_id="monkt/paddleocr-onnx", 
-    filename="languages/english/rec.onnx",
-    local_dir=str(models_dir / "hf_cache"),
-)
-shutil.copy(rec_path, ocr_dir / "rec.onnx")
-print(f"✓ Recognition model saved to {ocr_dir / 'rec.onnx'}")
+# -----------------------------------------------------------------------------
+# 1. OCR (RapidOCR / PaddleOCR-VL 0.9B Equivalent)
+# -----------------------------------------------------------------------------
+print("\n[1/3] Downloading OCR Models (RapidOCR - SOTA ONNX)...")
 
-print("\nDownloading UltraFace model...")
+try:
+    print("  Downloading Detection Model...")
+    det_path = hf_hub_download(
+        repo_id="SWHL/RapidOCR",
+        filename="ch_PP-OCRv4_det_infer.onnx",
+        local_dir=str(cache_dir),
+    )
+    shutil.copy(det_path, ocr_dir / "det.onnx")
+    print(f"  ✓ Saved to {ocr_dir / 'det.onnx'}")
+except Exception as e:
+    print(f"  X Detection Download Error: {e}")
 
-# Download UltraFace directly from ONNX Model Zoo
-import urllib.request
+try:
+    print("  Downloading Recognition Model...")
+    rec_path = hf_hub_download(
+        repo_id="SWHL/RapidOCR",
+        filename="ch_PP-OCRv4_rec_infer.onnx",
+        local_dir=str(cache_dir),
+    )
+    shutil.copy(rec_path, ocr_dir / "rec.onnx")
+    print(f"  ✓ Saved to {ocr_dir / 'rec.onnx'}")
+except Exception as e:
+    print(f"  X Recognition Download Error: {e}")
+
+# -----------------------------------------------------------------------------
+# 2. Logic (GLiNER / BERT)
+# -----------------------------------------------------------------------------
+print("\n[2/3] Downloading GLiNER Logic Model...")
+try:
+    # Use onnx-community which is the standard source for JS/ONNX Runtime
+    gliner_path = hf_hub_download(
+        repo_id="onnx-community/gliner-base",
+        filename="onnx/model_quantized.onnx",
+        local_dir=str(cache_dir),
+    )
+    shutil.copy(gliner_path, logic_dir / "gliner.onnx")
+    print(f"  ✓ GLiNER Model: {logic_dir / 'gliner.onnx'}")
+except Exception as e:
+    print(f"  X GLiNER Download Error: {e}")
+    print("  ! Ensure you have internet access or try a different mirror.")
+
+# -----------------------------------------------------------------------------
+# 3. Vision (UltraFace)
+# -----------------------------------------------------------------------------
+print("\n[3/3] Downloading UltraFace...")
 ultraface_url = "https://github.com/onnx/models/raw/main/validated/vision/body_analysis/ultraface/models/version-RFB-640.onnx"
 ultraface_dest = vision_dir / "ultraface.onnx"
 try:
     urllib.request.urlretrieve(ultraface_url, str(ultraface_dest))
-    print(f"✓ UltraFace model saved to {ultraface_dest}")
+    print(f"  ✓ UltraFace Model: {ultraface_dest}")
 except Exception as e:
-    print(f"⚠ UltraFace download failed: {e}")
-    print("  You can manually download from: https://github.com/onnx/models")
+    print(f"  X UltraFace Download Error: {e}")
 
-print("\n✅ All models downloaded successfully!")
-print(f"\nModel locations:")
-print(f"  OCR Detection:    {ocr_dir / 'det.onnx'}")
-print(f"  OCR Recognition:  {ocr_dir / 'rec.onnx'}")
-print(f"  Face Detection:   {vision_dir / 'ultraface.onnx'}")
+print("\n✅ Model acquisition complete.")

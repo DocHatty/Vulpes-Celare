@@ -3,7 +3,7 @@
  *
  * This is the orchestrator for image-based PHI redaction. It coordinates:
  * - OCR text extraction (via OCRService)
- * - Visual PHI detection (via VisualDetector)
+ * - Visual PHI detection (via Rust UltraFace)
  * - Text-based PHI matching (via VulpesCelare core)
  * - Pixel-level redaction (via Sharp)
  *
@@ -14,8 +14,8 @@
  *
  * @module core/images/ImageRedactor
  */
-import { TextBox } from './OCRService';
-import { VisualBox } from './VisualDetector';
+import { TextBox } from "./OCRService";
+import { VisualBox } from "../../VulpesNative";
 /**
  * Region to be redacted in the output image
  */
@@ -23,7 +23,7 @@ export interface RedactionRegion {
     /** Region coordinates */
     box: VisualBox | TextBox;
     /** Reason for redaction */
-    reason: 'FACE' | 'TEXT_PHI' | 'SIGNATURE' | 'VISUAL_PHI';
+    reason: "FACE" | "TEXT_PHI" | "SIGNATURE" | "VISUAL_PHI";
     /** What was detected (e.g., the matched text) */
     matchedContent?: string;
     /** Confidence score */
@@ -59,6 +59,10 @@ export interface VisualPolicy {
     redactFaces: boolean;
     /** Minimum confidence for face redaction (0-1) */
     faceConfidenceThreshold: number;
+    /** Optional UltraFace model path */
+    faceModelPath?: string;
+    /** Optional NMS IoU threshold */
+    faceNmsThreshold?: number;
     /** Redact text matching PHI patterns */
     redactTextPHI: boolean;
     /** Minimum confidence for text redaction (0-1) */
@@ -66,7 +70,7 @@ export interface VisualPolicy {
     /** Cross-reference OCR text with metadata for verification */
     enableMultiModalVerification: boolean;
     /** Redaction style */
-    redactionStyle: 'BLACK_BOX' | 'BLUR' | 'PIXELATE';
+    redactionStyle: "BLACK_BOX" | "BLUR" | "PIXELATE";
     /** Padding around redacted regions (pixels) */
     redactionPadding: number;
     /** Known patient identifiers for cross-reference */
@@ -91,7 +95,6 @@ export interface VisualPolicy {
  */
 export declare class ImageRedactor {
     private ocrService;
-    private visualDetector;
     private policy;
     private initialized;
     private initializing;

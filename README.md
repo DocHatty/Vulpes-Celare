@@ -2,8 +2,9 @@
 
 ![Vulpes Celare Logo](https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb)
 
-**Open-source HIPAA PHI redaction engine for clinical text, images, and DICOM. Fast, inspectable, air-gapped.**
+**Open-source HIPAA PHI redaction engine for clinical text, images, and DICOM. Rust-accelerated, fast, inspectable, air-gapped.**
 
+[![Rust](https://img.shields.io/badge/Rust-Core%20Engine-000000?style=for-the-badge&logo=rust&logoColor=white)](src/rust/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -114,12 +115,34 @@ const clean = await anonymizeDicomBuffer(dicomData);
 
 - **Context-Aware** - Distinguishes "Dr. Wilson" (person) from "Wilson's disease" (condition)
 - **OCR Resilient** - Catches PHI through scanner corruption (`0↔O`, `1↔l`)
+- **Rust Ferrari Core** - High‑performance OCR + face detection in Rust via NAPI
 - **Image & DICOM** - Face detection, OCR text extraction, metadata anonymization
 - **Streaming** - Real-time redaction for live dictation
 - **Policy DSL** - Declarative policies without code changes
 - **Cryptographic Audit** - Tamper-evident Merkle-linked proof of redaction
 
 > 📖 **Deep Dives:** [Architecture](docs/ARCHITECTURE.md) • [Policy DSL](examples/policy-dsl/POLICY-DSL.md) • [Trust Bundles](docs/TRUST-BUNDLE.md)
+
+## Native Rust Core
+
+Vulpes Celare uses a Rust native addon (`src/rust/`) for compute‑heavy vision tasks:
+
+- PaddleOCR ONNX inference (text detection + recognition)
+- UltraFace ONNX inference (face detection)
+
+The TypeScript/Node.js layer provides orchestration, policies, and CLI/API surfaces. Python bindings (when used) call into the same core logic.
+
+### ONNX Runtime
+
+Windows builds ship with a bundled ONNX Runtime CPU DLL (`native/onnxruntime.dll`) pinned to the version required by the Rust `ort` crate.
+
+To override the runtime (e.g., use CUDA/DirectML builds), set one of these before importing `vulpes-celare`:
+
+```bash
+set VULPES_ORT_PATH=C:\path\to\onnxruntime.dll
+# or
+set ORT_DYLIB_PATH=C:\path\to\onnxruntime.dll
+```
 
 ## Cryptographic Audit Trail
 

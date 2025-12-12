@@ -169,53 +169,139 @@
           "learning": "Regression detected for: AGE_90_PLUS. Review recent changes."
         }
       ]
+    },
+    {
+      "runId": "RUN-1765504105029",
+      "timestamp": "2025-12-12T01:48:25.032Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 26,
+          "learning": "OCR_CONFUSION pattern accounts for 26 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "IMPROVEMENT",
+          "learning": "Improved detection for: DATE, LICENSE_PLATE"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: SSN, MRN, ADDRESS, VIN, DEA, AGE_90_PLUS. Review recent changes."
+        }
+      ]
+    },
+    {
+      "runId": "RUN-1765505763344",
+      "timestamp": "2025-12-12T02:16:03.348Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 28,
+          "learning": "OCR_CONFUSION pattern accounts for 28 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "IMPROVEMENT",
+          "learning": "Improved detection for: MRN, ADDRESS, VIN, AGE_90_PLUS"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: NAME, DATE, ZIPCODE, LICENSE_PLATE, DEA. Review recent changes."
+        }
+      ]
+    },
+    {
+      "runId": "RUN-1765507489342",
+      "timestamp": "2025-12-12T02:44:49.346Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 12,
+          "learning": "OCR_CONFUSION pattern accounts for 12 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "IMPROVEMENT",
+          "learning": "Improved detection for: NAME, SSN, DATE, ZIPCODE, DEA"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: MRN, ADDRESS, LICENSE_PLATE. Review recent changes."
+        }
+      ]
+    },
+    {
+      "runId": "RUN-1765507733992",
+      "timestamp": "2025-12-12T02:48:53.996Z",
+      "learnings": [
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "CASE_VARIATION",
+          "count": 4,
+          "learning": "CASE_VARIATION pattern accounts for 4 failures. Mixed case or unusual casing not recognized"
+        },
+        {
+          "type": "PATTERN_IDENTIFIED",
+          "pattern": "OCR_CONFUSION",
+          "count": 16,
+          "learning": "OCR_CONFUSION pattern accounts for 16 failures. Characters that look similar when scanned (0/O, 1/l/I, 5/S, 8/B)"
+        },
+        {
+          "type": "IMPROVEMENT",
+          "learning": "Improved detection for: MRN, ADDRESS"
+        },
+        {
+          "type": "REGRESSION",
+          "learning": "Regression detected for: NAME, SSN, DATE, FAX, LICENSE_PLATE, DEA, AGE_90_PLUS. Review recent changes."
+        }
+      ]
     }
   ],
   "recommendations": [
     {
       "priority": "HIGH",
       "action": "Add character substitution patterns",
-      "reasoning": "Identified 13 failures matching OCR_CONFUSION pattern.",
-      "expectedImpact": "Could fix 13 failures",
-      "confidence": 0.5019230769230769,
+      "reasoning": "Identified 16 failures matching OCR_CONFUSION pattern.",
+      "expectedImpact": "Could fix 16 failures",
+      "confidence": 0.5468749999999999,
       "previouslyWorked": false
     },
     {
       "priority": "HIGH",
       "action": "Implement fuzzy matching",
-      "reasoning": "Identified 13 failures matching OCR_CONFUSION pattern.",
-      "expectedImpact": "Could fix 13 failures",
-      "confidence": 0.5019230769230769,
+      "reasoning": "Identified 16 failures matching OCR_CONFUSION pattern.",
+      "expectedImpact": "Could fix 16 failures",
+      "confidence": 0.5468749999999999,
+      "previouslyWorked": false
+    },
+    {
+      "priority": "HIGH",
+      "action": "Detect partial matches",
+      "reasoning": "Identified 1 failures matching TRUNCATION pattern.",
+      "expectedImpact": "Could fix 1 failures",
+      "confidence": 0.44999999999999996,
+      "previouslyWorked": false
+    },
+    {
+      "priority": "HIGH",
+      "action": "Use prefix/suffix matching",
+      "reasoning": "Identified 1 failures matching TRUNCATION pattern.",
+      "expectedImpact": "Could fix 1 failures",
+      "confidence": 0.44999999999999996,
       "previouslyWorked": false
     },
     {
       "priority": "MEDIUM",
-      "action": "Add specific pattern for: Special character \" \" appears frequently",
-      "reasoning": "Detected recurring pattern in 3 failures: \"carLOS  C. wortingTon-smYTHe\"",
-      "expectedImpact": "Could fix 3 failures",
+      "action": "Add specific pattern for: Special character \"*\" appears frequently",
+      "reasoning": "Detected recurring pattern in 5 failures: \"***-**-590\"",
+      "expectedImpact": "Could fix 5 failures",
       "confidence": 0.6,
-      "previouslyWorked": false
-    },
-    {
-      "priority": "LOW",
-      "action": "Normalize whitespace",
-      "reasoning": "Identified 1 failures matching SPACING_ISSUES pattern.",
-      "expectedImpact": "Could fix 1 failures",
-      "confidence": 0.55,
-      "previouslyWorked": false
-    },
-    {
-      "priority": "LOW",
-      "action": "Allow flexible spacing in patterns",
-      "reasoning": "Identified 1 failures matching SPACING_ISSUES pattern.",
-      "expectedImpact": "Could fix 1 failures",
-      "confidence": 0.55,
       "previouslyWorked": false
     },
     {
       "priority": "HIGH",
       "action": "Focus on NAME detection - persistent issue",
-      "reasoning": "NAME has failed in 74 of last 5 runs",
+      "reasoning": "NAME has failed in 70 of last 5 runs",
       "expectedImpact": "Address recurring problem",
       "confidence": 0.8,
       "isPersistent": true
@@ -223,7 +309,7 @@
     {
       "priority": "HIGH",
       "action": "Focus on DEA detection - persistent issue",
-      "reasoning": "DEA has failed in 27 of last 5 runs",
+      "reasoning": "DEA has failed in 24 of last 5 runs",
       "expectedImpact": "Address recurring problem",
       "confidence": 0.8,
       "isPersistent": true
@@ -231,7 +317,7 @@
     {
       "priority": "HIGH",
       "action": "Focus on DATE detection - persistent issue",
-      "reasoning": "DATE has failed in 23 of last 5 runs",
+      "reasoning": "DATE has failed in 10 of last 5 runs",
       "expectedImpact": "Address recurring problem",
       "confidence": 0.8,
       "isPersistent": true

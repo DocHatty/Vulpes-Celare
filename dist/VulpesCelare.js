@@ -21,7 +21,7 @@
  * @author Hatkoff
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.VulpesCelare = void 0;
+exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.OCRService = exports.ImageRedactor = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.VulpesCelare = void 0;
 const ParallelRedactionEngine_1 = require("./core/ParallelRedactionEngine");
 const RedactionContext_1 = require("./context/RedactionContext");
 const images_1 = require("./core/images");
@@ -248,8 +248,6 @@ var images_2 = require("./core/images");
 Object.defineProperty(exports, "ImageRedactor", { enumerable: true, get: function () { return images_2.ImageRedactor; } });
 var images_3 = require("./core/images");
 Object.defineProperty(exports, "OCRService", { enumerable: true, get: function () { return images_3.OCRService; } });
-var images_4 = require("./core/images");
-Object.defineProperty(exports, "VisualDetector", { enumerable: true, get: function () { return images_4.VisualDetector; } });
 // Export DICOM services (The "DICOM Firewall")
 var dicom_1 = require("./core/dicom");
 Object.defineProperty(exports, "DicomStreamTransformer", { enumerable: true, get: function () { return dicom_1.DicomStreamTransformer; } });
