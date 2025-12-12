@@ -11,14 +11,14 @@
 [![License](https://img.shields.io/badge/License-Source%20Available-4B32C3?style=for-the-badge)](LICENSE)
 [![HIPAA](https://img.shields.io/badge/HIPAA-18%2F18-brightgreen?style=for-the-badge)](#features)
 
-|     | Metric                | Score         | Notes |
-|:---:|:---------------------:|:-------------:|:------|
-| 🎯  | **Sensitivity**       | **99.6%**     | [Validation details](#validation) |
-| 🛡️  | **Specificity**       | **96-100%**   | Synthetic corpus |
-| ⚡  | **Speed**             | **2-3 ms**    | Per document |
-| 📋  | **Coverage**          | **18/18**     | Full HIPAA Safe Harbor |
+| Metric | Score | Notes |
+|:------:|:-----:|:------|
+| **Sensitivity** | **98%** | [Validation details](#validation) |
+| **Specificity** | **95%** | Synthetic corpus |
+| **Speed** | **2–3 ms** | Per document |
+| **Coverage** | **18/18** | Full HIPAA Safe Harbor |
 
-> ⚠️ **Status:** Validated on synthetic data only. Production use requires i2b2 2014 validation and compliance review. See [Validation](#validation).
+**Status:** Validated on synthetic data only. Production use requires i2b2 2014 validation and compliance review. See [Validation](#validation).
 
 ---
 
@@ -26,7 +26,7 @@
 
 - **Inspectable** - Fully open source, every decision traceable
 - **Healthcare-native** - Built for US clinical formats
-- **Fast** - 2-3ms stateless processing, scales linearly  
+- **Fast** - 2–3 ms stateless processing, scales linearly
 - **Air-gapped** - Zero external calls, keeps PHI inside your network
 
 ## How It Works
@@ -35,38 +35,38 @@
 flowchart TB
     subgraph INPUT [" "]
         direction LR
-        Access["🖥️ Access Point<br/>Epic · PACS · Web"]
-        Data["📋 Clinical Data<br/>+ Question"]
+        Access["Access Point<br/>Epic • PACS • Web"]
+        Data["Clinical Data<br/>+ Question"]
     end
 
     Access --> Data
 
-    subgraph CORE ["🦊 VULPES CELARE"]
+    subgraph CORE ["VULPES CELARE"]
         direction TB
-        Redact["✂️ REDACT<br/>John Smith<br/>742 Evergreen Terrace<br/>eGFR 28, Cr 2.4 (was 1.8)<br/>↓<br/>[NAME-1]<br/>[ADDRESS-1]<br/>eGFR 28, Cr 2.4 (was 1.8)"]
-        Map["🗺️ STORE MAP<br/>Kept locally"]
+        Redact["REDACT<br/>John Smith<br/>742 Evergreen Terrace<br/>eGFR 28, Cr 2.4 (was 1.8)<br/><br/>[NAME-1]<br/>[ADDRESS-1]<br/>eGFR 28, Cr 2.4 (was 1.8)"]
+        Map["STORE MAP<br/>Kept locally"]
         Redact --> Map
     end
 
     Data -->|"Data"| Redact
     Data -->|"Question"| LLM
 
-    subgraph EXT ["☁️ LLM"]
+    subgraph EXT ["LLM"]
         LLM["Claude / GPT-5.1 / Gemini<br/>Only sees: [NAME-1], [ADDRESS-1]<br/>eGFR 28, Cr 2.4 (was 1.8)"]
     end
 
     Map -->|"Clean data"| LLM
 
-    subgraph CORE2 ["🦊 VULPES CELARE"]
+    subgraph CORE2 ["VULPES CELARE"]
         direction TB
-        Restore["🔄 RESTORE<br/>[NAME-1], [ADDRESS-1]<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended.<br/>↓<br/>John Smith, 742 Evergreen Terrace<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended."]
-        Audit["📝 AUDIT LOG"]
+        Restore["RESTORE<br/>[NAME-1], [ADDRESS-1]<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended.<br/><br/>John Smith, 742 Evergreen Terrace<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended."]
+        Audit["AUDIT LOG"]
         Restore --> Audit
     end
 
     LLM -->|"Response"| Restore
 
-    Result["✅ You see real names<br/>AI never knew them"]
+    Result["You see real names<br/>AI never knew them"]
     Audit --> Result
 
     style CORE fill:#ff6b35,stroke:#d63000,color:#fff
@@ -75,7 +75,7 @@ flowchart TB
     style Result fill:#c8e6c9,stroke:#2e7d32
 ```
 
-PHI never crosses the network boundary. The LLM only sees tokenized placeholders. Your data stays local. Always.
+PHI never crosses the network boundary. The LLM only sees tokenized placeholders. Your data stays local.
 
 ## Quick Start
 
@@ -97,7 +97,10 @@ import { anonymizeDicomBuffer } from 'vulpes-celare';
 const clean = await anonymizeDicomBuffer(dicomData);
 ```
 
-> 📖 **More:** [LLM Integrations](examples/integrations/LLM-INTEGRATIONS.md) • [Streaming API](examples/streaming/STREAMING-API.md) • [Image/DICOM](docs/IMAGE-DICOM.md)
+More:
+- `examples/integrations/LLM-INTEGRATIONS.md`
+- `examples/streaming/STREAMING-API.md`
+- `docs/IMAGE-DICOM.md`
 
 ## Features
 
@@ -114,14 +117,17 @@ const clean = await anonymizeDicomBuffer(dicomData);
 ### Key Capabilities
 
 - **Context-Aware** - Distinguishes "Dr. Wilson" (person) from "Wilson's disease" (condition)
-- **OCR Resilient** - Catches PHI through scanner corruption (`0↔O`, `1↔l`)
+- **OCR Resilient** - Catches PHI through scanner corruption (`0O`, `1l`)
 - **Rust Native Core** - High‑performance OCR + face detection in Rust via NAPI
 - **Image & DICOM** - Face detection, OCR text extraction, metadata anonymization
 - **Streaming** - Real-time redaction for live dictation
 - **Policy DSL** - Declarative policies without code changes
 - **Cryptographic Audit** - Tamper-evident Merkle-linked proof of redaction
 
-> 📖 **Deep Dives:** [Architecture](docs/ARCHITECTURE.md) • [Policy DSL](examples/policy-dsl/POLICY-DSL.md) • [Trust Bundles](docs/TRUST-BUNDLE.md)
+Deep dives:
+- `docs/ARCHITECTURE.md`
+- `examples/policy-dsl/POLICY-DSL.md`
+- `docs/TRUST-BUNDLE.md`
 
 ## Native Rust Core
 
@@ -146,17 +152,18 @@ set ORT_DYLIB_PATH=C:\path\to\onnxruntime.dll
 
 ## Cryptographic Audit Trail
 
-Every redaction can generate tamper-proof proof:
+Every redaction can generate a tamper‑proof proof:
 
 ```typescript
 const bundle = await TrustBundleExporter.generate(original, result.text, result);
 await TrustBundleExporter.export(bundle, 'proof.red');
-// Auditor drags file into web portal → Verified in 30 seconds
 ```
 
-**What it proves:** What was redacted, when, which policy, document integrity (SHA-256), chain of custody (Merkle log).
+What it proves: what was redacted, when, which policy, document integrity (SHA‑256), chain of custody (Merkle log).
 
-> 📖 [Trust Bundle Docs](docs/TRUST-BUNDLE.md) • [Verification Portal](verification-portal/README.md)
+See:
+- `docs/TRUST-BUNDLE.md`
+- `verification-portal/README.md`
 
 ## CLI
 
@@ -168,19 +175,20 @@ vulpes chat         # LLM chat with auto-redaction
 vulpes --help       # All options
 ```
 
-> 📖 [CLI Guide](docs/CLI.md)
+CLI guide: `docs/CLI.md`
 
 ## Validation
 
 | Aspect | Status |
 |--------|--------|
-| **Sensitivity** | 99.6% (synthetic corpus, 7k+ docs) |
-| **i2b2 2014** | ❌ Pending data access |
-| **Production** | ❌ Seeking pilot partners |
+| **Sensitivity** | 98% (synthetic corpus, 7k+ docs) |
+| **i2b2 2014** | Pending data access |
+| **Production** | Seeking pilot partners |
 
-**Honest position:** Speed and features are verified. Accuracy claims need i2b2 validation.
+Honest position: Speed and features are verified. Accuracy claims need i2b2 validation.
 
-> 📖 [Benchmarks](docs/BENCHMARKS.md) • [Validation Roadmap](docs/VALIDATION.md)
+Benchmarks: `docs/BENCHMARKS.md`  
+Roadmap: `docs/ROADMAP.md`
 
 ## License
 
@@ -189,14 +197,16 @@ vulpes --help       # All options
 Free for: individuals, researchers, non-profits, companies <$1M/year, internal use.  
 Commercial license required for: companies >$1M/year, managed services.
 
-📄 [License Details](docs/legal/COMMERCIAL_LICENSE.md)
+License details: `docs/legal/COMMERCIAL_LICENSE.md`
 
 ## Contributing
 
 Validation contributions especially valued: i2b2 testing, pilot feedback, security audits.
 
-> 📖 [Contributing Guide](.github/CONTRIBUTING.md)
+Contributing guide: `.github/CONTRIBUTING.md`
 
 ---
 
-📚 [Full Documentation](docs/) • 🐛 [Report Issues](https://github.com/DocHatty/Vulpes-Celare/issues) • 💬 [Discussions](https://github.com/DocHatty/Vulpes-Celare/discussions)
+Full docs: `docs/`  
+Report issues: https://github.com/DocHatty/Vulpes-Celare/issues  
+Discussions: https://github.com/DocHatty/Vulpes-Celare/discussions
