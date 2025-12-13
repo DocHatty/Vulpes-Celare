@@ -10,7 +10,7 @@ Open-source HIPAA PHI redaction engine for clinical text, images, and DICOM. Rus
 |:------:|:-----:|:------|
 | Sensitivity | 99%+ | Synthetic corpus, see `docs/BENCHMARKS.md` |
 | Specificity | 96%+ | Synthetic corpus, see `docs/BENCHMARKS.md` |
-| Speed | varies | Depends on enabled filters and input size; see `docs/BENCHMARKS.md` |
+| Speed | ms | See `docs/BENCHMARKS.md` |
 | Coverage | 18/18 | HIPAA Safe Harbor identifiers |
 
 Status: validated on synthetic data only. Production use requires i2b2 2014 validation and compliance review.
