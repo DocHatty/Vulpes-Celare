@@ -2,16 +2,66 @@
 
 ![Vulpes Celare Logo](https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb)
 
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
+
 Open-source HIPAA PHI redaction engine for clinical text, images, and DICOM. Rust-accelerated, fast, inspectable, air-gapped.
 
 | Metric | Score | Notes |
 |:------:|:-----:|:------|
 | Sensitivity | 99%+ | Synthetic corpus, see `docs/BENCHMARKS.md` |
 | Specificity | 96%+ | Synthetic corpus, see `docs/BENCHMARKS.md` |
-| Speed | varies | Depends on enabled filters and input size; see `docs/BENCHMARKS.md` |
+| Speed | ms | See `docs/BENCHMARKS.md` |
 | Coverage | 18/18 | HIPAA Safe Harbor identifiers |
 
 Status: validated on synthetic data only. Production use requires i2b2 2014 validation and compliance review.
+
+## How It Works
+
+```mermaid
+flowchart TB
+    subgraph INPUT [" "]
+        direction LR
+        Access["Access Point<br/>Epic • PACS • Web"]
+        Data["Clinical Data<br/>+ Question"]
+    end
+
+    Access --> Data
+
+    subgraph CORE ["VULPES CELARE"]
+        direction TB
+        Redact["REDACT<br/>John Smith<br/>742 Evergreen Terrace<br/>eGFR 28, Cr 2.4 (was 1.8)<br/><br/>[NAME-1]<br/>[ADDRESS-1]<br/>eGFR 28, Cr 2.4 (was 1.8)"]
+        Map["STORE MAP<br/>Kept locally"]
+        Redact --> Map
+    end
+
+    Data -->|"Data"| Redact
+    Data -->|"Question"| LLM
+
+    subgraph EXT ["LLM"]
+        LLM["Claude / GPT-5.1 / Gemini<br/>Only sees: [NAME-1], [ADDRESS-1]<br/>eGFR 28, Cr 2.4 (was 1.8)"]
+    end
+
+    Map -->|"Clean data"| LLM
+
+    subgraph CORE2 ["VULPES CELARE"]
+        direction TB
+        Restore["RESTORE<br/>[NAME-1], [ADDRESS-1]<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended.<br/><br/>John Smith, 742 Evergreen Terrace<br/>has stage 4 CKD with rapid progression.<br/>Nephrology referral recommended."]
+        Audit["AUDIT LOG"]
+        Restore --> Audit
+    end
+
+    LLM -->|"Response"| Restore
+
+    Result["You see real names<br/>AI never knew them"]
+    Audit --> Result
+
+    style CORE fill:#ff6b35,stroke:#d63000,color:#fff
+    style CORE2 fill:#ff6b35,stroke:#d63000,color:#fff
+    style EXT fill:#e8e8e8,stroke:#999
+    style Result fill:#c8e6c9,stroke:#2e7d32
+```
+
+PHI never crosses the network boundary. The LLM only sees tokenized placeholders. Your data stays local.
 
 ## Quick Start
 
