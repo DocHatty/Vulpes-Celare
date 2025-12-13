@@ -5,6 +5,10 @@
  * Measures OCR quality and text corruption to enable adaptive detection thresholds.
  * Documents with higher chaos scores should use more permissive matching patterns.
  *
+ * RUST ACCELERATION:
+ * When VULPES_CHAOS_ACCEL is enabled (default), uses Rust native implementation
+ * for 5-15x speedup. Set VULPES_CHAOS_ACCEL=0 to disable.
+ *
  * MATHEMATICAL FOUNDATION:
  * 1. Shannon Entropy - Measures character distribution randomness
  *    Formula: H = -sum(p_i * log2(p_i)) where p_i = frequency of character i
@@ -27,6 +31,26 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OcrChaosDetector = void 0;
+const binding_1 = require("../native/binding");
+// Cache the native binding
+let cachedBinding = undefined;
+function getBinding() {
+    if (cachedBinding !== undefined)
+        return cachedBinding;
+    try {
+        cachedBinding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
+    }
+    catch {
+        cachedBinding = null;
+    }
+    return cachedBinding;
+}
+function isChaosAccelEnabled() {
+    // Rust chaos detection is now DEFAULT (promoted from opt-in).
+    // Set VULPES_CHAOS_ACCEL=0 to disable and use pure TypeScript.
+    const val = process.env.VULPES_CHAOS_ACCEL;
+    return val === undefined || val === "1";
+}
 class OcrChaosDetector {
     /**
      * Sigmoid function for smooth threshold transitions
@@ -61,7 +85,7 @@ class OcrChaosDetector {
         for (const count of charCounts.values()) {
             const p = count / total;
             if (p > OcrChaosDetector.EPSILON) {
-                entropy -= p * Math.log(p) / OcrChaosDetector.LOG2;
+                entropy -= (p * Math.log(p)) / OcrChaosDetector.LOG2;
             }
         }
         // Normalize by maximum possible entropy (log2 of alphabet size)
@@ -74,6 +98,31 @@ class OcrChaosDetector {
      * Uses entropy-based scoring combined with pattern detection
      */
     static analyze(text) {
+        // Try Rust accelerator first
+        if (isChaosAccelEnabled()) {
+            const binding = getBinding();
+            if (binding?.analyzeChaos) {
+                try {
+                    const rustResult = binding.analyzeChaos(text);
+                    // Convert Rust result to TypeScript interface
+                    return {
+                        score: rustResult.score,
+                        indicators: {
+                            digitSubstitutions: rustResult.indicators.digitSubstitutions,
+                            caseChaosFactor: rustResult.indicators.caseChaosFactor,
+                            spacingAnomalies: rustResult.indicators.spacingAnomalies,
+                            charCorruption: rustResult.indicators.charCorruption,
+                        },
+                        recommendedThreshold: rustResult.recommendedThreshold,
+                        enableLabelBoost: rustResult.enableLabelBoost,
+                        quality: rustResult.quality,
+                    };
+                }
+                catch {
+                    // Fall back to TS implementation
+                }
+            }
+        }
         // Check cache first (use first 500 chars as key)
         const cacheKey = text.substring(0, 500);
         if (this.analysisCache.has(cacheKey)) {
@@ -95,18 +144,20 @@ class OcrChaosDetector {
         // - Character corruption is less common but significant (0.15)
         // - High entropy suggests noise/corruption (0.10)
         const weights = {
-            digitSubstitutions: 0.30,
+            digitSubstitutions: 0.3,
             caseChaosFactor: 0.25,
-            spacingAnomalies: 0.20,
+            spacingAnomalies: 0.2,
             charCorruption: 0.15,
-            entropy: 0.10,
+            entropy: 0.1,
         };
         const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
-        const score = Math.min(1.0, (indicators.digitSubstitutions * weights.digitSubstitutions +
+        const score = Math.min(1.0, ((indicators.digitSubstitutions * weights.digitSubstitutions +
             indicators.caseChaosFactor * weights.caseChaosFactor +
             indicators.spacingAnomalies * weights.spacingAnomalies +
             indicators.charCorruption * weights.charCorruption +
-            charEntropy * weights.entropy) / totalWeight * totalWeight); // Normalize to original scale
+            charEntropy * weights.entropy) /
+            totalWeight) *
+            totalWeight); // Normalize to original scale
         const analysis = {
             score,
             indicators,
@@ -129,23 +180,42 @@ class OcrChaosDetector {
      * Get confidence weights adjusted for document chaos level
      */
     static getConfidenceWeights(chaosScore) {
+        // Try Rust accelerator first
+        if (isChaosAccelEnabled()) {
+            const binding = getBinding();
+            if (binding?.getConfidenceWeights) {
+                try {
+                    const rustResult = binding.getConfidenceWeights(chaosScore);
+                    return {
+                        properCase: rustResult.properCase,
+                        allCaps: rustResult.allCaps,
+                        allLower: rustResult.allLower,
+                        chaosCase: rustResult.chaosCase,
+                        labelBoost: rustResult.labelBoost,
+                    };
+                }
+                catch {
+                    // Fall back to TS implementation
+                }
+            }
+        }
         // Base weights for clean documents
         const baseWeights = {
             properCase: 0.95,
-            allCaps: 0.90,
-            allLower: 0.80,
-            chaosCase: 0.50, // Very low for clean docs - chaos case is suspicious
-            labelBoost: 0.10,
+            allCaps: 0.9,
+            allLower: 0.8,
+            chaosCase: 0.5, // Very low for clean docs - chaos case is suspicious
+            labelBoost: 0.1,
         };
         // Adjust weights based on chaos - higher chaos = more tolerance for weird patterns
         if (chaosScore > 0.5) {
             // Chaotic document - be very permissive
             return {
-                properCase: 0.90,
+                properCase: 0.9,
                 allCaps: 0.88,
                 allLower: 0.85,
                 chaosCase: 0.75, // Much higher - chaos case is EXPECTED
-                labelBoost: 0.20, // Strong boost from labels
+                labelBoost: 0.2, // Strong boost from labels
             };
         }
         else if (chaosScore > 0.2) {
@@ -164,20 +234,32 @@ class OcrChaosDetector {
      * Calculate confidence for a specific name match based on its case pattern
      */
     static calculateNameConfidence(name, chaosScore, hasLabel = false) {
+        // Try Rust accelerator first
+        if (isChaosAccelEnabled()) {
+            const binding = getBinding();
+            if (binding?.calculateNameConfidence) {
+                try {
+                    return binding.calculateNameConfidence(name, chaosScore, hasLabel);
+                }
+                catch {
+                    // Fall back to TS implementation
+                }
+            }
+        }
         const weights = this.getConfidenceWeights(chaosScore);
         const casePattern = this.classifyCasePattern(name);
         let baseConfidence;
         switch (casePattern) {
-            case 'PROPER':
+            case "PROPER":
                 baseConfidence = weights.properCase;
                 break;
-            case 'ALL_CAPS':
+            case "ALL_CAPS":
                 baseConfidence = weights.allCaps;
                 break;
-            case 'ALL_LOWER':
+            case "ALL_LOWER":
                 baseConfidence = weights.allLower;
                 break;
-            case 'CHAOS':
+            case "CHAOS":
             default:
                 baseConfidence = weights.chaosCase;
                 break;
@@ -192,18 +274,30 @@ class OcrChaosDetector {
      * Classify the case pattern of a name
      */
     static classifyCasePattern(name) {
+        // Try Rust accelerator first
+        if (isChaosAccelEnabled()) {
+            const binding = getBinding();
+            if (binding?.classifyCasePattern) {
+                try {
+                    return binding.classifyCasePattern(name);
+                }
+                catch {
+                    // Fall back to TS implementation
+                }
+            }
+        }
         const words = name.trim().split(/\s+/);
         // Check if all caps
         if (/^[A-Z\s.,'-]+$/.test(name) && /[A-Z]/.test(name)) {
-            return 'ALL_CAPS';
+            return "ALL_CAPS";
         }
         // Check if all lowercase
         if (/^[a-z\s.,'-]+$/.test(name) && /[a-z]/.test(name)) {
-            return 'ALL_LOWER';
+            return "ALL_LOWER";
         }
         // Check if proper case (each word starts with capital, rest lowercase)
-        const isProperCase = words.every(word => {
-            const cleaned = word.replace(/[.,'-]/g, '');
+        const isProperCase = words.every((word) => {
+            const cleaned = word.replace(/[.,'-]/g, "");
             if (cleaned.length === 0)
                 return true;
             // Allow middle initials like "J."
@@ -213,9 +307,9 @@ class OcrChaosDetector {
             return /^[A-Z][a-z]+$/.test(cleaned);
         });
         if (isProperCase) {
-            return 'PROPER';
+            return "PROPER";
         }
-        return 'CHAOS';
+        return "CHAOS";
     }
     // ============ Private measurement methods ============
     /**
@@ -333,12 +427,12 @@ class OcrChaosDetector {
      */
     static classifyQuality(score) {
         if (score < 0.15)
-            return 'CLEAN';
+            return "CLEAN";
         if (score < 0.35)
-            return 'NOISY';
+            return "NOISY";
         if (score < 0.6)
-            return 'DEGRADED';
-        return 'CHAOTIC';
+            return "DEGRADED";
+        return "CHAOTIC";
     }
     /**
      * Clear the analysis cache (useful for testing)

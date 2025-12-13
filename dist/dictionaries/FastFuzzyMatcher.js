@@ -4,6 +4,10 @@
  *
  * PERFORMANCE: 100-1000x faster than traditional approaches
  *
+ * RUST ACCELERATION:
+ * When VULPES_FUZZY_ACCEL is enabled (default), uses Rust native implementation
+ * for 10-50x additional speedup. Set VULPES_FUZZY_ACCEL=0 to disable.
+ *
  * ALGORITHM:
  * Based on SymSpell's Symmetric Delete algorithm by Wolf Garbe (2012):
  * - Pre-compute deletion neighborhood for dictionary terms
@@ -27,6 +31,26 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FastFuzzyMatcher = void 0;
 const lru_cache_1 = require("lru-cache");
+const binding_1 = require("../native/binding");
+// Cache the native binding
+let cachedBinding = undefined;
+function getBinding() {
+    if (cachedBinding !== undefined)
+        return cachedBinding;
+    try {
+        cachedBinding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
+    }
+    catch {
+        cachedBinding = null;
+    }
+    return cachedBinding;
+}
+function isFuzzyAccelEnabled() {
+    // Rust fuzzy matching is now DEFAULT (promoted from opt-in).
+    // Set VULPES_FUZZY_ACCEL=0 to disable and use pure TypeScript.
+    const val = process.env.VULPES_FUZZY_ACCEL;
+    return val === undefined || val === "1";
+}
 const DEFAULT_CONFIG = {
     maxEditDistance: 2,
     enablePhonetic: true,
@@ -35,6 +59,9 @@ const DEFAULT_CONFIG = {
 };
 class FastFuzzyMatcher {
     constructor(terms, config = {}) {
+        // Rust accelerator (if available)
+        this.rustMatcher = null;
+        this.useRust = false;
         // Statistics for monitoring
         this.stats = {
             exactHits: 0,
@@ -50,7 +77,27 @@ class FastFuzzyMatcher {
         this.queryCache = new lru_cache_1.LRUCache({
             max: this.config.cacheSize,
         });
-        // Build indexes
+        // Try to use Rust accelerator
+        if (isFuzzyAccelEnabled()) {
+            const binding = getBinding();
+            if (binding?.VulpesFuzzyMatcher) {
+                try {
+                    const rustConfig = {
+                        maxEditDistance: this.config.maxEditDistance,
+                        enablePhonetic: this.config.enablePhonetic,
+                        minTermLength: this.config.minTermLength,
+                        cacheSize: this.config.cacheSize,
+                    };
+                    this.rustMatcher = new binding.VulpesFuzzyMatcher(terms, rustConfig);
+                    this.useRust = true;
+                    return; // Skip TS index build
+                }
+                catch {
+                    // Fall back to TS implementation
+                }
+            }
+        }
+        // Build TS indexes (fallback)
         this.buildIndex(terms);
     }
     /**
@@ -97,7 +144,9 @@ class FastFuzzyMatcher {
         const result = [];
         const seen = new Set();
         // BFS to generate all deletions
-        const queue = [{ text: term, distance: 0 }];
+        const queue = [
+            { text: term, distance: 0 },
+        ];
         while (queue.length > 0) {
             const current = queue.shift();
             if (current.distance > 0) {
@@ -108,7 +157,8 @@ class FastFuzzyMatcher {
             // Generate deletions by removing each character
             for (let i = 0; i < current.text.length; i++) {
                 const deletion = current.text.slice(0, i) + current.text.slice(i + 1);
-                if (deletion.length >= this.config.minTermLength - maxDistance && !seen.has(deletion)) {
+                if (deletion.length >= this.config.minTermLength - maxDistance &&
+                    !seen.has(deletion)) {
                     seen.add(deletion);
                     queue.push({ text: deletion, distance: current.distance + 1 });
                 }
@@ -126,6 +176,17 @@ class FastFuzzyMatcher {
      * 4. Return best match
      */
     lookup(query) {
+        // Use Rust accelerator if available
+        if (this.useRust && this.rustMatcher) {
+            const rustResult = this.rustMatcher.lookup(query);
+            return {
+                matched: rustResult.matched,
+                term: rustResult.term,
+                distance: rustResult.distance,
+                confidence: rustResult.confidence,
+                matchType: rustResult.matchType,
+            };
+        }
         const normalizedQuery = query.toLowerCase().trim();
         // Check cache first
         const cached = this.queryCache.get(normalizedQuery);
@@ -141,7 +202,7 @@ class FastFuzzyMatcher {
                 term: normalizedQuery,
                 distance: 0,
                 confidence: 1.0,
-                matchType: 'EXACT',
+                matchType: "EXACT",
             };
             this.queryCache.set(normalizedQuery, result);
             return result;
@@ -168,7 +229,7 @@ class FastFuzzyMatcher {
                         term: bestMatch.term,
                         distance: bestMatch.distance,
                         confidence,
-                        matchType: bestMatch.distance === 1 ? 'DELETE_1' : 'DELETE_2',
+                        matchType: bestMatch.distance === 1 ? "DELETE_1" : "DELETE_2",
                     };
                     this.queryCache.set(normalizedQuery, result);
                     return result;
@@ -176,7 +237,8 @@ class FastFuzzyMatcher {
             }
         }
         // 3. Phonetic fallback
-        if (this.config.enablePhonetic && normalizedQuery.length >= this.config.minTermLength) {
+        if (this.config.enablePhonetic &&
+            normalizedQuery.length >= this.config.minTermLength) {
             const phonetic = this.soundex(normalizedQuery);
             const phoneticMatches = this.phoneticIndex.get(phonetic);
             if (phoneticMatches && phoneticMatches.length > 0) {
@@ -188,7 +250,8 @@ class FastFuzzyMatcher {
                         bestMatch = { term, distance };
                     }
                 }
-                if (bestMatch && bestMatch.distance <= this.config.maxEditDistance + 1) {
+                if (bestMatch &&
+                    bestMatch.distance <= this.config.maxEditDistance + 1) {
                     this.stats.phoneticHits++;
                     const confidence = this.calculateConfidence(normalizedQuery, bestMatch.term, bestMatch.distance) * 0.9;
                     const result = {
@@ -196,7 +259,7 @@ class FastFuzzyMatcher {
                         term: bestMatch.term,
                         distance: bestMatch.distance,
                         confidence,
-                        matchType: 'PHONETIC',
+                        matchType: "PHONETIC",
                     };
                     this.queryCache.set(normalizedQuery, result);
                     return result;
@@ -210,7 +273,7 @@ class FastFuzzyMatcher {
             term: null,
             distance: Infinity,
             confidence: 0,
-            matchType: 'NONE',
+            matchType: "NONE",
         };
         this.queryCache.set(normalizedQuery, result);
         return result;
@@ -287,8 +350,7 @@ class FastFuzzyMatcher {
                 const cost = a[i - 1] === b[j - 1] ? 0 : 1;
                 curr[j] = Math.min(prev[j] + 1, // deletion
                 curr[j - 1] + 1, // insertion
-                prev[j - 1] + cost // substitution
-                );
+                prev[j - 1] + cost);
                 // Transposition
                 if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
                     curr[j] = Math.min(curr[j], prevPrev[j - 2] + cost);
@@ -307,7 +369,7 @@ class FastFuzzyMatcher {
             return 1.0;
         // Base confidence decreases with distance
         const maxLen = Math.max(query.length, matched.length);
-        const similarity = 1 - (distance / maxLen);
+        const similarity = 1 - distance / maxLen;
         // Jaro-Winkler bonus for common prefix
         let prefixLen = 0;
         const maxPrefix = Math.min(4, Math.min(query.length, matched.length));
@@ -327,27 +389,39 @@ class FastFuzzyMatcher {
      * Soundex phonetic encoding
      */
     soundex(text) {
-        const s = text.toUpperCase().replace(/[^A-Z]/g, '');
+        const s = text.toUpperCase().replace(/[^A-Z]/g, "");
         if (s.length === 0)
-            return '0000';
+            return "0000";
         const codes = {
-            B: '1', F: '1', P: '1', V: '1',
-            C: '2', G: '2', J: '2', K: '2', Q: '2', S: '2', X: '2', Z: '2',
-            D: '3', T: '3',
-            L: '4',
-            M: '5', N: '5',
-            R: '6',
+            B: "1",
+            F: "1",
+            P: "1",
+            V: "1",
+            C: "2",
+            G: "2",
+            J: "2",
+            K: "2",
+            Q: "2",
+            S: "2",
+            X: "2",
+            Z: "2",
+            D: "3",
+            T: "3",
+            L: "4",
+            M: "5",
+            N: "5",
+            R: "6",
         };
         let result = s[0];
-        let prevCode = codes[s[0]] || '0';
+        let prevCode = codes[s[0]] || "0";
         for (let i = 1; i < s.length && result.length < 4; i++) {
-            const code = codes[s[i]] || '0';
-            if (code !== '0' && code !== prevCode) {
+            const code = codes[s[i]] || "0";
+            if (code !== "0" && code !== prevCode) {
                 result += code;
             }
             prevCode = code;
         }
-        return (result + '000').substring(0, 4);
+        return (result + "000").substring(0, 4);
     }
     // ============ Public API ============
     /**
@@ -372,18 +446,28 @@ class FastFuzzyMatcher {
      * Clear the query cache
      */
     clearCache() {
+        if (this.useRust && this.rustMatcher) {
+            this.rustMatcher.clearCache();
+            return;
+        }
         this.queryCache.clear();
     }
     /**
      * Get dictionary size
      */
     get size() {
+        if (this.useRust && this.rustMatcher) {
+            return this.rustMatcher.size();
+        }
         return this.exactTerms.size;
     }
     /**
      * Get deletion index size (for debugging)
      */
     get indexSize() {
+        if (this.useRust && this.rustMatcher) {
+            return this.rustMatcher.indexSize();
+        }
         return this.deletionIndex.size;
     }
     // ============ Static Factory Methods ============

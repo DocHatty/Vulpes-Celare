@@ -15,7 +15,10 @@ function getBinding() {
     return cachedBinding;
 }
 function isKernelEnabled() {
-    return process.env.VULPES_SCAN_ACCEL === "1";
+    // Rust scan kernel is now DEFAULT (promoted from opt-in).
+    // Set VULPES_SCAN_ACCEL=0 to disable and use pure TypeScript.
+    const val = process.env.VULPES_SCAN_ACCEL;
+    return val === undefined || val === "1";
 }
 const cache = new WeakMap();
 exports.RustScanKernel = {

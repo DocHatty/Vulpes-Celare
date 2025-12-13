@@ -71,7 +71,6 @@
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "^0.7.0",
-    "@flatten-js/interval-tree": "^2.0.3",
     "acp-sdk": "^1.0.3",
     "adm-zip": "^0.5.16",
     "better-sqlite3": "^12.5.0",

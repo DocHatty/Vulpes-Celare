@@ -172,6 +172,210 @@ export type VulpesNativeBinding = {
       replacement: string;
     }[],
   ) => string;
+
+  // FastFuzzyMatcher (Rust accelerator)
+  VulpesFuzzyMatcher?: new (
+    terms: string[],
+    config: {
+      maxEditDistance: number;
+      enablePhonetic: boolean;
+      minTermLength: number;
+      cacheSize: number;
+    },
+  ) => {
+    lookup(query: string): {
+      matched: boolean;
+      term: string | null;
+      distance: number;
+      confidence: number;
+      matchType: string;
+    };
+    has(query: string): boolean;
+    getConfidence(query: string): number;
+    clearCache(): void;
+    size(): number;
+    indexSize(): number;
+  };
+  createFirstNameMatcher?: (names: string[]) => {
+    lookup(query: string): {
+      matched: boolean;
+      term: string | null;
+      distance: number;
+      confidence: number;
+      matchType: string;
+    };
+    has(query: string): boolean;
+    getConfidence(query: string): number;
+    clearCache(): void;
+    size(): number;
+    indexSize(): number;
+  };
+  createSurnameMatcher?: (names: string[]) => {
+    lookup(query: string): {
+      matched: boolean;
+      term: string | null;
+      distance: number;
+      confidence: number;
+      matchType: string;
+    };
+    has(query: string): boolean;
+    getConfidence(query: string): number;
+    clearCache(): void;
+    size(): number;
+    indexSize(): number;
+  };
+
+  // OCR Chaos Detection (Rust accelerator)
+  analyzeChaos?: (text: string) => {
+    score: number;
+    indicators: {
+      digitSubstitutions: number;
+      caseChaosFactor: number;
+      spacingAnomalies: number;
+      charCorruption: number;
+    };
+    recommendedThreshold: number;
+    enableLabelBoost: boolean;
+    quality: string;
+  };
+  getConfidenceWeights?: (chaosScore: number) => {
+    properCase: number;
+    allCaps: number;
+    allLower: number;
+    chaosCase: number;
+    labelBoost: number;
+  };
+  calculateNameConfidence?: (
+    name: string,
+    chaosScore: number,
+    hasLabel: boolean,
+  ) => number;
+  classifyCasePattern?: (name: string) => string;
+  clearChaosCache?: () => void;
+
+  // Interval Tree / Span Overlap (Rust accelerator)
+  dropOverlappingSpansFast?: (
+    spans: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }[],
+  ) => number[];
+  mergeSpansFast?: (
+    spanArrays: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }[][],
+  ) => number[];
+  getIdenticalSpanGroups?: (
+    spans: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }[],
+  ) => number[][];
+  getFilterTypeSpecificity?: (filterType: string) => number;
+
+  // Full Interval Tree (Rust accelerator - replaces @flatten-js/interval-tree)
+  VulpesIntervalTree?: new () => {
+    insert(span: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }): string;
+    insertAll(
+      spans: {
+        characterStart: number;
+        characterEnd: number;
+        filterType: string;
+        confidence: number;
+        priority: number;
+        text: string;
+      }[],
+    ): void;
+    findOverlaps(
+      start: number,
+      end: number,
+    ): {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }[];
+    findOverlappingSpans(span: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }): {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }[];
+    hasOverlap(span: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }): boolean;
+    remove(span: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }): boolean;
+    removeByKey(key: string): boolean;
+    clear(): void;
+    getAllSpans(): {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }[];
+    size: number;
+    has(span: {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    }): boolean;
+    get(key: string): {
+      characterStart: number;
+      characterEnd: number;
+      filterType: string;
+      confidence: number;
+      priority: number;
+      text: string;
+    } | null;
+  };
 };
 
 type LoadOptions = {

@@ -71,6 +71,9 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
     private detectPatientAllCapsNames;
     /**
      * Pattern 4: Standalone ALL CAPS names
+     *
+     * IMPORTANT: Limit whitespace to 1-3 chars between words to avoid greedy matching
+     * that captures field labels like "PEDRO LINDBERG       DOB" as a single name.
      */
     private detectStandaloneAllCapsNames;
     /**

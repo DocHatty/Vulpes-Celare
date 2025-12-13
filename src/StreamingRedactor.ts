@@ -203,7 +203,11 @@ export class StreamingRedactor {
       : null;
     this.pendingNativeDetections = [];
 
-    const wantsKernel = process.env.VULPES_STREAM_KERNEL === "1";
+    // Rust streaming kernel is now DEFAULT (promoted from opt-in).
+    // Set VULPES_STREAM_KERNEL=0 to disable and use pure TypeScript.
+    const streamKernelEnv = process.env.VULPES_STREAM_KERNEL;
+    const wantsKernel =
+      streamKernelEnv === undefined || streamKernelEnv === "1";
     const binding = wantsKernel ? getStreamingBinding() : null;
     if (wantsKernel && binding?.VulpesStreamingKernel) {
       this.nativeKernel = new binding.VulpesStreamingKernel(

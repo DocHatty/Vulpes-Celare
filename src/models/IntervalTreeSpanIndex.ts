@@ -4,9 +4,14 @@
  * PERFORMANCE: Reduces overlap detection from O(n²) to O(log n + k)
  * where k is the number of overlapping spans returned.
  *
+ * RUST ACCELERATION:
+ * When VULPES_INTERVAL_ACCEL is enabled (default), uses Rust native implementation
+ * for ALL operations (insert, findOverlaps, remove, dropOverlappingSpans).
+ * Set VULPES_INTERVAL_ACCEL=0 to disable and fall back to TypeScript.
+ *
  * ALGORITHM:
  * Based on augmented interval trees (Cormen et al. 2009, Section 14.3).
- * Uses @flatten-js/interval-tree for production-ready implementation.
+ * Rust implementation provides full interval tree with O(log n) operations.
  *
  * KEY OPERATIONS:
  * - insert(span): O(log n)
@@ -18,8 +23,37 @@
  * @module redaction/models
  */
 
-import IntervalTree from "@flatten-js/interval-tree";
 import type { Span } from "./Span";
+import { loadNativeBinding, VulpesNativeBinding } from "../native/binding";
+
+// Cache the native binding
+let cachedBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
+  undefined;
+
+function getBinding(): ReturnType<typeof loadNativeBinding> | null {
+  if (cachedBinding !== undefined) return cachedBinding;
+  try {
+    cachedBinding = loadNativeBinding({ configureOrt: false });
+  } catch {
+    cachedBinding = null;
+  }
+  return cachedBinding;
+}
+
+function isIntervalAccelEnabled(): boolean {
+  // Rust interval tree is now DEFAULT (promoted from opt-in).
+  // Set VULPES_INTERVAL_ACCEL=0 to disable and use pure TypeScript.
+  const val = process.env.VULPES_INTERVAL_ACCEL;
+  return val === undefined || val === "1";
+}
+
+// Type for the Rust interval tree instance
+type RustIntervalTree =
+  NonNullable<
+    VulpesNativeBinding["VulpesIntervalTree"]
+  > extends new () => infer T
+    ? T
+    : never;
 
 /**
  * Scored span for overlap resolution
@@ -73,14 +107,34 @@ const TYPE_SPECIFICITY: Record<string, number> = {
 
 /**
  * IntervalTreeSpanIndex - High-performance span overlap management
+ *
+ * Uses Rust VulpesIntervalTree when available (default), falls back to TypeScript.
  */
 export class IntervalTreeSpanIndex {
-  private tree: IntervalTree;
-  private spanMap: Map<string, Span>;
+  // Rust implementation (preferred)
+  private rustTree: RustIntervalTree | null = null;
+
+  // TypeScript fallback implementation
+  private spanMap: Map<string, Span> = new Map();
+  private tsIntervals: Array<{ start: number; end: number; key: string }> = [];
+
+  private readonly useRust: boolean;
 
   constructor() {
-    this.tree = new IntervalTree();
-    this.spanMap = new Map();
+    // Try to use Rust implementation
+    if (isIntervalAccelEnabled()) {
+      const binding = getBinding();
+      if (binding?.VulpesIntervalTree) {
+        try {
+          this.rustTree = new binding.VulpesIntervalTree();
+          this.useRust = true;
+          return;
+        } catch {
+          // Fall through to TS implementation
+        }
+      }
+    }
+    this.useRust = false;
   }
 
   /**
@@ -91,19 +145,79 @@ export class IntervalTreeSpanIndex {
   }
 
   /**
+   * Convert Span to Rust format
+   */
+  private toRustSpan(span: Span): {
+    characterStart: number;
+    characterEnd: number;
+    filterType: string;
+    confidence: number;
+    priority: number;
+    text: string;
+  } {
+    return {
+      characterStart: span.characterStart,
+      characterEnd: span.characterEnd,
+      filterType: String(span.filterType),
+      confidence: span.confidence,
+      priority: span.priority,
+      text: span.text,
+    };
+  }
+
+  /**
+   * Convert Rust span back to Span type
+   */
+  private fromRustSpan(rustSpan: {
+    characterStart: number;
+    characterEnd: number;
+    filterType: string;
+    confidence: number;
+    priority: number;
+    text: string;
+  }): Span {
+    // Create a minimal Span-like object
+    // The caller will need to handle full Span reconstruction if needed
+    return {
+      characterStart: rustSpan.characterStart,
+      characterEnd: rustSpan.characterEnd,
+      filterType: rustSpan.filterType,
+      confidence: rustSpan.confidence,
+      priority: rustSpan.priority,
+      text: rustSpan.text,
+      length: rustSpan.characterEnd - rustSpan.characterStart,
+    } as Span;
+  }
+
+  /**
    * Insert a span into the index
    * O(log n)
    */
   insert(span: Span): void {
+    if (this.useRust && this.rustTree) {
+      this.rustTree.insert(this.toRustSpan(span));
+      return;
+    }
+
+    // TypeScript fallback
     const key = this.getSpanKey(span);
     this.spanMap.set(key, span);
-    this.tree.insert([span.characterStart, span.characterEnd], key);
+    this.tsIntervals.push({
+      start: span.characterStart,
+      end: span.characterEnd,
+      key,
+    });
   }
 
   /**
    * Insert multiple spans
    */
   insertAll(spans: Span[]): void {
+    if (this.useRust && this.rustTree) {
+      this.rustTree.insertAll(spans.map((s) => this.toRustSpan(s)));
+      return;
+    }
+
     for (const span of spans) {
       this.insert(span);
     }
@@ -114,10 +228,21 @@ export class IntervalTreeSpanIndex {
    * O(log n + k) where k = number of overlaps
    */
   findOverlaps(start: number, end: number): Span[] {
-    const results = this.tree.search([start, end]) as string[];
-    return results
-      .map((key) => this.spanMap.get(key))
-      .filter((span): span is Span => span !== undefined);
+    if (this.useRust && this.rustTree) {
+      const rustResults = this.rustTree.findOverlaps(start, end);
+      return rustResults.map((r) => this.fromRustSpan(r));
+    }
+
+    // TypeScript fallback: linear scan
+    const results: Span[] = [];
+    for (const interval of this.tsIntervals) {
+      // Check for overlap: not (end1 <= start2 || start1 >= end2)
+      if (!(end <= interval.start || start >= interval.end)) {
+        const span = this.spanMap.get(interval.key);
+        if (span) results.push(span);
+      }
+    }
+    return results;
   }
 
   /**
@@ -132,8 +257,13 @@ export class IntervalTreeSpanIndex {
    * O(log n)
    */
   hasOverlap(span: Span): boolean {
-    const results = this.tree.search([span.characterStart, span.characterEnd]);
-    return results.length > 0;
+    if (this.useRust && this.rustTree) {
+      return this.rustTree.hasOverlap(this.toRustSpan(span));
+    }
+
+    // TypeScript fallback
+    const overlaps = this.findOverlaps(span.characterStart, span.characterEnd);
+    return overlaps.length > 0;
   }
 
   /**
@@ -141,10 +271,15 @@ export class IntervalTreeSpanIndex {
    * O(log n)
    */
   remove(span: Span): boolean {
+    if (this.useRust && this.rustTree) {
+      return this.rustTree.remove(this.toRustSpan(span));
+    }
+
+    // TypeScript fallback
     const key = this.getSpanKey(span);
     if (this.spanMap.has(key)) {
       this.spanMap.delete(key);
-      this.tree.remove([span.characterStart, span.characterEnd], key);
+      this.tsIntervals = this.tsIntervals.filter((i) => i.key !== key);
       return true;
     }
     return false;
@@ -154,14 +289,23 @@ export class IntervalTreeSpanIndex {
    * Clear the index
    */
   clear(): void {
-    this.tree = new IntervalTree();
+    if (this.useRust && this.rustTree) {
+      this.rustTree.clear();
+      return;
+    }
+
     this.spanMap.clear();
+    this.tsIntervals = [];
   }
 
   /**
    * Get all spans in the index
    */
   getAllSpans(): Span[] {
+    if (this.useRust && this.rustTree) {
+      return this.rustTree.getAllSpans().map((r) => this.fromRustSpan(r));
+    }
+
     return Array.from(this.spanMap.values());
   }
 
@@ -169,6 +313,10 @@ export class IntervalTreeSpanIndex {
    * Get count of spans
    */
   get size(): number {
+    if (this.useRust && this.rustTree) {
+      return this.rustTree.size;
+    }
+
     return this.spanMap.size;
   }
 
@@ -201,6 +349,37 @@ export class IntervalTreeSpanIndex {
   static dropOverlappingSpans(spans: Span[]): Span[] {
     if (spans.length === 0) return [];
     if (spans.length === 1) return spans;
+
+    // Try Rust accelerator first
+    if (isIntervalAccelEnabled()) {
+      const binding = getBinding();
+      if (binding?.dropOverlappingSpansFast) {
+        try {
+          // Convert spans to Rust input format
+          const rustSpans = spans.map((s) => ({
+            characterStart: s.characterStart,
+            characterEnd: s.characterEnd,
+            filterType: String(s.filterType),
+            confidence: s.confidence,
+            priority: s.priority,
+            text: s.text,
+          }));
+
+          const keptIndices = binding.dropOverlappingSpansFast(
+            rustSpans,
+          ) as number[];
+
+          // Map back to original spans and sort by position
+          const kept = keptIndices
+            .map((i) => spans[i])
+            .filter((s): s is Span => Boolean(s));
+
+          return kept.sort((a, b) => a.characterStart - b.characterStart);
+        } catch {
+          // Fall back to TS implementation
+        }
+      }
+    }
 
     // STEP 1: Remove exact duplicates (same position + type)
     // This handles filters that generate multiple matches for the same text

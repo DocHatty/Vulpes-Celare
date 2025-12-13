@@ -17,6 +17,7 @@ const NameFilterConstants_1 = require("./constants/NameFilterConstants");
 const DocumentVocabulary_1 = require("../vocabulary/DocumentVocabulary");
 const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
+const RustNameScanner_1 = require("../utils/RustNameScanner");
 class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "NAME";
@@ -26,11 +27,21 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const spans = [];
+        // Rust accelerator mode (shared with SmartNameFilterSpan)
+        // Default to level 2 (Last,First + First Last patterns in Rust)
+        const accelMode = process.env.VULPES_NAME_ACCEL ?? "2";
+        const useRustCommaNames = accelMode === "1" || accelMode === "2" || accelMode === "3";
+        const useRustFirstLastNames = accelMode === "2" || accelMode === "3";
         // Pattern -1: Labeled name fields ("Name:", "Patient:", "Member Name:", etc.)
         // This is high-sensitivity and high-precision because it only triggers in explicit name fields.
         this.detectLabeledNameFields(text, spans);
         // Pattern 0: Last, First format (medical records format)
-        this.detectLastFirstNames(text, spans);
+        if (useRustCommaNames) {
+            this.detectRustLastFirstNames(text, spans);
+        }
+        else {
+            this.detectLastFirstNames(text, spans);
+        }
         // Pattern 0.5: Titled names (Dr. Smith, Mr. Jones)
         this.detectTitledNames(text, spans);
         // Pattern 0.6: Family relationship names (Daughter: Emma, Wife: Mary)
@@ -50,7 +61,12 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // Pattern 7: Names after age/gender descriptors
         this.detectAgeGenderNames(text, spans);
         // Pattern 8: General full names (most permissive, run last)
-        this.detectGeneralFullNames(text, spans);
+        if (useRustFirstLastNames) {
+            this.detectRustFirstLastNames(text, spans);
+        }
+        else {
+            this.detectGeneralFullNames(text, spans);
+        }
         // Pattern 9: Names with credential suffixes (RN, NP, MD, etc.)
         this.detectNamesWithCredentials(text, spans);
         return spans;
@@ -884,6 +900,106 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 disambiguationScore: null,
             });
             spans.push(span);
+        }
+    }
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RUST ACCELERATOR METHODS
+    // ═══════════════════════════════════════════════════════════════════════════
+    /**
+     * Rust-accelerated Last, First detection
+     * Delegates to VulpesNameScanner.detectLastFirst() for performance
+     */
+    detectRustLastFirstNames(text, spans) {
+        const detections = RustNameScanner_1.RustNameScanner.detectLastFirst(text);
+        if (!detections.length)
+            return;
+        for (const d of detections) {
+            const fullName = d.text;
+            const start = d.characterStart;
+            const end = d.characterEnd;
+            // Apply same provider-title exclusion as TS path
+            const lookbackStart = Math.max(0, start - 30);
+            const textBefore = text.substring(lookbackStart, start);
+            const titleNamePattern = new RegExp(`\\b(${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`, "i");
+            if (titleNamePattern.test(textBefore)) {
+                continue;
+            }
+            // Skip if second part is a credential
+            const parts = fullName.split(/\s*,\s*/);
+            if (parts.length === 2) {
+                const secondPart = parts[1].split(/\s+/)[0];
+                if (NameDetectionUtils_1.PROVIDER_CREDENTIALS.has(secondPart.toUpperCase())) {
+                    continue;
+                }
+            }
+            if (!this.isWhitelistedLastFirst(fullName)) {
+                spans.push(new Span_1.Span({
+                    text: fullName,
+                    originalValue: fullName,
+                    characterStart: start,
+                    characterEnd: end,
+                    filterType: Span_1.FilterType.NAME,
+                    confidence: d.confidence,
+                    priority: this.getPriority(),
+                    context: this.extractContext(text, start, end),
+                    window: [],
+                    replacement: null,
+                    salt: null,
+                    pattern: d.pattern,
+                    applied: false,
+                    ignored: false,
+                    ambiguousWith: [],
+                    disambiguationScore: null,
+                }));
+            }
+        }
+    }
+    /**
+     * Rust-accelerated First Last detection
+     * Delegates to VulpesNameScanner.detectFirstLast() for performance
+     */
+    detectRustFirstLastNames(text, spans) {
+        const detections = RustNameScanner_1.RustNameScanner.detectFirstLast(text);
+        if (!detections.length)
+            return;
+        for (const d of detections) {
+            const fullName = d.text;
+            const start = d.characterStart;
+            const end = d.characterEnd;
+            // Exclude provider-title contexts
+            const lookbackStart = Math.max(0, start - 30);
+            const textBefore = text.substring(lookbackStart, start);
+            const titlePattern = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`, "i");
+            if (titlePattern.test(textBefore)) {
+                continue;
+            }
+            // Exclude credentials immediately after the match
+            const after = text.substring(end, Math.min(text.length, end + 40));
+            const credentialPattern = /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|RN|NP|PA|PA-C|FACS|FACP|FACC)\b/i;
+            if (credentialPattern.test(after)) {
+                continue;
+            }
+            if (!this.isWhitelisted(fullName, false, text) &&
+                this.isLikelyPersonName(fullName)) {
+                spans.push(new Span_1.Span({
+                    text: fullName,
+                    originalValue: fullName,
+                    characterStart: start,
+                    characterEnd: end,
+                    filterType: Span_1.FilterType.NAME,
+                    confidence: d.confidence,
+                    priority: this.getPriority(),
+                    context: this.extractContext(text, start, end),
+                    window: [],
+                    replacement: null,
+                    salt: null,
+                    pattern: d.pattern,
+                    applied: false,
+                    ignored: false,
+                    ambiguousWith: [],
+                    disambiguationScore: null,
+                }));
+            }
         }
     }
 }

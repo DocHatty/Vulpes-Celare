@@ -17,7 +17,10 @@ const IntervalTreeSpanIndex_1 = require("./IntervalTreeSpanIndex");
 const binding_1 = require("../native/binding");
 let cachedSpanBinding = undefined;
 function isSpanAccelEnabled() {
-    return process.env.VULPES_SPAN_ACCEL === "1";
+    // Rust span acceleration is now DEFAULT (promoted from opt-in).
+    // Set VULPES_SPAN_ACCEL=0 to disable and use pure TypeScript.
+    const val = process.env.VULPES_SPAN_ACCEL;
+    return val === undefined || val === "1";
 }
 function getSpanBinding() {
     if (cachedSpanBinding !== undefined)

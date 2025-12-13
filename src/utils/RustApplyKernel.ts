@@ -20,7 +20,10 @@ function getBinding(): ReturnType<typeof loadNativeBinding> | null {
 }
 
 function isEnabled(): boolean {
-  return process.env.VULPES_APPLY_SPANS_ACCEL === "1";
+  // Rust apply kernel is now DEFAULT (promoted from opt-in).
+  // Set VULPES_APPLY_SPANS_ACCEL=0 to disable and use pure TypeScript.
+  const val = process.env.VULPES_APPLY_SPANS_ACCEL;
+  return val === undefined || val === "1";
 }
 
 export const RustApplyKernel = {

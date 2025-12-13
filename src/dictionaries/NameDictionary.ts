@@ -56,7 +56,10 @@ export class NameDictionary {
   } | null = null;
 
   private static isPhoneticEnabled(): boolean {
-    return process.env.VULPES_ENABLE_PHONETIC === "1";
+    // Rust phonetic matching is now DEFAULT (promoted from opt-in).
+    // Set VULPES_ENABLE_PHONETIC=0 to disable.
+    const val = process.env.VULPES_ENABLE_PHONETIC;
+    return val === undefined || val === "1";
   }
 
   private static getPhoneticThreshold(): number {

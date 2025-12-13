@@ -104,9 +104,9 @@ TypeScript orchestrates policies and workflows; Rust owns ONNX inference and vis
 
 The same native addon also provides **crypto/provenance helpers** (SHA-256, HMAC-SHA256, Merkle root) used by trust bundles and DICOM hashing.
 
-### Optional Rust Text Accelerators
+### Rust Text Accelerators (Default Enabled)
 
-Additional Rust accelerators exist for text hotspots (tokenization, span overlap + span application, name scanning, post-filter pruning, and a multi-identifier scan kernel for regex-heavy filters). They are feature-flagged until fully validated; see `docs/internal/PROFILING.md`.
+11 Rust accelerators handle text hotspots: phonetic matching, tokenization, span overlap/application, name scanning, post-filter pruning, fuzzy matching, OCR chaos detection, and multi-identifier scanning. All are **default-enabled** with TypeScript fallbacks for HIPAA safety. Set `VULPES_*_ACCEL=0` to disable specific accelerators. See `RUST_IMPLEMENTATION_STATUS.md` for details.
 
 ### ONNX Runtime (Windows)
 

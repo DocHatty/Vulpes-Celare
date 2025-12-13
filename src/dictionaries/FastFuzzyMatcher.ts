@@ -3,6 +3,10 @@
  *
  * PERFORMANCE: 100-1000x faster than traditional approaches
  *
+ * RUST ACCELERATION:
+ * When VULPES_FUZZY_ACCEL is enabled (default), uses Rust native implementation
+ * for 10-50x additional speedup. Set VULPES_FUZZY_ACCEL=0 to disable.
+ *
  * ALGORITHM:
  * Based on SymSpell's Symmetric Delete algorithm by Wolf Garbe (2012):
  * - Pre-compute deletion neighborhood for dictionary terms
@@ -24,14 +28,54 @@
  * @module redaction/dictionaries
  */
 
-import { LRUCache } from 'lru-cache';
+import { LRUCache } from "lru-cache";
+import { loadNativeBinding } from "../native/binding";
+
+// Rust accelerator types
+type RustFuzzyMatcher = {
+  lookup: (query: string) => RustMatchResult;
+  has: (query: string) => boolean;
+  getConfidence: (query: string) => number;
+  clearCache: () => void;
+  size: () => number;
+  indexSize: () => number;
+};
+
+type RustMatchResult = {
+  matched: boolean;
+  term: string | null;
+  distance: number;
+  confidence: number;
+  matchType: string;
+};
+
+// Cache the native binding
+let cachedBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
+  undefined;
+
+function getBinding(): ReturnType<typeof loadNativeBinding> | null {
+  if (cachedBinding !== undefined) return cachedBinding;
+  try {
+    cachedBinding = loadNativeBinding({ configureOrt: false });
+  } catch {
+    cachedBinding = null;
+  }
+  return cachedBinding;
+}
+
+function isFuzzyAccelEnabled(): boolean {
+  // Rust fuzzy matching is now DEFAULT (promoted from opt-in).
+  // Set VULPES_FUZZY_ACCEL=0 to disable and use pure TypeScript.
+  const val = process.env.VULPES_FUZZY_ACCEL;
+  return val === undefined || val === "1";
+}
 
 export interface FastMatchResult {
   matched: boolean;
   term: string | null;
   distance: number;
   confidence: number;
-  matchType: 'EXACT' | 'DELETE_1' | 'DELETE_2' | 'FUZZY' | 'PHONETIC' | 'NONE';
+  matchType: "EXACT" | "DELETE_1" | "DELETE_2" | "FUZZY" | "PHONETIC" | "NONE";
 }
 
 export interface FastMatcherConfig {
@@ -63,13 +107,17 @@ interface DeletionEntry {
 export class FastFuzzyMatcher {
   private readonly config: FastMatcherConfig;
 
-  // Primary data structures
+  // Primary data structures (TS fallback)
   private readonly exactTerms: Set<string>;
   private readonly deletionIndex: Map<string, DeletionEntry[]>;
   private readonly phoneticIndex: Map<string, string[]>;
 
   // LRU cache for repeated queries
   private readonly queryCache: LRUCache<string, FastMatchResult>;
+
+  // Rust accelerator (if available)
+  private readonly rustMatcher: RustFuzzyMatcher | null = null;
+  private readonly useRust: boolean = false;
 
   // Statistics for monitoring
   private stats = {
@@ -91,7 +139,30 @@ export class FastFuzzyMatcher {
       max: this.config.cacheSize,
     });
 
-    // Build indexes
+    // Try to use Rust accelerator
+    if (isFuzzyAccelEnabled()) {
+      const binding = getBinding();
+      if (binding?.VulpesFuzzyMatcher) {
+        try {
+          const rustConfig = {
+            maxEditDistance: this.config.maxEditDistance,
+            enablePhonetic: this.config.enablePhonetic,
+            minTermLength: this.config.minTermLength,
+            cacheSize: this.config.cacheSize,
+          };
+          this.rustMatcher = new binding.VulpesFuzzyMatcher(
+            terms,
+            rustConfig,
+          ) as RustFuzzyMatcher;
+          this.useRust = true;
+          return; // Skip TS index build
+        } catch {
+          // Fall back to TS implementation
+        }
+      }
+    }
+
+    // Build TS indexes (fallback)
     this.buildIndex(terms);
   }
 
@@ -110,7 +181,10 @@ export class FastFuzzyMatcher {
       this.exactTerms.add(term);
 
       // Generate deletion neighborhood
-      const deletions = this.generateDeletions(term, this.config.maxEditDistance);
+      const deletions = this.generateDeletions(
+        term,
+        this.config.maxEditDistance,
+      );
 
       for (const deletion of deletions) {
         if (!this.deletionIndex.has(deletion.text)) {
@@ -141,13 +215,15 @@ export class FastFuzzyMatcher {
    */
   private generateDeletions(
     term: string,
-    maxDistance: number
+    maxDistance: number,
   ): Array<{ text: string; distance: number }> {
     const result: Array<{ text: string; distance: number }> = [];
     const seen = new Set<string>();
 
     // BFS to generate all deletions
-    const queue: Array<{ text: string; distance: number }> = [{ text: term, distance: 0 }];
+    const queue: Array<{ text: string; distance: number }> = [
+      { text: term, distance: 0 },
+    ];
 
     while (queue.length > 0) {
       const current = queue.shift()!;
@@ -162,7 +238,10 @@ export class FastFuzzyMatcher {
       for (let i = 0; i < current.text.length; i++) {
         const deletion = current.text.slice(0, i) + current.text.slice(i + 1);
 
-        if (deletion.length >= this.config.minTermLength - maxDistance && !seen.has(deletion)) {
+        if (
+          deletion.length >= this.config.minTermLength - maxDistance &&
+          !seen.has(deletion)
+        ) {
           seen.add(deletion);
           queue.push({ text: deletion, distance: current.distance + 1 });
         }
@@ -182,6 +261,18 @@ export class FastFuzzyMatcher {
    * 4. Return best match
    */
   lookup(query: string): FastMatchResult {
+    // Use Rust accelerator if available
+    if (this.useRust && this.rustMatcher) {
+      const rustResult = this.rustMatcher.lookup(query);
+      return {
+        matched: rustResult.matched,
+        term: rustResult.term,
+        distance: rustResult.distance,
+        confidence: rustResult.confidence,
+        matchType: rustResult.matchType as FastMatchResult["matchType"],
+      };
+    }
+
     const normalizedQuery = query.toLowerCase().trim();
 
     // Check cache first
@@ -199,7 +290,7 @@ export class FastFuzzyMatcher {
         term: normalizedQuery,
         distance: 0,
         confidence: 1.0,
-        matchType: 'EXACT',
+        matchType: "EXACT",
       };
       this.queryCache.set(normalizedQuery, result);
       return result;
@@ -214,7 +305,10 @@ export class FastFuzzyMatcher {
         let bestMatch: { term: string; distance: number } | null = null;
 
         for (const candidate of candidates) {
-          const distance = this.damerauLevenshtein(normalizedQuery, candidate.term);
+          const distance = this.damerauLevenshtein(
+            normalizedQuery,
+            candidate.term,
+          );
 
           if (distance <= this.config.maxEditDistance) {
             if (!bestMatch || distance < bestMatch.distance) {
@@ -225,13 +319,17 @@ export class FastFuzzyMatcher {
 
         if (bestMatch) {
           this.stats.deletionHits++;
-          const confidence = this.calculateConfidence(normalizedQuery, bestMatch.term, bestMatch.distance);
+          const confidence = this.calculateConfidence(
+            normalizedQuery,
+            bestMatch.term,
+            bestMatch.distance,
+          );
           const result: FastMatchResult = {
             matched: true,
             term: bestMatch.term,
             distance: bestMatch.distance,
             confidence,
-            matchType: bestMatch.distance === 1 ? 'DELETE_1' : 'DELETE_2',
+            matchType: bestMatch.distance === 1 ? "DELETE_1" : "DELETE_2",
           };
           this.queryCache.set(normalizedQuery, result);
           return result;
@@ -240,7 +338,10 @@ export class FastFuzzyMatcher {
     }
 
     // 3. Phonetic fallback
-    if (this.config.enablePhonetic && normalizedQuery.length >= this.config.minTermLength) {
+    if (
+      this.config.enablePhonetic &&
+      normalizedQuery.length >= this.config.minTermLength
+    ) {
       const phonetic = this.soundex(normalizedQuery);
       const phoneticMatches = this.phoneticIndex.get(phonetic);
 
@@ -255,15 +356,23 @@ export class FastFuzzyMatcher {
           }
         }
 
-        if (bestMatch && bestMatch.distance <= this.config.maxEditDistance + 1) {
+        if (
+          bestMatch &&
+          bestMatch.distance <= this.config.maxEditDistance + 1
+        ) {
           this.stats.phoneticHits++;
-          const confidence = this.calculateConfidence(normalizedQuery, bestMatch.term, bestMatch.distance) * 0.9;
+          const confidence =
+            this.calculateConfidence(
+              normalizedQuery,
+              bestMatch.term,
+              bestMatch.distance,
+            ) * 0.9;
           const result: FastMatchResult = {
             matched: true,
             term: bestMatch.term,
             distance: bestMatch.distance,
             confidence,
-            matchType: 'PHONETIC',
+            matchType: "PHONETIC",
           };
           this.queryCache.set(normalizedQuery, result);
           return result;
@@ -278,7 +387,7 @@ export class FastFuzzyMatcher {
       term: null,
       distance: Infinity,
       confidence: 0,
-      matchType: 'NONE',
+      matchType: "NONE",
     };
     this.queryCache.set(normalizedQuery, result);
     return result;
@@ -306,7 +415,10 @@ export class FastFuzzyMatcher {
     }
 
     // Generate deletions of query and look up
-    const queryDeletions = this.generateDeletions(query, this.config.maxEditDistance);
+    const queryDeletions = this.generateDeletions(
+      query,
+      this.config.maxEditDistance,
+    );
 
     for (const deletion of queryDeletions) {
       // Check exact match of deletion in dictionary
@@ -366,9 +478,9 @@ export class FastFuzzyMatcher {
         const cost = a[i - 1] === b[j - 1] ? 0 : 1;
 
         curr[j] = Math.min(
-          prev[j] + 1,      // deletion
-          curr[j - 1] + 1,  // insertion
-          prev[j - 1] + cost // substitution
+          prev[j] + 1, // deletion
+          curr[j - 1] + 1, // insertion
+          prev[j - 1] + cost, // substitution
         );
 
         // Transposition
@@ -387,12 +499,16 @@ export class FastFuzzyMatcher {
   /**
    * Calculate confidence score based on match quality
    */
-  private calculateConfidence(query: string, matched: string, distance: number): number {
+  private calculateConfidence(
+    query: string,
+    matched: string,
+    distance: number,
+  ): number {
     if (distance === 0) return 1.0;
 
     // Base confidence decreases with distance
     const maxLen = Math.max(query.length, matched.length);
-    const similarity = 1 - (distance / maxLen);
+    const similarity = 1 - distance / maxLen;
 
     // Jaro-Winkler bonus for common prefix
     let prefixLen = 0;
@@ -414,30 +530,42 @@ export class FastFuzzyMatcher {
    * Soundex phonetic encoding
    */
   private soundex(text: string): string {
-    const s = text.toUpperCase().replace(/[^A-Z]/g, '');
-    if (s.length === 0) return '0000';
+    const s = text.toUpperCase().replace(/[^A-Z]/g, "");
+    if (s.length === 0) return "0000";
 
     const codes: Record<string, string> = {
-      B: '1', F: '1', P: '1', V: '1',
-      C: '2', G: '2', J: '2', K: '2', Q: '2', S: '2', X: '2', Z: '2',
-      D: '3', T: '3',
-      L: '4',
-      M: '5', N: '5',
-      R: '6',
+      B: "1",
+      F: "1",
+      P: "1",
+      V: "1",
+      C: "2",
+      G: "2",
+      J: "2",
+      K: "2",
+      Q: "2",
+      S: "2",
+      X: "2",
+      Z: "2",
+      D: "3",
+      T: "3",
+      L: "4",
+      M: "5",
+      N: "5",
+      R: "6",
     };
 
     let result = s[0];
-    let prevCode = codes[s[0]] || '0';
+    let prevCode = codes[s[0]] || "0";
 
     for (let i = 1; i < s.length && result.length < 4; i++) {
-      const code = codes[s[i]] || '0';
-      if (code !== '0' && code !== prevCode) {
+      const code = codes[s[i]] || "0";
+      if (code !== "0" && code !== prevCode) {
         result += code;
       }
       prevCode = code;
     }
 
-    return (result + '000').substring(0, 4);
+    return (result + "000").substring(0, 4);
   }
 
   // ============ Public API ============
@@ -467,6 +595,10 @@ export class FastFuzzyMatcher {
    * Clear the query cache
    */
   clearCache(): void {
+    if (this.useRust && this.rustMatcher) {
+      this.rustMatcher.clearCache();
+      return;
+    }
     this.queryCache.clear();
   }
 
@@ -474,6 +606,9 @@ export class FastFuzzyMatcher {
    * Get dictionary size
    */
   get size(): number {
+    if (this.useRust && this.rustMatcher) {
+      return this.rustMatcher.size();
+    }
     return this.exactTerms.size;
   }
 
@@ -481,6 +616,9 @@ export class FastFuzzyMatcher {
    * Get deletion index size (for debugging)
    */
   get indexSize(): number {
+    if (this.useRust && this.rustMatcher) {
+      return this.rustMatcher.indexSize();
+    }
     return this.deletionIndex.size;
   }
 

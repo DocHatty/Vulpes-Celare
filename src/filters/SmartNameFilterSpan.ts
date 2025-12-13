@@ -87,7 +87,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
 
-    const accelMode = process.env.VULPES_NAME_ACCEL;
+    // Rust accelerators are now DEFAULT (promoted from opt-in).
+    // Set VULPES_NAME_ACCEL=0 to disable and use pure TypeScript.
+    // Levels: 1 = Last,First only, 2 = +First Last, 3 = full smart (default)
+    const accelMode = process.env.VULPES_NAME_ACCEL ?? "2"; // Default to level 2
     const useRustCommaNames =
       accelMode === "1" || accelMode === "2" || accelMode === "3";
     const useRustFirstLastNames = accelMode === "2" || accelMode === "3";
@@ -564,9 +567,14 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Pattern 4: Standalone ALL CAPS names
+   *
+   * IMPORTANT: Limit whitespace to 1-3 chars between words to avoid greedy matching
+   * that captures field labels like "PEDRO LINDBERG       DOB" as a single name.
    */
   private detectStandaloneAllCapsNames(text: string, spans: Span[]): void {
-    const pattern = /\b([A-Z]{2,}[ \t]+[A-Z]{2,}(?:[ \t]+[A-Z]{2,})?)\b/g;
+    // Use {1,3} for whitespace to prevent greedy over-matching across field boundaries
+    const pattern =
+      /\b([A-Z]{2,}[ \t]{1,3}[A-Z]{2,}(?:[ \t]{1,3}[A-Z]{2,})?)\b/g;
     pattern.lastIndex = 0;
     let match;
 
@@ -1287,10 +1295,18 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   private detectGeneralFullNames(text: string, spans: Span[]): void {
     // STRICT pattern: First Last format with proper capitalization
     // Each word must start with capital letter followed by at least 2 lowercase letters
-    // This matches: "John Smith", "Mary Johnson Jr."
+    // This matches: "John Smith", "Mary Johnson Jr.", "Patricia McKenzie", "Ravi Andrew Lindberg"
     // This does NOT match: "Apixaban 5mg", "takes Apixaban", "CT Scan"
-    const pattern =
-      /\b([A-Z][a-z]{2,}[ \t]+[A-Z][a-z]{2,}(?:[ \t]+(?:Jr\.?|Sr\.?|II|III|IV))?)\b/g;
+    //
+    // Name word pattern allows:
+    // - Simple: Capital + 2+ lowercase (John, Mary)
+    // - Mc/Mac prefix: Mc/Mac + Capital + lowercase (McKenzie, MacDonald)
+    // - O' prefix: O' + Capital + lowercase (O'Brien, O'Connor)
+    const nameWord = `(?:[A-Z][a-z]{2,}|(?:Mc|Mac|O')[A-Z][a-z]+)`;
+    const pattern = new RegExp(
+      `\\b(${nameWord}[ \\t]+${nameWord}(?:[ \\t]+${nameWord})?(?:[ \\t]+(?:Jr\\.?|Sr\\.?|II|III|IV))?)\\b`,
+      "g",
+    );
     pattern.lastIndex = 0;
     let match;
 

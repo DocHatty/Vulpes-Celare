@@ -4,6 +4,10 @@
  * Measures OCR quality and text corruption to enable adaptive detection thresholds.
  * Documents with higher chaos scores should use more permissive matching patterns.
  *
+ * RUST ACCELERATION:
+ * When VULPES_CHAOS_ACCEL is enabled (default), uses Rust native implementation
+ * for 5-15x speedup. Set VULPES_CHAOS_ACCEL=0 to disable.
+ *
  * MATHEMATICAL FOUNDATION:
  * 1. Shannon Entropy - Measures character distribution randomness
  *    Formula: H = -sum(p_i * log2(p_i)) where p_i = frequency of character i
@@ -43,7 +47,7 @@ export interface ChaosAnalysis {
     /** Whether to enable permissive label-based detection */
     enableLabelBoost: boolean;
     /** Human-readable quality assessment */
-    quality: 'CLEAN' | 'NOISY' | 'DEGRADED' | 'CHAOTIC';
+    quality: "CLEAN" | "NOISY" | "DEGRADED" | "CHAOTIC";
 }
 export interface ConfidenceWeights {
     /** Base confidence for proper case (Patricia Johnson) */
@@ -91,7 +95,7 @@ export declare class OcrChaosDetector {
     /**
      * Classify the case pattern of a name
      */
-    static classifyCasePattern(name: string): 'PROPER' | 'ALL_CAPS' | 'ALL_LOWER' | 'CHAOS';
+    static classifyCasePattern(name: string): "PROPER" | "ALL_CAPS" | "ALL_LOWER" | "CHAOS";
     /**
      * Measure digit-for-letter substitutions
      * Higher score = more OCR digit substitutions detected

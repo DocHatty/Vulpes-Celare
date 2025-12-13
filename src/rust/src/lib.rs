@@ -2,18 +2,21 @@
 use napi_derive::napi;
 use std::sync::{Arc, Mutex};
 
-pub mod vision;
-pub mod crypto;
-pub mod phonetic;
-pub mod span;
-pub mod tokenize;
-pub mod name;
-pub mod postfilter;
-pub mod streaming;
-pub mod name_stream;
-pub mod scan;
 pub mod apply;
+pub mod chaos;
+pub mod crypto;
+pub mod fuzzy;
+pub mod interval;
+pub mod name;
+pub mod name_stream;
+pub mod phonetic;
+pub mod postfilter;
+pub mod scan;
 pub mod scan_stream;
+pub mod span;
+pub mod streaming;
+pub mod tokenize;
+pub mod vision;
 use vision::OcrEngine;
 
 #[napi]

@@ -3,6 +3,10 @@
  *
  * PERFORMANCE: 100-1000x faster than traditional approaches
  *
+ * RUST ACCELERATION:
+ * When VULPES_FUZZY_ACCEL is enabled (default), uses Rust native implementation
+ * for 10-50x additional speedup. Set VULPES_FUZZY_ACCEL=0 to disable.
+ *
  * ALGORITHM:
  * Based on SymSpell's Symmetric Delete algorithm by Wolf Garbe (2012):
  * - Pre-compute deletion neighborhood for dictionary terms
@@ -28,7 +32,7 @@ export interface FastMatchResult {
     term: string | null;
     distance: number;
     confidence: number;
-    matchType: 'EXACT' | 'DELETE_1' | 'DELETE_2' | 'FUZZY' | 'PHONETIC' | 'NONE';
+    matchType: "EXACT" | "DELETE_1" | "DELETE_2" | "FUZZY" | "PHONETIC" | "NONE";
 }
 export interface FastMatcherConfig {
     /** Maximum edit distance for fuzzy matching (1 or 2 recommended) */
@@ -46,6 +50,8 @@ export declare class FastFuzzyMatcher {
     private readonly deletionIndex;
     private readonly phoneticIndex;
     private readonly queryCache;
+    private readonly rustMatcher;
+    private readonly useRust;
     private stats;
     constructor(terms: string[], config?: Partial<FastMatcherConfig>);
     /**

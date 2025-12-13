@@ -24,8 +24,10 @@ pub(crate) static REGEX_LAST_FIRST: Lazy<Regex> = Lazy::new(|| {
 });
 
 pub(crate) static REGEX_LOWER_LAST_FIRST: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"\b([a-z][a-z'`.-]{2,20})\s*,\s*([a-z][a-z'`.-]{2,30})(?:\s+[a-z][a-z'`.-]{2,30})?\b")
-        .expect("invalid REGEX_LOWER_LAST_FIRST")
+    Regex::new(
+        r"\b([a-z][a-z'`.-]{2,20})\s*,\s*([a-z][a-z'`.-]{2,30})(?:\s+[a-z][a-z'`.-]{2,30})?\b",
+    )
+    .expect("invalid REGEX_LOWER_LAST_FIRST")
 });
 
 pub(crate) static REGEX_CHAOS_LAST_FIRST: Lazy<Regex> = Lazy::new(|| {
@@ -34,8 +36,14 @@ pub(crate) static REGEX_CHAOS_LAST_FIRST: Lazy<Regex> = Lazy::new(|| {
 });
 
 pub(crate) static REGEX_FIRST_LAST: Lazy<Regex> = Lazy::new(|| {
+    // Pattern allows:
+    // - Simple: Capital + letters (John, Mary)
+    // - Mc/Mac prefix: Mc/Mac + Capital + letters (McKenzie, MacDonald)
+    // - O' prefix: O' + Capital + letters (O'Brien, O'Connor)
+    // - Optional middle initial or middle name
+    // - Two or three word names
     Regex::new(
-        r"\b([A-Z][A-Za-z'`.-]{1,30})(?:\s+[A-Z]\.)?\s+([A-Z][A-Za-z'`.-]{1,30})\b",
+        r"\b((?:[A-Z][A-Za-z'`.-]{1,30}|(?:Mc|Mac|O')[A-Z][a-z]+))(?:\s+[A-Z]\.?)?\s+((?:[A-Z][A-Za-z'`.-]{1,30}|(?:Mc|Mac|O')[A-Z][a-z]+))(?:\s+((?:[A-Z][A-Za-z'`.-]{1,30}|(?:Mc|Mac|O')[A-Z][a-z]+)))?\b",
     )
     .expect("invalid REGEX_FIRST_LAST")
 });
@@ -377,7 +385,8 @@ impl VulpesNameScanner {
     /// Detect First Last-style names (no comma).
     ///
     /// This is intentionally conservative (capitalized words + dictionary anchors).
-    /// Use shadow mode in TS before promoting to default behavior.
+    /// Supports two-word (First Last) and three-word (First Middle Last) names.
+    /// Handles Mc/Mac/O' prefixes (McKenzie, MacDonald, O'Brien).
     #[napi]
     pub fn detect_first_last(&self, text: String) -> Vec<NameDetection> {
         if !self.initialized || text.is_empty() {
@@ -394,24 +403,42 @@ impl VulpesNameScanner {
             };
 
             let first = caps.get(1).map(|v| v.as_str()).unwrap_or("");
-            let last = caps.get(2).map(|v| v.as_str()).unwrap_or("");
+            let second = caps.get(2).map(|v| v.as_str()).unwrap_or("");
+            let third = caps.get(3).map(|v| v.as_str()); // Optional third word
 
-            if first.is_empty() || last.is_empty() {
+            if first.is_empty() || second.is_empty() {
                 continue;
             }
+
+            // For three-word names, last word is the surname
+            // For two-word names, second word is the surname
+            let last = third.unwrap_or(second);
 
             let first_is_first = in_dict_with_ocr(&self.first_names, first);
             let first_is_last = in_dict_with_ocr(&self.surnames, first);
             let last_is_last = in_dict_with_ocr(&self.surnames, last);
             let last_is_first = in_dict_with_ocr(&self.first_names, last);
 
-            // Anchor: at least one side should look like a name in either dictionary.
-            if !(first_is_first || first_is_last || last_is_last || last_is_first) {
+            // For three-word names, also check the middle word
+            let middle_anchored = if third.is_some() {
+                in_dict_with_ocr(&self.first_names, second)
+                    || in_dict_with_ocr(&self.surnames, second)
+            } else {
+                false
+            };
+
+            // Anchor: at least one part should look like a name in either dictionary.
+            if !(first_is_first
+                || first_is_last
+                || last_is_last
+                || last_is_first
+                || middle_anchored)
+            {
                 continue;
             }
 
             // Confidence model mirrors NameDictionary.getNameConfidence() semantics.
-            let confidence = if first_is_first && last_is_last {
+            let mut confidence = if first_is_first && last_is_last {
                 0.92
             } else if first_is_first && !last_is_last {
                 0.84
@@ -425,15 +452,26 @@ impl VulpesNameScanner {
                 0.68
             };
 
+            // Boost confidence for three-word names with good anchors
+            if third.is_some() && middle_anchored {
+                confidence = (confidence + 0.05_f64).min(0.95);
+            }
+
             let start_u16 = byte_to_utf16(&map, m.start());
             let end_u16 = byte_to_utf16(&map, m.end());
+
+            let pattern_name = if third.is_some() {
+                "Rust First Middle Last"
+            } else {
+                "Rust First Last"
+            };
 
             out.push(NameDetection {
                 character_start: start_u16,
                 character_end: end_u16,
                 text: m.as_str().to_string(),
                 confidence,
-                pattern: "Rust First Last".to_string(),
+                pattern: pattern_name.to_string(),
             });
         }
 
@@ -488,7 +526,12 @@ impl VulpesNameScanner {
             (&REGEX_NAME_WITH_SUFFIX, 1, 0.9, "Rust Name with suffix"),
             (&REGEX_AGE_GENDER_NAME, 1, 0.9, "Rust Age/gender name"),
             (&REGEX_POSSESSIVE_NAME, 1, 0.78, "Rust Possessive name"),
-            (&REGEX_LABELED_CHAOS_NAME, 1, 0.88, "Rust Labeled name (OCR/chaos)"),
+            (
+                &REGEX_LABELED_CHAOS_NAME,
+                1,
+                0.88,
+                "Rust Labeled name (OCR/chaos)",
+            ),
             (&REGEX_HYPHENATED_NAME, 1, 0.86, "Rust Hyphenated name"),
             (&REGEX_APOSTROPHE_NAME, 1, 0.86, "Rust Apostrophe name"),
             (&REGEX_ACCENTED_NAME, 1, 0.84, "Rust Accented name"),

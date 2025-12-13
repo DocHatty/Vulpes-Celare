@@ -319,8 +319,7 @@ fn is_valid_ssn(ssn: &str) -> bool {
 // =============================================================================
 
 static NPI_RE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?i)\bNPI(?:\s+(?:Number|No|#))?\s*[#:]*\s*([0-9]{10})\b")
-        .expect("invalid NPI_RE")
+    Regex::new(r"(?i)\bNPI(?:\s+(?:Number|No|#))?\s*[#:]*\s*([0-9]{10})\b").expect("invalid NPI_RE")
 });
 
 // =============================================================================
@@ -358,7 +357,10 @@ static FAX_PATTERNS: Lazy<Vec<Regex>> = Lazy::new(|| {
 });
 
 fn is_valid_us_phone_like(phone_number: &str) -> bool {
-    let digits: String = phone_number.chars().filter(|c| c.is_ascii_digit()).collect();
+    let digits: String = phone_number
+        .chars()
+        .filter(|c| c.is_ascii_digit())
+        .collect();
     if digits.len() == 10 {
         return true;
     }
@@ -546,8 +548,12 @@ fn is_creditcard_like(card: &str) -> bool {
     }
 
     // HIPAA-sensitivity-first: accept cards that look like cards, even if they fail Luhn.
-    let digits_str: String = digits.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect();
-    let is_amex = (digits_str.starts_with("34") || digits_str.starts_with("37")) && digits.len() == 15;
+    let digits_str: String = digits
+        .iter()
+        .map(|d| char::from_digit(*d, 10).unwrap())
+        .collect();
+    let is_amex =
+        (digits_str.starts_with("34") || digits_str.starts_with("37")) && digits.len() == 15;
     if is_amex {
         return true;
     }
@@ -691,7 +697,9 @@ fn is_valid_alphanumeric_account(value: &str) -> bool {
     cleaned.len() >= 6
         && cleaned.len() <= 20
         && cleaned.chars().any(|c| c.is_ascii_digit())
-        && cleaned.chars().all(|c| c.is_ascii_alphanumeric() || c == '-')
+        && cleaned
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-')
 }
 
 fn is_valid_acc_prefix(value: &str) -> bool {
@@ -744,7 +752,9 @@ fn is_valid_prefixed_account(value: &str) -> bool {
 }
 
 fn is_valid_standalone_prefixed(value: &str) -> bool {
-    let common_prefixes = ["ACCT", "PID", "MID", "SID", "REF", "CONF", "TXN", "INV", "ORD", "BILL"];
+    let common_prefixes = [
+        "ACCT", "PID", "MID", "SID", "REF", "CONF", "TXN", "INV", "ORD", "BILL",
+    ];
     let parts: Vec<&str> = value.split('-').collect();
     if parts.len() < 2 {
         return false;
@@ -759,10 +769,7 @@ fn is_valid_group_number(value: &str) -> bool {
     if value.len() < 8 || value.len() > 25 {
         return false;
     }
-    if !value
-        .chars()
-        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-    {
+    if !value.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
         return false;
     }
     value.split('-').count() >= 2
@@ -1234,7 +1241,9 @@ static ADDRESS_PATTERNS: Lazy<Vec<(Regex, Option<usize>, &'static str, f64)>> = 
     ];
     let us_state_pattern = us_states.join("|");
 
-    let ca_provinces = ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT"];
+    let ca_provinces = [
+        "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT",
+    ];
     let ca_province_pattern = ca_provinces.join("|");
 
     let au_states = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
@@ -1511,8 +1520,8 @@ static PLATE_PATTERNS: Lazy<Vec<Regex>> = Lazy::new(|| {
         r"\b([0-9]{3}\s+[A-Z]{3})\b",
         r"\b([A-Z]{2,4}[0-9]{2,4})\b",
         r"\b([0-9]{2,4}[A-Z]{2,4})\b",
-        r"\b([A-Z0-9]{2,4}[\u2013-][A-Z0-9]{2,4})\b",
-        r"\b([A-Z0-9]{1,3}[.\u2013-\s][A-Z0-9]{1,3}[.\u2013-\s][A-Z0-9]{1,4})\b",
+        r"\b([A-Z0-9]{2,4}[\u2013\-][A-Z0-9]{2,4})\b",
+        r"\b([A-Z0-9]{1,3}[.\u2013\-\s][A-Z0-9]{1,3}[.\u2013\-\s][A-Z0-9]{1,4})\b",
     ];
     sources
         .into_iter()
@@ -1590,10 +1599,7 @@ fn is_vital_sign_context(text: &str, byte_start: usize, matched: &str) -> bool {
     }
 
     let surround_start = prev_char_boundary(text, byte_start.saturating_sub(50));
-    let surround_end = next_char_boundary(
-        text,
-        (byte_start + matched.len() + 20).min(text.len()),
-    );
+    let surround_end = next_char_boundary(text, (byte_start + matched.len() + 20).min(text.len()));
     let surround = &text[surround_start..surround_end].to_ascii_lowercase();
     ["mmhg", "bpm", "blood pressure", "heart rate", "vital signs"]
         .iter()
@@ -1678,7 +1684,8 @@ static DEVICE_SHORT_SERIAL_RE: Lazy<Regex> = Lazy::new(|| {
 });
 
 static DEVICE_IMPLANT_DATE_RE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?i)\b([A-Z]{2,4}-\d{4}-[A-Z0-9-]{6,18})\b").expect("invalid DEVICE_IMPLANT_DATE_RE")
+    Regex::new(r"(?i)\b([A-Z]{2,4}-\d{4}-[A-Z0-9-]{6,18})\b")
+        .expect("invalid DEVICE_IMPLANT_DATE_RE")
 });
 
 static DEVICE_MANUFACTURER_RE: Lazy<Regex> = Lazy::new(|| {
@@ -2133,7 +2140,14 @@ pub fn scan_all_identifiers(text: String) -> Vec<IdentifierDetection> {
                 Some(v) => v,
                 None => full,
             };
-            if *require_ctx && !has_keyword_context(&text, full.start(), full.as_str().len(), &INSURANCE_KEYWORDS) {
+            if *require_ctx
+                && !has_keyword_context(
+                    &text,
+                    full.start(),
+                    full.as_str().len(),
+                    &INSURANCE_KEYWORDS,
+                )
+            {
                 continue;
             }
             if !validate_healthplan(m.as_str()) {
@@ -2781,9 +2795,10 @@ pub fn scan_all_identifiers(text: String) -> Vec<IdentifierDetection> {
         if parts.len() < 2 {
             continue;
         }
-        let has_numeric_part = parts.iter().skip(1).any(|p| {
-            p.chars().filter(|c| c.is_ascii_digit()).count() >= 3 || p.len() >= 6
-        });
+        let has_numeric_part = parts
+            .iter()
+            .skip(1)
+            .any(|p| p.chars().filter(|c| c.is_ascii_digit()).count() >= 3 || p.len() >= 6);
         if !has_numeric_part {
             continue;
         }

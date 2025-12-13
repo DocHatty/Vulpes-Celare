@@ -4,9 +4,14 @@
  * PERFORMANCE: Reduces overlap detection from O(n²) to O(log n + k)
  * where k is the number of overlapping spans returned.
  *
+ * RUST ACCELERATION:
+ * When VULPES_INTERVAL_ACCEL is enabled (default), uses Rust native implementation
+ * for ALL operations (insert, findOverlaps, remove, dropOverlappingSpans).
+ * Set VULPES_INTERVAL_ACCEL=0 to disable and fall back to TypeScript.
+ *
  * ALGORITHM:
  * Based on augmented interval trees (Cormen et al. 2009, Section 14.3).
- * Uses @flatten-js/interval-tree for production-ready implementation.
+ * Rust implementation provides full interval tree with O(log n) operations.
  *
  * KEY OPERATIONS:
  * - insert(span): O(log n)
@@ -25,15 +30,27 @@ import type { Span } from "./Span";
 declare const TYPE_SPECIFICITY: Record<string, number>;
 /**
  * IntervalTreeSpanIndex - High-performance span overlap management
+ *
+ * Uses Rust VulpesIntervalTree when available (default), falls back to TypeScript.
  */
 export declare class IntervalTreeSpanIndex {
-    private tree;
+    private rustTree;
     private spanMap;
+    private tsIntervals;
+    private readonly useRust;
     constructor();
     /**
      * Generate unique key for a span
      */
     private getSpanKey;
+    /**
+     * Convert Span to Rust format
+     */
+    private toRustSpan;
+    /**
+     * Convert Rust span back to Span type
+     */
+    private fromRustSpan;
     /**
      * Insert a span into the index
      * O(log n)

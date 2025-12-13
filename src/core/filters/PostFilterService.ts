@@ -20,7 +20,10 @@ let cachedPostFilterBinding:
   | undefined = undefined;
 
 function isPostFilterAccelEnabled(): boolean {
-  return process.env.VULPES_POSTFILTER_ACCEL === "1";
+  // Rust post-filter is now DEFAULT (promoted from opt-in).
+  // Set VULPES_POSTFILTER_ACCEL=0 to disable and use pure TypeScript.
+  const val = process.env.VULPES_POSTFILTER_ACCEL;
+  return val === undefined || val === "1";
 }
 
 function isPostFilterShadowEnabled(): boolean {

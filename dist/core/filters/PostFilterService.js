@@ -17,7 +17,10 @@ const RadiologyLogger_1 = require("../../utils/RadiologyLogger");
 const binding_1 = require("../../native/binding");
 let cachedPostFilterBinding = undefined;
 function isPostFilterAccelEnabled() {
-    return process.env.VULPES_POSTFILTER_ACCEL === "1";
+    // Rust post-filter is now DEFAULT (promoted from opt-in).
+    // Set VULPES_POSTFILTER_ACCEL=0 to disable and use pure TypeScript.
+    const val = process.env.VULPES_POSTFILTER_ACCEL;
+    return val === undefined || val === "1";
 }
 function isPostFilterShadowEnabled() {
     return process.env.VULPES_SHADOW_POSTFILTER === "1";

@@ -105,5 +105,15 @@ export declare class FormattedNameFilterSpan extends SpanBasedFilter {
      * "Sarah Stokes, RN" is a provider (nurse), not a patient.
      */
     private detectNamesWithCredentials;
+    /**
+     * Rust-accelerated Last, First detection
+     * Delegates to VulpesNameScanner.detectLastFirst() for performance
+     */
+    private detectRustLastFirstNames;
+    /**
+     * Rust-accelerated First Last detection
+     * Delegates to VulpesNameScanner.detectFirstLast() for performance
+     */
+    private detectRustFirstLastNames;
 }
 //# sourceMappingURL=FormattedNameFilterSpan.d.ts.map

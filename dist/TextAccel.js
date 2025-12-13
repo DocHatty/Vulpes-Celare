@@ -34,7 +34,10 @@ function getNative() {
 }
 exports.TextAccel = {
     isEnabled() {
-        return process.env.VULPES_TEXT_ACCEL === "1";
+        // Rust text acceleration is now DEFAULT (promoted from opt-in).
+        // Set VULPES_TEXT_ACCEL=0 to disable and use pure TypeScript.
+        const val = process.env.VULPES_TEXT_ACCEL;
+        return val === undefined || val === "1";
     },
     /**
      * Normalizes common OCR substitutions (O->0, l/I/|->1, S->5, etc.) in Rust.
