@@ -113,8 +113,15 @@ export class SpanEnhancer {
   constructor(config: Partial<EnhancementConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.detector = enhancedDetector;
-    this.detector.init();
+    // DON'T call init() here - do it lazily when needed
     this.weightedScorer = weightedScorer;
+  }
+
+  /**
+   * Ensure detector is initialized (lazy initialization)
+   */
+  private ensureInitialized(): void {
+    this.detector.init();
   }
 
   /**
@@ -249,6 +256,9 @@ export class SpanEnhancer {
     }
 
     // Fallback: Use original ensemble detector
+    // Ensure detector is initialized before use
+    this.ensureInitialized();
+
     const candidate: DetectionCandidate = {
       text: span.text,
       start: span.characterStart,
@@ -392,6 +402,9 @@ export class SpanEnhancer {
 
     // Fallback: Use original ensemble detector for remaining spans
     if (spansNeedingFullEvaluation.length > 0) {
+      // Ensure detector is initialized before use
+      this.ensureInitialized();
+
       const candidates: DetectionCandidate[] = spansNeedingFullEvaluation.map(
         (span) => ({
           text: span.text,

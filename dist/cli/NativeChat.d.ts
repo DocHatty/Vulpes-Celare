@@ -33,6 +33,7 @@ interface ChatConfig {
     subagentModel?: string;
     subagentApiKey?: string;
     maxParallelSubagents?: number;
+    skipBanner?: boolean;
 }
 export declare class NativeChat {
     private config;

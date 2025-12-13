@@ -26,6 +26,7 @@ const NameFilterConstants_1 = require("../filters/constants/NameFilterConstants"
 const RustNameScanner_1 = require("../utils/RustNameScanner");
 const RustApplyKernel_1 = require("../utils/RustApplyKernel");
 const RustAccelConfig_1 = require("../config/RustAccelConfig");
+const FilterWorkerPool_1 = require("./FilterWorkerPool");
 /**
  * Parallel Redaction Engine
  * Orchestrates parallel filter execution and span merging
@@ -83,18 +84,17 @@ class ParallelRedactionEngine {
             RadiologyLogger_1.RadiologyLogger.info("REDACTION", "Text too short for redaction, skipping");
             return text;
         }
-        // STEP 1: Execute all filters in parallel using Promise.all
-        // Note: This is single-threaded concurrency (event loop), not true CPU parallelism.
-        // For CPU-bound work like regex matching, this still provides good performance
-        // by allowing I/O operations to interleave. True parallelism would require
-        // worker_threads with shared dictionary memory (future optimization).
+        // STEP 1: Execute all filters in parallel using Worker Threads
+        // This offloads CPU-intensive operations to separate threads
+        const workerPool = FilterWorkerPool_1.FilterWorkerPool.getInstance();
         const executionResults = await Promise.all(enabledFilters.map(async (filter) => {
             const filterStart = Date.now();
             const filterType = filter.getType();
             const filterName = filter.constructor.name;
             const config = policy.identifiers?.[filterType];
             try {
-                const spans = await Promise.resolve(filter.detect(text, config, context));
+                // Use worker pool for execution
+                const spans = await workerPool.execute(filterName, text, config);
                 const executionTimeMs = Date.now() - filterStart;
                 // Log completion
                 RadiologyLogger_1.RadiologyLogger.filterComplete({
@@ -117,7 +117,9 @@ class ParallelRedactionEngine {
             }
             catch (error) {
                 const executionTimeMs = Date.now() - filterStart;
-                RadiologyLogger_1.RadiologyLogger.error("REDACTION", `Filter ${filterName} failed: ${error}`);
+                RadiologyLogger_1.RadiologyLogger.error("REDACTION", `Filter ${filterName} failed (Worker): ${error}`);
+                // FALLBACK: Try local execution if worker fails?
+                // For now, log error and proceed.
                 filterResults.push({
                     filterName,
                     filterType,

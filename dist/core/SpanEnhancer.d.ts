@@ -50,6 +50,10 @@ export declare class SpanEnhancer {
     private getStatsRef;
     constructor(config?: Partial<EnhancementConfig>);
     /**
+     * Ensure detector is initialized (lazy initialization)
+     */
+    private ensureInitialized;
+    /**
      * Get lazy evaluation statistics
      */
     getStats(context?: RedactionContext): typeof this.stats;

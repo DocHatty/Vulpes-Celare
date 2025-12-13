@@ -170,10 +170,17 @@ console.log(result.text); // Patient [NAME] SSN [SSN]
 // ============================================================================
 class VulpesAgent {
     config;
-    vulpes;
+    _vulpes = null;
     spinner = null;
     subprocess = null;
     lastComparison = null;
+    // Lazy getter for VulpesCelare - only instantiate when actually needed
+    get vulpes() {
+        if (!this._vulpes) {
+            this._vulpes = new VulpesCelare_1.VulpesCelare();
+        }
+        return this._vulpes;
+    }
     constructor(config = {}) {
         this.config = {
             mode: config.mode || "dev",
@@ -189,7 +196,7 @@ class VulpesAgent {
         if (!config.verbose) {
             process.env.VULPES_QUIET = "1";
         }
-        this.vulpes = new VulpesCelare_1.VulpesCelare();
+        // VulpesCelare is now lazy - not created until first use
     }
     // ══════════════════════════════════════════════════════════════════════════
     // MAIN ENTRY POINT
@@ -226,12 +233,14 @@ class VulpesAgent {
             mode: this.config.mode,
             verbose: this.config.verbose,
         });
-        const status = await integration.checkStatus();
+        // Fast path: just check if files exist, skip slow CLI version checks
+        const claudeMdExists = require("fs").existsSync(require("path").join(this.config.workingDir, "CLAUDE.md"));
+        const slashCommandsExist = require("fs").existsSync(require("path").join(this.config.workingDir, ".claude", "commands", "vulpes-redact.md"));
+        const agentsMdExists = require("fs").existsSync(require("path").join(this.config.workingDir, "AGENTS.md"));
         // Check if we need to install integrations
         const needsClaudeSetup = this.config.backend === "claude" &&
-            (!status.claudeCode.claudeMdExists ||
-                !status.claudeCode.slashCommandsInstalled);
-        const needsCodexSetup = this.config.backend === "codex" && !status.codex.agentsMdExists;
+            (!claudeMdExists || !slashCommandsExist);
+        const needsCodexSetup = this.config.backend === "codex" && !agentsMdExists;
         if (needsClaudeSetup || needsCodexSetup) {
             console.log(theme.info("\n  Setting up Vulpes integration...\n"));
             if (needsClaudeSetup) {
@@ -399,21 +408,15 @@ class VulpesAgent {
     // SPAWN EXTERNAL AGENT
     // ══════════════════════════════════════════════════════════════════════════
     async spawnAgent(cmd, args, env) {
-        // SECURITY FIX: Spawn without shell to prevent command injection
-        // The command and args are passed separately, not interpolated into a shell string
+        // On Windows, npm-installed CLI tools are .cmd/.bat scripts that need shell
+        const needsShell = process.platform === "win32" &&
+            ["claude", "codex", "copilot"].includes(cmd);
         const spawnOptions = {
             cwd: this.config.workingDir,
             stdio: "inherit",
-            shell: false, // SECURITY: Disable shell to prevent injection
             env,
-            // On Windows, we need to find the actual executable
-            ...(process.platform === "win32" && {
-                // Windows needs shell:true for .cmd/.bat scripts from npm
-                // But we validate the command is a known safe value
-                shell: ["claude", "codex", "copilot"].includes(cmd),
-            }),
+            shell: needsShell,
         };
-        // Spawn with command and args array (no shell interpolation)
         this.subprocess = (0, child_process_1.spawn)(cmd, args, spawnOptions);
         this.subprocess.on("error", (err) => {
             console.error(theme.error(`\n  Failed to start ${cmd}: ${err.message}`));

@@ -61,9 +61,6 @@ const DeviceIdentifierFilterSpan_1 = require("./filters/DeviceIdentifierFilterSp
 const VehicleIdentifierFilterSpan_1 = require("./filters/VehicleIdentifierFilterSpan");
 const BiometricContextFilterSpan_1 = require("./filters/BiometricContextFilterSpan");
 const UniqueIdentifierFilterSpan_1 = require("./filters/UniqueIdentifierFilterSpan");
-// ============================================================================
-// MAIN CLASS
-// ============================================================================
 class VulpesCelare {
     filters;
     policy;
@@ -96,10 +93,21 @@ class VulpesCelare {
     static VERSION = "1.0.0";
     static NAME = "Vulpes Celare";
     static VARIANT = "Hatkoff Redaction Engine";
-    constructor(config = {}) {
+    constructor(config = {}, dependencies) {
         this.config = config;
-        this.filters = this.buildFilters(config);
-        this.policy = this.buildPolicy(config);
+        // Use injected providers or fall back to internal implementations
+        if (dependencies?.filterProvider) {
+            this.filters = dependencies.filterProvider.getFilters(config);
+        }
+        else {
+            this.filters = this.buildFilters(config);
+        }
+        if (dependencies?.policyProvider) {
+            this.policy = dependencies.policyProvider.getPolicy(config);
+        }
+        else {
+            this.policy = this.buildPolicy(config);
+        }
     }
     static async redact(text) {
         return (await new VulpesCelare().process(text)).text;

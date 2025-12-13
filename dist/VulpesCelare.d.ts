@@ -39,6 +39,12 @@ export interface RedactionResult {
     executionTimeMs: number;
     report?: RedactionExecutionReport;
 }
+export interface FilterProvider {
+    getFilters(config: VulpesCelareConfig): SpanBasedFilter[];
+}
+export interface PolicyProvider {
+    getPolicy(config: VulpesCelareConfig): any;
+}
 export declare class VulpesCelare {
     private filters;
     private policy;
@@ -47,7 +53,10 @@ export declare class VulpesCelare {
     static readonly VERSION = "1.0.0";
     static readonly NAME = "Vulpes Celare";
     static readonly VARIANT = "Hatkoff Redaction Engine";
-    constructor(config?: VulpesCelareConfig);
+    constructor(config?: VulpesCelareConfig, dependencies?: {
+        filterProvider?: FilterProvider;
+        policyProvider?: PolicyProvider;
+    });
     static redact(text: string): Promise<string>;
     static redactWithDetails(text: string, config?: VulpesCelareConfig): Promise<RedactionResult>;
     /**

@@ -35,6 +35,7 @@ import {
   type RustReplacement,
 } from "../utils/RustApplyKernel";
 import { RustAccelConfig } from "../config/RustAccelConfig";
+import { FilterWorkerPool } from "./FilterWorkerPool";
 
 /**
  * Filter execution result with detailed diagnostics
@@ -174,11 +175,10 @@ export class ParallelRedactionEngine {
       return text;
     }
 
-    // STEP 1: Execute all filters in parallel using Promise.all
-    // Note: This is single-threaded concurrency (event loop), not true CPU parallelism.
-    // For CPU-bound work like regex matching, this still provides good performance
-    // by allowing I/O operations to interleave. True parallelism would require
-    // worker_threads with shared dictionary memory (future optimization).
+    // STEP 1: Execute all filters in parallel using Worker Threads
+    // This offloads CPU-intensive operations to separate threads
+    const workerPool = FilterWorkerPool.getInstance();
+
     const executionResults = await Promise.all(
       enabledFilters.map(async (filter) => {
         const filterStart = Date.now();
@@ -187,9 +187,9 @@ export class ParallelRedactionEngine {
         const config = policy.identifiers?.[filterType];
 
         try {
-          const spans = await Promise.resolve(
-            filter.detect(text, config, context),
-          );
+          // Use worker pool for execution
+          const spans = await workerPool.execute(filterName, text, config);
+
           const executionTimeMs = Date.now() - filterStart;
 
           // Log completion
@@ -216,8 +216,11 @@ export class ParallelRedactionEngine {
           const executionTimeMs = Date.now() - filterStart;
           RadiologyLogger.error(
             "REDACTION",
-            `Filter ${filterName} failed: ${error}`,
+            `Filter ${filterName} failed (Worker): ${error}`,
           );
+
+          // FALLBACK: Try local execution if worker fails?
+          // For now, log error and proceed.
 
           filterResults.push({
             filterName,
@@ -613,15 +616,15 @@ export class ParallelRedactionEngine {
     const postfilterShadow: PostFilterShadowReport | undefined =
       process.env.VULPES_SHADOW_POSTFILTER === "1"
         ? {
-            enabled: true,
-            rustAvailable: false,
-            rustEnabled: false,
-            inputSpans: mergedSpans.length,
-            tsKept: 0,
-            rustKept: 0,
-            missingInRust: 0,
-            extraInRust: 0,
-          }
+          enabled: true,
+          rustAvailable: false,
+          rustEnabled: false,
+          inputSpans: mergedSpans.length,
+          tsKept: 0,
+          rustKept: 0,
+          missingInRust: 0,
+          extraInRust: 0,
+        }
         : undefined;
 
     if (postfilterShadow) {

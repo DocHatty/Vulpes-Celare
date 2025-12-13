@@ -70,8 +70,14 @@ class SpanEnhancer {
     constructor(config = {}) {
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.detector = EnhancedPHIDetector_1.enhancedDetector;
-        this.detector.init();
+        // DON'T call init() here - do it lazily when needed
         this.weightedScorer = WeightedPHIScorer_1.weightedScorer;
+    }
+    /**
+     * Ensure detector is initialized (lazy initialization)
+     */
+    ensureInitialized() {
+        this.detector.init();
     }
     /**
      * Get lazy evaluation statistics
@@ -184,6 +190,8 @@ class SpanEnhancer {
             return enhancementResult;
         }
         // Fallback: Use original ensemble detector
+        // Ensure detector is initialized before use
+        this.ensureInitialized();
         const candidate = {
             text: span.text,
             start: span.characterStart,
@@ -299,6 +307,8 @@ class SpanEnhancer {
         }
         // Fallback: Use original ensemble detector for remaining spans
         if (spansNeedingFullEvaluation.length > 0) {
+            // Ensure detector is initialized before use
+            this.ensureInitialized();
             const candidates = spansNeedingFullEvaluation.map((span) => ({
                 text: span.text,
                 start: span.characterStart,

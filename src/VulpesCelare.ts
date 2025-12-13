@@ -125,6 +125,14 @@ export interface RedactionResult {
 // MAIN CLASS
 // ============================================================================
 
+export interface FilterProvider {
+  getFilters(config: VulpesCelareConfig): SpanBasedFilter[];
+}
+
+export interface PolicyProvider {
+  getPolicy(config: VulpesCelareConfig): any;
+}
+
 export class VulpesCelare {
   private filters: SpanBasedFilter[];
   private policy: any;
@@ -160,10 +168,27 @@ export class VulpesCelare {
   static readonly NAME = "Vulpes Celare";
   static readonly VARIANT = "Hatkoff Redaction Engine";
 
-  constructor(config: VulpesCelareConfig = {}) {
+  constructor(
+     config: VulpesCelareConfig = {},
+     dependencies?: {
+       filterProvider?: FilterProvider;
+       policyProvider?: PolicyProvider;
+     }
+  ) {
     this.config = config;
-    this.filters = this.buildFilters(config);
-    this.policy = this.buildPolicy(config);
+    
+    // Use injected providers or fall back to internal implementations
+    if (dependencies?.filterProvider) {
+      this.filters = dependencies.filterProvider.getFilters(config);
+    } else {
+      this.filters = this.buildFilters(config);
+    }
+
+    if (dependencies?.policyProvider) {
+      this.policy = dependencies.policyProvider.getPolicy(config);
+    } else {
+      this.policy = this.buildPolicy(config);
+    }
   }
 
   static async redact(text: string): Promise<string> {

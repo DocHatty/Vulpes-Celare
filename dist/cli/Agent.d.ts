@@ -52,10 +52,11 @@ interface RedactionIssue {
 }
 export declare class VulpesAgent {
     private config;
-    private vulpes;
+    private _vulpes;
     private spinner;
     private subprocess;
     private lastComparison;
+    private get vulpes();
     constructor(config?: Partial<AgentConfig>);
     start(): Promise<void>;
     private ensureVulpesified;

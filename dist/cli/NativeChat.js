@@ -291,7 +291,10 @@ class NativeChat {
         }
         // Initialize conversation with system prompt
         this.initializeConversation();
-        this.printBanner();
+        // Skip banner if launched from unified launcher (which already shows banner)
+        if (!this.config.skipBanner) {
+            this.printBanner();
+        }
         await this.chatLoop();
     }
     initializeOrchestrator() {
@@ -564,7 +567,8 @@ class NativeChat {
     }
     async toolRunCommand(command) {
         return new Promise((resolve) => {
-            const proc = (0, child_process_1.spawn)(command, [], {
+            // Use exec for shell command strings to avoid deprecation warning
+            const proc = (0, child_process_1.spawn)(command, {
                 cwd: this.config.workingDir,
                 shell: true,
                 stdio: "pipe",
@@ -988,6 +992,8 @@ async function handleNativeChat(options) {
         subagentModel: options.subagentModel,
         subagentApiKey: options.subagentApiKey,
         maxParallelSubagents: parseInt(options.parallel) || 3,
+        // UI options
+        skipBanner: options.skipBanner || false,
     });
     await chat.start();
 }

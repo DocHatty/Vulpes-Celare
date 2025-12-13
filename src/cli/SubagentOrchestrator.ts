@@ -1317,13 +1317,13 @@ class Subagent {
 
   private toolRunTests(filter?: string, quick?: boolean): string {
     return new Promise<string>((resolve) => {
-      let cmd = "npm test";
-      if (quick) cmd += " -- --quick";
-      if (filter) cmd += ` -- --filter="${filter}"`;
+      const args = ["test"];
+      if (quick) args.push("--", "--quick");
+      if (filter) args.push("--", `--filter=${filter}`);
 
-      const proc = spawn(cmd, [], {
+      const proc = spawn("npm", args, {
         cwd: this.workingDir,
-        shell: true,
+        shell: process.platform === "win32",
         stdio: "pipe",
       });
       let output = "";

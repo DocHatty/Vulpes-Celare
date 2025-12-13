@@ -1173,14 +1173,14 @@ class Subagent {
     }
     toolRunTests(filter, quick) {
         return new Promise((resolve) => {
-            let cmd = "npm test";
+            const args = ["test"];
             if (quick)
-                cmd += " -- --quick";
+                args.push("--", "--quick");
             if (filter)
-                cmd += ` -- --filter="${filter}"`;
-            const proc = (0, child_process_1.spawn)(cmd, [], {
+                args.push("--", `--filter=${filter}`);
+            const proc = (0, child_process_1.spawn)("npm", args, {
                 cwd: this.workingDir,
-                shell: true,
+                shell: process.platform === "win32",
                 stdio: "pipe",
             });
             let output = "";

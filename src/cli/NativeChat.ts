@@ -90,6 +90,8 @@ interface ChatConfig {
   subagentModel?: string;
   subagentApiKey?: string;
   maxParallelSubagents?: number;
+  // UI options
+  skipBanner?: boolean; // Skip banner when launched from unified launcher
 }
 
 // ============================================================================
@@ -312,7 +314,10 @@ export class NativeChat {
     // Initialize conversation with system prompt
     this.initializeConversation();
 
-    this.printBanner();
+    // Skip banner if launched from unified launcher (which already shows banner)
+    if (!this.config.skipBanner) {
+      this.printBanner();
+    }
     await this.chatLoop();
   }
 
@@ -642,7 +647,8 @@ export class NativeChat {
 
   private async toolRunCommand(command: string): Promise<string> {
     return new Promise((resolve) => {
-      const proc = spawn(command, [], {
+      // Use exec for shell command strings to avoid deprecation warning
+      const proc = spawn(command, {
         cwd: this.config.workingDir,
         shell: true,
         stdio: "pipe",
@@ -1194,6 +1200,8 @@ export async function handleNativeChat(options: any): Promise<void> {
     subagentModel: options.subagentModel,
     subagentApiKey: options.subagentApiKey,
     maxParallelSubagents: parseInt(options.parallel) || 3,
+    // UI options
+    skipBanner: options.skipBanner || false,
   });
 
   await chat.start();

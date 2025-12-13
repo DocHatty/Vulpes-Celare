@@ -26,9 +26,6 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
     detect(text: string, config: any, context: RedactionContext): Span[];
-    private detectRustLastFirstNames;
-    private detectRustFirstLastNames;
-    private detectRustSmartNames;
     /**
      * Check if a titled name is a PROVIDER name (should NOT be redacted)
      * Provider names with professional titles or credentials are NOT patient PHI
@@ -105,13 +102,6 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
      */
     private detectPossessiveNames;
     /**
-     * Pattern 0: Last, First format
-     *
-     * CRITICAL: This pattern must be STRICT to avoid false positives.
-     * The pattern requires proper capitalization: Capital letter followed by lowercase.
-     */
-    private detectLastFirstNames;
-    /**
      * Pattern 0a: OCR-Tolerant Last, First format
      *
      * Handles real-world OCR failures seen in testing:
@@ -157,14 +147,6 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
      * Quick heuristic to check if a string is likely a person name
      */
     private isLikelyOcrName;
-    /**
-     * Pattern 9: General full names (First Last format)
-     *
-     * CRITICAL: This pattern must be STRICT to avoid false positives.
-     * The pattern requires proper capitalization: Capital letter followed by lowercase.
-     * This prevents matching things like "Apixaban 5mg" or "takes Apixaban" as names.
-     */
-    private detectGeneralFullNames;
     /**
      * Pattern 9a: Labeled names with noisy/OCR spelling
      *
