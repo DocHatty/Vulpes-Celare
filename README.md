@@ -2,6 +2,8 @@
 
 ![Vulpes Celare Logo](https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb)
 
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
+
 Open-source HIPAA PHI redaction engine for clinical text, images, and DICOM. Rust-accelerated, fast, inspectable, air-gapped.
 
 | Metric | Score | Notes |
@@ -12,6 +14,18 @@ Open-source HIPAA PHI redaction engine for clinical text, images, and DICOM. Rus
 | Coverage | 18/18 | HIPAA Safe Harbor identifiers |
 
 Status: validated on synthetic data only. Production use requires i2b2 2014 validation and compliance review.
+
+## Workflow
+
+```mermaid
+flowchart TD
+    A[Inputs: clinical text] --> B[Vulpes Celare orchestrator (TypeScript)]
+    A2[Inputs: images / DICOM] --> B
+    B --> C{Filters + detectors}
+    C --> D[Safe text with PHI removed]
+    C --> E[Redacted images / anonymized DICOM]
+    B --> F[Trust bundle + audit trail]
+```
 
 ## Quick Start
 
