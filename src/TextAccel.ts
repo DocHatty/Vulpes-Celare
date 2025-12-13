@@ -1,4 +1,5 @@
 import { loadNativeBinding } from "./native/binding";
+import { RustAccelConfig } from "./config/RustAccelConfig";
 
 type TextAccelNative = {
   normalizeOcr?: (text: string) => string;
@@ -46,10 +47,7 @@ function getNative(): TextAccelNative | null {
 
 export const TextAccel = {
   isEnabled(): boolean {
-    // Rust text acceleration is now DEFAULT (promoted from opt-in).
-    // Set VULPES_TEXT_ACCEL=0 to disable and use pure TypeScript.
-    const val = process.env.VULPES_TEXT_ACCEL;
-    return val === undefined || val === "1";
+    return RustAccelConfig.isTextAccelEnabled();
   },
 
   /**

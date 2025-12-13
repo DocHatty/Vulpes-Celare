@@ -29,6 +29,7 @@ import {
   PROVIDER_CREDENTIALS,
 } from "../utils/NameDetectionUtils";
 import { RustNameScanner } from "../utils/RustNameScanner";
+import { RustAccelConfig } from "../config/RustAccelConfig";
 
 export class FormattedNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -44,10 +45,9 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
 
     // Rust accelerator mode (shared with SmartNameFilterSpan)
     // Default to level 2 (Last,First + First Last patterns in Rust)
-    const accelMode = process.env.VULPES_NAME_ACCEL ?? "2";
-    const useRustCommaNames =
-      accelMode === "1" || accelMode === "2" || accelMode === "3";
-    const useRustFirstLastNames = accelMode === "2" || accelMode === "3";
+    const accelMode = RustAccelConfig.getNameAccelMode();
+    const useRustCommaNames = accelMode >= 1;
+    const useRustFirstLastNames = accelMode >= 2;
 
     // Pattern -1: Labeled name fields ("Name:", "Patient:", "Member Name:", etc.)
     // This is high-sensitivity and high-precision because it only triggers in explicit name fields.

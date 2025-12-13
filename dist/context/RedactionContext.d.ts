@@ -22,6 +22,7 @@ export declare class RedactionContext {
     private dateShiftingEngine;
     private replacementService;
     private contextName;
+    private readonly memo;
     constructor(sessionId?: string, contextName?: string, replacementScope?: ReplacementScope);
     /**
      * Create a unique token and store the mapping
@@ -81,5 +82,23 @@ export declare class RedactionContext {
         totalReplacements: number;
         consistentReplacements: number;
     };
+    /**
+     * Internal per-request memoization store.
+     * Modules should namespace keys to avoid collisions (e.g., `MyModule:cache`).
+     *
+     * This is intentionally generic so we can standardize caches on `RedactionContext`
+     * without introducing a global registry.
+     *
+     * @internal
+     */
+    getMemo<T>(key: string): T | undefined;
+    /**
+     * @internal
+     */
+    setMemo<T>(key: string, value: T): void;
+    /**
+     * @internal
+     */
+    getOrCreateMemo<T>(key: string, factory: () => T): T;
 }
 //# sourceMappingURL=RedactionContext.d.ts.map

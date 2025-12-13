@@ -11,7 +11,7 @@ import { Transform, TransformCallback, TransformOptions } from "stream";
  * DICOM tag anonymization rule
  */
 export interface DicomAnonymizationRule {
-    /** DICOM tag (e.g., 'x00100010' for PatientName) */
+    /** DICOM tag (e.g., 'x00100010' or '00100010' for PatientName) */
     tag: string;
     /** Action: 'REMOVE', 'REPLACE', 'HASH' */
     action: "REMOVE" | "REPLACE" | "HASH";

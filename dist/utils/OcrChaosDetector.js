@@ -32,6 +32,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OcrChaosDetector = void 0;
 const binding_1 = require("../native/binding");
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
 // Cache the native binding
 let cachedBinding = undefined;
 function getBinding() {
@@ -46,15 +47,13 @@ function getBinding() {
     return cachedBinding;
 }
 function isChaosAccelEnabled() {
-    // Rust chaos detection is now DEFAULT (promoted from opt-in).
-    // Set VULPES_CHAOS_ACCEL=0 to disable and use pure TypeScript.
-    const val = process.env.VULPES_CHAOS_ACCEL;
-    return val === undefined || val === "1";
+    return RustAccelConfig_1.RustAccelConfig.isChaosEnabled();
 }
 class OcrChaosDetector {
     /** Cache of analyzed documents to avoid re-computation */
     static analysisCache = new Map();
     static CACHE_MAX_SIZE = 100;
+    static CONTEXT_CACHE_KEY = "OcrChaosDetector:analysis";
     // Mathematical constants
     static LOG2 = Math.log(2);
     static EPSILON = 1e-10;
@@ -103,7 +102,12 @@ class OcrChaosDetector {
      * Analyze a document/text block for OCR chaos indicators
      * Uses entropy-based scoring combined with pattern detection
      */
-    static analyze(text) {
+    static analyze(text, context) {
+        if (context) {
+            const existing = context.getMemo(this.CONTEXT_CACHE_KEY);
+            if (existing && existing.text === text)
+                return existing.analysis;
+        }
         // Try Rust accelerator first
         if (isChaosAccelEnabled()) {
             const binding = getBinding();
@@ -111,7 +115,7 @@ class OcrChaosDetector {
                 try {
                     const rustResult = binding.analyzeChaos(text);
                     // Convert Rust result to TypeScript interface
-                    return {
+                    const analysis = {
                         score: rustResult.score,
                         indicators: {
                             digitSubstitutions: rustResult.indicators.digitSubstitutions,
@@ -123,16 +127,23 @@ class OcrChaosDetector {
                         enableLabelBoost: rustResult.enableLabelBoost,
                         quality: rustResult.quality,
                     };
+                    if (context) {
+                        context.setMemo(this.CONTEXT_CACHE_KEY, { text, analysis });
+                    }
+                    return analysis;
                 }
                 catch {
                     // Fall back to TS implementation
                 }
             }
         }
-        // Check cache first (use first 500 chars as key)
-        const cacheKey = text.substring(0, 500);
-        if (this.analysisCache.has(cacheKey)) {
-            return this.analysisCache.get(cacheKey);
+        let cacheKey = "";
+        if (!context) {
+            // Check cache first (use first 500 chars as key)
+            cacheKey = text.substring(0, 500);
+            if (this.analysisCache.has(cacheKey)) {
+                return this.analysisCache.get(cacheKey);
+            }
         }
         const indicators = {
             digitSubstitutions: this.measureDigitSubstitutions(text),
@@ -171,15 +182,20 @@ class OcrChaosDetector {
             enableLabelBoost: score > 0.3,
             quality: this.classifyQuality(score),
         };
-        // Cache the result
-        if (this.analysisCache.size >= this.CACHE_MAX_SIZE) {
-            // Clear oldest entries
-            const keys = Array.from(this.analysisCache.keys());
-            for (let i = 0; i < 20; i++) {
-                this.analysisCache.delete(keys[i]);
-            }
+        if (context) {
+            context.setMemo(this.CONTEXT_CACHE_KEY, { text, analysis });
         }
-        this.analysisCache.set(cacheKey, analysis);
+        else {
+            // Cache the result
+            if (this.analysisCache.size >= this.CACHE_MAX_SIZE) {
+                // Clear oldest entries
+                const keys = Array.from(this.analysisCache.keys());
+                for (let i = 0; i < 20; i++) {
+                    this.analysisCache.delete(keys[i]);
+                }
+            }
+            this.analysisCache.set(cacheKey, analysis);
+        }
         return analysis;
     }
     /**

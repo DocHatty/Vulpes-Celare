@@ -59,6 +59,7 @@ export { FilterRegistry } from "./filters/FilterRegistry";
 export { WindowService } from "./services/WindowService";
 export { ConfidenceModifierService } from "./services/ConfidenceModifierService";
 export { ReplacementContextService } from "./services/ReplacementContextService";
+export { ProvenanceService, type ProvenanceRecordOptions, } from "./services/ProvenanceService";
 export { MLWeightOptimizer, mlWeightOptimizer, TrainingDocument, GroundTruthLabel, OptimizationResult, } from "./core/MLWeightOptimizer";
 export { CrossTypeReasoner, crossTypeReasoner, ReasoningResult, } from "./core/CrossTypeReasoner";
 export { ConfidenceCalibrator, confidenceCalibrator, CalibrationDataPoint, CalibrationMetrics, CalibrationResult, } from "./core/ConfidenceCalibrator";
@@ -76,6 +77,7 @@ export { PolicyCompiler, PolicyTemplates, PolicyRule, PolicyDefinition, Compiled
 export { TrustBundleExporter, TrustBundle, TrustBundleManifest, TrustBundleCertificate, TrustBundlePolicy, TrustBundleOptions, VerificationResult, TRUST_BUNDLE_VERSION, TRUST_BUNDLE_EXTENSION, } from "./provenance/TrustBundleExporter";
 export { ImageRedactor, ImageRedactionResult, RedactionRegion, VisualPolicy, } from "./core/images";
 export { OCRService, OCRResult, TextBox, OCRServiceConfig, } from "./core/images";
+export { VisualDetector, VisualDetectorConfig } from "./core/images";
 export type { VisualDetection, VisualBox } from "./core/images";
 export { ImageServiceLogger, getLogger, withErrorBoundary, withRetry, withTimeout, LogLevel, LogEntry, ServiceHealth, OperationMetrics, } from "./core/images";
 export { DicomStreamTransformer, HIPAA_DICOM_TAGS, anonymizeDicomBuffer, } from "./core/dicom";

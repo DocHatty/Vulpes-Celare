@@ -21,7 +21,8 @@ const RadiologyLogger_1 = require("./utils/RadiologyLogger");
 const RedactionContext_1 = require("./context/RedactionContext");
 const FilterRegistry_1 = require("./filters/FilterRegistry");
 const PolicyLoader_1 = require("./policies/PolicyLoader");
-const ParallelRedactionEngine_1 = require("./core/ParallelRedactionEngine");
+const VulpesCelare_1 = require("./VulpesCelare");
+const ProvenanceService_1 = require("./services/ProvenanceService");
 // Re-export for backward compatibility
 var RedactionContext_2 = require("./context/RedactionContext");
 Object.defineProperty(exports, "RedactionContext", { enumerable: true, get: function () { return RedactionContext_2.RedactionContext; } });
@@ -34,6 +35,8 @@ exports.BaseFilter = BaseFilter;
 /**
  * RedactionEngine - Thin Orchestrator
  * Delegates to specialized services for each concern
+ *
+ * @deprecated Prefer `VulpesCelare` as the public orchestrator.
  */
 class RedactionEngine {
     /**
@@ -91,7 +94,7 @@ class RedactionEngine {
             // All filters scan original text simultaneously, return Spans
             const filters = FilterRegistry_1.FilterRegistry.getAllSpanFilters();
             RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Starting parallel Span-based redaction with ${filters.length} filters`);
-            const redactedText = await ParallelRedactionEngine_1.ParallelRedactionEngine.redactParallel(text, filters, policy, context);
+            const redactedText = await VulpesCelare_1.VulpesCelare.redactWithPolicy(text, filters, policy, context);
             const totalTime = Date.now() - startTime;
             const stats = context.getStats();
             if (totalTime > 50) {
@@ -99,7 +102,7 @@ class RedactionEngine {
             }
             // AUTO-PROVENANCE: Record the redaction job
             try {
-                await RedactionEngine.recordProvenance(text, redactedText);
+                await ProvenanceService_1.ProvenanceService.recordRedaction(text, redactedText);
             }
             catch (provError) {
                 RadiologyLogger_1.RadiologyLogger.error("PROVENANCE", "Failed to record provenance", provError);
@@ -200,42 +203,6 @@ class RedactionEngine {
      */
     static async loadPolicy(policyName) {
         return await PolicyLoader_1.PolicyLoader.loadPolicy(policyName);
-    }
-    /**
-     * Record provenance data to the local RPL layer
-     */
-    static async recordProvenance(original, redacted) {
-        // Only attempt if we are in an environment with fetch (Node 18+)
-        if (typeof fetch === 'undefined')
-            return;
-        // Construct simplified manifest for provenance (full manifest to come later)
-        // For now we just prove the transformation occurred
-        const manifest = {
-            timestamp: new Date().toISOString(),
-            engine: "Vulpes-Celare RedactionEngine v1.0"
-        };
-        const payload = {
-            docId: `doc-${Date.now()}`, // Generate ad-hoc ID if context doesn't have one
-            original,
-            redacted,
-            manifest,
-            actorId: "system-redaction-engine"
-        };
-        try {
-            // Fire and forget - we await it but don't let it crash the main flow
-            const response = await fetch("http://localhost:3106/provenance/record", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                const err = await response.text();
-                throw new Error(`RPL Server responded with ${response.status}: ${err}`);
-            }
-        }
-        catch (e) {
-            throw e; // Rethrow to be caught by caller logger
-        }
     }
 }
 exports.RedactionEngine = RedactionEngine;

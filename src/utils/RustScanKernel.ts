@@ -1,5 +1,6 @@
 import { loadNativeBinding } from "../native/binding";
 import { RedactionContext } from "../context/RedactionContext";
+import { RustAccelConfig } from "../config/RustAccelConfig";
 
 export type RustKernelDetection = {
   filterType: string;
@@ -24,14 +25,11 @@ function getBinding(): ReturnType<typeof loadNativeBinding> | null {
 }
 
 function isKernelEnabled(): boolean {
-  // Rust scan kernel is now DEFAULT (promoted from opt-in).
-  // Set VULPES_SCAN_ACCEL=0 to disable and use pure TypeScript.
-  const val = process.env.VULPES_SCAN_ACCEL;
-  return val === undefined || val === "1";
+  return RustAccelConfig.isScanKernelEnabled();
 }
 
 type CacheEntry = { text: string; byType: Map<string, RustKernelDetection[]> };
-const cache = new WeakMap<RedactionContext, CacheEntry>();
+const CACHE_KEY = "RustScanKernel:cache";
 
 export const RustScanKernel = {
   isAvailable(): boolean {
@@ -48,7 +46,7 @@ export const RustScanKernel = {
     const scanAll = binding?.scanAllIdentifiers;
     if (typeof scanAll !== "function") return null;
 
-    const existing = cache.get(context);
+    const existing = context.getMemo<CacheEntry>(CACHE_KEY);
     if (existing && existing.text === text) {
       return existing.byType.get(type) ?? [];
     }
@@ -67,7 +65,7 @@ export const RustScanKernel = {
       byType.set(d.filterType, list);
     }
 
-    cache.set(context, { text, byType });
+    context.setMemo(CACHE_KEY, { text, byType });
     return byType.get(type) ?? [];
   },
 };

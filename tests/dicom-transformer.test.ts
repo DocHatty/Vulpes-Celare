@@ -73,7 +73,7 @@ describe("DicomStreamTransformer", () => {
 
     // UID hashing should preserve valid UI format (digits and dots)
     const sop = parsed.string("x00080018") || "";
-    expect(sop).toMatch(/^2\\.25\\.[0-9]+$/);
+    expect(sop).toMatch(/^2\.25\.[0-9]+$/);
   });
 });
 

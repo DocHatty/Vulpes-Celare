@@ -31,6 +31,7 @@ export class RedactionContext {
   private dateShiftingEngine: DateShiftingEngine;
   private replacementService: ReplacementContextService;
   private contextName: string;
+  private readonly memo: Map<string, unknown> = new Map();
 
   constructor(
     sessionId?: string,
@@ -167,5 +168,36 @@ export class RedactionContext {
    */
   getReplacementStats() {
     return this.replacementService.getStatistics();
+  }
+
+  /**
+   * Internal per-request memoization store.
+   * Modules should namespace keys to avoid collisions (e.g., `MyModule:cache`).
+   *
+   * This is intentionally generic so we can standardize caches on `RedactionContext`
+   * without introducing a global registry.
+   *
+   * @internal
+   */
+  getMemo<T>(key: string): T | undefined {
+    return this.memo.get(key) as T | undefined;
+  }
+
+  /**
+   * @internal
+   */
+  setMemo<T>(key: string, value: T): void {
+    this.memo.set(key, value);
+  }
+
+  /**
+   * @internal
+   */
+  getOrCreateMemo<T>(key: string, factory: () => T): T {
+    const existing = this.getMemo<T>(key);
+    if (existing !== undefined) return existing;
+    const created = factory();
+    this.setMemo(key, created);
+    return created;
   }
 }

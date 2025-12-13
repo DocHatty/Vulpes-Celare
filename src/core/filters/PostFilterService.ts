@@ -13,6 +13,7 @@
 import { Span, FilterType } from "../../models/Span";
 import { RadiologyLogger } from "../../utils/RadiologyLogger";
 import { loadNativeBinding } from "../../native/binding";
+import { RustAccelConfig } from "../../config/RustAccelConfig";
 
 let cachedPostFilterBinding:
   | ReturnType<typeof loadNativeBinding>
@@ -20,10 +21,7 @@ let cachedPostFilterBinding:
   | undefined = undefined;
 
 function isPostFilterAccelEnabled(): boolean {
-  // Rust post-filter is now DEFAULT (promoted from opt-in).
-  // Set VULPES_POSTFILTER_ACCEL=0 to disable and use pure TypeScript.
-  const val = process.env.VULPES_POSTFILTER_ACCEL;
-  return val === undefined || val === "1";
+  return RustAccelConfig.isPostFilterEnabled();
 }
 
 function isPostFilterShadowEnabled(): boolean {

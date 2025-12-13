@@ -178,6 +178,25 @@ export class VulpesCelare {
   }
 
   /**
+   * Low-level orchestrator entrypoint used by legacy `RedactionEngine`.
+   *
+   * @internal
+   */
+  static async redactWithPolicy(
+    text: string,
+    filters: SpanBasedFilter[],
+    policy: any,
+    context: RedactionContext,
+  ): Promise<string> {
+    return ParallelRedactionEngine.redactParallel(
+      text,
+      filters,
+      policy,
+      context,
+    );
+  }
+
+  /**
    * Redact PHI from an image buffer.
    * Detects faces, extracts text via OCR, and applies black-box redaction.
    *
@@ -347,6 +366,7 @@ export {
 } from "./core/images";
 export { OCRService, OCRResult } from "./core/images";
 export type { VisualDetection } from "./core/images";
+export { VisualDetector } from "./core/images";
 
 // Export DICOM services (The "DICOM Firewall")
 export {

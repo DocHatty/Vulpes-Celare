@@ -25,6 +25,8 @@ export declare abstract class BaseFilter {
 /**
  * RedactionEngine - Thin Orchestrator
  * Delegates to specialized services for each concern
+ *
+ * @deprecated Prefer `VulpesCelare` as the public orchestrator.
  */
 export declare class RedactionEngine {
     /**
@@ -71,9 +73,5 @@ export declare class RedactionEngine {
      * Delegates to PolicyLoader
      */
     static loadPolicy(policyName: string): Promise<any>;
-    /**
-     * Record provenance data to the local RPL layer
-     */
-    private static recordProvenance;
 }
 //# sourceMappingURL=RedactionEngine.d.ts.map

@@ -34,6 +34,7 @@ import {
   RustApplyKernel,
   type RustReplacement,
 } from "../utils/RustApplyKernel";
+import { RustAccelConfig } from "../config/RustAccelConfig";
 
 /**
  * Filter execution result with detailed diagnostics
@@ -402,7 +403,11 @@ export class ParallelRedactionEngine {
       minConfidence: 0.0,
       modifySpans: true,
     });
-    const enhancementAnalysis = spanEnhancer.analyzeSpans(allSpans, text);
+    const enhancementAnalysis = spanEnhancer.analyzeSpans(
+      allSpans,
+      text,
+      context,
+    );
 
     // Log enhancement stats but DON'T filter yet - let existing filters handle it
     // Once tuned, we can enable filtering with appropriate threshold
@@ -562,7 +567,7 @@ export class ParallelRedactionEngine {
       }
     }
 
-    if (process.env.VULPES_SHADOW_RUST_NAME_SMART === "1") {
+    if (RustAccelConfig.isShadowRustNameSmartEnabled()) {
       const baseShadow = shadow ?? {};
       try {
         const rust = RustNameScanner.detectSmart(text);
@@ -770,7 +775,7 @@ export class ParallelRedactionEngine {
 
     const applyShadowEnabled = process.env.VULPES_SHADOW_APPLY_SPANS === "1";
     const rustAvailable = RustApplyKernel.isAvailable();
-    const rustEnabled = process.env.VULPES_APPLY_SPANS_ACCEL === "1";
+    const rustEnabled = RustAccelConfig.isApplySpansEnabled();
 
     const applyInTs = (input: string, reps: RustReplacement[]): string => {
       const sorted = [...reps].sort(

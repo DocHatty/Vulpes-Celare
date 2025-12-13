@@ -9,6 +9,7 @@
 
 import { Span } from "../models/Span";
 import { loadNativeBinding } from "../native/binding";
+import { RustAccelConfig } from "../config/RustAccelConfig";
 
 export interface WindowOptions {
   /**
@@ -78,7 +79,7 @@ export class WindowService {
     includePunctuation: boolean,
   ): TokenWithPosition[] {
     // Optional Rust accelerator (shares the `VULPES_TEXT_ACCEL=1` gate with other text helpers).
-    if (process.env.VULPES_TEXT_ACCEL === "1") {
+    if (RustAccelConfig.isTextAccelExplicitlyEnabled()) {
       const nativeTokenizer = getNativeTokenizer();
       if (nativeTokenizer) {
         try {

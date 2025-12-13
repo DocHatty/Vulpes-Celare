@@ -28,6 +28,7 @@ class RedactionContext {
     dateShiftingEngine;
     replacementService;
     contextName;
+    memo = new Map();
     constructor(sessionId, contextName = "default", replacementScope = ReplacementContextService_1.ReplacementScope.DOCUMENT) {
         this.sessionId =
             sessionId || Date.now() + "_" + Math.floor(Math.random() * 9000 + 1000);
@@ -134,6 +135,35 @@ class RedactionContext {
      */
     getReplacementStats() {
         return this.replacementService.getStatistics();
+    }
+    /**
+     * Internal per-request memoization store.
+     * Modules should namespace keys to avoid collisions (e.g., `MyModule:cache`).
+     *
+     * This is intentionally generic so we can standardize caches on `RedactionContext`
+     * without introducing a global registry.
+     *
+     * @internal
+     */
+    getMemo(key) {
+        return this.memo.get(key);
+    }
+    /**
+     * @internal
+     */
+    setMemo(key, value) {
+        this.memo.set(key, value);
+    }
+    /**
+     * @internal
+     */
+    getOrCreateMemo(key, factory) {
+        const existing = this.getMemo(key);
+        if (existing !== undefined)
+            return existing;
+        const created = factory();
+        this.setMemo(key, created);
+        return created;
     }
 }
 exports.RedactionContext = RedactionContext;

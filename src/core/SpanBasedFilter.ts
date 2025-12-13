@@ -13,6 +13,7 @@
 
 import { Span, FilterType } from "../models/Span";
 import { RedactionContext } from "../context/RedactionContext";
+export { FilterPriority } from "../models/FilterPriority";
 
 /**
  * Base interface for Span-based filters
@@ -120,49 +121,3 @@ export abstract class SpanBasedFilter {
     });
   }
 }
-
-/**
- * Priority levels for common filter types
- * Higher priority wins when spans overlap
- */
-export const FilterPriority = {
-  // Highest priority - uniquely identifying
-  SSN: 10,
-  CREDITCARD: 10,
-
-  // Medical identifiers
-  MRN: 9,
-  NPI: 9,
-  DEVICE: 9,
-
-  // Financial and technical
-  ACCOUNT: 8,
-  LICENSE: 8,
-  HEALTHPLAN: 8,
-
-  // Temporal
-  DATE: 8,
-
-  // Contact info
-  PHONE: 7,
-  FAX: 7,
-  EMAIL: 7,
-
-  // Personal identifiers
-  NAME: 6,
-
-  // Location
-  ADDRESS: 5,
-  ZIPCODE: 4,
-
-  // Context-dependent identifiers
-  VEHICLE: 5,
-  BIOMETRIC: 5,
-
-  // Technical
-  URL: 3,
-  IP: 3,
-
-  // Least priority
-  OCCUPATION: 2,
-};

@@ -28,6 +28,7 @@
  *
  * @module redaction/utils
  */
+import { RedactionContext } from "../context/RedactionContext";
 export interface ChaosAnalysis {
     /** Overall chaos score 0.0 (clean) to 1.0 (total chaos) */
     score: number;
@@ -65,6 +66,7 @@ export declare class OcrChaosDetector {
     /** Cache of analyzed documents to avoid re-computation */
     private static analysisCache;
     private static readonly CACHE_MAX_SIZE;
+    private static readonly CONTEXT_CACHE_KEY;
     private static readonly LOG2;
     private static readonly EPSILON;
     /**
@@ -83,7 +85,7 @@ export declare class OcrChaosDetector {
      * Analyze a document/text block for OCR chaos indicators
      * Uses entropy-based scoring combined with pattern detection
      */
-    static analyze(text: string): ChaosAnalysis;
+    static analyze(text: string, context?: RedactionContext): ChaosAnalysis;
     /**
      * Get confidence weights adjusted for document chaos level
      */

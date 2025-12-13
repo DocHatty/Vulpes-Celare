@@ -596,6 +596,7 @@ If the hashes match, the redacted document has not been modified since export.
 ## Notes
 
 - Trust Bundles are designed to avoid embedding original PHI.
+- This bundle is designed to support HIPAA Safe Harbor verification workflows.
 - The bundle may include 'merkle-proof.json' which provides additional tamper evidence over the bundle's file hashes.
 
 Generated at: ${new Date().toISOString()}

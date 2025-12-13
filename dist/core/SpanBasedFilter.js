@@ -12,8 +12,10 @@
  * @module redaction/core
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FilterPriority = exports.SpanBasedFilter = void 0;
+exports.SpanBasedFilter = exports.FilterPriority = void 0;
 const Span_1 = require("../models/Span");
+var FilterPriority_1 = require("../models/FilterPriority");
+Object.defineProperty(exports, "FilterPriority", { enumerable: true, get: function () { return FilterPriority_1.FilterPriority; } });
 /**
  * Base interface for Span-based filters
  * Filters scan text and return detected entities as Spans
@@ -89,40 +91,4 @@ class SpanBasedFilter {
     }
 }
 exports.SpanBasedFilter = SpanBasedFilter;
-/**
- * Priority levels for common filter types
- * Higher priority wins when spans overlap
- */
-exports.FilterPriority = {
-    // Highest priority - uniquely identifying
-    SSN: 10,
-    CREDITCARD: 10,
-    // Medical identifiers
-    MRN: 9,
-    NPI: 9,
-    DEVICE: 9,
-    // Financial and technical
-    ACCOUNT: 8,
-    LICENSE: 8,
-    HEALTHPLAN: 8,
-    // Temporal
-    DATE: 8,
-    // Contact info
-    PHONE: 7,
-    FAX: 7,
-    EMAIL: 7,
-    // Personal identifiers
-    NAME: 6,
-    // Location
-    ADDRESS: 5,
-    ZIPCODE: 4,
-    // Context-dependent identifiers
-    VEHICLE: 5,
-    BIOMETRIC: 5,
-    // Technical
-    URL: 3,
-    IP: 3,
-    // Least priority
-    OCCUPATION: 2,
-};
 //# sourceMappingURL=SpanBasedFilter.js.map

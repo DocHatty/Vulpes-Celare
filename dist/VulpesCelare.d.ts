@@ -21,6 +21,7 @@
  */
 import { RedactionExecutionReport } from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
+import { RedactionContext } from "./context/RedactionContext";
 import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
 export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "npi" | "dea" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "unique_id" | "zip" | "fax" | "age";
 export type ReplacementStyle = "brackets" | "asterisks" | "empty";
@@ -49,6 +50,12 @@ export declare class VulpesCelare {
     constructor(config?: VulpesCelareConfig);
     static redact(text: string): Promise<string>;
     static redactWithDetails(text: string, config?: VulpesCelareConfig): Promise<RedactionResult>;
+    /**
+     * Low-level orchestrator entrypoint used by legacy `RedactionEngine`.
+     *
+     * @internal
+     */
+    static redactWithPolicy(text: string, filters: SpanBasedFilter[], policy: any, context: RedactionContext): Promise<string>;
     /**
      * Redact PHI from an image buffer.
      * Detects faces, extracts text via OCR, and applies black-box redaction.
@@ -81,6 +88,7 @@ export type { PolicyRule, PolicyDefinition, CompiledPolicy } from "./PolicyDSL";
 export { ImageRedactor, ImageRedactionResult, RedactionRegion, VisualPolicy, } from "./core/images";
 export { OCRService, OCRResult } from "./core/images";
 export type { VisualDetection } from "./core/images";
+export { VisualDetector } from "./core/images";
 export { DicomStreamTransformer, HIPAA_DICOM_TAGS, anonymizeDicomBuffer, } from "./core/dicom";
 export type { DicomAnonymizationRule, DicomTransformerConfig, } from "./core/dicom";
 export { CortexPythonBridge } from "./core/cortex/python/CortexPythonBridge";

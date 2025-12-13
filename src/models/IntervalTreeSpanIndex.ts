@@ -25,6 +25,8 @@
 
 import type { Span } from "./Span";
 import { loadNativeBinding, VulpesNativeBinding } from "../native/binding";
+import { TYPE_SPECIFICITY } from "./FilterPriority";
+import { RustAccelConfig } from "../config/RustAccelConfig";
 
 // Cache the native binding
 let cachedBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
@@ -41,10 +43,7 @@ function getBinding(): ReturnType<typeof loadNativeBinding> | null {
 }
 
 function isIntervalAccelEnabled(): boolean {
-  // Rust interval tree is now DEFAULT (promoted from opt-in).
-  // Set VULPES_INTERVAL_ACCEL=0 to disable and use pure TypeScript.
-  const val = process.env.VULPES_INTERVAL_ACCEL;
-  return val === undefined || val === "1";
+  return RustAccelConfig.isIntervalTreeEnabled();
 }
 
 // Type for the Rust interval tree instance
@@ -62,48 +61,6 @@ interface ScoredSpan {
   span: Span;
   score: number;
 }
-
-/**
- * Type specificity ranking for span disambiguation
- * Higher values = more specific/trustworthy
- */
-const TYPE_SPECIFICITY: Record<string, number> = {
-  // High specificity - structured patterns
-  SSN: 100,
-  MRN: 95,
-  NPI: 95,
-  DEA: 95,
-  CREDIT_CARD: 90,
-  ACCOUNT: 85,
-  LICENSE: 85,
-  PASSPORT: 85,
-  IBAN: 85,
-  HEALTH_PLAN: 85,
-  EMAIL: 80,
-  PHONE: 75,
-  FAX: 75,
-  IP: 75,
-  URL: 75,
-  MAC_ADDRESS: 75,
-  BITCOIN: 75,
-  VEHICLE: 70,
-  DEVICE: 70,
-  BIOMETRIC: 70,
-  // Medium specificity
-  DATE: 60,
-  ZIPCODE: 55,
-  ADDRESS: 50,
-  CITY: 45,
-  STATE: 45,
-  COUNTY: 45,
-  // Lower specificity - context-dependent
-  AGE: 40,
-  RELATIVE_DATE: 40,
-  PROVIDER_NAME: 36,
-  NAME: 35,
-  OCCUPATION: 30,
-  CUSTOM: 20,
-};
 
 /**
  * IntervalTreeSpanIndex - High-performance span overlap management

@@ -10,6 +10,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WindowService = void 0;
 const binding_1 = require("../native/binding");
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
 let cachedNativeTokenizer = undefined;
 function getNativeTokenizer() {
     if (cachedNativeTokenizer !== undefined)
@@ -43,7 +44,7 @@ class WindowService {
      */
     static tokenizeWithPositions(text, includePunctuation) {
         // Optional Rust accelerator (shares the `VULPES_TEXT_ACCEL=1` gate with other text helpers).
-        if (process.env.VULPES_TEXT_ACCEL === "1") {
+        if (RustAccelConfig_1.RustAccelConfig.isTextAccelExplicitlyEnabled()) {
             const nativeTokenizer = getNativeTokenizer();
             if (nativeTokenizer) {
                 try {

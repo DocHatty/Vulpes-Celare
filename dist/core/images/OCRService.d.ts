@@ -63,6 +63,10 @@ export declare class OCRService {
      */
     isReady(): boolean;
     /**
+     * Backwards-compatible alias for isReady()
+     */
+    isModelLoaded(): boolean;
+    /**
      * Release resources
      */
     dispose(): Promise<void>;

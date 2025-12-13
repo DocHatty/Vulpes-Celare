@@ -32,6 +32,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FastFuzzyMatcher = void 0;
 const lru_cache_1 = require("lru-cache");
 const binding_1 = require("../native/binding");
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
 // Cache the native binding
 let cachedBinding = undefined;
 function getBinding() {
@@ -46,10 +47,7 @@ function getBinding() {
     return cachedBinding;
 }
 function isFuzzyAccelEnabled() {
-    // Rust fuzzy matching is now DEFAULT (promoted from opt-in).
-    // Set VULPES_FUZZY_ACCEL=0 to disable and use pure TypeScript.
-    const val = process.env.VULPES_FUZZY_ACCEL;
-    return val === undefined || val === "1";
+    return RustAccelConfig_1.RustAccelConfig.isFuzzyEnabled();
 }
 const DEFAULT_CONFIG = {
     maxEditDistance: 2,

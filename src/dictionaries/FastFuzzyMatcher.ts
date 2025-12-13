@@ -30,6 +30,7 @@
 
 import { LRUCache } from "lru-cache";
 import { loadNativeBinding } from "../native/binding";
+import { RustAccelConfig } from "../config/RustAccelConfig";
 
 // Rust accelerator types
 type RustFuzzyMatcher = {
@@ -64,10 +65,7 @@ function getBinding(): ReturnType<typeof loadNativeBinding> | null {
 }
 
 function isFuzzyAccelEnabled(): boolean {
-  // Rust fuzzy matching is now DEFAULT (promoted from opt-in).
-  // Set VULPES_FUZZY_ACCEL=0 to disable and use pure TypeScript.
-  const val = process.env.VULPES_FUZZY_ACCEL;
-  return val === undefined || val === "1";
+  return RustAccelConfig.isFuzzyEnabled();
 }
 
 export interface FastMatchResult {

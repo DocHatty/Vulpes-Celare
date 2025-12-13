@@ -22,8 +22,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConfidenceCalibrator = exports.crossTypeReasoner = exports.CrossTypeReasoner = exports.mlWeightOptimizer = exports.MLWeightOptimizer = exports.ReplacementContextService = exports.ConfidenceModifierService = exports.WindowService = exports.FilterRegistry = exports.UniqueIdentifierFilterSpan = exports.BiometricContextFilterSpan = exports.VehicleIdentifierFilterSpan = exports.DeviceIdentifierFilterSpan = exports.URLFilterSpan = exports.IPAddressFilterSpan = exports.AccountNumberFilterSpan = exports.CreditCardFilterSpan = exports.DateFilterSpan = exports.AgeFilterSpan = exports.HealthPlanNumberFilterSpan = exports.NPIFilterSpan = exports.MRNFilterSpan = exports.ZipCodeFilterSpan = exports.AddressFilterSpan = exports.EmailFilterSpan = exports.FaxNumberFilterSpan = exports.PhoneFilterSpan = exports.DEAFilterSpan = exports.LicenseNumberFilterSpan = exports.PassportNumberFilterSpan = exports.SSNFilterSpan = exports.FamilyNameFilterSpan = exports.TitledNameFilterSpan = exports.FormattedNameFilterSpan = exports.SmartNameFilterSpan = exports.DocumentVocabulary = exports.RedactionContext = exports.FilterType = exports.SpanUtils = exports.Span = exports.PostFilterService = exports.FieldLabelWhitelist = exports.FieldContextDetector = exports.FilterAdapter = exports.SpanFactory = exports.FilterPriority = exports.SpanBasedFilter = exports.ParallelRedactionEngine = exports.default = exports.VulpesCelare = void 0;
-exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.OCRService = exports.ImageRedactor = exports.TRUST_BUNDLE_EXTENSION = exports.TRUST_BUNDLE_VERSION = exports.TrustBundleExporter = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.PolicyLoader = exports.TokenManager = exports.StatisticsTracker = exports.FilterHealthCheck = exports.FAMILY_RELATIONSHIP_KEYWORDS = exports.NON_PERSON_STRUCTURE_TERMS = exports.PROVIDER_CREDENTIALS = exports.PROVIDER_TITLE_PREFIXES = exports.NameDetectionUtils = exports.ValidationUtils = exports.InterPHIDisambiguator = exports.EnsembleVoter = exports.spanEnhancer = exports.SpanEnhancer = exports.weightedScorer = exports.WeightedPHIScorer = exports.confidenceCalibrator = void 0;
+exports.crossTypeReasoner = exports.CrossTypeReasoner = exports.mlWeightOptimizer = exports.MLWeightOptimizer = exports.ProvenanceService = exports.ReplacementContextService = exports.ConfidenceModifierService = exports.WindowService = exports.FilterRegistry = exports.UniqueIdentifierFilterSpan = exports.BiometricContextFilterSpan = exports.VehicleIdentifierFilterSpan = exports.DeviceIdentifierFilterSpan = exports.URLFilterSpan = exports.IPAddressFilterSpan = exports.AccountNumberFilterSpan = exports.CreditCardFilterSpan = exports.DateFilterSpan = exports.AgeFilterSpan = exports.HealthPlanNumberFilterSpan = exports.NPIFilterSpan = exports.MRNFilterSpan = exports.ZipCodeFilterSpan = exports.AddressFilterSpan = exports.EmailFilterSpan = exports.FaxNumberFilterSpan = exports.PhoneFilterSpan = exports.DEAFilterSpan = exports.LicenseNumberFilterSpan = exports.PassportNumberFilterSpan = exports.SSNFilterSpan = exports.FamilyNameFilterSpan = exports.TitledNameFilterSpan = exports.FormattedNameFilterSpan = exports.SmartNameFilterSpan = exports.DocumentVocabulary = exports.RedactionContext = exports.FilterType = exports.SpanUtils = exports.Span = exports.PostFilterService = exports.FieldLabelWhitelist = exports.FieldContextDetector = exports.FilterAdapter = exports.SpanFactory = exports.FilterPriority = exports.SpanBasedFilter = exports.ParallelRedactionEngine = exports.default = exports.VulpesCelare = void 0;
+exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.TRUST_BUNDLE_EXTENSION = exports.TRUST_BUNDLE_VERSION = exports.TrustBundleExporter = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.PolicyLoader = exports.TokenManager = exports.StatisticsTracker = exports.FilterHealthCheck = exports.FAMILY_RELATIONSHIP_KEYWORDS = exports.NON_PERSON_STRUCTURE_TERMS = exports.PROVIDER_CREDENTIALS = exports.PROVIDER_TITLE_PREFIXES = exports.NameDetectionUtils = exports.ValidationUtils = exports.InterPHIDisambiguator = exports.EnsembleVoter = exports.spanEnhancer = exports.SpanEnhancer = exports.weightedScorer = exports.WeightedPHIScorer = exports.confidenceCalibrator = exports.ConfidenceCalibrator = void 0;
 // ============================================================================
 // MAIN ORCHESTRATOR - Start Here!
 // ============================================================================
@@ -146,6 +146,8 @@ var ConfidenceModifierService_1 = require("./services/ConfidenceModifierService"
 Object.defineProperty(exports, "ConfidenceModifierService", { enumerable: true, get: function () { return ConfidenceModifierService_1.ConfidenceModifierService; } });
 var ReplacementContextService_1 = require("./services/ReplacementContextService");
 Object.defineProperty(exports, "ReplacementContextService", { enumerable: true, get: function () { return ReplacementContextService_1.ReplacementContextService; } });
+var ProvenanceService_1 = require("./services/ProvenanceService");
+Object.defineProperty(exports, "ProvenanceService", { enumerable: true, get: function () { return ProvenanceService_1.ProvenanceService; } });
 // ============================================================================
 // ML & ADVANCED SCORING SYSTEMS
 // ============================================================================
@@ -212,14 +214,16 @@ var images_1 = require("./core/images");
 Object.defineProperty(exports, "ImageRedactor", { enumerable: true, get: function () { return images_1.ImageRedactor; } });
 var images_2 = require("./core/images");
 Object.defineProperty(exports, "OCRService", { enumerable: true, get: function () { return images_2.OCRService; } });
-// Image Service Logging & Debugging
 var images_3 = require("./core/images");
-Object.defineProperty(exports, "ImageServiceLogger", { enumerable: true, get: function () { return images_3.ImageServiceLogger; } });
-Object.defineProperty(exports, "getLogger", { enumerable: true, get: function () { return images_3.getLogger; } });
-Object.defineProperty(exports, "withErrorBoundary", { enumerable: true, get: function () { return images_3.withErrorBoundary; } });
-Object.defineProperty(exports, "withRetry", { enumerable: true, get: function () { return images_3.withRetry; } });
-Object.defineProperty(exports, "withTimeout", { enumerable: true, get: function () { return images_3.withTimeout; } });
-Object.defineProperty(exports, "LogLevel", { enumerable: true, get: function () { return images_3.LogLevel; } });
+Object.defineProperty(exports, "VisualDetector", { enumerable: true, get: function () { return images_3.VisualDetector; } });
+// Image Service Logging & Debugging
+var images_4 = require("./core/images");
+Object.defineProperty(exports, "ImageServiceLogger", { enumerable: true, get: function () { return images_4.ImageServiceLogger; } });
+Object.defineProperty(exports, "getLogger", { enumerable: true, get: function () { return images_4.getLogger; } });
+Object.defineProperty(exports, "withErrorBoundary", { enumerable: true, get: function () { return images_4.withErrorBoundary; } });
+Object.defineProperty(exports, "withRetry", { enumerable: true, get: function () { return images_4.withRetry; } });
+Object.defineProperty(exports, "withTimeout", { enumerable: true, get: function () { return images_4.withTimeout; } });
+Object.defineProperty(exports, "LogLevel", { enumerable: true, get: function () { return images_4.LogLevel; } });
 // ============================================================================
 // DICOM ANONYMIZATION (The "DICOM Firewall")
 // ============================================================================

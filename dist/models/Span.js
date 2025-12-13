@@ -15,12 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpanUtils = exports.Span = exports.FilterType = void 0;
 const IntervalTreeSpanIndex_1 = require("./IntervalTreeSpanIndex");
 const binding_1 = require("../native/binding");
+const FilterPriority_1 = require("./FilterPriority");
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
 let cachedSpanBinding = undefined;
 function isSpanAccelEnabled() {
-    // Rust span acceleration is now DEFAULT (promoted from opt-in).
-    // Set VULPES_SPAN_ACCEL=0 to disable and use pure TypeScript.
-    const val = process.env.VULPES_SPAN_ACCEL;
-    return val === undefined || val === "1";
+    return RustAccelConfig_1.RustAccelConfig.isSpanOpsEnabled();
 }
 function getSpanBinding() {
     if (cachedSpanBinding !== undefined)
@@ -190,47 +189,6 @@ exports.Span = Span;
  * instead of O(n²) nested loops.
  */
 class SpanUtils {
-    /**
-     * Filter type specificity ranking (higher = more specific/trustworthy)
-     * More specific types should win over general ones
-     */
-    static TYPE_SPECIFICITY = {
-        // High specificity - structured patterns
-        SSN: 100,
-        MRN: 95,
-        NPI: 95,
-        DEA: 95,
-        CREDIT_CARD: 90,
-        ACCOUNT: 85,
-        LICENSE: 85,
-        PASSPORT: 85,
-        IBAN: 85,
-        HEALTH_PLAN: 85,
-        EMAIL: 80,
-        PHONE: 75,
-        FAX: 75,
-        IP: 75,
-        URL: 75,
-        MAC_ADDRESS: 75,
-        BITCOIN: 75,
-        VEHICLE: 70,
-        DEVICE: 70,
-        BIOMETRIC: 70,
-        // Medium specificity
-        DATE: 60,
-        ZIPCODE: 55,
-        ADDRESS: 50,
-        CITY: 45,
-        STATE: 45,
-        COUNTY: 45,
-        // Lower specificity - context-dependent
-        AGE: 40,
-        RELATIVE_DATE: 40,
-        PROVIDER_NAME: 36, // Slightly higher than NAME since it has title context
-        NAME: 35, // Names can overlap with many things
-        OCCUPATION: 30,
-        CUSTOM: 20,
-    };
     // Performance flag - can be disabled for debugging
     static USE_INTERVAL_TREE = true;
     /**
@@ -247,7 +205,7 @@ class SpanUtils {
      * @returns A composite score (higher = better)
      */
     static calculateSpanScore(span) {
-        const typeSpecificity = this.TYPE_SPECIFICITY[span.filterType] || 25;
+        const typeSpecificity = FilterPriority_1.TYPE_SPECIFICITY[span.filterType] || 25;
         // Weighted scoring:
         // - Length: 40% weight (longer spans capture more context)
         // - Confidence: 30% weight (detection confidence)
@@ -334,8 +292,8 @@ class SpanUtils {
                 // Special case: if new span fully contains existing, check if we
                 // should prefer the more specific (smaller) span for certain types
                 if (span.contains(existing)) {
-                    const spanSpec = this.TYPE_SPECIFICITY[span.filterType] || 25;
-                    const existSpec = this.TYPE_SPECIFICITY[existing.filterType] || 25;
+                    const spanSpec = FilterPriority_1.TYPE_SPECIFICITY[span.filterType] || 25;
+                    const existSpec = FilterPriority_1.TYPE_SPECIFICITY[existing.filterType] || 25;
                     // If existing is more specific type and high confidence, keep it
                     if (existSpec > spanSpec && existing.confidence >= 0.9) {
                         shouldKeep = false;
@@ -344,8 +302,8 @@ class SpanUtils {
                 }
                 // Special case: existing fully contains new span
                 if (existing.contains(span)) {
-                    const spanSpec = this.TYPE_SPECIFICITY[span.filterType] || 25;
-                    const existSpec = this.TYPE_SPECIFICITY[existing.filterType] || 25;
+                    const spanSpec = FilterPriority_1.TYPE_SPECIFICITY[span.filterType] || 25;
+                    const existSpec = FilterPriority_1.TYPE_SPECIFICITY[existing.filterType] || 25;
                     // If new span is more specific type and high confidence,
                     // replace existing with new
                     if (spanSpec > existSpec && span.confidence >= 0.9) {
@@ -436,7 +394,7 @@ class SpanUtils {
      * Get type specificity for a filter type
      */
     static getTypeSpecificity(filterType) {
-        return this.TYPE_SPECIFICITY[filterType] || 25;
+        return FilterPriority_1.TYPE_SPECIFICITY[filterType] || 25;
     }
 }
 exports.SpanUtils = SpanUtils;

@@ -20,6 +20,10 @@ const FieldLabelWhitelist_1 = require("../core/FieldLabelWhitelist");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
 const OcrChaosDetector_1 = require("../utils/OcrChaosDetector");
 const RustNameScanner_1 = require("../utils/RustNameScanner");
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
+const LastFirstPatterns_1 = require("./name-patterns/LastFirstPatterns");
+const OcrTolerancePatterns_1 = require("./name-patterns/OcrTolerancePatterns");
+const TitledNamePatterns_1 = require("./name-patterns/TitledNamePatterns");
 class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     // ═══════════════════════════════════════════════════════════════════════════
     // STATIC CACHED REGEX PATTERNS - Compiled once at class load, not per-call
@@ -48,11 +52,11 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const spans = [];
         // Rust accelerators are now DEFAULT (promoted from opt-in).
         // Set VULPES_NAME_ACCEL=0 to disable and use pure TypeScript.
-        // Levels: 1 = Last,First only, 2 = +First Last, 3 = full smart (default)
-        const accelMode = process.env.VULPES_NAME_ACCEL ?? "2"; // Default to level 2
-        const useRustCommaNames = accelMode === "1" || accelMode === "2" || accelMode === "3";
-        const useRustFirstLastNames = accelMode === "2" || accelMode === "3";
-        const useRustSmartNames = accelMode === "3";
+        // Levels: 1 = Last,First only, 2 = +First Last (default), 3 = full smart (opt-in)
+        const accelMode = RustAccelConfig_1.RustAccelConfig.getNameAccelMode();
+        const useRustCommaNames = accelMode >= 1;
+        const useRustFirstLastNames = accelMode >= 2;
+        const useRustSmartNames = accelMode >= 3;
         // Pattern 0: Last, First format (medical records)
         if (useRustCommaNames) {
             this.detectRustLastFirstNames(text, spans);
@@ -112,7 +116,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         this.detectTeamMemberNames(text, spans);
         // Pattern 15: CHAOS-AWARE labeled names with adaptive confidence
         // Catches chaotic OCR like "pATriCIA L. jOHNsOn" when preceded by labels
-        this.detectChaosAwareLabeledNames(text, spans);
+        this.detectChaosAwareLabeledNames(text, spans, context);
         // Pattern 16: Concatenated names (no space between first and last)
         // Catches: "DeborahHarris", "JohnSmith", "MaryJohnson"
         this.detectConcatenatedNames(text, spans);
@@ -129,8 +133,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             // Match the same provider-title and credential exclusions as the legacy TS path.
             const lookbackStart = Math.max(0, start - 30);
             const textBefore = text.substring(lookbackStart, start);
-            const titleNamePattern = new RegExp(`\\b(${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`, "i");
-            if (titleNamePattern.test(textBefore)) {
+            if (TitledNamePatterns_1.TITLE_PLUS_TRAILING_WORD_PATTERN.test(textBefore)) {
                 continue;
             }
             const parts = fullName.split(/\s*,\s*/);
@@ -176,13 +179,12 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             // Exclude provider-title contexts (provider names are handled separately).
             const lookbackStart = Math.max(0, start - 30);
             const textBefore = text.substring(lookbackStart, start);
-            const titleNamePattern = new RegExp(`\\b(${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`, "i");
-            if (titleNamePattern.test(textBefore)) {
+            if (TitledNamePatterns_1.TITLE_TRAILING_PATTERN.test(textBefore)) {
                 continue;
             }
             // Exclude credentials immediately after the match (e.g., "John Smith, MD").
             const after = text.substring(end, Math.min(text.length, end + 40));
-            if (SmartNameFilterSpan.CREDENTIAL_AFTER_NAME_PATTERN.test(after)) {
+            if (TitledNamePatterns_1.PROVIDER_CONTEXT_CREDENTIAL_AFTER_NAME_PATTERN.test(after)) {
                 continue;
             }
             if (!this.isWhitelisted(fullName, text) &&
@@ -262,8 +264,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         if (nameEnd < fullContext.length) {
             const afterName = fullContext.substring(nameEnd, nameEnd + 30); // Look ahead 30 chars
             // Check for credentials pattern: ", MD" or ", DDS" or ", PhD" etc.
-            const credentialPattern = /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC)\b/i;
-            if (credentialPattern.test(afterName)) {
+            if (TitledNamePatterns_1.PROVIDER_CREDENTIAL_AFTER_NAME_PATTERN.test(afterName)) {
                 return true;
             }
         }
@@ -290,23 +291,20 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const beforeText = fullContext.substring(startLook, matchIndex);
         // Check if text before the name ends with a title prefix (immediate)
         // Pattern: title possibly followed by period and space(s)
-        const titlePattern = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`, "i");
-        if (titlePattern.test(beforeText)) {
+        if (TitledNamePatterns_1.TITLE_PREFIX_PATTERN.test(beforeText)) {
             return true;
         }
         // ALSO check if there's a title anywhere in the lookback followed by name-like words
         // This catches "Dame Ananya O'Neill" where O'Neill is matched separately
         // Pattern: Title + period? + space + CapitalizedWord(s) + space at end
-        const titledNamePattern = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Z][a-zA-Z'-]+(?:\\s+[A-Z][a-zA-Z'-]+)*\\s*$`, "i");
-        if (titledNamePattern.test(beforeText)) {
+        if (TitledNamePatterns_1.TITLED_NAME_LOOKBACK_PATTERN.test(beforeText)) {
             return true;
         }
         // Also check if this name is followed by professional credentials
         const nameEnd = matchIndex + name.length;
         if (nameEnd < fullContext.length) {
             const afterName = fullContext.substring(nameEnd, nameEnd + 30);
-            const credentialPattern = /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|FCCP|FAHA|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC|AGNP-C|OTR\/L)\b/i;
-            if (credentialPattern.test(afterName)) {
+            if (TitledNamePatterns_1.PROVIDER_CONTEXT_CREDENTIAL_AFTER_NAME_PATTERN.test(afterName)) {
                 return true;
             }
         }
@@ -686,7 +684,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     detectLastFirstNames(text, spans) {
         // STRICT pattern: "Last, First" format with proper capitalization
         // Each word must start with capital letter followed by at least 2 lowercase letters
-        const pattern = /\b([A-Z][a-z]{2,},[ \t]+[A-Z][a-z]{2,}(?:[ \t]+[A-Z][a-z]{2,})?)\b/g;
+        const pattern = (0, LastFirstPatterns_1.getStrictLastFirstPattern)();
         pattern.lastIndex = 0;
         let match;
         while ((match = pattern.exec(text)) !== null) {
@@ -695,8 +693,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             // "Hon. Javier Rosen, AGNP" -> "Rosen, AGNP" should NOT be detected
             const lookbackStart = Math.max(0, match.index - 30);
             const textBefore = text.substring(lookbackStart, match.index);
-            const titleNamePattern = new RegExp(`\\b(${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`, "i");
-            if (titleNamePattern.test(textBefore)) {
+            if (TitledNamePatterns_1.TITLE_PLUS_TRAILING_WORD_PATTERN.test(textBefore)) {
                 continue;
             }
             // CRITICAL: Skip if second part is a credential (AGNP, RN, MD, etc.)
@@ -745,45 +742,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * - "ZHAN6, SUSAN" (digit instead of letter)
      */
     detectOcrLastFirstNames(text, spans, options = {}) {
-        const patterns = [
-            // ULTRA-PERMISSIVE: ANY case mix, hyphens, apostrophes, dots, spaces
-            // Catches: "aNDREA bUI", "arjun al-fasri", "Ka rer Kim-Pqrk", "vladimir p. wrighf"
-            {
-                regex: /\b([a-zA-Z][a-zA-Z\s.'-]{1,40})\s+([a-zA-Z][a-zA-Z\s.'-]{1,40})\b/g,
-                confidence: 0.8,
-                note: "ultra-permissive mixed case",
-            },
-            // Space before comma: "Le , Sanjay"
-            {
-                regex: /\b([A-Z][a-z]+)\s+,\s+([A-Z][a-z]+)\b/g,
-                confidence: 0.88,
-                note: "space before comma",
-            },
-            // Last, First with optional spaces around comma: "Torres , Wilferd"
-            {
-                regex: /\b([A-Za-z][A-Za-z\s.'-]{1,30})\s*,\s*([A-Za-z][A-Za-z\s.'-]{1,30})\b/g,
-                confidence: 0.87,
-                note: "Last, First with spaces",
-            },
-            // OCR comma in wrong place: "Wals,h Ali" or "Hajid,R aj"
-            {
-                regex: /\b([A-Z][a-z]{1,10}),([a-z]{1,10})\s+([A-Z][a-z]+(?:\s+[A-Z]\.?)?)\b/g,
-                confidence: 0.88,
-                note: "comma misplaced",
-            },
-            // OCR digits in names: "J0nse", "ZHAN6", "Wilferd" (f→d)
-            {
-                regex: /\b([A-Z][a-z0-9]{2,20}),\s*([A-Z][a-z0-9\s]{2,})\b/gi,
-                confidence: 0.9,
-                note: "digits in name",
-            },
-            // ALL CAPS with OCR digits: "ZHAN6, SUSAN"
-            {
-                regex: /\b([A-Z0-9]{2,20}),\s+([A-Z][A-Z\s]+)\b/g,
-                confidence: 0.92,
-                note: "ALL CAPS with OCR",
-            },
-        ];
+        const patterns = (0, OcrTolerancePatterns_1.getOcrLastFirstPatternDefs)();
         const skipCommaPatterns = options.skipCommaPatterns ?? false;
         for (const patternObj of patterns) {
             if (skipCommaPatterns) {
@@ -851,32 +810,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      */
     detectChaosLastFirstNames(text, spans) {
         // Ultra-permissive patterns for chaos-case names
-        const chaosPatterns = [
-            // Space BEFORE comma: "Smith ,John" or "gOLdbeeRg ,marTinA"
-            {
-                regex: /\b([a-zA-Z0-9@$!][a-zA-Z0-9@$!'.-]{1,20})\s+,\s*([a-zA-Z0-9@$!][a-zA-Z0-9@$!.'`-]{1,30})\b/g,
-                confidence: 0.85,
-                note: "space before comma",
-            },
-            // All lowercase Last, First: "martinez, latonya" or "smith, john a."
-            {
-                regex: /\b([a-z][a-z0-9@$!'-]{2,20})\s*,\s*([a-z][a-z0-9@$!.'`-]{2,30})\b/g,
-                confidence: 0.82,
-                note: "all lowercase",
-            },
-            // Mixed chaos case with comma: "gOLdbeeRg,marTinA" or "NAKAMURA,kevin"
-            {
-                regex: /\b([a-zA-Z][a-zA-Z0-9@$!'.-]{2,20})\s*,\s*([a-zA-Z][a-zA-Z0-9@$!'`.-]{2,30})\b/g,
-                confidence: 0.8,
-                note: "mixed case chaos",
-            },
-            // OCR substitutions in Last, First: "5mith, j0hn" or "Sh@pira, M@ria"
-            {
-                regex: /\b([a-zA-Z0-9@$!][a-zA-Z0-9@$!'-]{2,20})\s*,\s*([a-zA-Z0-9@$!][a-zA-Z0-9@$!'`.-]{2,30})\b/g,
-                confidence: 0.83,
-                note: "OCR substitutions",
-            },
-        ];
+        const chaosPatterns = (0, OcrTolerancePatterns_1.getChaosLastFirstPatternDefs)();
         // Track detected positions to avoid duplicates
         const detectedPositions = new Set(spans.map((s) => `${s.characterStart}-${s.characterEnd}`));
         for (const patternObj of chaosPatterns) {
@@ -1495,9 +1429,9 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * - "Name:                   kevin louise liu"
      * - "Legal Name (Last, First Middle):     pATriCIA L. jOHNsOn"
      */
-    detectChaosAwareLabeledNames(text, spans) {
+    detectChaosAwareLabeledNames(text, spans, context) {
         // Analyze document for chaos level
-        const chaosAnalysis = OcrChaosDetector_1.OcrChaosDetector.analyze(text);
+        const chaosAnalysis = OcrChaosDetector_1.OcrChaosDetector.analyze(text, context);
         // Comprehensive label patterns that indicate a name follows
         // These are HIGH CONFIDENCE contextual markers
         const labelPatterns = [

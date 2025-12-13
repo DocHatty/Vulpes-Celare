@@ -52,10 +52,10 @@ const VulpesNative_1 = require("../../VulpesNative");
 // ============================================================================
 // CONSTANTS
 // ============================================================================
-const SERVICE_NAME = 'OCRService';
+const SERVICE_NAME = "OCRService";
 const DEFAULT_CONFIG = {
-    detectionModelPath: path.join(__dirname, '../../../models/ocr/det.onnx'),
-    recognitionModelPath: path.join(__dirname, '../../../models/ocr/rec.onnx'),
+    detectionModelPath: path.join(__dirname, "../../../models/ocr/det.onnx"),
+    recognitionModelPath: path.join(__dirname, "../../../models/ocr/rec.onnx"),
     confidenceThreshold: 0.5,
 };
 // ============================================================================
@@ -72,7 +72,7 @@ class OCRService {
     logger = (0, logger_1.getLogger)();
     constructor(config = {}) {
         this.config = { ...DEFAULT_CONFIG, ...config };
-        this.logger.debug(SERVICE_NAME, 'constructor', 'OCRService created', {
+        this.logger.debug(SERVICE_NAME, "constructor", "OCRService created", {
             detectionModel: this.config.detectionModelPath,
             recognitionModel: this.config.recognitionModelPath,
         });
@@ -86,7 +86,7 @@ class OCRService {
     async initialize() {
         if (this.initialized)
             return;
-        const complete = this.logger.startOperation(SERVICE_NAME, 'initialize');
+        const complete = this.logger.startOperation(SERVICE_NAME, "initialize");
         try {
             // Validate model files exist
             if (!fs.existsSync(this.config.detectionModelPath)) {
@@ -97,17 +97,20 @@ class OCRService {
             }
             // Initialize Rust Core Logging
             const status = VulpesNative_1.VulpesNative.initCore();
-            this.logger.info(SERVICE_NAME, 'initialize', 'Rust core initialized', { status });
+            this.logger.info(SERVICE_NAME, "initialize", "Rust core initialized", {
+                status,
+            });
             // Create Engine Instance
             this.engine = new VulpesNative_1.VulpesNative(this.config.detectionModelPath, this.config.recognitionModelPath);
             this.initialized = true;
             complete(true);
-            this.logger.info(SERVICE_NAME, 'initialize', 'Vulpes Ferrari Engine (Rust) ready');
+            this.logger.info(SERVICE_NAME, "initialize", "Vulpes Ferrari Engine (Rust) ready");
         }
         catch (error) {
-            this.initError = error instanceof Error ? error : new Error(String(error));
+            this.initError =
+                error instanceof Error ? error : new Error(String(error));
             complete(false, this.initError.message);
-            this.logger.error(SERVICE_NAME, 'initialize', 'Native initialization failed', this.initError);
+            this.logger.error(SERVICE_NAME, "initialize", "Native initialization failed", this.initError);
             throw this.initError;
         }
     }
@@ -117,20 +120,20 @@ class OCRService {
     async extractText(imageBuffer, width, height) {
         // Validate input
         if (!imageBuffer || imageBuffer.length === 0) {
-            this.logger.warn(SERVICE_NAME, 'extractText', 'Empty image buffer provided');
+            this.logger.warn(SERVICE_NAME, "extractText", "Empty image buffer provided");
             return [];
         }
         if (!this.initialized) {
             await this.initialize();
         }
         if (!this.engine) {
-            this.logger.error(SERVICE_NAME, 'extractText', 'Engine not initialized');
+            this.logger.error(SERVICE_NAME, "extractText", "Engine not initialized");
             return [];
         }
-        const complete = this.logger.startOperation(SERVICE_NAME, 'extractText');
+        const complete = this.logger.startOperation(SERVICE_NAME, "extractText");
         try {
-            this.logger.debug(SERVICE_NAME, 'extractText', 'Processing image with Rust engine', {
-                bufferSize: imageBuffer.length
+            this.logger.debug(SERVICE_NAME, "extractText", "Processing image with Rust engine", {
+                bufferSize: imageBuffer.length,
             });
             // CALL RUST ENGINE
             const nativeResults = this.engine.detectText(imageBuffer);
@@ -142,7 +145,7 @@ class OCRService {
                 }
             }
             complete(true);
-            this.logger.info(SERVICE_NAME, 'extractText', `Extracted ${results.length} text segments (Rust)`, {
+            this.logger.info(SERVICE_NAME, "extractText", `Extracted ${results.length} text segments (Rust)`, {
                 rawCount: nativeResults.length,
                 filteredCount: results.length,
             });
@@ -151,7 +154,7 @@ class OCRService {
         catch (error) {
             const err = error instanceof Error ? error : new Error(String(error));
             complete(false, err.message);
-            this.logger.error(SERVICE_NAME, 'extractText', 'Native text extraction failed', err);
+            this.logger.error(SERVICE_NAME, "extractText", "Native text extraction failed", err);
             return [];
         }
     }
@@ -162,12 +165,18 @@ class OCRService {
         return this.initialized && this.engine !== null;
     }
     /**
+     * Backwards-compatible alias for isReady()
+     */
+    isModelLoaded() {
+        return this.isReady();
+    }
+    /**
      * Release resources
      */
     async dispose() {
         this.engine = null;
         this.initialized = false;
-        this.logger.info(SERVICE_NAME, 'dispose', 'OCRService disposed');
+        this.logger.info(SERVICE_NAME, "dispose", "OCRService disposed");
     }
     // ========================================================================
     // PRIVATE HELPERS
@@ -176,7 +185,7 @@ class OCRService {
         return {
             text: native.text,
             confidence: native.confidence,
-            box: this.pointsToBox(native.boxPoints)
+            box: this.pointsToBox(native.boxPoints),
         };
     }
     pointsToBox(points) {
@@ -196,7 +205,7 @@ class OCRService {
             x: minX,
             y: minY,
             width: maxX - minX,
-            height: maxY - minY
+            height: maxY - minY,
         };
     }
 }

@@ -15,6 +15,7 @@
  * @module redaction/core
  */
 import { Span } from "../models/Span";
+import { RedactionContext } from "../context/RedactionContext";
 export interface EnhancementResult {
     span: Span;
     originalConfidence: number;
@@ -44,15 +45,18 @@ export declare class SpanEnhancer {
     private config;
     private weightedScorer;
     private stats;
+    private static readonly CONTEXT_STATS_KEY;
+    private static emptyStats;
+    private getStatsRef;
     constructor(config?: Partial<EnhancementConfig>);
     /**
      * Get lazy evaluation statistics
      */
-    getStats(): typeof this.stats;
+    getStats(context?: RedactionContext): typeof this.stats;
     /**
      * Reset statistics
      */
-    resetStats(): void;
+    resetStats(context?: RedactionContext): void;
     /**
      * OPTIMIZATION: Check if span qualifies for lazy skip (high confidence, skip ensemble)
      */
@@ -65,21 +69,21 @@ export declare class SpanEnhancer {
      * Enhance a single span with multi-signal scoring
      * OPTIMIZED: Uses lazy evaluation for high/low confidence spans
      */
-    enhanceSpan(span: Span, fullText: string): EnhancementResult;
+    enhanceSpan(span: Span, fullText: string, context?: RedactionContext): EnhancementResult;
     /**
      * Enhance multiple spans at once (more efficient - analyzes document once)
      * OPTIMIZED: Uses lazy evaluation and WeightedPHIScorer
      */
-    enhanceSpans(spans: Span[], fullText: string): EnhancementResult[];
+    enhanceSpans(spans: Span[], fullText: string, context?: RedactionContext): EnhancementResult[];
     /**
      * Filter spans based on enhanced confidence
      * Returns only spans that meet the confidence threshold
      */
-    filterSpans(spans: Span[], fullText: string): Span[];
+    filterSpans(spans: Span[], fullText: string, context?: RedactionContext): Span[];
     /**
      * Get detailed analysis of span quality
      */
-    analyzeSpans(spans: Span[], fullText: string): {
+    analyzeSpans(spans: Span[], fullText: string, context?: RedactionContext): {
         total: number;
         kept: number;
         filtered: number;

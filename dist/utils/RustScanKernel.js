@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RustScanKernel = void 0;
 const binding_1 = require("../native/binding");
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
 let cachedBinding = undefined;
 function getBinding() {
     if (cachedBinding !== undefined)
@@ -15,12 +16,9 @@ function getBinding() {
     return cachedBinding;
 }
 function isKernelEnabled() {
-    // Rust scan kernel is now DEFAULT (promoted from opt-in).
-    // Set VULPES_SCAN_ACCEL=0 to disable and use pure TypeScript.
-    const val = process.env.VULPES_SCAN_ACCEL;
-    return val === undefined || val === "1";
+    return RustAccelConfig_1.RustAccelConfig.isScanKernelEnabled();
 }
-const cache = new WeakMap();
+const CACHE_KEY = "RustScanKernel:cache";
 exports.RustScanKernel = {
     isAvailable() {
         return typeof getBinding()?.scanAllIdentifiers === "function";
@@ -32,7 +30,7 @@ exports.RustScanKernel = {
         const scanAll = binding?.scanAllIdentifiers;
         if (typeof scanAll !== "function")
             return null;
-        const existing = cache.get(context);
+        const existing = context.getMemo(CACHE_KEY);
         if (existing && existing.text === text) {
             return existing.byType.get(type) ?? [];
         }
@@ -49,7 +47,7 @@ exports.RustScanKernel = {
             list.push(d);
             byType.set(d.filterType, list);
         }
-        cache.set(context, { text, byType });
+        context.setMemo(CACHE_KEY, { text, byType });
         return byType.get(type) ?? [];
     },
 };

@@ -17,7 +17,7 @@ import { loadNativeBinding } from "../../native/binding";
  * DICOM tag anonymization rule
  */
 export interface DicomAnonymizationRule {
-  /** DICOM tag (e.g., 'x00100010' for PatientName) */
+  /** DICOM tag (e.g., 'x00100010' or '00100010' for PatientName) */
   tag: string;
   /** Action: 'REMOVE', 'REPLACE', 'HASH' */
   action: "REMOVE" | "REPLACE" | "HASH";
@@ -168,12 +168,15 @@ export class DicomStreamTransformer extends Transform {
    */
   async processDicom(inputBuffer: Buffer): Promise<Buffer> {
     // Parse and rewrite via dcmjs (avoids in-place truncation and invalid VR outputs).
-    const { DicomMessage, DicomMetaDictionary, DicomDict } = (dcmjs as any)
-      .data;
+    const { DicomMessage } = (dcmjs as any).data;
 
     let parsed: any;
     try {
-      parsed = DicomMessage.readFile(inputBuffer.buffer);
+      const arrayBuffer = inputBuffer.buffer.slice(
+        inputBuffer.byteOffset,
+        inputBuffer.byteOffset + inputBuffer.byteLength,
+      );
+      parsed = DicomMessage.readFile(arrayBuffer);
     } catch (error) {
       console.error("[DicomStreamTransformer] Failed to parse DICOM:", error);
       throw error;
@@ -182,15 +185,56 @@ export class DicomStreamTransformer extends Transform {
     const dict: Record<string, any> = parsed.dict || {};
     const meta: Record<string, any> = parsed.meta || {};
 
+    const normalizeTag = (tag: string): string =>
+      String(tag).replace(/^x/i, "").toUpperCase();
+
+    const getElementByTag = (container: Record<string, any>, tag: string) => {
+      const normalized = normalizeTag(tag);
+      return (
+        container[normalized] ??
+        container[normalized.toLowerCase()] ??
+        container[tag] ??
+        container[tag.toLowerCase()] ??
+        container[tag.toUpperCase()]
+      );
+    };
+
     const getFirstStringValue = (element: any): string => {
       const v = element?.Value;
       if (!v || !Array.isArray(v) || v.length === 0) return "";
-      return String(v[0] ?? "");
+      const first = v[0];
+      if (first === null || first === undefined) return "";
+
+      if (
+        typeof first === "string" ||
+        typeof first === "number" ||
+        typeof first === "bigint" ||
+        typeof first === "boolean"
+      ) {
+        return String(first);
+      }
+
+      // dcmjs PN values are often objects with multiple representations.
+      if (typeof element?._rawValue === "string") {
+        return element._rawValue;
+      }
+
+      if (typeof first === "object") {
+        const pn = first as Record<string, unknown>;
+        const parts = ["Alphabetic", "Ideographic", "Phonetic"].map((key) =>
+          typeof pn[key] === "string" ? (pn[key] as string) : "",
+        );
+        while (parts.length > 0 && parts[parts.length - 1] === "") parts.pop();
+        if (parts.length > 0) return parts.join("=");
+      }
+
+      return String(first);
     };
 
     const setStringValue = (tag: string, value: string) => {
-      if (!dict[tag]) return;
-      dict[tag].Value = value === "" ? [] : [value];
+      const element = getElementByTag(dict, tag);
+      if (!element) return;
+      element.Value = value === "" ? [] : [value];
     };
 
     const hashToken = (value: string): string => {
@@ -230,7 +274,7 @@ export class DicomStreamTransformer extends Transform {
 
     // Step 1: Anonymize metadata tags in the denaturalized dict.
     for (const rule of this.config.anonymizationRules) {
-      const element = dict[rule.tag];
+      const element = getElementByTag(dict, rule.tag);
       if (!element) continue;
 
       const vr = rule.vr || element.vr;
@@ -260,18 +304,14 @@ export class DicomStreamTransformer extends Transform {
 
     // Keep meta header consistent when SOPInstanceUID is updated.
     try {
-      const sop = dict["x00080018"]?.Value?.[0];
-      if (sop && meta["x00020003"]) {
-        meta["x00020003"].Value = [String(sop)];
-      }
+      const sop = getElementByTag(dict, "00080018")?.Value?.[0];
+      const metaSop = getElementByTag(meta, "00020003");
+      if (sop && metaSop) metaSop.Value = [String(sop)];
     } catch {
       // best-effort
     }
 
-    const out = new DicomDict(meta);
-    out.dict = dict;
-    const part10 = out.write();
-    const outputBuffer = Buffer.from(part10);
+    const outputBuffer = Buffer.from(parsed.write());
 
     // Step 2: Process pixel data if enabled and redactor available (best-effort)
     if (this.config.enablePixelRedaction && this.imageRedactor) {

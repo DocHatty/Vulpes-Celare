@@ -15,12 +15,10 @@ exports.FieldLabelFilter = exports.GeographicTermFilter = exports.MedicalSuffixF
 const Span_1 = require("../../models/Span");
 const RadiologyLogger_1 = require("../../utils/RadiologyLogger");
 const binding_1 = require("../../native/binding");
+const RustAccelConfig_1 = require("../../config/RustAccelConfig");
 let cachedPostFilterBinding = undefined;
 function isPostFilterAccelEnabled() {
-    // Rust post-filter is now DEFAULT (promoted from opt-in).
-    // Set VULPES_POSTFILTER_ACCEL=0 to disable and use pure TypeScript.
-    const val = process.env.VULPES_POSTFILTER_ACCEL;
-    return val === undefined || val === "1";
+    return RustAccelConfig_1.RustAccelConfig.isPostFilterEnabled();
 }
 function isPostFilterShadowEnabled() {
     return process.env.VULPES_SHADOW_POSTFILTER === "1";

@@ -23,11 +23,7 @@
  * @module redaction/models
  */
 import type { Span } from "./Span";
-/**
- * Type specificity ranking for span disambiguation
- * Higher values = more specific/trustworthy
- */
-declare const TYPE_SPECIFICITY: Record<string, number>;
+import { TYPE_SPECIFICITY } from "./FilterPriority";
 /**
  * IntervalTreeSpanIndex - High-performance span overlap management
  *

@@ -26,6 +26,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TYPE_SPECIFICITY = exports.IntervalTreeSpanIndex = void 0;
 const binding_1 = require("../native/binding");
+const FilterPriority_1 = require("./FilterPriority");
+Object.defineProperty(exports, "TYPE_SPECIFICITY", { enumerable: true, get: function () { return FilterPriority_1.TYPE_SPECIFICITY; } });
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
 // Cache the native binding
 let cachedBinding = undefined;
 function getBinding() {
@@ -40,53 +43,8 @@ function getBinding() {
     return cachedBinding;
 }
 function isIntervalAccelEnabled() {
-    // Rust interval tree is now DEFAULT (promoted from opt-in).
-    // Set VULPES_INTERVAL_ACCEL=0 to disable and use pure TypeScript.
-    const val = process.env.VULPES_INTERVAL_ACCEL;
-    return val === undefined || val === "1";
+    return RustAccelConfig_1.RustAccelConfig.isIntervalTreeEnabled();
 }
-/**
- * Type specificity ranking for span disambiguation
- * Higher values = more specific/trustworthy
- */
-const TYPE_SPECIFICITY = {
-    // High specificity - structured patterns
-    SSN: 100,
-    MRN: 95,
-    NPI: 95,
-    DEA: 95,
-    CREDIT_CARD: 90,
-    ACCOUNT: 85,
-    LICENSE: 85,
-    PASSPORT: 85,
-    IBAN: 85,
-    HEALTH_PLAN: 85,
-    EMAIL: 80,
-    PHONE: 75,
-    FAX: 75,
-    IP: 75,
-    URL: 75,
-    MAC_ADDRESS: 75,
-    BITCOIN: 75,
-    VEHICLE: 70,
-    DEVICE: 70,
-    BIOMETRIC: 70,
-    // Medium specificity
-    DATE: 60,
-    ZIPCODE: 55,
-    ADDRESS: 50,
-    CITY: 45,
-    STATE: 45,
-    COUNTY: 45,
-    // Lower specificity - context-dependent
-    AGE: 40,
-    RELATIVE_DATE: 40,
-    PROVIDER_NAME: 36,
-    NAME: 35,
-    OCCUPATION: 30,
-    CUSTOM: 20,
-};
-exports.TYPE_SPECIFICITY = TYPE_SPECIFICITY;
 /**
  * IntervalTreeSpanIndex - High-performance span overlap management
  *
@@ -271,7 +229,7 @@ class IntervalTreeSpanIndex {
      * Calculate composite score for a span (same algorithm as original SpanUtils)
      */
     static calculateSpanScore(span) {
-        const typeSpecificity = TYPE_SPECIFICITY[span.filterType] || 25;
+        const typeSpecificity = FilterPriority_1.TYPE_SPECIFICITY[span.filterType] || 25;
         // Weighted scoring:
         // - Length: 40% weight (longer spans capture more context)
         // - Confidence: 30% weight (detection confidence)
@@ -363,8 +321,8 @@ class IntervalTreeSpanIndex {
                     span.characterEnd >= existing.characterEnd;
                 const existingContainsSpan = existing.characterStart <= span.characterStart &&
                     existing.characterEnd >= span.characterEnd;
-                const spanSpec = TYPE_SPECIFICITY[span.filterType] || 25;
-                const existSpec = TYPE_SPECIFICITY[existing.filterType] || 25;
+                const spanSpec = FilterPriority_1.TYPE_SPECIFICITY[span.filterType] || 25;
+                const existSpec = FilterPriority_1.TYPE_SPECIFICITY[existing.filterType] || 25;
                 if (spanContainsExisting) {
                     // New span contains existing
                     // If same type or existing is more specific with high confidence, reject new span

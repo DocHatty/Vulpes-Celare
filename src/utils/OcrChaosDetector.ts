@@ -30,6 +30,8 @@
  */
 
 import { loadNativeBinding } from "../native/binding";
+import { RustAccelConfig } from "../config/RustAccelConfig";
+import { RedactionContext } from "../context/RedactionContext";
 
 // Cache the native binding
 let cachedBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
@@ -46,10 +48,7 @@ function getBinding(): ReturnType<typeof loadNativeBinding> | null {
 }
 
 function isChaosAccelEnabled(): boolean {
-  // Rust chaos detection is now DEFAULT (promoted from opt-in).
-  // Set VULPES_CHAOS_ACCEL=0 to disable and use pure TypeScript.
-  const val = process.env.VULPES_CHAOS_ACCEL;
-  return val === undefined || val === "1";
+  return RustAccelConfig.isChaosEnabled();
 }
 
 export interface ChaosAnalysis {
@@ -95,6 +94,7 @@ export class OcrChaosDetector {
   /** Cache of analyzed documents to avoid re-computation */
   private static analysisCache = new Map<string, ChaosAnalysis>();
   private static readonly CACHE_MAX_SIZE = 100;
+  private static readonly CONTEXT_CACHE_KEY = "OcrChaosDetector:analysis";
 
   // Mathematical constants
   private static readonly LOG2 = Math.log(2);
@@ -149,7 +149,15 @@ export class OcrChaosDetector {
    * Analyze a document/text block for OCR chaos indicators
    * Uses entropy-based scoring combined with pattern detection
    */
-  static analyze(text: string): ChaosAnalysis {
+  static analyze(text: string, context?: RedactionContext): ChaosAnalysis {
+    if (context) {
+      const existing = context.getMemo<{
+        text: string;
+        analysis: ChaosAnalysis;
+      }>(this.CONTEXT_CACHE_KEY);
+      if (existing && existing.text === text) return existing.analysis;
+    }
+
     // Try Rust accelerator first
     if (isChaosAccelEnabled()) {
       const binding = getBinding();
@@ -157,7 +165,7 @@ export class OcrChaosDetector {
         try {
           const rustResult = binding.analyzeChaos(text);
           // Convert Rust result to TypeScript interface
-          return {
+          const analysis: ChaosAnalysis = {
             score: rustResult.score,
             indicators: {
               digitSubstitutions: rustResult.indicators.digitSubstitutions,
@@ -169,16 +177,25 @@ export class OcrChaosDetector {
             enableLabelBoost: rustResult.enableLabelBoost,
             quality: rustResult.quality as ChaosAnalysis["quality"],
           };
+
+          if (context) {
+            context.setMemo(this.CONTEXT_CACHE_KEY, { text, analysis });
+          }
+
+          return analysis;
         } catch {
           // Fall back to TS implementation
         }
       }
     }
 
-    // Check cache first (use first 500 chars as key)
-    const cacheKey = text.substring(0, 500);
-    if (this.analysisCache.has(cacheKey)) {
-      return this.analysisCache.get(cacheKey)!;
+    let cacheKey = "";
+    if (!context) {
+      // Check cache first (use first 500 chars as key)
+      cacheKey = text.substring(0, 500);
+      if (this.analysisCache.has(cacheKey)) {
+        return this.analysisCache.get(cacheKey)!;
+      }
     }
 
     const indicators = {
@@ -227,15 +244,19 @@ export class OcrChaosDetector {
       quality: this.classifyQuality(score),
     };
 
-    // Cache the result
-    if (this.analysisCache.size >= this.CACHE_MAX_SIZE) {
-      // Clear oldest entries
-      const keys = Array.from(this.analysisCache.keys());
-      for (let i = 0; i < 20; i++) {
-        this.analysisCache.delete(keys[i]);
+    if (context) {
+      context.setMemo(this.CONTEXT_CACHE_KEY, { text, analysis });
+    } else {
+      // Cache the result
+      if (this.analysisCache.size >= this.CACHE_MAX_SIZE) {
+        // Clear oldest entries
+        const keys = Array.from(this.analysisCache.keys());
+        for (let i = 0; i < 20; i++) {
+          this.analysisCache.delete(keys[i]);
+        }
       }
+      this.analysisCache.set(cacheKey, analysis);
     }
-    this.analysisCache.set(cacheKey, analysis);
 
     return analysis;
   }

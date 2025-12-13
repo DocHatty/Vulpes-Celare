@@ -132,6 +132,10 @@ export { FilterRegistry } from "./filters/FilterRegistry";
 export { WindowService } from "./services/WindowService";
 export { ConfidenceModifierService } from "./services/ConfidenceModifierService";
 export { ReplacementContextService } from "./services/ReplacementContextService";
+export {
+  ProvenanceService,
+  type ProvenanceRecordOptions,
+} from "./services/ProvenanceService";
 
 // ============================================================================
 // ML & ADVANCED SCORING SYSTEMS
@@ -254,6 +258,7 @@ export {
   TextBox,
   OCRServiceConfig,
 } from "./core/images";
+export { VisualDetector, VisualDetectorConfig } from "./core/images";
 
 export type { VisualDetection, VisualBox } from "./core/images";
 

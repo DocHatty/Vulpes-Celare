@@ -6,6 +6,7 @@
 
 // Services
 export { OCRService, OCRResult, TextBox, OCRServiceConfig } from "./OCRService";
+export { VisualDetector, VisualDetectorConfig } from "./VisualDetector";
 export {
   ImageRedactor,
   ImageRedactionResult,

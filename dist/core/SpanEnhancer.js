@@ -53,6 +53,20 @@ class SpanEnhancer {
         lazyRejected: 0,
         fullyEvaluated: 0,
     };
+    static CONTEXT_STATS_KEY = "SpanEnhancer:stats";
+    static emptyStats() {
+        return {
+            totalSpans: 0,
+            lazySkipped: 0,
+            lazyRejected: 0,
+            fullyEvaluated: 0,
+        };
+    }
+    getStatsRef(context) {
+        if (!context)
+            return this.stats;
+        return context.getOrCreateMemo(SpanEnhancer.CONTEXT_STATS_KEY, () => SpanEnhancer.emptyStats());
+    }
     constructor(config = {}) {
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.detector = EnhancedPHIDetector_1.enhancedDetector;
@@ -62,19 +76,19 @@ class SpanEnhancer {
     /**
      * Get lazy evaluation statistics
      */
-    getStats() {
-        return { ...this.stats };
+    getStats(context) {
+        const stats = this.getStatsRef(context);
+        return { ...stats };
     }
     /**
      * Reset statistics
      */
-    resetStats() {
-        this.stats = {
-            totalSpans: 0,
-            lazySkipped: 0,
-            lazyRejected: 0,
-            fullyEvaluated: 0,
-        };
+    resetStats(context) {
+        if (!context) {
+            this.stats = SpanEnhancer.emptyStats();
+            return;
+        }
+        context.setMemo(SpanEnhancer.CONTEXT_STATS_KEY, SpanEnhancer.emptyStats());
     }
     /**
      * OPTIMIZATION: Check if span qualifies for lazy skip (high confidence, skip ensemble)
@@ -108,11 +122,12 @@ class SpanEnhancer {
      * Enhance a single span with multi-signal scoring
      * OPTIMIZED: Uses lazy evaluation for high/low confidence spans
      */
-    enhanceSpan(span, fullText) {
-        this.stats.totalSpans++;
+    enhanceSpan(span, fullText, context) {
+        const stats = this.getStatsRef(context);
+        stats.totalSpans++;
         // OPTIMIZATION: Lazy evaluation - skip ensemble for high-confidence spans
         if (this.shouldLazySkip(span)) {
-            this.stats.lazySkipped++;
+            stats.lazySkipped++;
             return {
                 span,
                 originalConfidence: span.confidence,
@@ -124,7 +139,7 @@ class SpanEnhancer {
         }
         // OPTIMIZATION: Lazy reject - skip ensemble for very low confidence
         if (this.shouldLazyReject(span)) {
-            this.stats.lazyRejected++;
+            stats.lazyRejected++;
             return {
                 span,
                 originalConfidence: span.confidence,
@@ -134,7 +149,7 @@ class SpanEnhancer {
                 wasFiltered: true,
             };
         }
-        this.stats.fullyEvaluated++;
+        stats.fullyEvaluated++;
         // OPTIMIZATION: Use WeightedPHIScorer for scoring if enabled
         if (this.config.useWeightedScorer) {
             const contextStart = Math.max(0, span.characterStart - 100);
@@ -202,7 +217,7 @@ class SpanEnhancer {
      * Enhance multiple spans at once (more efficient - analyzes document once)
      * OPTIMIZED: Uses lazy evaluation and WeightedPHIScorer
      */
-    enhanceSpans(spans, fullText) {
+    enhanceSpans(spans, fullText, context) {
         if (spans.length === 0)
             return [];
         // Filter to applicable PHI types if specified
@@ -213,12 +228,13 @@ class SpanEnhancer {
         const spansNeedingFullEvaluation = [];
         const spanIndexMap = new Map(); // Track original positions
         // OPTIMIZATION: First pass - apply lazy evaluation
+        const stats = this.getStatsRef(context);
         for (let i = 0; i < applicableSpans.length; i++) {
             const span = applicableSpans[i];
-            this.stats.totalSpans++;
+            stats.totalSpans++;
             // Lazy skip high-confidence spans
             if (this.shouldLazySkip(span)) {
-                this.stats.lazySkipped++;
+                stats.lazySkipped++;
                 results[i] = {
                     span,
                     originalConfidence: span.confidence,
@@ -231,7 +247,7 @@ class SpanEnhancer {
             }
             // Lazy reject low-confidence spans
             if (this.shouldLazyReject(span)) {
-                this.stats.lazyRejected++;
+                stats.lazyRejected++;
                 results[i] = {
                     span,
                     originalConfidence: span.confidence,
@@ -243,7 +259,7 @@ class SpanEnhancer {
                 continue;
             }
             // Needs full evaluation
-            this.stats.fullyEvaluated++;
+            stats.fullyEvaluated++;
             spanIndexMap.set(span, i);
             spansNeedingFullEvaluation.push(span);
         }
@@ -318,8 +334,8 @@ class SpanEnhancer {
      * Filter spans based on enhanced confidence
      * Returns only spans that meet the confidence threshold
      */
-    filterSpans(spans, fullText) {
-        const enhancements = this.enhanceSpans(spans, fullText);
+    filterSpans(spans, fullText, context) {
+        const enhancements = this.enhanceSpans(spans, fullText, context);
         return enhancements
             .filter((e) => !e.wasFiltered && e.enhancedConfidence >= this.config.minConfidence)
             .map((e) => e.span);
@@ -327,8 +343,8 @@ class SpanEnhancer {
     /**
      * Get detailed analysis of span quality
      */
-    analyzeSpans(spans, fullText) {
-        const enhancements = this.enhanceSpans(spans, fullText);
+    analyzeSpans(spans, fullText, context) {
+        const enhancements = this.enhanceSpans(spans, fullText, context);
         const byType = {};
         let kept = 0;
         let filtered = 0;

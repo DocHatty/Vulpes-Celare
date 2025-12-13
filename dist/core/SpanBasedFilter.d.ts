@@ -12,6 +12,7 @@
  */
 import { Span, FilterType } from "../models/Span";
 import { RedactionContext } from "../context/RedactionContext";
+export { FilterPriority } from "../models/FilterPriority";
 /**
  * Base interface for Span-based filters
  * Filters scan text and return detected entities as Spans
@@ -61,30 +62,4 @@ export declare abstract class SpanBasedFilter {
      */
     protected static compilePatterns(patterns: (RegExp | string)[], flags?: string): RegExp[];
 }
-/**
- * Priority levels for common filter types
- * Higher priority wins when spans overlap
- */
-export declare const FilterPriority: {
-    SSN: number;
-    CREDITCARD: number;
-    MRN: number;
-    NPI: number;
-    DEVICE: number;
-    ACCOUNT: number;
-    LICENSE: number;
-    HEALTHPLAN: number;
-    DATE: number;
-    PHONE: number;
-    FAX: number;
-    EMAIL: number;
-    NAME: number;
-    ADDRESS: number;
-    ZIPCODE: number;
-    VEHICLE: number;
-    BIOMETRIC: number;
-    URL: number;
-    IP: number;
-    OCCUPATION: number;
-};
 //# sourceMappingURL=SpanBasedFilter.d.ts.map

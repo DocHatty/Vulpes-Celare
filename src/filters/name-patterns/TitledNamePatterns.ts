@@ -1,0 +1,27 @@
+import { PROVIDER_TITLE_PREFIXES } from "../../utils/NameDetectionUtils";
+
+export const TITLE_PREFIX_PATTERN = new RegExp(
+  `(?:${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`,
+  "i",
+);
+
+export const TITLED_NAME_LOOKBACK_PATTERN = new RegExp(
+  `(?:${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Z][a-zA-Z'-]+(?:\\s+[A-Z][a-zA-Z'-]+)*\\s*$`,
+  "i",
+);
+
+export const TITLE_TRAILING_PATTERN = new RegExp(
+  `\\b(${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`,
+  "i",
+);
+
+export const TITLE_PLUS_TRAILING_WORD_PATTERN = new RegExp(
+  `\\b(${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`,
+  "i",
+);
+
+export const PROVIDER_CREDENTIAL_AFTER_NAME_PATTERN =
+  /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC)\b/i;
+
+export const PROVIDER_CONTEXT_CREDENTIAL_AFTER_NAME_PATTERN =
+  /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|FCCP|FAHA|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC|AGNP-C|OTR\/L)\b/i;

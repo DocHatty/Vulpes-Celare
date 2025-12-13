@@ -19,7 +19,8 @@ import { RadiologyLogger } from "./utils/RadiologyLogger";
 import { RedactionContext } from "./context/RedactionContext";
 import { FilterRegistry } from "./filters/FilterRegistry";
 import { PolicyLoader } from "./policies/PolicyLoader";
-import { ParallelRedactionEngine } from "./core/ParallelRedactionEngine";
+import { VulpesCelare } from "./VulpesCelare";
+import { ProvenanceService } from "./services/ProvenanceService";
 
 // Re-export for backward compatibility
 export { RedactionContext } from "./context/RedactionContext";
@@ -39,6 +40,8 @@ export abstract class BaseFilter {
 /**
  * RedactionEngine - Thin Orchestrator
  * Delegates to specialized services for each concern
+ *
+ * @deprecated Prefer `VulpesCelare` as the public orchestrator.
  */
 export class RedactionEngine {
   /**
@@ -128,7 +131,7 @@ export class RedactionEngine {
         `Starting parallel Span-based redaction with ${filters.length} filters`,
       );
 
-      const redactedText = await ParallelRedactionEngine.redactParallel(
+      const redactedText = await VulpesCelare.redactWithPolicy(
         text,
         filters,
         policy,
@@ -145,12 +148,15 @@ export class RedactionEngine {
         );
       }
 
-
       // AUTO-PROVENANCE: Record the redaction job
       try {
-        await RedactionEngine.recordProvenance(text, redactedText);
+        await ProvenanceService.recordRedaction(text, redactedText);
       } catch (provError) {
-        RadiologyLogger.error("PROVENANCE", "Failed to record provenance", provError);
+        RadiologyLogger.error(
+          "PROVENANCE",
+          "Failed to record provenance",
+          provError,
+        );
         // We do NOT block the request if provenance fails, but we log it.
       }
 
@@ -306,44 +312,5 @@ export class RedactionEngine {
    */
   static async loadPolicy(policyName: string): Promise<any> {
     return await PolicyLoader.loadPolicy(policyName);
-  }
-
-  /**
-   * Record provenance data to the local RPL layer
-   */
-  private static async recordProvenance(original: string, redacted: string): Promise<void> {
-    // Only attempt if we are in an environment with fetch (Node 18+)
-    if (typeof fetch === 'undefined') return;
-
-    // Construct simplified manifest for provenance (full manifest to come later)
-    // For now we just prove the transformation occurred
-    const manifest = {
-      timestamp: new Date().toISOString(),
-      engine: "Vulpes-Celare RedactionEngine v1.0"
-    };
-
-    const payload = {
-      docId: `doc-${Date.now()}`, // Generate ad-hoc ID if context doesn't have one
-      original,
-      redacted,
-      manifest,
-      actorId: "system-redaction-engine"
-    };
-
-    try {
-      // Fire and forget - we await it but don't let it crash the main flow
-      const response = await fetch("http://localhost:3106/provenance/record", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const err = await response.text();
-        throw new Error(`RPL Server responded with ${response.status}: ${err}`);
-      }
-    } catch (e) {
-      throw e; // Rethrow to be caught by caller logger
-    }
   }
 }

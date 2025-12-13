@@ -118,11 +118,6 @@ export declare class Span {
  * instead of O(n²) nested loops.
  */
 export declare class SpanUtils {
-    /**
-     * Filter type specificity ranking (higher = more specific/trustworthy)
-     * More specific types should win over general ones
-     */
-    private static readonly TYPE_SPECIFICITY;
     private static USE_INTERVAL_TREE;
     /**
      * Enable or disable interval tree optimization (for debugging)

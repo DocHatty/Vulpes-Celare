@@ -4,6 +4,7 @@
  * @module core/images
  */
 export { OCRService, OCRResult, TextBox, OCRServiceConfig } from "./OCRService";
+export { VisualDetector, VisualDetectorConfig } from "./VisualDetector";
 export { ImageRedactor, ImageRedactionResult, RedactionRegion, VisualPolicy, } from "./ImageRedactor";
 export type { VisualDetection, VisualBox } from "../../VulpesNative";
 export { ImageServiceLogger, getLogger, withErrorBoundary, withRetry, withTimeout, LogLevel, LogEntry, ServiceHealth, OperationMetrics, } from "./logger";

@@ -13,15 +13,14 @@
 
 import { IntervalTreeSpanIndex } from "./IntervalTreeSpanIndex";
 import { loadNativeBinding } from "../native/binding";
+import { TYPE_SPECIFICITY } from "./FilterPriority";
+import { RustAccelConfig } from "../config/RustAccelConfig";
 
 let cachedSpanBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
   undefined;
 
 function isSpanAccelEnabled(): boolean {
-  // Rust span acceleration is now DEFAULT (promoted from opt-in).
-  // Set VULPES_SPAN_ACCEL=0 to disable and use pure TypeScript.
-  const val = process.env.VULPES_SPAN_ACCEL;
-  return val === undefined || val === "1";
+  return RustAccelConfig.isSpanOpsEnabled();
 }
 
 function getSpanBinding(): ReturnType<typeof loadNativeBinding> | null {
@@ -251,48 +250,6 @@ export class Span {
  * instead of O(n²) nested loops.
  */
 export class SpanUtils {
-  /**
-   * Filter type specificity ranking (higher = more specific/trustworthy)
-   * More specific types should win over general ones
-   */
-  private static readonly TYPE_SPECIFICITY: Record<string, number> = {
-    // High specificity - structured patterns
-    SSN: 100,
-    MRN: 95,
-    NPI: 95,
-    DEA: 95,
-    CREDIT_CARD: 90,
-    ACCOUNT: 85,
-    LICENSE: 85,
-    PASSPORT: 85,
-    IBAN: 85,
-    HEALTH_PLAN: 85,
-    EMAIL: 80,
-    PHONE: 75,
-    FAX: 75,
-    IP: 75,
-    URL: 75,
-    MAC_ADDRESS: 75,
-    BITCOIN: 75,
-    VEHICLE: 70,
-    DEVICE: 70,
-    BIOMETRIC: 70,
-    // Medium specificity
-    DATE: 60,
-    ZIPCODE: 55,
-    ADDRESS: 50,
-    CITY: 45,
-    STATE: 45,
-    COUNTY: 45,
-    // Lower specificity - context-dependent
-    AGE: 40,
-    RELATIVE_DATE: 40,
-    PROVIDER_NAME: 36, // Slightly higher than NAME since it has title context
-    NAME: 35, // Names can overlap with many things
-    OCCUPATION: 30,
-    CUSTOM: 20,
-  };
-
   // Performance flag - can be disabled for debugging
   private static USE_INTERVAL_TREE = true;
 
@@ -311,8 +268,7 @@ export class SpanUtils {
    * @returns A composite score (higher = better)
    */
   static calculateSpanScore(span: Span): number {
-    const typeSpecificity =
-      this.TYPE_SPECIFICITY[span.filterType as string] || 25;
+    const typeSpecificity = TYPE_SPECIFICITY[span.filterType as string] || 25;
 
     // Weighted scoring:
     // - Length: 40% weight (longer spans capture more context)
@@ -411,10 +367,9 @@ export class SpanUtils {
         // Special case: if new span fully contains existing, check if we
         // should prefer the more specific (smaller) span for certain types
         if (span.contains(existing)) {
-          const spanSpec =
-            this.TYPE_SPECIFICITY[span.filterType as string] || 25;
+          const spanSpec = TYPE_SPECIFICITY[span.filterType as string] || 25;
           const existSpec =
-            this.TYPE_SPECIFICITY[existing.filterType as string] || 25;
+            TYPE_SPECIFICITY[existing.filterType as string] || 25;
 
           // If existing is more specific type and high confidence, keep it
           if (existSpec > spanSpec && existing.confidence >= 0.9) {
@@ -425,10 +380,9 @@ export class SpanUtils {
 
         // Special case: existing fully contains new span
         if (existing.contains(span)) {
-          const spanSpec =
-            this.TYPE_SPECIFICITY[span.filterType as string] || 25;
+          const spanSpec = TYPE_SPECIFICITY[span.filterType as string] || 25;
           const existSpec =
-            this.TYPE_SPECIFICITY[existing.filterType as string] || 25;
+            TYPE_SPECIFICITY[existing.filterType as string] || 25;
 
           // If new span is more specific type and high confidence,
           // replace existing with new
@@ -535,6 +489,6 @@ export class SpanUtils {
    * Get type specificity for a filter type
    */
   static getTypeSpecificity(filterType: FilterType | string): number {
-    return this.TYPE_SPECIFICITY[filterType as string] || 25;
+    return TYPE_SPECIFICITY[filterType as string] || 25;
   }
 }

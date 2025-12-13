@@ -18,6 +18,7 @@ const DocumentVocabulary_1 = require("../vocabulary/DocumentVocabulary");
 const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
 const RustNameScanner_1 = require("../utils/RustNameScanner");
+const RustAccelConfig_1 = require("../config/RustAccelConfig");
 class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "NAME";
@@ -29,9 +30,9 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const spans = [];
         // Rust accelerator mode (shared with SmartNameFilterSpan)
         // Default to level 2 (Last,First + First Last patterns in Rust)
-        const accelMode = process.env.VULPES_NAME_ACCEL ?? "2";
-        const useRustCommaNames = accelMode === "1" || accelMode === "2" || accelMode === "3";
-        const useRustFirstLastNames = accelMode === "2" || accelMode === "3";
+        const accelMode = RustAccelConfig_1.RustAccelConfig.getNameAccelMode();
+        const useRustCommaNames = accelMode >= 1;
+        const useRustFirstLastNames = accelMode >= 2;
         // Pattern -1: Labeled name fields ("Name:", "Patient:", "Member Name:", etc.)
         // This is high-sensitivity and high-precision because it only triggers in explicit name fields.
         this.detectLabeledNameFields(text, spans);
