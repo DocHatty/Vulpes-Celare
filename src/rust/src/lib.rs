@@ -3,6 +3,10 @@ use napi_derive::napi;
 use std::sync::{Arc, Mutex};
 
 pub mod vision;
+pub mod crypto;
+pub mod phonetic;
+pub mod span;
+pub mod tokenize;
 use vision::OcrEngine;
 
 #[napi]
@@ -62,4 +66,109 @@ pub fn detect_faces(
 
     vision::face::detect_faces(data, &model_path, conf, nms)
         .map_err(|e| napi::Error::from_reason(e.to_string()))
+}
+
+#[napi]
+pub fn normalize_ocr(text: String) -> String {
+    let mut out = String::with_capacity(text.len());
+
+    for ch in text.chars() {
+        let mapped = match ch {
+            'O' | 'o' => '0',
+            'l' | 'I' | '|' => '1',
+            'B' => '8',
+            'b' => '6',
+            'S' | 's' => '5',
+            'Z' | 'z' => '2',
+            'G' => '6',
+            'g' | 'q' => '9',
+            _ => ch,
+        };
+        out.push(mapped);
+    }
+
+    out
+}
+
+#[napi]
+pub fn extract_digits(text: String) -> String {
+    let mut out = String::with_capacity(text.len());
+    for ch in text.chars() {
+        if ch.is_ascii_digit() {
+            out.push(ch);
+        }
+    }
+    out
+}
+
+#[napi]
+pub fn extract_digits_with_ocr(text: String) -> String {
+    let mut out = String::with_capacity(text.len());
+
+    for ch in text.chars() {
+        let mapped = match ch {
+            'O' | 'o' => '0',
+            'l' | 'I' | '|' => '1',
+            'B' => '8',
+            'b' => '6',
+            'S' | 's' => '5',
+            'Z' | 'z' => '2',
+            'G' => '6',
+            'g' | 'q' => '9',
+            _ => ch,
+        };
+
+        if mapped.is_ascii_digit() {
+            out.push(mapped);
+        }
+    }
+
+    out
+}
+
+#[napi]
+pub fn extract_alphanumeric(text: String, preserve_case: Option<bool>) -> String {
+    let preserve_case = preserve_case.unwrap_or(true);
+
+    let mut out = String::with_capacity(text.len());
+    for ch in text.chars() {
+        if ch.is_ascii_alphanumeric() {
+            if preserve_case {
+                out.push(ch);
+            } else {
+                out.push(ch.to_ascii_uppercase());
+            }
+        }
+    }
+    out
+}
+
+#[napi]
+pub fn passes_luhn(number: String) -> bool {
+    let digits: Vec<u32> = number
+        .chars()
+        .filter(|c| c.is_ascii_digit())
+        .filter_map(|c| c.to_digit(10))
+        .collect();
+
+    if digits.is_empty() {
+        return false;
+    }
+
+    let mut sum: u32 = 0;
+    let mut is_even = false;
+
+    for d in digits.iter().rev() {
+        let mut digit = *d;
+        if is_even {
+            digit *= 2;
+            if digit > 9 {
+                digit -= 9;
+            }
+        }
+        sum += digit;
+        is_even = !is_even;
+    }
+
+    sum % 10 == 0
 }

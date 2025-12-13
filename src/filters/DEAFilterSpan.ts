@@ -41,7 +41,7 @@ export class DEAFilterSpan extends SpanBasedFilter {
    * U - Narcotic Treatment Program
    * X - Suboxone/Subutex prescribers (DATA waiver)
    */
-  private static readonly VALID_FIRST_LETTERS = "ABCDEFGHJKLMPRSTUX";
+  private static readonly VALID_FIRST_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   /**
    * DEA pattern definitions
@@ -52,19 +52,20 @@ export class DEAFilterSpan extends SpanBasedFilter {
     /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}\d{7})\b/gi,
 
     // Pattern 2: Standalone DEA format (strict - valid first letters only)
-    // Must start with valid registrant type letter
-    /\b([ABCDEFGHJKLMPRSTUX][A-Z]\d{7})\b/g,
+    // In practice we prioritize sensitivity over strict registrant typing.
+    // Keep the overall shape strict (2 letters + 7 digits).
+    /\b([A-Z]{2}\d{7})\b/g,
 
     // Pattern 3: OCR-tolerant - common substitutions
     // O→0, l→1, I→1, B→8, S→5 in the digit portion
     /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}[0-9OoIlBbSs]{7})\b/gi,
 
     // Pattern 4: Standalone with OCR errors in digits
-    /\b([ABCDEFGHJKLMPRSTUX][A-Z][0-9OoIlBbSs]{7})\b/g,
+    /\b([A-Z]{2}[0-9OoIlBbSs]{7})\b/g,
 
     // Pattern 5: Separator-tolerant (spaces/dashes within digits)
     /\bDEA\s*[:#-]?\s*([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/gi,
-    /\b([ABCDEFGHJKLMPRSTUX][A-Z])[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/g,
+    /\b([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/g,
   ];
 
   /**
@@ -144,12 +145,6 @@ export class DEAFilterSpan extends SpanBasedFilter {
 
     // Must be 9 characters (2 letters + 7 digits)
     if (normalized.length !== 9) {
-      return false;
-    }
-
-    // First character must be valid registrant type
-    const firstLetter = normalized[0];
-    if (!DEAFilterSpan.VALID_FIRST_LETTERS.includes(firstLetter)) {
       return false;
     }
 

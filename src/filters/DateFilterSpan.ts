@@ -170,6 +170,14 @@ export class DateFilterSpan extends SpanBasedFilter {
     // ===== EXTREME OCR ERROR PATTERNS =====
     // Missing first digit: "/93/2021", "/15/1985"
     /\/\d{1,2}\/(?:19|20)\d{2}\b/g,
+    // Missing first digit with short year: "/12/24"
+    /\/\d{1,2}\/\d{2}\b/g,
+    // Missing middle component with double separators: "2//1970", "24//99"
+    /\b\d{1,2}[-/]{2}\d{2,4}\b/g,
+    // Space inside a date component from OCR: "01/2 2/24", "05/0 7/0"
+    /\b\d{1,2}[-/]\d\s+\d[-/]\d{1,4}\b/g,
+    // Space inserted before the final separator group: "4/2 65/2"
+    /\b\d{1,2}[-/]\d{1,2}\s+\d{1,2}[-/]\d{1,2}\b/g,
     // Z for 2 in year: "10/26/Z020", "o9/07/20Z3", "8/9/20Z4"
     /\b\d{1,2}[-/]\d{1,2}[-/](?:[Z2][O0]\d{2}|20[Z2]\d|20\d[Z2])\b/gi,
     // Truncated year: "08/21/6", "3/2/05" (single or double digit year)

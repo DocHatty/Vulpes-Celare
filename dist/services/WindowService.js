@@ -9,6 +9,23 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WindowService = void 0;
+const binding_1 = require("../native/binding");
+let cachedNativeTokenizer = undefined;
+function getNativeTokenizer() {
+    if (cachedNativeTokenizer !== undefined)
+        return cachedNativeTokenizer ?? null;
+    try {
+        const binding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
+        cachedNativeTokenizer =
+            typeof binding.tokenizeWithPositions === "function"
+                ? binding.tokenizeWithPositions
+                : null;
+    }
+    catch {
+        cachedNativeTokenizer = null;
+    }
+    return cachedNativeTokenizer ?? null;
+}
 /**
  * Window Service - Extracts context windows around text spans
  */
@@ -22,6 +39,18 @@ class WindowService {
      * @returns Array of tokens with their positions
      */
     static tokenizeWithPositions(text, includePunctuation) {
+        // Optional Rust accelerator (shares the `VULPES_TEXT_ACCEL=1` gate with other text helpers).
+        if (process.env.VULPES_TEXT_ACCEL === "1") {
+            const nativeTokenizer = getNativeTokenizer();
+            if (nativeTokenizer) {
+                try {
+                    return nativeTokenizer(text, includePunctuation);
+                }
+                catch {
+                    // Fall through to JS tokenizer.
+                }
+            }
+        }
         const pattern = includePunctuation ? this.TOKEN_PATTERN : /\w+/g;
         const tokens = [];
         for (const match of text.matchAll(pattern)) {

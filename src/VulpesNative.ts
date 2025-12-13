@@ -6,56 +6,10 @@
  */
 
 import { resolve } from "path";
+import { loadNativeBinding } from "./native/binding";
 
-// Determine the correct binary path based on platform
-function getNativeBinding(): {
-  VulpesEngine: new (detPath: string, recPath: string) => VulpesNativeEngine;
-  initCore: () => string;
-  detectFaces: (
-    buffer: Buffer,
-    modelPath: string,
-    confidenceThreshold?: number,
-    nmsThreshold?: number,
-  ) => VisualDetection[];
-} {
-  // Ensure ORT loads our bundled ONNX Runtime by default.
-  // Users can override by setting VULPES_ORT_PATH or ORT_DYLIB_PATH before importing this module.
-  if (process.env.VULPES_ORT_PATH && !process.env.ORT_DYLIB_PATH) {
-    process.env.ORT_DYLIB_PATH = resolve(process.env.VULPES_ORT_PATH);
-  }
-  if (!process.env.ORT_DYLIB_PATH) {
-    process.env.ORT_DYLIB_PATH = resolve(
-      __dirname,
-      "../native/onnxruntime.dll",
-    );
-  }
-
-  const platform = process.platform;
-  const arch = process.arch;
-
-  let nativeBinding: any;
-
-  try {
-    if (platform === "win32" && arch === "x64") {
-      nativeBinding = require("../native/vulpes_core.win32-x64-msvc.node");
-    } else if (platform === "darwin" && arch === "x64") {
-      nativeBinding = require("../native/vulpes_core.darwin-x64.node");
-    } else if (platform === "darwin" && arch === "arm64") {
-      nativeBinding = require("../native/vulpes_core.darwin-arm64.node");
-    } else if (platform === "linux" && arch === "x64") {
-      nativeBinding = require("../native/vulpes_core.linux-x64-gnu.node");
-    } else {
-      throw new Error(`Unsupported platform: ${platform}-${arch}`);
-    }
-  } catch (e) {
-    console.error("Failed to load native binding:", e);
-    throw new Error(
-      "Vulpes native binding not found. Ensure the Rust core is built. " +
-        "Run: cd src/rust && cargo build --release",
-    );
-  }
-
-  return nativeBinding;
+function getNativeBinding() {
+  return loadNativeBinding({ configureOrt: true });
 }
 
 /**
@@ -150,6 +104,37 @@ export class VulpesNative {
   static initCore(): string {
     const binding = getNativeBinding();
     return binding.initCore();
+  }
+
+  static sha256Hex(data: Buffer | string): string {
+    const binding = getNativeBinding();
+    if (typeof data === "string") {
+      if (!binding.sha256HexString) {
+        throw new Error("Native sha256HexString is not available");
+      }
+      return binding.sha256HexString(data);
+    }
+
+    if (!binding.sha256Hex) {
+      throw new Error("Native sha256Hex is not available");
+    }
+    return binding.sha256Hex(data);
+  }
+
+  static hmacSha256Hex(key: string, message: string): string {
+    const binding = getNativeBinding();
+    if (!binding.hmacSha256Hex) {
+      throw new Error("Native hmacSha256Hex is not available");
+    }
+    return binding.hmacSha256Hex(key, message);
+  }
+
+  static merkleRootSha256Hex(leafHashesHex: string[]): string {
+    const binding = getNativeBinding();
+    if (!binding.merkleRootSha256Hex) {
+      throw new Error("Native merkleRootSha256Hex is not available");
+    }
+    return binding.merkleRootSha256Hex(leafHashesHex);
   }
 }
 

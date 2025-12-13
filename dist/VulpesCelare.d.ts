@@ -5,10 +5,10 @@
  *
  * Hatkoff Redaction Engine
  *
- * A production-grade HIPAA PHI redaction engine achieving:
- *   - 99.4% Sensitivity (catches almost everything)
- *   - 100% Specificity (zero false positives)
- *   - 100/100 Score on 220-document assessment
+ * A HIPAA Safe Harbor PHI redaction engine.
+ *
+ * Current validation is synthetic-only; see `docs/BENCHMARKS.md` for the latest
+ * evaluation posture and results.
  *
  * This is the MAIN ORCHESTRATOR - your primary integration point.
  *
@@ -22,7 +22,7 @@
 import { RedactionExecutionReport } from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
 import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
-export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "npi" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "unique_id" | "zip" | "fax" | "age";
+export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "npi" | "dea" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "unique_id" | "zip" | "fax" | "age";
 export type ReplacementStyle = "brackets" | "asterisks" | "empty";
 export interface VulpesCelareConfig {
     enabledTypes?: PHIType[];

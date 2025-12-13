@@ -28,10 +28,10 @@
  *
  * // Verify bundle
  * const verification = await TrustBundleExporter.verify('patient-note.red');
- * console.log(verification.valid ? '✓ VERIFIED' : '✗ INVALID');
+ * console.log(verification.valid ? 'âœ“ VERIFIED' : 'âœ— INVALID');
  * ```
  */
-import { RedactionResult } from '../VulpesCelare';
+import { RedactionResult } from "../VulpesCelare";
 /**
  * Trust Bundle format version
  */
@@ -83,7 +83,7 @@ export interface TrustBundleOptions {
  */
 export interface TrustBundleManifest {
     version: string;
-    format: 'RED';
+    format: "RED";
     jobId: string;
     timestamp: string;
     documentId?: string;
@@ -100,7 +100,7 @@ export interface TrustBundleManifest {
         }>;
     };
     integrity: {
-        hashAlgorithm: 'SHA-256';
+        hashAlgorithm: "SHA-256";
         hashOriginal: string;
         hashRedacted: string;
         hashManifest: string;
@@ -140,7 +140,7 @@ export interface TrustBundleCertificate {
     };
     cryptographicProofs: {
         hashChain: {
-            algorithm: 'SHA-256';
+            algorithm: "SHA-256";
             originalHash: string;
             redactedHash: string;
             manifestHash: string;
@@ -204,6 +204,12 @@ export interface VerificationResult {
  * Creates and verifies cryptographic Trust Bundles for redacted documents.
  */
 export declare class TrustBundleExporter {
+    private static nativeBindingCache;
+    private static getNativeBinding;
+    private static isZipFile;
+    private static sha256Hex;
+    private static stableJsonStringify;
+    private static buildMerkleRootHex;
     /**
      * Generate a Trust Bundle from redaction results
      *
@@ -247,9 +253,9 @@ export declare class TrustBundleExporter {
      * ```typescript
      * const result = await TrustBundleExporter.verify('./trust-bundle.red');
      * if (result.valid) {
-     *   console.log('✓ Bundle verified');
+     *   console.log('âœ“ Bundle verified');
      * } else {
-     *   console.error('✗ Verification failed:', result.errors);
+     *   console.error('âœ— Verification failed:', result.errors);
      * }
      * ```
      */

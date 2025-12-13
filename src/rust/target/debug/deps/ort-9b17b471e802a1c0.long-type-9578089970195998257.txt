@@ -1,1 +1,0 @@
-unsafe extern "system" fn(*mut OrtSessionOptions, *const OrtTensorRTProviderOptionsV2) -> OrtStatusPtr

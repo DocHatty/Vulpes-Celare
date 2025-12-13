@@ -14,6 +14,8 @@
  * @module redaction/utils
  */
 
+import { TextAccel } from "../TextAccel";
+
 /**
  * OCR character substitution map for common scanning errors
  * Used to normalize text that may have OCR mistakes
@@ -59,6 +61,11 @@ export class ValidationUtils {
     text: string,
     customMap?: Record<string, string>,
   ): string {
+    if (!customMap) {
+      const accelerated = TextAccel.normalizeOCR(text);
+      if (accelerated !== text) return accelerated;
+    }
+
     const map = customMap ?? OCR_SUBSTITUTION_MAP;
     return text.replace(/./g, (char) => map[char] ?? char);
   }
@@ -73,6 +80,9 @@ export class ValidationUtils {
    * ValidationUtils.extractDigitsWithOCR("l23-4S-6789") // "123456789"
    */
   static extractDigitsWithOCR(text: string): string {
+    const accelerated = TextAccel.extractDigitsWithOCR(text);
+    if (accelerated !== null) return accelerated;
+
     const normalized = this.normalizeOCR(text);
     return normalized.replace(/\D/g, "");
   }
@@ -84,6 +94,9 @@ export class ValidationUtils {
    * @returns String of extracted digits only
    */
   static extractDigits(text: string): string {
+    const accelerated = TextAccel.extractDigits(text);
+    if (accelerated !== null) return accelerated;
+
     return text.replace(/\D/g, "");
   }
 
@@ -98,6 +111,9 @@ export class ValidationUtils {
     text: string,
     preserveCase: boolean = true,
   ): string {
+    const accelerated = TextAccel.extractAlphanumeric(text, preserveCase);
+    if (accelerated !== null) return accelerated;
+
     const result = text.replace(/[^a-zA-Z0-9]/g, "");
     return preserveCase ? result : result.toUpperCase();
   }
@@ -117,6 +133,9 @@ export class ValidationUtils {
    * ValidationUtils.passesLuhn("4532015112830366") // true (valid Visa)
    */
   static passesLuhn(number: string): boolean {
+    const accelerated = TextAccel.passesLuhn(number);
+    if (accelerated !== null) return accelerated;
+
     const digits = this.extractDigits(number);
     if (digits.length === 0) return false;
 

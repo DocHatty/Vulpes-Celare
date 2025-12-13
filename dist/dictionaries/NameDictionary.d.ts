@@ -38,6 +38,8 @@ export declare class NameDictionary {
     private static initErrors;
     private static phoneticMatcher;
     private static phoneticInitialized;
+    private static isPhoneticEnabled;
+    private static getPhoneticThreshold;
     /**
      * Initialize dictionaries from files
      * Call once at app startup

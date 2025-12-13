@@ -26,6 +26,9 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const spans = [];
+        // Pattern -1: Labeled name fields ("Name:", "Patient:", "Member Name:", etc.)
+        // This is high-sensitivity and high-precision because it only triggers in explicit name fields.
+        this.detectLabeledNameFields(text, spans);
         // Pattern 0: Last, First format (medical records format)
         this.detectLastFirstNames(text, spans);
         // Pattern 0.5: Titled names (Dr. Smith, Mr. Jones)
@@ -51,6 +54,63 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // Pattern 9: Names with credential suffixes (RN, NP, MD, etc.)
         this.detectNamesWithCredentials(text, spans);
         return spans;
+    }
+    /**
+     * Detect explicit "name field" values.
+     * These are very high-signal contexts in clinical/admin documents and should not be missed.
+     */
+    detectLabeledNameFields(text, spans) {
+        const pattern = /\b(?:name|patient\s+name|member\s+name|legal\s+name(?:\s*\([^)]*\))?|patient)\s*:\s*([^\r\n]{2,120})/gim;
+        const terminator = /\b(?:preferred\s+name|date\s+of\s+birth|dob|medical\s+record|member\s+id|member\s+id|group|mrn|id)\b/i;
+        const covered = new Set(spans.map((s) => `${s.characterStart}-${s.characterEnd}`));
+        let match;
+        pattern.lastIndex = 0;
+        while ((match = pattern.exec(text)) !== null) {
+            const rawFieldValue = match[1];
+            const cutAt = rawFieldValue.search(terminator);
+            const rawCandidate = (cutAt >= 0 ? rawFieldValue.slice(0, cutAt) : rawFieldValue).replace(/\s+$/g, "");
+            const trimmedLeft = rawCandidate.length - rawCandidate.trimStart().length;
+            const trimmedRight = rawCandidate.length - rawCandidate.trimEnd().length;
+            const start = match.index + match[0].indexOf(rawFieldValue) + trimmedLeft;
+            const end = start + rawCandidate.length - trimmedLeft - trimmedRight;
+            if (start < 0 || end <= start || end > text.length)
+                continue;
+            const candidateText = text.substring(start, end).trim();
+            if (candidateText.length < 3)
+                continue;
+            if (/^(?:n\/a|none|unknown)$/i.test(candidateText))
+                continue;
+            // Must look like a person name: either multiple tokens, or a strong punctuation marker.
+            const tokens = candidateText.split(/\s+/).filter(Boolean);
+            const hasStrongMarker = /[,.'-]/.test(candidateText);
+            if (tokens.length < 2 && !hasStrongMarker)
+                continue;
+            // Avoid swallowing the next label if we accidentally included it.
+            if (terminator.test(candidateText))
+                continue;
+            const posKey = `${start}-${end}`;
+            if (covered.has(posKey))
+                continue;
+            covered.add(posKey);
+            spans.push(new Span_1.Span({
+                text: text.substring(start, end),
+                originalValue: text.substring(start, end),
+                characterStart: start,
+                characterEnd: end,
+                filterType: Span_1.FilterType.NAME,
+                confidence: 0.98,
+                priority: 180,
+                context: this.extractContext(text, start, end),
+                window: [],
+                replacement: null,
+                salt: null,
+                pattern: "Labeled name field",
+                applied: false,
+                ignored: false,
+                ambiguousWith: [],
+                disambiguationScore: null,
+            }));
+        }
     }
     /**
      * Pattern 0: Last, First format (both mixed case and ALL CAPS)

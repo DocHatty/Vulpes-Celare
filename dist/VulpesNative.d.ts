@@ -59,6 +59,9 @@ export declare class VulpesNative {
      * @returns Initialization status message.
      */
     static initCore(): string;
+    static sha256Hex(data: Buffer | string): string;
+    static hmacSha256Hex(key: string, message: string): string;
+    static merkleRootSha256Hex(leafHashesHex: string[]): string;
 }
 export default VulpesNative;
 //# sourceMappingURL=VulpesNative.d.ts.map

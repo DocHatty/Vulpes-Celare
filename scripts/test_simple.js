@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 
-process.env.ORT_DYLIB_PATH = path.resolve("onnxruntime.dll");
+process.env.ORT_DYLIB_PATH = path.resolve("native/onnxruntime.dll");
 console.log("ORT_DYLIB_PATH set to:", process.env.ORT_DYLIB_PATH);
 
 try {
@@ -26,6 +26,11 @@ try {
     console.log("Detecting text...");
     const results = engine.detectText(buffer);
     console.log("Detected regions:", results.length);
+
+    const faceModelPath = path.resolve("models/vision/ultraface.onnx");
+    console.log("Detecting faces...");
+    const faces = binding.detectFaces(buffer, faceModelPath, 0.5, 0.3);
+    console.log("Detected faces:", faces.length);
   } else {
     console.log("No test image found.");
   }

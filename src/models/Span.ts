@@ -12,6 +12,24 @@
  */
 
 import { IntervalTreeSpanIndex } from "./IntervalTreeSpanIndex";
+import { loadNativeBinding } from "../native/binding";
+
+let cachedSpanBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
+  undefined;
+
+function isSpanAccelEnabled(): boolean {
+  return process.env.VULPES_SPAN_ACCEL === "1";
+}
+
+function getSpanBinding(): ReturnType<typeof loadNativeBinding> | null {
+  if (cachedSpanBinding !== undefined) return cachedSpanBinding;
+  try {
+    cachedSpanBinding = loadNativeBinding({ configureOrt: false });
+  } catch {
+    cachedSpanBinding = null;
+  }
+  return cachedSpanBinding;
+}
 
 export enum FilterType {
   // Identity
@@ -317,6 +335,32 @@ export class SpanUtils {
   static dropOverlappingSpans(spans: Span[]): Span[] {
     if (spans.length === 0) return [];
     if (spans.length === 1) return spans;
+
+    // Optional Rust accelerator (kept behind a feature flag).
+    // Falls back to the existing IntervalTree implementation for safety.
+    if (isSpanAccelEnabled()) {
+      const binding = getSpanBinding();
+      if (binding?.dropOverlappingSpans) {
+        try {
+          const indices = binding.dropOverlappingSpans(
+            spans.map((s) => ({
+              characterStart: s.characterStart,
+              characterEnd: s.characterEnd,
+              filterType: String(s.filterType),
+              confidence: s.confidence,
+              priority: s.priority,
+            })),
+          );
+
+          const kept = indices
+            .map((i) => spans[i])
+            .filter((s): s is Span => Boolean(s));
+          return kept.sort((a, b) => a.characterStart - b.characterStart);
+        } catch {
+          // Fall back below.
+        }
+      }
+    }
 
     // Use optimized IntervalTree implementation when enabled
     if (SpanUtils.USE_INTERVAL_TREE) {

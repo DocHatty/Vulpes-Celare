@@ -59,9 +59,12 @@ aggregate-*.log
 # Models cache (download fresh)
 models/hf_cache/
 
+# Rust build artifacts (must not be committed)
+src/rust/target/
+src/rust/target_release/
+
 # AI tooling (internal use only)
 .claude/
 .agent/
 AGENTS.md
 CLAUDE.md
-

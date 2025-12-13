@@ -82,11 +82,6 @@ class DEAFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         if (normalized.length !== 9) {
             return false;
         }
-        // First character must be valid registrant type
-        const firstLetter = normalized[0];
-        if (!DEAFilterSpan.VALID_FIRST_LETTERS.includes(firstLetter)) {
-            return false;
-        }
         // Second character must be a letter (first letter of last name)
         const secondLetter = normalized[1];
         if (!/[A-Z]/.test(secondLetter)) {
@@ -138,7 +133,7 @@ exports.DEAFilterSpan = DEAFilterSpan;
  * U - Narcotic Treatment Program
  * X - Suboxone/Subutex prescribers (DATA waiver)
  */
-DEAFilterSpan.VALID_FIRST_LETTERS = "ABCDEFGHJKLMPRSTUX";
+DEAFilterSpan.VALID_FIRST_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 /**
  * DEA pattern definitions
  */
@@ -147,16 +142,17 @@ DEAFilterSpan.DEA_PATTERN_SOURCES = [
     // Matches: DEA: AB1234567, DEA #AB1234567, DEA Number: AB1234567
     /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}\d{7})\b/gi,
     // Pattern 2: Standalone DEA format (strict - valid first letters only)
-    // Must start with valid registrant type letter
-    /\b([ABCDEFGHJKLMPRSTUX][A-Z]\d{7})\b/g,
+    // In practice we prioritize sensitivity over strict registrant typing.
+    // Keep the overall shape strict (2 letters + 7 digits).
+    /\b([A-Z]{2}\d{7})\b/g,
     // Pattern 3: OCR-tolerant - common substitutions
     // O→0, l→1, I→1, B→8, S→5 in the digit portion
     /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}[0-9OoIlBbSs]{7})\b/gi,
     // Pattern 4: Standalone with OCR errors in digits
-    /\b([ABCDEFGHJKLMPRSTUX][A-Z][0-9OoIlBbSs]{7})\b/g,
+    /\b([A-Z]{2}[0-9OoIlBbSs]{7})\b/g,
     // Pattern 5: Separator-tolerant (spaces/dashes within digits)
     /\bDEA\s*[:#-]?\s*([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/gi,
-    /\b([ABCDEFGHJKLMPRSTUX][A-Z])[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/g,
+    /\b([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/g,
 ];
 /**
  * PERFORMANCE OPTIMIZATION: Pre-compiled patterns

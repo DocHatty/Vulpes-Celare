@@ -748,6 +748,17 @@ MedicalSuffixFilter.MEDICAL_SUFFIXES = [
     "Syndrome",
     "Infection",
     "Condition",
+    // Facility / org suffixes (common false positives for NAME detection)
+    "Health",
+    "Hospital",
+    "Clinic",
+    "Center",
+    "Partners",
+    "Group",
+    "Medical",
+    "Medicine",
+    "System",
+    "Systems",
     "Pressure",
     "Rate",
     "Signs",
@@ -761,6 +772,42 @@ MedicalSuffixFilter.MEDICAL_SUFFIXES = [
     "Management",
     "Planning",
 ];
+/**
+ * Filter out name spans that cross line boundaries.
+ * Real person names should never include newlines; this prevents swallowing
+ * the next line's label (e.g., "Hospital: X\\nDx: ...").
+ */
+class NameLineBreakFilter {
+    constructor() {
+        this.name = "NameLineBreak";
+    }
+    shouldKeep(span, text) {
+        if (span.filterType !== "NAME") {
+            return true;
+        }
+        if (!/[\r\n]/.test(span.text)) {
+            return true;
+        }
+        // If the span crosses into the next line and that next line starts with a
+        // common medical field label, this is almost certainly a false positive.
+        // Example: "Hospital: Foo\\nDx: Bar" -> avoid swallowing "Dx" into a name span.
+        const parts = span.text.split(/\r?\n/);
+        const afterNewline = parts.slice(1).join(" ").trim();
+        const labelLike = /^(?:dx|dob|mrn|age|phone|fax|email|address|street|zip|zipcode|npi|dea|ssn|patient|provider)\b[:\s-]*/i;
+        if (labelLike.test(afterNewline)) {
+            return false;
+        }
+        // If the post-newline tail contains a short label-ish fragment ending with ":"
+        // it's also a strong indicator we captured a field label.
+        if (afterNewline.length > 0 &&
+            afterNewline.length <= 24 &&
+            /:/.test(afterNewline)) {
+            return false;
+        }
+        // Otherwise allow newline-separated names (rare but possible in OCR/layout).
+        return true;
+    }
+}
 /**
  * Filter for geographic terms that aren't names
  */
@@ -884,6 +931,7 @@ PostFilterService.strategies = [
     new ShortNameFilter(),
     new InvalidPrefixFilter(),
     new InvalidSuffixFilter(),
+    new NameLineBreakFilter(),
     new MedicalPhraseFilter(),
     new MedicalSuffixFilter(),
     new GeographicTermFilter(),

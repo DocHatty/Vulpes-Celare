@@ -11,6 +11,12 @@ crate-type = ["cdylib"]
 napi = { version = "2.16", default-features = false, features = ["napi4", "async", "tokio_rt"] }
 napi-derive = "2.16"
 
+# Crypto / provenance
+sha2 = "0.10"
+hmac = "0.12"
+hex = "0.4"
+rphonetic = "3.0"
+
 # Deep Learning Inference
 ort = { version = "=2.0.0-rc.10", features = ["load-dynamic", "ndarray"] }
 

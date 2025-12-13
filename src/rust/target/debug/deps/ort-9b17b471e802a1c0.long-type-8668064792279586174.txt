@@ -1,1 +1,0 @@
-unsafe extern "system" fn(*const OrtKernelInfo, OrtMemType, *mut *mut OrtAllocator) -> OrtStatusPtr

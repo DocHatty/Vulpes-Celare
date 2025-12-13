@@ -20,13 +20,37 @@ class ZipCodeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const spans = [];
+        const seen = new Set();
         // Apply patterns in order (ZIP+4 first to avoid partial matches)
         for (const pattern of ZipCodeFilterSpan.COMPILED_PATTERNS) {
             pattern.lastIndex = 0; // Reset regex
             let match;
             while ((match = pattern.exec(text)) !== null) {
-                const span = this.createSpanFromMatch(text, match, Span_1.FilterType.ZIPCODE, 0.85);
-                spans.push(span);
+                const zip = match[1] || match[0];
+                const start = match.index + match[0].indexOf(zip);
+                const end = start + zip.length;
+                const key = `${start}-${end}`;
+                if (seen.has(key))
+                    continue;
+                seen.add(key);
+                spans.push(new Span_1.Span({
+                    text: zip,
+                    originalValue: zip,
+                    characterStart: start,
+                    characterEnd: end,
+                    filterType: Span_1.FilterType.ZIPCODE,
+                    confidence: 0.85,
+                    priority: this.getPriority(),
+                    context: this.extractContext(text, start, end),
+                    window: [],
+                    replacement: null,
+                    salt: null,
+                    pattern: "ZIP code",
+                    applied: false,
+                    ignored: false,
+                    ambiguousWith: [],
+                    disambiguationScore: null,
+                }));
             }
         }
         return spans;
@@ -42,6 +66,9 @@ exports.ZipCodeFilterSpan = ZipCodeFilterSpan;
 ZipCodeFilterSpan.ZIP_PATTERN_SOURCES = [
     /\b\d{5}-\d{4}\b/g, // ZIP+4 format (must check first to avoid partial match)
     /\b\d{5}\b/g, // Standard 5-digit ZIP
+    // OCR/state-attachment variants: "AZ40576" or "A Z40576"
+    /\b[A-Z]\s*[A-Z](\d{5})(?:-\d{4})?\b/g,
+    /\b[A-Z]{2}(\d{5})(?:-\d{4})?\b/g,
 ];
 /**
  * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)

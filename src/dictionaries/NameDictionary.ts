@@ -51,6 +51,17 @@ export class NameDictionary {
   private static phoneticMatcher: PhoneticMatcher | null = null;
   private static phoneticInitialized = false;
 
+  private static isPhoneticEnabled(): boolean {
+    return process.env.VULPES_ENABLE_PHONETIC === "1";
+  }
+
+  private static getPhoneticThreshold(): number {
+    const raw = process.env.VULPES_PHONETIC_THRESHOLD;
+    const parsed = raw ? Number(raw) : Number.NaN;
+    if (!Number.isFinite(parsed)) return 0.95;
+    return Math.min(1, Math.max(0, parsed));
+  }
+
   /**
    * Initialize dictionaries from files
    * Call once at app startup
@@ -151,8 +162,11 @@ export class NameDictionary {
 
     this.initialized = true;
 
-    // Initialize phonetic matcher with loaded dictionaries
-    this.initPhoneticMatcher();
+    // Phonetic matching is optional (it can shift sensitivity/specificity tradeoffs).
+    // Enable via `VULPES_ENABLE_PHONETIC=1` when experimenting/tuning.
+    if (this.isPhoneticEnabled()) {
+      this.initPhoneticMatcher();
+    }
 
     // Log overall status
     if (this.initErrors.length > 0) {
@@ -180,10 +194,12 @@ export class NameDictionary {
         this.phoneticMatcher = new PhoneticMatcher();
         this.phoneticMatcher.initialize(firstNamesArray, surnamesArray);
         this.phoneticInitialized = true;
-        RadiologyLogger.info(
-          "DICTIONARY",
-          `PhoneticMatcher initialized for fuzzy name matching`,
-        );
+        if (this.isPhoneticEnabled()) {
+          RadiologyLogger.info(
+            "DICTIONARY",
+            `PhoneticMatcher initialized for fuzzy name matching`,
+          );
+        }
       }
     } catch (error) {
       RadiologyLogger.warn(
@@ -275,15 +291,20 @@ export class NameDictionary {
     if (deduplicated !== normalized && this.firstNames.has(deduplicated))
       return true;
 
-    // DISABLED: Phonetic matching causing regression (Sens 96.59% vs 97.09% baseline)
-    // Keeping code for reference but bypassing for now
-    // TODO: Investigate why phonetic matching hurts performance
-    // if (this.phoneticMatcher && this.phoneticInitialized) {
-    //   const phoneticMatch = this.phoneticMatcher.matchFirstName(name);
-    //   if (phoneticMatch && phoneticMatch.confidence >= 0.9) {
-    //     return true;
-    //   }
-    // }
+    // Optional: phonetic match for OCR-corrupted names (Rust-accelerated when native is available).
+    // Kept opt-in because it can shift sensitivity/specificity tradeoffs on some corpora.
+    if (this.isPhoneticEnabled()) {
+      if (!this.phoneticInitialized) this.initPhoneticMatcher();
+      if (this.phoneticMatcher && this.phoneticInitialized) {
+        const phoneticMatch = this.phoneticMatcher.matchFirstName(name);
+        if (
+          phoneticMatch &&
+          phoneticMatch.confidence >= this.getPhoneticThreshold()
+        ) {
+          return true;
+        }
+      }
+    }
 
     return false;
   }
@@ -309,13 +330,18 @@ export class NameDictionary {
     if (deduplicated !== normalized && this.surnames.has(deduplicated))
       return true;
 
-    // DISABLED: Phonetic matching causing regression
-    // if (this.phoneticMatcher && this.phoneticInitialized) {
-    //   const phoneticMatch = this.phoneticMatcher.matchSurname(name);
-    //   if (phoneticMatch && phoneticMatch.confidence >= 0.9) {
-    //     return true;
-    //   }
-    // }
+    if (this.isPhoneticEnabled()) {
+      if (!this.phoneticInitialized) this.initPhoneticMatcher();
+      if (this.phoneticMatcher && this.phoneticInitialized) {
+        const phoneticMatch = this.phoneticMatcher.matchSurname(name);
+        if (
+          phoneticMatch &&
+          phoneticMatch.confidence >= this.getPhoneticThreshold()
+        ) {
+          return true;
+        }
+      }
+    }
 
     return false;
   }
@@ -324,6 +350,8 @@ export class NameDictionary {
    * Get phonetic match details for a name (for debugging/logging)
    */
   static getPhoneticMatch(name: string): PhoneticMatch | null {
+    if (!this.isPhoneticEnabled()) return null;
+    if (!this.phoneticInitialized) this.initPhoneticMatcher();
     if (!this.phoneticMatcher || !this.phoneticInitialized) return null;
     return this.phoneticMatcher.matchAnyName(name);
   }

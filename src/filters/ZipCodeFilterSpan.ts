@@ -8,10 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 export class ZipCodeFilterSpan extends SpanBasedFilter {
@@ -24,6 +21,9 @@ export class ZipCodeFilterSpan extends SpanBasedFilter {
   private static readonly ZIP_PATTERN_SOURCES = [
     /\b\d{5}-\d{4}\b/g, // ZIP+4 format (must check first to avoid partial match)
     /\b\d{5}\b/g, // Standard 5-digit ZIP
+    // OCR/state-attachment variants: "AZ40576" or "A Z40576"
+    /\b[A-Z]\s*[A-Z](\d{5})(?:-\d{4})?\b/g,
+    /\b[A-Z]{2}(\d{5})(?:-\d{4})?\b/g,
   ];
 
   /**
@@ -43,6 +43,7 @@ export class ZipCodeFilterSpan extends SpanBasedFilter {
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
+    const seen = new Set<string>();
 
     // Apply patterns in order (ZIP+4 first to avoid partial matches)
     for (const pattern of ZipCodeFilterSpan.COMPILED_PATTERNS) {
@@ -50,13 +51,33 @@ export class ZipCodeFilterSpan extends SpanBasedFilter {
       let match;
 
       while ((match = pattern.exec(text)) !== null) {
-        const span = this.createSpanFromMatch(
-          text,
-          match,
-          FilterType.ZIPCODE,
-          0.85, // Good confidence for ZIP codes
+        const zip = match[1] || match[0];
+        const start = match.index! + match[0].indexOf(zip);
+        const end = start + zip.length;
+        const key = `${start}-${end}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        spans.push(
+          new Span({
+            text: zip,
+            originalValue: zip,
+            characterStart: start,
+            characterEnd: end,
+            filterType: FilterType.ZIPCODE,
+            confidence: 0.85,
+            priority: this.getPriority(),
+            context: this.extractContext(text, start, end),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: "ZIP code",
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          }),
         );
-        spans.push(span);
       }
     }
 

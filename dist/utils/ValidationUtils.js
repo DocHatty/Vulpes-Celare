@@ -16,6 +16,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ValidationUtils = void 0;
+const TextAccel_1 = require("../TextAccel");
 /**
  * OCR character substitution map for common scanning errors
  * Used to normalize text that may have OCR mistakes
@@ -56,6 +57,11 @@ class ValidationUtils {
      * ValidationUtils.normalizeOCR("SSN: l23-4S-6789") // "SSN: 123-45-6789"
      */
     static normalizeOCR(text, customMap) {
+        if (!customMap) {
+            const accelerated = TextAccel_1.TextAccel.normalizeOCR(text);
+            if (accelerated !== text)
+                return accelerated;
+        }
         const map = customMap ?? OCR_SUBSTITUTION_MAP;
         return text.replace(/./g, (char) => map[char] ?? char);
     }
@@ -69,6 +75,9 @@ class ValidationUtils {
      * ValidationUtils.extractDigitsWithOCR("l23-4S-6789") // "123456789"
      */
     static extractDigitsWithOCR(text) {
+        const accelerated = TextAccel_1.TextAccel.extractDigitsWithOCR(text);
+        if (accelerated !== null)
+            return accelerated;
         const normalized = this.normalizeOCR(text);
         return normalized.replace(/\D/g, "");
     }
@@ -79,6 +88,9 @@ class ValidationUtils {
      * @returns String of extracted digits only
      */
     static extractDigits(text) {
+        const accelerated = TextAccel_1.TextAccel.extractDigits(text);
+        if (accelerated !== null)
+            return accelerated;
         return text.replace(/\D/g, "");
     }
     /**
@@ -89,6 +101,9 @@ class ValidationUtils {
      * @returns Alphanumeric characters only
      */
     static extractAlphanumeric(text, preserveCase = true) {
+        const accelerated = TextAccel_1.TextAccel.extractAlphanumeric(text, preserveCase);
+        if (accelerated !== null)
+            return accelerated;
         const result = text.replace(/[^a-zA-Z0-9]/g, "");
         return preserveCase ? result : result.toUpperCase();
     }
@@ -106,6 +121,9 @@ class ValidationUtils {
      * ValidationUtils.passesLuhn("4532015112830366") // true (valid Visa)
      */
     static passesLuhn(number) {
+        const accelerated = TextAccel_1.TextAccel.passesLuhn(number);
+        if (accelerated !== null)
+            return accelerated;
         const digits = this.extractDigits(number);
         if (digits.length === 0)
             return false;

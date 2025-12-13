@@ -413,6 +413,13 @@ class ParallelRedactionEngine {
         const suffixPattern = new RegExp(String.raw `\b(?:${NAME_SUFFIXES.join("|")})\.?$`, "i");
         return spans.filter((span) => {
             const text = span.text.trim();
+            // Explicit name-field extractions are high-signal and should not be dropped
+            // by aggressive whitelists (e.g. single-word whitelists like "Ann").
+            if (span.filterType === Span_1.FilterType.NAME &&
+                span.pattern === "Labeled name field" &&
+                span.confidence >= 0.95) {
+                return true;
+            }
             // ═══════════════════════════════════════════════════════════════════════
             // HIGH-YIELD FIX #1 & #2: Check isNonPHI() and isInsuranceTerm() FIRST
             // These are POWERFUL methods that check multiple whitelists at once.

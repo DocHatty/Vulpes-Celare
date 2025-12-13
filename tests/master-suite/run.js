@@ -1,155 +1,155 @@
 #!/usr/bin/env node
 
 /**
- * ╔═══════════════════════════════════════════════════════════════════════════════╗
- * ║                                                                               ║
- * ║     ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗                        ║
- * ║     ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝                        ║
- * ║     ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗                        ║
- * ║     ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║                        ║
- * ║      ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║                        ║
- * ║       ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝                        ║
- * ║                                                                               ║
- * ║      ██████╗███████╗██╗      █████╗ ██████╗ ███████╗                          ║
- * ║     ██╔════╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝                          ║
- * ║     ██║     █████╗  ██║     ███████║██████╔╝█████╗                            ║
- * ║     ██║     ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝                            ║
- * ║     ╚██████╗███████╗███████╗██║  ██║██║  ██║███████╗                          ║
- * ║      ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝                          ║
- * ║                                                                               ║
- * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║   MASTER TEST RUNNER                                                          ║
- * ║   Complete Assessment Suite with VULPES CORTEX Intelligence                   ║
- * ╚═══════════════════════════════════════════════════════════════════════════════╝
+ * â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+ * â•‘                                                                               â•‘
+ * â•‘     â–ˆâ–ˆâ•—   â–ˆâ–ˆâ•—â–ˆâ–ˆâ•—   â–ˆâ–ˆâ•—â–ˆâ–ˆâ•—     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—                        â•‘
+ * â•‘     â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•                        â•‘
+ * â•‘     â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—                        â•‘
+ * â•‘     â•šâ–ˆâ–ˆâ•— â–ˆâ–ˆâ•”â•â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•”â•â•â•â• â–ˆâ–ˆâ•”â•â•â•  â•šâ•â•â•â•â–ˆâ–ˆâ•‘                        â•‘
+ * â•‘      â•šâ–ˆâ–ˆâ–ˆâ–ˆâ•”â• â•šâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘                        â•‘
+ * â•‘       â•šâ•â•â•â•   â•šâ•â•â•â•â•â• â•šâ•â•â•â•â•â•â•â•šâ•â•     â•šâ•â•â•â•â•â•â•â•šâ•â•â•â•â•â•â•                        â•‘
+ * â•‘                                                                               â•‘
+ * â•‘      â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•—      â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—                          â•‘
+ * â•‘     â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•                          â•‘
+ * â•‘     â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—                            â•‘
+ * â•‘     â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•                            â•‘
+ * â•‘     â•šâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—                          â•‘
+ * â•‘      â•šâ•â•â•â•â•â•â•šâ•â•â•â•â•â•â•â•šâ•â•â•â•â•â•â•â•šâ•â•  â•šâ•â•â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•                          â•‘
+ * â•‘                                                                               â•‘
+ * â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
+ * â•‘   MASTER TEST RUNNER                                                          â•‘
+ * â•‘   Complete Assessment Suite with VULPES CORTEX Intelligence                   â•‘
+ * â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
- * ╔═══════════════════════════════════════════════════════════════════════════════╗
- * ║  LLM STARTUP CHECKLIST - DO THIS WHEN USER SAYS "TEST THE SYSTEM"            ║
- * ╠═══════════════════════════════════════════════════════════════════════════════╣
- * ║                                                                               ║
- * ║  STEP 0: START THE MCP SERVER (for intelligent recommendations)              ║
- * ║    cd tests/master-suite/cortex && node index.js --server                    ║
- * ║    (Run in background - keeps history of what worked/failed)                 ║
- * ║                                                                               ║
- * ║  STEP 1: RUN THE TEST SUITE                                                  ║
- * ║    node tests/master-suite/run.js --log-file --profile=HIPAA_STRICT          ║
- * ║                                                                               ║
- * ║  STEP 2: READ THE FULL LOG FILE                                              ║
- * ║    Check tests/results/verbose-*.log for untruncated output                  ║
- * ║                                                                               ║
- * ║  STEP 3: FOLLOW THE ACTION CHECKLIST PRINTED AT THE END                      ║
- * ║    The test output shows EXACTLY what to fix with real examples              ║
- * ║                                                                               ║
- * ║  STEP 4: EXECUTE FIXES (You are the execution engine!)                       ║
- * ║    - READ the failing filter/dictionary                                      ║
- * ║    - EDIT it to catch the missed patterns                                    ║
- * ║    - RUN the test again                                                      ║
- * ║    - COMPARE metrics (keep if better, revert if worse)                       ║
- * ║                                                                              ║
- * ║  STEP 5: ITERATE until sensitivity >= 99%                                    ║
- * ║                                                                              ║
- * ║  KEY FILES:                                                                  ║
- * ║    Filters:      src/filters/*.ts                                            ║
- * ║    Dictionaries: src/dictionaries/*.txt                                      ║
- * ║    Test Results: tests/results/verbose-*.log                                 ║
- * ║    MCP Server:   tests/master-suite/cortex/ (port 3100)                      ║
- * ║    REST API:     tests/master-suite/cortex/api/ (port 3101)                  ║
- * ║                                                                              ║
- * ╚══════════════════════════════════════════════════════════════════════════════╝
+ * â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+ * â•‘  LLM STARTUP CHECKLIST - DO THIS WHEN USER SAYS "TEST THE SYSTEM"            â•‘
+ * â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
+ * â•‘                                                                               â•‘
+ * â•‘  STEP 0: START THE MCP SERVER (for intelligent recommendations)              â•‘
+ * â•‘    cd tests/master-suite/cortex && node index.js --server                    â•‘
+ * â•‘    (Run in background - keeps history of what worked/failed)                 â•‘
+ * â•‘                                                                               â•‘
+ * â•‘  STEP 1: RUN THE TEST SUITE                                                  â•‘
+ * â•‘    node tests/master-suite/run.js --log-file --profile=HIPAA_STRICT          â•‘
+ * â•‘                                                                               â•‘
+ * â•‘  STEP 2: READ THE FULL LOG FILE                                              â•‘
+ * â•‘    Check tests/results/verbose-*.log for untruncated output                  â•‘
+ * â•‘                                                                               â•‘
+ * â•‘  STEP 3: FOLLOW THE ACTION CHECKLIST PRINTED AT THE END                      â•‘
+ * â•‘    The test output shows EXACTLY what to fix with real examples              â•‘
+ * â•‘                                                                               â•‘
+ * â•‘  STEP 4: EXECUTE FIXES (You are the execution engine!)                       â•‘
+ * â•‘    - READ the failing filter/dictionary                                      â•‘
+ * â•‘    - EDIT it to catch the missed patterns                                    â•‘
+ * â•‘    - RUN the test again                                                      â•‘
+ * â•‘    - COMPARE metrics (keep if better, revert if worse)                       â•‘
+ * â•‘                                                                              â•‘
+ * â•‘  STEP 5: ITERATE until sensitivity >= 99%                                    â•‘
+ * â•‘                                                                              â•‘
+ * â•‘  KEY FILES:                                                                  â•‘
+ * â•‘    Filters:      src/filters/*.ts                                            â•‘
+ * â•‘    Dictionaries: src/dictionaries/*.txt                                      â•‘
+ * â•‘    Test Results: tests/results/verbose-*.log                                 â•‘
+ * â•‘    MCP Server:   tests/master-suite/cortex/ (port 3100)                      â•‘
+ * â•‘    REST API:     tests/master-suite/cortex/api/ (port 3101)                  â•‘
+ * â•‘                                                                              â•‘
+ * â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
- * ┌─────────────────────────────────────────────────────────────────────────────┐
- * │  ⚠️  LLM/AI OPERATOR CRITICAL INSTRUCTION:                                   │
- * │                                                                             │
- * │  ALWAYS use --log-file to prevent output truncation!                        │
- * │                                                                             │
- * │  CORRECT:   node tests/master-suite/run.js --log-file                       │
- * │  WRONG:     node tests/master-suite/run.js 2>&1 | tail -100                 │
- * │  WRONG:     node tests/master-suite/run.js 2>&1 (output will truncate!)     │
- * │                                                                             │
- * │  After running, read the log file to see FULL untruncated results:          │
- * │    - Log files are saved to: tests/results/verbose-*.log                    │
- * │    - Use: cat tests/results/verbose-*.log | tail -200                       │
- * │    - Or read the specific log file path shown in console output             │
- * │                                                                             │
- * │  This prevents bash/terminal truncation that loses critical metrics!        │
- * └─────────────────────────────────────────────────────────────────────────────┘
+ * â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+ * â”‚  âš ï¸  LLM/AI OPERATOR CRITICAL INSTRUCTION:                                   â”‚
+ * â”‚                                                                             â”‚
+ * â”‚  ALWAYS use --log-file to prevent output truncation!                        â”‚
+ * â”‚                                                                             â”‚
+ * â”‚  CORRECT:   node tests/master-suite/run.js --log-file                       â”‚
+ * â”‚  WRONG:     node tests/master-suite/run.js 2>&1 | tail -100                 â”‚
+ * â”‚  WRONG:     node tests/master-suite/run.js 2>&1 (output will truncate!)     â”‚
+ * â”‚                                                                             â”‚
+ * â”‚  After running, read the log file to see FULL untruncated results:          â”‚
+ * â”‚    - Log files are saved to: tests/results/verbose-*.log                    â”‚
+ * â”‚    - Use: cat tests/results/verbose-*.log | tail -200                       â”‚
+ * â”‚    - Or read the specific log file path shown in console output             â”‚
+ * â”‚                                                                             â”‚
+ * â”‚  This prevents bash/terminal truncation that loses critical metrics!        â”‚
+ * â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
  *
- * ╔═════════════════════════════════════════════════════════════════════════════╗
- * ║  LLM/AI OPERATOR: MANDATORY IMPROVEMENT WORKFLOW                            ║
- * ║                                                                             ║
- * ║  You MUST follow this scientific process when improving the PHI engine:     ║
- * ║                                                                             ║
- * ║  STEP 1: OBSERVE (Baseline)                                                 ║
- * ║    □ Run test with 200 docs: node tests/master-suite/run.js --log-file      ║
- * ║    □ Read the FULL log file (not truncated console output)                  ║
- * ║    □ Record baseline metrics: Sensitivity, Specificity, F1, F2              ║
- * ║    □ Identify the TOP failure pattern (e.g., "NAME: 74 failures")           ║
- * ║                                                                             ║
- * ║  STEP 2: ANALYZE                                                            ║
- * ║    □ Read specific failure examples from the log                            ║
- * ║    □ Identify WHY the pattern is failing (OCR? Format? Missing regex?)      ║
- * ║    □ Find the relevant filter file in src/filters/                          ║
- * ║    □ Understand the current detection logic                                 ║
- * ║                                                                             ║
- * ║  STEP 3: HYPOTHESIZE                                                        ║
- * ║    □ Form a specific hypothesis: "Adding X pattern will catch Y cases"      ║
- * ║    □ Estimate impact: "This should reduce NAME failures by ~20"             ║
- * ║    □ Consider side effects: "This might cause Z false positives"            ║
- * ║                                                                             ║
- * ║  STEP 4: IMPLEMENT (Small Change)                                           ║
- * ║    □ Make ONE focused change (not multiple changes at once!)                ║
- * ║    □ Keep the change minimal and reversible                                 ║
- * ║    □ Document what you changed and why                                      ║
- * ║                                                                             ║
- * ║  STEP 5: TEST                                                               ║
- * ║    □ Run the same test: node tests/master-suite/run.js --log-file           ║
- * ║    □ Compare metrics to baseline                                            ║
- * ║    □ Check: Did sensitivity improve? Did false positives increase?          ║
- * ║                                                                             ║
- * ║  STEP 6: EVALUATE                                                           ║
- * ║    □ If IMPROVED: Keep the change, commit it, update baseline               ║
- * ║    □ If WORSE: REVERT the change immediately (git checkout)                 ║
- * ║    □ If NEUTRAL: Consider reverting (simpler is better)                     ║
- * ║                                                                             ║
- * ║  STEP 7: ITERATE                                                            ║
- * ║    □ Return to STEP 1 with new baseline                                     ║
- * ║    □ Target the next highest-impact failure pattern                         ║
- * ║    □ Continue until sensitivity >= 99% and grade is A                       ║
- * ║                                                                             ║
- * ║  CRITICAL RULES:                                                            ║
- * ║    - NEVER make multiple changes before testing                             ║
- * ║    - ALWAYS revert changes that don't improve metrics                       ║
- * ║    - ALWAYS use --log-file to see full output                               ║
- * ║    - NEVER trust truncated console output for metrics                       ║
- * ║    - ALWAYS prioritize sensitivity (recall) over precision                  ║
- * ╚═════════════════════════════════════════════════════════════════════════════╝
+ * â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+ * â•‘  LLM/AI OPERATOR: MANDATORY IMPROVEMENT WORKFLOW                            â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  You MUST follow this scientific process when improving the PHI engine:     â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  STEP 1: OBSERVE (Baseline)                                                 â•‘
+ * â•‘    â–¡ Run test with 200 docs: node tests/master-suite/run.js --log-file      â•‘
+ * â•‘    â–¡ Read the FULL log file (not truncated console output)                  â•‘
+ * â•‘    â–¡ Record baseline metrics: Sensitivity, Specificity, F1, F2              â•‘
+ * â•‘    â–¡ Identify the TOP failure pattern (e.g., "NAME: 74 failures")           â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  STEP 2: ANALYZE                                                            â•‘
+ * â•‘    â–¡ Read specific failure examples from the log                            â•‘
+ * â•‘    â–¡ Identify WHY the pattern is failing (OCR? Format? Missing regex?)      â•‘
+ * â•‘    â–¡ Find the relevant filter file in src/filters/                          â•‘
+ * â•‘    â–¡ Understand the current detection logic                                 â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  STEP 3: HYPOTHESIZE                                                        â•‘
+ * â•‘    â–¡ Form a specific hypothesis: "Adding X pattern will catch Y cases"      â•‘
+ * â•‘    â–¡ Estimate impact: "This should reduce NAME failures by ~20"             â•‘
+ * â•‘    â–¡ Consider side effects: "This might cause Z false positives"            â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  STEP 4: IMPLEMENT (Small Change)                                           â•‘
+ * â•‘    â–¡ Make ONE focused change (not multiple changes at once!)                â•‘
+ * â•‘    â–¡ Keep the change minimal and reversible                                 â•‘
+ * â•‘    â–¡ Document what you changed and why                                      â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  STEP 5: TEST                                                               â•‘
+ * â•‘    â–¡ Run the same test: node tests/master-suite/run.js --log-file           â•‘
+ * â•‘    â–¡ Compare metrics to baseline                                            â•‘
+ * â•‘    â–¡ Check: Did sensitivity improve? Did false positives increase?          â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  STEP 6: EVALUATE                                                           â•‘
+ * â•‘    â–¡ If IMPROVED: Keep the change, commit it, update baseline               â•‘
+ * â•‘    â–¡ If WORSE: REVERT the change immediately (git checkout)                 â•‘
+ * â•‘    â–¡ If NEUTRAL: Consider reverting (simpler is better)                     â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  STEP 7: ITERATE                                                            â•‘
+ * â•‘    â–¡ Return to STEP 1 with new baseline                                     â•‘
+ * â•‘    â–¡ Target the next highest-impact failure pattern                         â•‘
+ * â•‘    â–¡ Continue until sensitivity >= 99% and grade is A                       â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  CRITICAL RULES:                                                            â•‘
+ * â•‘    - NEVER make multiple changes before testing                             â•‘
+ * â•‘    - ALWAYS revert changes that don't improve metrics                       â•‘
+ * â•‘    - ALWAYS use --log-file to see full output                               â•‘
+ * â•‘    - NEVER trust truncated console output for metrics                       â•‘
+ * â•‘    - ALWAYS prioritize sensitivity (recall) over precision                  â•‘
+ * â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
- * ╔═════════════════════════════════════════════════════════════════════════════╗
- * ║  LLM: YOU ARE THE EXECUTION ENGINE - NOT JUST AN ANALYZER                   ║
- * ╠═════════════════════════════════════════════════════════════════════════════╣
- * ║                                                                             ║
- * ║  You have FULL POWER to:                                                    ║
- * ║    ✓ READ any file (filters, dictionaries, config)                          ║
- * ║    ✓ EDIT any file (apply fixes directly)                                   ║
- * ║    ✓ RUN tests (node tests/master-suite/run.js --log-file)                  ║
- * ║    ✓ COMPARE metrics (before vs after)                                      ║
- * ║    ✓ ROLLBACK if worse (git checkout <file>)                                ║
- * ║                                                                             ║
- * ║  DO NOT just analyze and report. EXECUTE THE FIXES.                         ║
- * ║                                                                             ║
- * ║  CLOSED LOOP:                                                               ║
- * ║    1. Run test → See failures with exact values                             ║
- * ║    2. Read the filter/dictionary that should catch it                       ║
- * ║    3. EDIT the file to add the missing pattern/entry                        ║
- * ║    4. Run test again → Compare sensitivity                                  ║
- * ║    5. If better: keep it. If worse: git checkout <file>                     ║
- * ║    6. Repeat until sensitivity >= 99%                                       ║
- * ║                                                                             ║
- * ║  KEY LOCATIONS:                                                             ║
- * ║    Filters:      src/filters/*.ts                                           ║
- * ║    Dictionaries: src/dictionaries/*.txt                                     ║
- * ║    Core:         src/core/*.ts                                              ║
- * ║                                                                             ║
- * ╚═════════════════════════════════════════════════════════════════════════════╝
+ * â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+ * â•‘  LLM: YOU ARE THE EXECUTION ENGINE - NOT JUST AN ANALYZER                   â•‘
+ * â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
+ * â•‘                                                                             â•‘
+ * â•‘  You have FULL POWER to:                                                    â•‘
+ * â•‘    âœ“ READ any file (filters, dictionaries, config)                          â•‘
+ * â•‘    âœ“ EDIT any file (apply fixes directly)                                   â•‘
+ * â•‘    âœ“ RUN tests (node tests/master-suite/run.js --log-file)                  â•‘
+ * â•‘    âœ“ COMPARE metrics (before vs after)                                      â•‘
+ * â•‘    âœ“ ROLLBACK if worse (git checkout <file>)                                â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  DO NOT just analyze and report. EXECUTE THE FIXES.                         â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  CLOSED LOOP:                                                               â•‘
+ * â•‘    1. Run test â†’ See failures with exact values                             â•‘
+ * â•‘    2. Read the filter/dictionary that should catch it                       â•‘
+ * â•‘    3. EDIT the file to add the missing pattern/entry                        â•‘
+ * â•‘    4. Run test again â†’ Compare sensitivity                                  â•‘
+ * â•‘    5. If better: keep it. If worse: git checkout <file>                     â•‘
+ * â•‘    6. Repeat until sensitivity >= 99%                                       â•‘
+ * â•‘                                                                             â•‘
+ * â•‘  KEY LOCATIONS:                                                             â•‘
+ * â•‘    Filters:      src/filters/*.ts                                           â•‘
+ * â•‘    Dictionaries: src/dictionaries/*.txt                                     â•‘
+ * â•‘    Core:         src/core/*.ts                                              â•‘
+ * â•‘                                                                             â•‘
+ * â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *
  * USAGE:
  *   node tests/master-suite/run.js [options]
@@ -186,6 +186,7 @@
 
 const path = require("path");
 const { RigorousAssessment } = require("./assessment/assessment");
+const { seedGlobal } = require("./generators/seeded-random");
 
 // Import console formatter for beautiful, glitch-free output
 const fmt = require("./cortex/core/console-formatter");
@@ -229,8 +230,10 @@ const options = {
   documentCount: 50, // Reduced from 200 - same coverage, 4x faster
   verbose: false,
   jsonOnly: false,
-  profile: "DEVELOPMENT", // Default to development-friendly grading
+  profile: "HIPAA_STRICT", // Default to production-grade grading
+  seed: null,
   learn: true, // Learning enabled by default
+  strictExit: false, // Only fail the process when explicitly requested
   showContext: false,
   showEvolution: false,
   useCortex: true, // Use Vulpes Cortex by default if available
@@ -252,6 +255,10 @@ for (const arg of args) {
   if (arg.startsWith("--count=")) {
     options.documentCount = parseInt(arg.split("=")[1]) || 200;
   }
+  if (arg.startsWith("--seed=")) {
+    const parsed = Number.parseInt(arg.split("=")[1], 10);
+    options.seed = Number.isFinite(parsed) ? parsed : null;
+  }
   if (arg.startsWith("--profile=")) {
     options.profile = arg.split("=")[1].toUpperCase();
   }
@@ -262,6 +269,8 @@ for (const arg of args) {
   if (arg === "--thorough") options.documentCount = 500;
   if (arg === "--learn") options.learn = true;
   if (arg === "--no-learn") options.learn = false;
+  if (arg === "--strict-exit") options.strictExit = true;
+  if (arg === "--no-strict-exit") options.strictExit = false;
   if (arg === "--context") options.showContext = true;
   if (arg === "--evolution") options.showEvolution = true;
   if (arg === "--cortex") options.useCortex = true;
@@ -311,10 +320,10 @@ async function main() {
       await VulpesCortex.initialize();
       cortex = VulpesCortex;
       log(
-        "  ✓ Vulpes Cortex initialized (advanced learning + history consultation)\n",
+        "  âœ“ Vulpes Cortex initialized (advanced learning + history consultation)\n",
       );
     } catch (e) {
-      console.warn(`  ⚠ Vulpes Cortex failed to initialize: ${e.message}\n`);
+      console.warn(`  âš  Vulpes Cortex failed to initialize: ${e.message}\n`);
     }
   }
 
@@ -325,9 +334,11 @@ async function main() {
       learningEngine = new LearningEngine(
         path.join(__dirname, "..", "results"),
       );
-      log("  ✓ Learning engine initialized (legacy mode)\n");
+      log("  âœ“ Learning engine initialized (legacy mode)\n");
     } catch (e) {
-      console.warn(`  ⚠ Learning engine failed to initialize: ${e.message}\n`);
+      console.warn(
+        `  âš  Learning engine failed to initialize: ${e.message}\n`,
+      );
     }
   }
 
@@ -367,6 +378,11 @@ async function main() {
   }
 
   try {
+    if (options.seed !== null) {
+      seedGlobal(options.seed);
+      log(`\n  Seed: ${options.seed}`);
+    }
+
     // Create assessment instance
     const assessment = new RigorousAssessment({
       documentCount: options.documentCount,
@@ -445,11 +461,11 @@ async function main() {
 
       cortexAnalysis.recommendation = recommendation;
 
-      log("  ✓ Pattern analysis complete");
-      log("  ✓ History consulted");
-      log("  ✓ Insights generated");
+      log("  âœ“ Pattern analysis complete");
+      log("  âœ“ History consulted");
+      log("  âœ“ Insights generated");
       log(
-        `  ✓ Top recommendation: ${recommendation.recommendation?.summary || "Review results"}`,
+        `  âœ“ Top recommendation: ${recommendation.recommendation?.summary || "Review results"}`,
       );
     } else if (learningEngine) {
       log("\nPHASE 5: Learning from results (legacy mode)...\n");
@@ -491,7 +507,7 @@ async function main() {
             5,
           )) {
             log(
-              `    • ${pattern.category} (${pattern.phiType}): ${pattern.remediation || "Review"}`,
+              `    â€¢ ${pattern.category} (${pattern.phiType}): ${pattern.remediation || "Review"}`,
             );
           }
         }
@@ -533,21 +549,23 @@ async function main() {
           const summaryResults = {
             metrics: assessment.results.metrics,
             documents: options.documentCount,
-            processingTime: `${assessment.results.processingTime || 'N/A'}`
+            processingTime: `${assessment.results.processingTime || "N/A"}`,
           };
 
-          log('\n' + fmt.separator('═'));
-          log(fmt.headerBox('SMART SUMMARY (LLM-OPTIMIZED)'));
-          log(fmt.separator('═') + '\n');
-          log(smartSummary.generate(summaryResults, {
-            compact: false,
-            showComparison: true,
-            showRecommendations: true
-          }));
-          log('\n');
+          log("\n" + fmt.divider());
+          log(fmt.headerBox("SMART SUMMARY (LLM-OPTIMIZED)"));
+          log(fmt.divider() + "\n");
+          log(
+            smartSummary.generate(summaryResults, {
+              compact: false,
+              showComparison: true,
+              showRecommendations: true,
+            }),
+          );
+          log("\n");
         } catch (e) {
           // Gracefully skip if SmartSummary fails
-          console.warn(`  ⚠ SmartSummary generation failed: ${e.message}`);
+          console.warn(`  SmartSummary generation failed: ${e.message}`);
         }
       }
     }
@@ -558,6 +576,7 @@ async function main() {
     // Output JSON for CI/CD if requested
     if (options.jsonOnly) {
       const output = {
+        seed: options.seed,
         metrics: assessment.results.metrics,
         // Include full failure details for MCP analysis
         failures: assessment.results.failures.map((f) => ({
@@ -618,7 +637,14 @@ async function main() {
     // Determine exit code
     // Use smart grade if available, otherwise fall back to original
     const sensitivity = assessment.results.metrics.sensitivity;
+    const specificity = assessment.results.metrics.specificity;
     let grade = assessment.results.metrics.grade;
+    const strictFailures = (assessment.results.failures || []).length;
+    const strictOverRedactions = (assessment.results.overRedactions || [])
+      .length;
+
+    const shouldFailProcess =
+      options.strictExit === true || process.env.VULPES_STRICT_EXIT === "1";
 
     if (smartGradeResults) {
       // Use the selected profile's grade for exit code decision
@@ -639,17 +665,32 @@ async function main() {
         ? ["A+", "A", "A-", "B+", "B"]
         : ["A+", "A", "A-"];
 
+    if (options.profile === "HIPAA_STRICT") {
+      const meetsStrict =
+        sensitivity >= 99 && specificity >= 96 && strictFailures === 0;
+
+      if (meetsStrict) {
+        log("\n  PASS (HIPAA_STRICT)\n");
+        printLLMActionChecklist(assessment.results, smartGradeResults, "PASS");
+        process.exit(0);
+      }
+
+      log("\n  NEEDS IMPROVEMENT (HIPAA_STRICT)\n");
+      printLLMActionChecklist(assessment.results, smartGradeResults, "IMPROVE");
+      process.exit(shouldFailProcess ? 1 : 0);
+    }
+
     if (sensitivity >= 95 && passingGrades.includes(grade)) {
-      log("\n  ✓ PASS\n");
+      log("\n  âœ“ PASS\n");
       printLLMActionChecklist(assessment.results, smartGradeResults, "PASS");
       process.exit(0);
     } else {
-      log("\n  ✗ NEEDS IMPROVEMENT\n");
+      log("\n  âœ— NEEDS IMPROVEMENT\n");
       printLLMActionChecklist(assessment.results, smartGradeResults, "IMPROVE");
-      process.exit(1);
+      process.exit(shouldFailProcess ? 1 : 0);
     }
   } catch (error) {
-    console.error(`\n❌ Assessment failed: ${error.message}`);
+    console.error(`\nâŒ Assessment failed: ${error.message}`);
     console.error(error.stack);
     process.exit(2);
   }
@@ -694,13 +735,13 @@ function printLLMActionChecklist(results, smartGradeResults, status) {
   // Box drawing helper - ensures perfect 80-char width
   const W = 80;
   const pointed = (s) =>
-    "║  " + s + " ".repeat(Math.max(0, W - 4 - s.length)) + "║";
+    "â•‘  " + s + " ".repeat(Math.max(0, W - 4 - s.length)) + "â•‘";
   const pointed2 = (s) =>
-    "║    " + s + " ".repeat(Math.max(0, W - 6 - s.length)) + "║";
-  const blank = "║" + " ".repeat(W - 2) + "║";
-  const top = "╔" + "═".repeat(W - 2) + "╗";
-  const mid = "╠" + "═".repeat(W - 2) + "╣";
-  const bot = "╚" + "═".repeat(W - 2) + "╝";
+    "â•‘    " + s + " ".repeat(Math.max(0, W - 6 - s.length)) + "â•‘";
+  const blank = "â•‘" + " ".repeat(W - 2) + "â•‘";
+  const top = "â•”" + "â•".repeat(W - 2) + "â•—";
+  const mid = "â• " + "â•".repeat(W - 2) + "â•£";
+  const bot = "â•š" + "â•".repeat(W - 2) + "â•";
 
   let lines = [];
 
@@ -712,7 +753,7 @@ function printLLMActionChecklist(results, smartGradeResults, status) {
   lines.push(mid);
   lines.push(blank);
   lines.push(pointed("CURRENT METRICS"));
-  lines.push(pointed("─".repeat(72)));
+  lines.push(pointed("â”€".repeat(72)));
   lines.push(pointed(`Sensitivity: ${sens}%     Specificity: ${spec}%`));
   lines.push(
     pointed(`F1 Score:    ${f1}       F2 Score:    ${f2}  (HIPAA standard)`),

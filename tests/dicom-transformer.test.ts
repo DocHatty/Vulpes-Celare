@@ -1,121 +1,122 @@
 /**
- * Tests for DICOM Stream Transformer
- * 
- * @jest-environment node
+ * Tests for DICOM Stream Transformer (synthetic, non-PHI fixtures)
  */
 
-import { DicomStreamTransformer, anonymizeDicomBuffer, HIPAA_DICOM_TAGS } from '../src/core/dicom/DicomStreamTransformer';
-import * as fs from 'fs';
-import * as path from 'path';
+import {
+  anonymizeDicomBuffer,
+  HIPAA_DICOM_TAGS,
+} from "../src/core/dicom/DicomStreamTransformer";
+import * as dicomParser from "dicom-parser";
+import * as dcmjs from "dcmjs";
 
-describe('DicomStreamTransformer', () => {
-    // Create a minimal DICOM buffer for testing
-    // Real tests should use actual DICOM files
-    function createMockDicomBuffer(): Buffer {
-        // DICOM file structure:
-        // - 128 bytes preamble (zeros)
-        // - 4 bytes "DICM" prefix
-        // - Data elements (simplified)
+describe("DicomStreamTransformer", () => {
+  function createSyntheticDicomBuffer(): Buffer {
+    const { DicomDict, DicomMetaDictionary } = (dcmjs as any).data;
 
-        const preamble = Buffer.alloc(128, 0);
-        const prefix = Buffer.from('DICM');
+    const dataset = {
+      PatientName: "DOE^JANE",
+      PatientID: "ID123",
+      PatientBirthDate: "19700101",
+      PatientTelephoneNumbers: "5551234567",
+      StudyDate: "20240115",
+      StudyTime: "120000",
+      Modality: "CT",
+      StudyInstanceUID: "1.2.3.4.5.6.7.8.9",
+      SeriesInstanceUID: "1.2.3.4.5.6.7.8.9.1",
+      SOPInstanceUID: "1.2.3.4.5.6.7.8.9.2",
+    };
 
-        // Create a minimal structure that dicom-parser can handle
-        // This is a simplified test buffer
-        return Buffer.concat([preamble, prefix, Buffer.alloc(100, 0)]);
+    const meta = {
+      MediaStorageSOPClassUID: "1.2.840.10008.5.1.4.1.1.2",
+      MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+      TransferSyntaxUID: "1.2.840.10008.1.2.1",
+      ImplementationClassUID: "1.2.3.4.5.6.7.8.9.0",
+    };
+
+    const dicomDict = new DicomDict(meta);
+    dicomDict.dict = DicomMetaDictionary.denaturalizeDataset(dataset);
+    const part10 = dicomDict.write();
+    return Buffer.from(part10);
+  }
+
+  test("HIPAA_DICOM_TAGS should contain required tags", () => {
+    expect(Array.isArray(HIPAA_DICOM_TAGS)).toBe(true);
+    expect(HIPAA_DICOM_TAGS.length).toBeGreaterThan(10);
+
+    // Check for critical tags
+    const tags = HIPAA_DICOM_TAGS.map((r) => r.tag);
+    expect(tags).toContain("x00100010"); // PatientName
+    expect(tags).toContain("x00100020"); // PatientID
+    expect(tags).toContain("x00100030"); // PatientBirthDate
+  });
+
+  test("anonymization rules should have valid actions", () => {
+    for (const rule of HIPAA_DICOM_TAGS) {
+      expect(["REMOVE", "REPLACE", "HASH"]).toContain(rule.action);
+      expect(rule.tag).toMatch(/^x[0-9a-fA-F]{8}$/);
     }
+  });
 
-    test('should create transformer with default config', () => {
-        const transformer = new DicomStreamTransformer();
-        expect(transformer).toBeDefined();
-    });
+  test("anonymizeDicomBuffer should remove/hash configured tags", async () => {
+    const input = createSyntheticDicomBuffer();
+    const output = await anonymizeDicomBuffer(input, { hashSalt: "test-salt" });
 
-    test('should create transformer with custom config', () => {
-        const transformer = new DicomStreamTransformer({
-            enablePixelRedaction: false,
-            hashSalt: 'custom-salt',
-        });
-        expect(transformer).toBeDefined();
-    });
+    const parsed = dicomParser.parseDicom(output);
 
-    test('HIPAA_DICOM_TAGS should contain required tags', () => {
-        expect(Array.isArray(HIPAA_DICOM_TAGS)).toBe(true);
-        expect(HIPAA_DICOM_TAGS.length).toBeGreaterThan(10);
+    // Hashed fields should not match the original
+    expect(parsed.string("x00100010")).not.toBe("DOE^JANE"); // PatientName
+    expect(parsed.string("x00100020")).not.toBe("ID123"); // PatientID
 
-        // Check for critical tags
-        const tags = HIPAA_DICOM_TAGS.map(r => r.tag);
-        expect(tags).toContain('x00100010'); // PatientName
-        expect(tags).toContain('x00100020'); // PatientID
-        expect(tags).toContain('x00100030'); // PatientBirthDate
-    });
+    // Removed date/time fields should be empty or missing
+    const studyDate = parsed.string("x00080020"); // StudyDate
+    expect(!studyDate || studyDate.trim() === "").toBe(true);
 
-    test('anonymization rules should have valid actions', () => {
-        for (const rule of HIPAA_DICOM_TAGS) {
-            expect(['REMOVE', 'REPLACE', 'HASH']).toContain(rule.action);
-            expect(rule.tag).toMatch(/^x[0-9a-fA-F]{8}$/);
-        }
-    });
-
-    test('setImageRedactor should accept redactor', () => {
-        const transformer = new DicomStreamTransformer();
-        const mockRedactor = { redact: () => Promise.resolve({}) };
-
-        expect(() => transformer.setImageRedactor(mockRedactor)).not.toThrow();
-    });
-
-    test('should handle streaming interface', (done) => {
-        const transformer = new DicomStreamTransformer();
-        const chunks: Buffer[] = [];
-
-        transformer.on('data', (chunk: Buffer) => {
-            chunks.push(chunk);
-        });
-
-        transformer.on('end', () => {
-            // Should produce output even if parsing fails
-            done();
-        });
-
-        transformer.on('error', (err) => {
-            // DICOM parsing may fail on mock buffer, that's expected
-            done();
-        });
-
-        // Write minimal data and end
-        transformer.write(Buffer.alloc(10));
-        transformer.end();
-    });
+    // UID hashing should preserve valid UI format (digits and dots)
+    const sop = parsed.string("x00080018") || "";
+    expect(sop).toMatch(/^2\\.25\\.[0-9]+$/);
+  });
 });
 
-describe('anonymizeDicomBuffer', () => {
-    test('should be exported as function', () => {
-        expect(typeof anonymizeDicomBuffer).toBe('function');
-    });
+describe("anonymizeDicomBuffer", () => {
+  test("should be exported as function", () => {
+    expect(typeof anonymizeDicomBuffer).toBe("function");
+  });
 
-    test('should accept buffer and optional config', async () => {
-        // This will throw on invalid DICOM, but tests the interface
-        const invalidBuffer = Buffer.from('not a dicom');
-
-        await expect(anonymizeDicomBuffer(invalidBuffer)).rejects.toThrow();
-    });
+  test("should accept buffer and optional config", async () => {
+    const invalidBuffer = Buffer.from("not a dicom");
+    await expect(anonymizeDicomBuffer(invalidBuffer)).rejects.toThrow();
+  });
 });
 
-describe('DICOM Hash Consistency', () => {
-    test('should produce consistent hashes for same input', async () => {
-        const transformer1 = new DicomStreamTransformer({ hashSalt: 'test-salt' });
-        const transformer2 = new DicomStreamTransformer({ hashSalt: 'test-salt' });
+describe("DICOM Hash Consistency", () => {
+  test("different salts should produce different hashed outputs", async () => {
+    const { DicomDict, DicomMetaDictionary } = (dcmjs as any).data;
 
-        // Access internal hash method via processDicom on same data
-        // In real implementation, same PatientID should produce same hash
-        expect(transformer1).toBeDefined();
-        expect(transformer2).toBeDefined();
-    });
+    const dataset = {
+      PatientName: "DOE^JANE",
+      PatientID: "ID123",
+      StudyInstanceUID: "1.2.3.4.5.6.7.8.9",
+      SeriesInstanceUID: "1.2.3.4.5.6.7.8.9.1",
+      SOPInstanceUID: "1.2.3.4.5.6.7.8.9.2",
+    };
+    const meta = {
+      MediaStorageSOPClassUID: "1.2.840.10008.5.1.4.1.1.2",
+      MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+      TransferSyntaxUID: "1.2.840.10008.1.2.1",
+      ImplementationClassUID: "1.2.3.4.5.6.7.8.9.0",
+    };
 
-    test('different salts should produce different hashes', () => {
-        const transformer1 = new DicomStreamTransformer({ hashSalt: 'salt-a' });
-        const transformer2 = new DicomStreamTransformer({ hashSalt: 'salt-b' });
+    const dicomDict = new DicomDict(meta);
+    dicomDict.dict = DicomMetaDictionary.denaturalizeDataset(dataset);
+    const input = Buffer.from(dicomDict.write());
 
-        // The transformers are different
-        expect(transformer1).not.toBe(transformer2);
-    });
+    const outA = await anonymizeDicomBuffer(input, { hashSalt: "salt-a" });
+    const outB = await anonymizeDicomBuffer(input, { hashSalt: "salt-b" });
+
+    const parsedA = dicomParser.parseDicom(outA);
+    const parsedB = dicomParser.parseDicom(outB);
+
+    expect(parsedA.string("x00100010")).not.toBe(parsedB.string("x00100010"));
+    expect(parsedA.string("x00080018")).not.toBe(parsedB.string("x00080018"));
+  });
 });

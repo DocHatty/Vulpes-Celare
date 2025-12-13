@@ -13,6 +13,7 @@
 
 import { doubleMetaphone } from "double-metaphone";
 import { closest, distance } from "fastest-levenshtein";
+import { loadNativeBinding } from "../native/binding";
 
 /**
  * Pre-computed phonetic index for fast lookup
@@ -60,6 +61,22 @@ export class PhoneticMatcher {
   private firstNameIndex: PhoneticIndex;
   private surnameIndex: PhoneticIndex;
   private initialized: boolean = false;
+  private nativeMatcher:
+    | null
+    | (new () => {
+        initialize(firstNames: string[], surnames: string[]): void;
+        matchFirstName(input: string): PhoneticMatch | null;
+        matchSurname(input: string): PhoneticMatch | null;
+        matchAnyName(input: string): PhoneticMatch | null;
+        isInitialized(): boolean;
+        getStats(): {
+          firstNames: number;
+          surnames: number;
+          primaryCodes: number;
+          secondaryCodes: number;
+        };
+      }) = null;
+  private nativeInstance: any = null;
 
   // Configuration
   private readonly MAX_LEVENSHTEIN_DISTANCE = 2;
@@ -68,6 +85,19 @@ export class PhoneticMatcher {
   constructor() {
     this.firstNameIndex = this.createEmptyIndex();
     this.surnameIndex = this.createEmptyIndex();
+
+    // Prefer the Rust-native phonetic matcher when available (much faster and avoids JS heavy deps).
+    // Falls back to the JS implementation for environments without the native binding.
+    try {
+      const binding = loadNativeBinding({ configureOrt: false });
+      if (binding.VulpesPhoneticMatcher) {
+        this.nativeMatcher = binding.VulpesPhoneticMatcher as any;
+        this.nativeInstance = new (binding.VulpesPhoneticMatcher as any)();
+      }
+    } catch {
+      this.nativeMatcher = null;
+      this.nativeInstance = null;
+    }
   }
 
   /**
@@ -87,6 +117,25 @@ export class PhoneticMatcher {
    */
   initialize(firstNames: string[], surnames: string[]): void {
     const startTime = Date.now();
+
+    if (this.nativeInstance) {
+      this.nativeInstance.initialize(firstNames, surnames);
+      this.initialized = true;
+
+      const elapsed = Date.now() - startTime;
+
+      if (
+        !process.env.VULPES_QUIET &&
+        !process.argv.includes("--quiet") &&
+        !process.argv.includes("-q")
+      ) {
+        const stats = this.nativeInstance.getStats?.();
+        console.log(
+          `[PhoneticMatcher] (native) Indexed ${stats?.firstNames ?? firstNames.length} first names and ${stats?.surnames ?? surnames.length} surnames in ${elapsed}ms`,
+        );
+      }
+      return;
+    }
 
     this.firstNameIndex = this.buildIndex(firstNames);
     this.surnameIndex = this.buildIndex(surnames);
@@ -176,6 +225,10 @@ export class PhoneticMatcher {
       );
       return null;
     }
+
+    if (this.nativeInstance) {
+      return this.nativeInstance.matchFirstName(input);
+    }
     return this.matchAgainstIndex(input, this.firstNameIndex);
   }
 
@@ -190,6 +243,10 @@ export class PhoneticMatcher {
       );
       return null;
     }
+
+    if (this.nativeInstance) {
+      return this.nativeInstance.matchSurname(input);
+    }
     return this.matchAgainstIndex(input, this.surnameIndex);
   }
 
@@ -198,6 +255,16 @@ export class PhoneticMatcher {
    * Returns the best match found
    */
   matchAnyName(input: string): PhoneticMatch | null {
+    if (this.nativeInstance) {
+      if (!this.initialized) {
+        console.warn(
+          "[PhoneticMatcher] Not initialized - call initialize() first",
+        );
+        return null;
+      }
+      return this.nativeInstance.matchAnyName(input);
+    }
+
     const firstMatch = this.matchFirstName(input);
     const surnameMatch = this.matchSurname(input);
 
@@ -343,6 +410,9 @@ export class PhoneticMatcher {
    * Check if initialized
    */
   isInitialized(): boolean {
+    if (this.nativeInstance) {
+      return this.nativeInstance.isInitialized();
+    }
     return this.initialized;
   }
 
@@ -355,6 +425,9 @@ export class PhoneticMatcher {
     primaryCodes: number;
     secondaryCodes: number;
   } {
+    if (this.nativeInstance) {
+      return this.nativeInstance.getStats();
+    }
     return {
       firstNames: this.firstNameIndex.names.size,
       surnames: this.surnameIndex.names.size,

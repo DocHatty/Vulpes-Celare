@@ -6,7 +6,7 @@
  *
  * @module core/dicom/DicomStreamTransformer
  */
-import { Transform, TransformCallback, TransformOptions } from 'stream';
+import { Transform, TransformCallback, TransformOptions } from "stream";
 /**
  * DICOM tag anonymization rule
  */
@@ -14,7 +14,7 @@ export interface DicomAnonymizationRule {
     /** DICOM tag (e.g., 'x00100010' for PatientName) */
     tag: string;
     /** Action: 'REMOVE', 'REPLACE', 'HASH' */
-    action: 'REMOVE' | 'REPLACE' | 'HASH';
+    action: "REMOVE" | "REPLACE" | "HASH";
     /** Replacement value (for REPLACE action) */
     replacement?: string;
     /** VR (Value Representation) for the tag */
@@ -48,33 +48,19 @@ export declare class DicomStreamTransformer extends Transform {
     private chunks;
     private bytesProcessed;
     private imageRedactor;
+    private nativeBindingCache;
     constructor(config?: Partial<DicomTransformerConfig>, options?: TransformOptions);
     /**
      * Set the image redactor for pixel-level processing
      */
     setImageRedactor(redactor: any): void;
+    private getNativeBinding;
     _transform(chunk: Buffer, encoding: BufferEncoding, callback: TransformCallback): void;
     _flush(callback: TransformCallback): Promise<void>;
     /**
      * Process a complete DICOM file buffer
      */
     processDicom(inputBuffer: Buffer): Promise<Buffer>;
-    /**
-     * Zero out bytes in buffer (for REMOVE action)
-     */
-    private zeroOutBytes;
-    /**
-     * Replace value in buffer
-     */
-    private replaceValue;
-    /**
-     * Get string value from buffer
-     */
-    private getStringValue;
-    /**
-     * Hash a value for pseudonymization
-     */
-    private hashValue;
     /**
      * Process pixel data for visual PHI
      */

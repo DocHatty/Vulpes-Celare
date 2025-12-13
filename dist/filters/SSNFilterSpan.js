@@ -53,12 +53,26 @@ class SSNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * Also handles partially masked SSNs like ***-**-6789
      */
     isValidSSN(ssn) {
+        const compact = ssn.replace(/\s+/g, "");
         // Check for partially masked SSN patterns first
         // These are valid PHI that must be redacted even if partially hidden
-        if (/[\*Xx]{3}[-]?[\*Xx]{2}[-]?\d{4}/.test(ssn)) {
+        if (/[\*Xx]{3}[-]?[\*Xx]{2}[-]?\d{4}/.test(compact)) {
             return true; // Partially masked SSN (last 4 visible)
         }
-        if (/\d{3}[-]?\d{2}[-]?[\*Xx]{4}/.test(ssn)) {
+        // Common fully-masked prefix variant: "***-***-6789"
+        if (/[\*Xx]{3}[-]?[\*Xx]{3}[-]?\d{4}/.test(compact)) {
+            return true;
+        }
+        // OCR partial mask variant: "**-***-6789"
+        if (/[\*Xx]{2}[-]?[\*Xx]{3}[-]?\d{4}/.test(compact)) {
+            return true;
+        }
+        // OCR corruption where a digit bleeds into the mask groups: "XXX-XX7-753"
+        if ((compact.match(/[\*Xx]/g) || []).length >= 4 &&
+            (compact.match(/\d/g) || []).length >= 3) {
+            return true;
+        }
+        if (/\d{3}[-]?\d{2}[-]?[\*Xx]{4}/.test(compact)) {
             return true; // Partially masked SSN (first 5 visible)
         }
         // Normalize OCR characters to digits
@@ -121,8 +135,12 @@ SSNFilterSpan.COMPILED_PATTERNS = SSNFilterSpan.compilePatterns([
     /[\*Xx]{3}-[\*Xx]\s*[\*Xx]-\d{4}\b/g,
     // "***-***-3210" - three asterisks in middle group
     /[\*Xx]{3}-[\*Xx]{3}-\d{4}\b/g,
+    // OCR partial mask: "**-***-5941" (missing one mask char)
+    /[\*Xx]{2}-[\*Xx]{3}-\d{4}\b/g,
     // "***-**--6477" - double dash before last group
     /[\*Xx]{3}-[\*Xx]{2}--\d{4}\b/g,
+    // OCR corruption inside groups: "XXX-XX7-753"
+    /[\*Xx]{3}-[\*Xx]{2}\d-\d{3,4}\b/g,
     // "***-**-67b" - OCR error in last 4 (truncated)
     /[\*Xx]{3}-[\*Xx]{2}-\d{2,3}[A-Za-z]?\b/g,
     // Space in mask: "XXX- XX-1234"

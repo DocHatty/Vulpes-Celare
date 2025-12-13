@@ -8,6 +8,7 @@
  */
 
 import { Span } from "../models/Span";
+import { loadNativeBinding } from "../native/binding";
 
 export interface WindowOptions {
   /**
@@ -35,6 +36,27 @@ interface TokenWithPosition {
   end: number;
 }
 
+let cachedNativeTokenizer:
+  | ((text: string, includePunctuation: boolean) => TokenWithPosition[])
+  | null
+  | undefined = undefined;
+
+function getNativeTokenizer():
+  | ((text: string, includePunctuation: boolean) => TokenWithPosition[])
+  | null {
+  if (cachedNativeTokenizer !== undefined) return cachedNativeTokenizer ?? null;
+  try {
+    const binding = loadNativeBinding({ configureOrt: false });
+    cachedNativeTokenizer =
+      typeof binding.tokenizeWithPositions === "function"
+        ? (binding.tokenizeWithPositions as any)
+        : null;
+  } catch {
+    cachedNativeTokenizer = null;
+  }
+  return cachedNativeTokenizer ?? null;
+}
+
 /**
  * Window Service - Extracts context windows around text spans
  */
@@ -55,6 +77,18 @@ export class WindowService {
     text: string,
     includePunctuation: boolean,
   ): TokenWithPosition[] {
+    // Optional Rust accelerator (shares the `VULPES_TEXT_ACCEL=1` gate with other text helpers).
+    if (process.env.VULPES_TEXT_ACCEL === "1") {
+      const nativeTokenizer = getNativeTokenizer();
+      if (nativeTokenizer) {
+        try {
+          return nativeTokenizer(text, includePunctuation);
+        } catch {
+          // Fall through to JS tokenizer.
+        }
+      }
+    }
+
     const pattern = includePunctuation ? this.TOKEN_PATTERN : /\w+/g;
     const tokens: TokenWithPosition[] = [];
 

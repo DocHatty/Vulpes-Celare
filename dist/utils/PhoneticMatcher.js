@@ -19,6 +19,7 @@ exports.isLikelyName = isLikelyName;
 exports.findNameMatch = findNameMatch;
 const double_metaphone_1 = require("double-metaphone");
 const fastest_levenshtein_1 = require("fastest-levenshtein");
+const binding_1 = require("../native/binding");
 /**
  * OCR character substitution map for pre-normalization
  */
@@ -40,11 +41,26 @@ const OCR_SUBSTITUTIONS = {
 class PhoneticMatcher {
     constructor() {
         this.initialized = false;
+        this.nativeMatcher = null;
+        this.nativeInstance = null;
         // Configuration
         this.MAX_LEVENSHTEIN_DISTANCE = 2;
         this.MIN_NAME_LENGTH = 2;
         this.firstNameIndex = this.createEmptyIndex();
         this.surnameIndex = this.createEmptyIndex();
+        // Prefer the Rust-native phonetic matcher when available (much faster and avoids JS heavy deps).
+        // Falls back to the JS implementation for environments without the native binding.
+        try {
+            const binding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
+            if (binding.VulpesPhoneticMatcher) {
+                this.nativeMatcher = binding.VulpesPhoneticMatcher;
+                this.nativeInstance = new binding.VulpesPhoneticMatcher();
+            }
+        }
+        catch {
+            this.nativeMatcher = null;
+            this.nativeInstance = null;
+        }
     }
     /**
      * Create an empty phonetic index
@@ -62,6 +78,18 @@ class PhoneticMatcher {
      */
     initialize(firstNames, surnames) {
         const startTime = Date.now();
+        if (this.nativeInstance) {
+            this.nativeInstance.initialize(firstNames, surnames);
+            this.initialized = true;
+            const elapsed = Date.now() - startTime;
+            if (!process.env.VULPES_QUIET &&
+                !process.argv.includes("--quiet") &&
+                !process.argv.includes("-q")) {
+                const stats = this.nativeInstance.getStats?.();
+                console.log(`[PhoneticMatcher] (native) Indexed ${stats?.firstNames ?? firstNames.length} first names and ${stats?.surnames ?? surnames.length} surnames in ${elapsed}ms`);
+            }
+            return;
+        }
         this.firstNameIndex = this.buildIndex(firstNames);
         this.surnameIndex = this.buildIndex(surnames);
         this.initialized = true;
@@ -128,6 +156,9 @@ class PhoneticMatcher {
             console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
             return null;
         }
+        if (this.nativeInstance) {
+            return this.nativeInstance.matchFirstName(input);
+        }
         return this.matchAgainstIndex(input, this.firstNameIndex);
     }
     /**
@@ -139,6 +170,9 @@ class PhoneticMatcher {
             console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
             return null;
         }
+        if (this.nativeInstance) {
+            return this.nativeInstance.matchSurname(input);
+        }
         return this.matchAgainstIndex(input, this.surnameIndex);
     }
     /**
@@ -146,6 +180,13 @@ class PhoneticMatcher {
      * Returns the best match found
      */
     matchAnyName(input) {
+        if (this.nativeInstance) {
+            if (!this.initialized) {
+                console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
+                return null;
+            }
+            return this.nativeInstance.matchAnyName(input);
+        }
         const firstMatch = this.matchFirstName(input);
         const surnameMatch = this.matchSurname(input);
         if (!firstMatch && !surnameMatch)
@@ -265,12 +306,18 @@ class PhoneticMatcher {
      * Check if initialized
      */
     isInitialized() {
+        if (this.nativeInstance) {
+            return this.nativeInstance.isInitialized();
+        }
         return this.initialized;
     }
     /**
      * Get index statistics
      */
     getStats() {
+        if (this.nativeInstance) {
+            return this.nativeInstance.getStats();
+        }
         return {
             firstNames: this.firstNameIndex.names.size,
             surnames: this.surnameIndex.names.size,

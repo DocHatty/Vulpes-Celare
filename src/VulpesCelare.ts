@@ -5,10 +5,10 @@
  *
  * Hatkoff Redaction Engine
  *
- * A production-grade HIPAA PHI redaction engine achieving:
- *   - 99.4% Sensitivity (catches almost everything)
- *   - 100% Specificity (zero false positives)
- *   - 100/100 Score on 220-document assessment
+ * A HIPAA Safe Harbor PHI redaction engine.
+ *
+ * Current validation is synthetic-only; see `docs/BENCHMARKS.md` for the latest
+ * evaluation posture and results.
  *
  * This is the MAIN ORCHESTRATOR - your primary integration point.
  *
@@ -57,6 +57,7 @@ import { ZipCodeFilterSpan } from "./filters/ZipCodeFilterSpan";
 // Medical Identifier Filters
 import { MRNFilterSpan } from "./filters/MRNFilterSpan";
 import { NPIFilterSpan } from "./filters/NPIFilterSpan";
+import { DEAFilterSpan } from "./filters/DEAFilterSpan";
 import { HealthPlanNumberFilterSpan } from "./filters/HealthPlanNumberFilterSpan";
 // HospitalFilterSpan removed - hospital names are NOT PHI under HIPAA Safe Harbor
 import { AgeFilterSpan } from "./filters/AgeFilterSpan";
@@ -86,6 +87,7 @@ export type PHIType =
   | "date"
   | "mrn"
   | "npi"
+  | "dea"
   | "ip"
   | "url"
   | "credit_card"
@@ -137,6 +139,7 @@ export class VulpesCelare {
     "date",
     "mrn",
     "npi",
+    "dea",
     "ip",
     "url",
     "credit_card",
@@ -280,6 +283,7 @@ export class VulpesCelare {
       zip: () => [new ZipCodeFilterSpan()],
       mrn: () => [new MRNFilterSpan()],
       npi: () => [new NPIFilterSpan()],
+      dea: () => [new DEAFilterSpan()],
       health_plan: () => [new HealthPlanNumberFilterSpan()],
       // hospital filter removed - hospital names are NOT PHI under HIPAA Safe Harbor
       age: () => [new AgeFilterSpan()],

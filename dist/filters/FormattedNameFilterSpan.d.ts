@@ -15,6 +15,11 @@ export declare class FormattedNameFilterSpan extends SpanBasedFilter {
     getPriority(): number;
     detect(text: string, config: any, context: RedactionContext): Span[];
     /**
+     * Detect explicit "name field" values.
+     * These are very high-signal contexts in clinical/admin documents and should not be missed.
+     */
+    private detectLabeledNameFields;
+    /**
      * Pattern 0: Last, First format (both mixed case and ALL CAPS)
      * STREET-SMART: "Last, First" and "Last, First Middle" formats are highly specific
      * to person names in medical documents. Don't whitelist based on individual words.
