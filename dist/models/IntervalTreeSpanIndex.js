@@ -93,12 +93,13 @@ exports.TYPE_SPECIFICITY = TYPE_SPECIFICITY;
  * Uses Rust VulpesIntervalTree when available (default), falls back to TypeScript.
  */
 class IntervalTreeSpanIndex {
+    // Rust implementation (preferred)
+    rustTree = null;
+    // TypeScript fallback implementation
+    spanMap = new Map();
+    tsIntervals = [];
+    useRust;
     constructor() {
-        // Rust implementation (preferred)
-        this.rustTree = null;
-        // TypeScript fallback implementation
-        this.spanMap = new Map();
-        this.tsIntervals = [];
         // Try to use Rust implementation
         if (isIntervalAccelEnabled()) {
             const binding = getBinding();

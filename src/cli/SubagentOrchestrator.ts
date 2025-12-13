@@ -77,8 +77,9 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { spawn, execSync } from "child_process";
+import { spawn } from "child_process";
 import chalk from "chalk";
+import { validatePath, safeGrep, safeExecSync } from "../utils/SecurityUtils";
 import figures from "figures";
 import PQueue from "p-queue";
 
@@ -1221,17 +1222,31 @@ class Subagent {
   }
 
   private toolSearchCode(pattern: string, searchPath?: string): string {
-    const targetPath = searchPath
-      ? path.resolve(this.workingDir, searchPath)
-      : path.join(this.workingDir, "src");
     try {
-      const result = execSync(
-        `grep -r "${pattern}" "${targetPath}" -n --include="*.ts" 2>/dev/null | head -30`,
-        { encoding: "utf-8", timeout: 10000 },
-      );
-      return result || "No matches";
+      const targetPath = searchPath
+        ? validatePath(this.workingDir, searchPath)
+        : path.join(this.workingDir, "src");
+
+      // Use safeGrep which prevents command injection
+      // This is sync context so we use a simplified approach
+      const isWindows = process.platform === "win32";
+      if (isWindows) {
+        const result = safeExecSync(
+          "findstr",
+          ["/N", "/S", "/C:" + pattern, path.join(targetPath, "*.ts")],
+          { cwd: this.workingDir, timeout: 10000 },
+        );
+        return result.split("\n").slice(0, 30).join("\n") || "No matches";
+      } else {
+        const result = safeExecSync(
+          "grep",
+          ["-r", "-n", "--include=*.ts", "--", pattern, targetPath],
+          { cwd: this.workingDir, timeout: 10000 },
+        );
+        return result.split("\n").slice(0, 30).join("\n") || "No matches";
+      }
     } catch {
-      return "Search failed";
+      return "No matches found";
     }
   }
 
@@ -1269,15 +1284,23 @@ class Subagent {
   }
 
   private toolReadFile(filePath: string): string {
-    const fullPath = path.resolve(this.workingDir, filePath);
-    if (!fs.existsSync(fullPath)) return `File not found: ${filePath}`;
-    return fs.readFileSync(fullPath, "utf-8");
+    try {
+      const fullPath = validatePath(this.workingDir, filePath);
+      if (!fs.existsSync(fullPath)) return `File not found: ${filePath}`;
+      return fs.readFileSync(fullPath, "utf-8");
+    } catch (error: any) {
+      return `Security error: ${error.message}`;
+    }
   }
 
   private toolWriteFile(filePath: string, content: string): string {
-    const fullPath = path.resolve(this.workingDir, filePath);
-    fs.writeFileSync(fullPath, content, "utf-8");
-    return `Written ${content.length} bytes to ${filePath}`;
+    try {
+      const fullPath = validatePath(this.workingDir, filePath);
+      fs.writeFileSync(fullPath, content, "utf-8");
+      return `Written ${content.length} bytes to ${filePath}`;
+    } catch (error: any) {
+      return `Security error: ${error.message}`;
+    }
   }
 
   private toolAppendDictionary(dictionary: string, entry: string): string {

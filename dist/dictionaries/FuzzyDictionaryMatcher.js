@@ -41,9 +41,15 @@ const DEFAULT_CONFIG = {
     useFastMatcher: true, // Use fast algorithm by default
 };
 class FuzzyDictionaryMatcher {
+    terms;
+    normalizedTerms; // normalized -> original
+    phoneticIndex; // phonetic code -> terms
+    config;
+    // Fast matcher (SymSpell-inspired)
+    fastMatcher = null;
+    // Cache reference
+    cache;
     constructor(terms, config = {}) {
-        // Fast matcher (SymSpell-inspired)
-        this.fastMatcher = null;
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.terms = new Set(terms.map((t) => t.toLowerCase()));
         this.normalizedTerms = new Map();

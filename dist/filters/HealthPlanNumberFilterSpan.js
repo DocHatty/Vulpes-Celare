@@ -13,30 +13,80 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class HealthPlanNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
-    constructor() {
-        super(...arguments);
-        /**
-         * Insurance-related keywords for context checking
-         */
-        this.INSURANCE_KEYWORDS = [
-            "insurance",
-            "medicare",
-            "medicaid",
-            "health plan",
-            "coverage",
-            "benefits",
-            "premium",
-            "deductible",
-            "copay",
-            "hmo",
-            "ppo",
-            "subscriber",
-            "beneficiary",
-            "covered",
-            "carrier",
-            "payer",
-        ];
-    }
+    /**
+     * Insurance-related keywords for context checking
+     */
+    INSURANCE_KEYWORDS = [
+        "insurance",
+        "medicare",
+        "medicaid",
+        "health plan",
+        "coverage",
+        "benefits",
+        "premium",
+        "deductible",
+        "copay",
+        "hmo",
+        "ppo",
+        "subscriber",
+        "beneficiary",
+        "covered",
+        "carrier",
+        "payer",
+    ];
+    /**
+     * Health plan number pattern definitions
+     */
+    static HEALTHPLAN_PATTERN_DEFS = [
+        {
+            regex: /\b(?:Medicare)(?:\s+(?:Number|No|ID|#))?\s*[#:]?\s*([A-Z0-9]{1}[A-Z0-9-]{9,14})\b/gi,
+            description: "Medicare number",
+        },
+        {
+            regex: /\b(?:Medicaid)(?:\s+(?:Number|No|ID|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{7,19})\b/gi,
+            description: "Medicaid number",
+        },
+        {
+            regex: /\b(?:Member|Subscriber|Insurance)(?:\s+(?:ID|Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{6,24})\b/gi,
+            description: "Member/Subscriber ID",
+        },
+        {
+            regex: /\b(?:Policy)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,24})\b/gi,
+            description: "Policy number",
+        },
+        {
+            regex: /\b(?:Group)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,24})\b/gi,
+            requireContext: true,
+            description: "Group number",
+        },
+        {
+            regex: /\b(?:Plan)(?:\s+(?:ID|Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,24})\b/gi,
+            requireContext: true,
+            description: "Plan ID",
+        },
+        {
+            regex: /\b((?:PLAN|GRP|POLICY|POL|PL)-[A-Z0-9-]{4,24})\b/gi,
+            description: "Plan/Group code (standalone)",
+        },
+        {
+            regex: /\b(?:Policy|POL|POLICY)\s*[#:]?\s*([A-Z0-9]{2,5}-[A-Z0-9-]{3,20})\b/gi,
+            description: "Policy code",
+        },
+        // ID# pattern: "ID#: BC123456789" or "ID #: ABC12345"
+        {
+            regex: /\bID\s*[#:]?\s*:?\s*([A-Z]{1,3}[0-9]{5,15})\b/gi,
+            description: "Insurance ID number",
+        },
+        // Member ID pattern with prefix: "DD-987654321"
+        {
+            regex: /\bMember\s+ID\s*:\s*([A-Z]{2}-[0-9]{6,12})\b/gi,
+            description: "Member ID with prefix",
+        },
+    ];
+    /**
+     * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
+     */
+    static COMPILED_PATTERNS = HealthPlanNumberFilterSpan.compilePatterns(HealthPlanNumberFilterSpan.HEALTHPLAN_PATTERN_DEFS.map((p) => p.regex));
     getType() {
         return "HEALTHPLAN";
     }
@@ -140,57 +190,4 @@ class HealthPlanNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.HealthPlanNumberFilterSpan = HealthPlanNumberFilterSpan;
-/**
- * Health plan number pattern definitions
- */
-HealthPlanNumberFilterSpan.HEALTHPLAN_PATTERN_DEFS = [
-    {
-        regex: /\b(?:Medicare)(?:\s+(?:Number|No|ID|#))?\s*[#:]?\s*([A-Z0-9]{1}[A-Z0-9-]{9,14})\b/gi,
-        description: "Medicare number",
-    },
-    {
-        regex: /\b(?:Medicaid)(?:\s+(?:Number|No|ID|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{7,19})\b/gi,
-        description: "Medicaid number",
-    },
-    {
-        regex: /\b(?:Member|Subscriber|Insurance)(?:\s+(?:ID|Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{6,24})\b/gi,
-        description: "Member/Subscriber ID",
-    },
-    {
-        regex: /\b(?:Policy)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,24})\b/gi,
-        description: "Policy number",
-    },
-    {
-        regex: /\b(?:Group)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,24})\b/gi,
-        requireContext: true,
-        description: "Group number",
-    },
-    {
-        regex: /\b(?:Plan)(?:\s+(?:ID|Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,24})\b/gi,
-        requireContext: true,
-        description: "Plan ID",
-    },
-    {
-        regex: /\b((?:PLAN|GRP|POLICY|POL|PL)-[A-Z0-9-]{4,24})\b/gi,
-        description: "Plan/Group code (standalone)",
-    },
-    {
-        regex: /\b(?:Policy|POL|POLICY)\s*[#:]?\s*([A-Z0-9]{2,5}-[A-Z0-9-]{3,20})\b/gi,
-        description: "Policy code",
-    },
-    // ID# pattern: "ID#: BC123456789" or "ID #: ABC12345"
-    {
-        regex: /\bID\s*[#:]?\s*:?\s*([A-Z]{1,3}[0-9]{5,15})\b/gi,
-        description: "Insurance ID number",
-    },
-    // Member ID pattern with prefix: "DD-987654321"
-    {
-        regex: /\bMember\s+ID\s*:\s*([A-Z]{2}-[0-9]{6,12})\b/gi,
-        description: "Member ID with prefix",
-    },
-];
-/**
- * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
- */
-HealthPlanNumberFilterSpan.COMPILED_PATTERNS = HealthPlanNumberFilterSpan.compilePatterns(HealthPlanNumberFilterSpan.HEALTHPLAN_PATTERN_DEFS.map((p) => p.regex));
 //# sourceMappingURL=HealthPlanNumberFilterSpan.js.map

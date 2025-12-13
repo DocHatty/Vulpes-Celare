@@ -67,6 +67,97 @@ export type ApiKeys = z.infer<typeof ApiKeySchema>;
 export type Preferences = z.infer<typeof PreferencesSchema>;
 
 // ============================================================================
+// DATABASE ROW TYPES - Proper typing for SQLite query results
+// ============================================================================
+
+export interface SessionRow {
+  id: string;
+  provider: string;
+  model: string | null;
+  started_at: string;
+  ended_at: string | null;
+  message_count: number;
+}
+
+export interface MessageRow {
+  id: number;
+  session_id: string;
+  role: string;
+  content: string;
+  timestamp: string;
+  tokens_used: number | null;
+}
+
+export interface RedactionLogRow {
+  id: number;
+  timestamp: string;
+  input_hash: string;
+  phi_count: number;
+  phi_types: string | null;
+  execution_ms: number | null;
+  session_id: string | null;
+}
+
+export interface AgentMemoryRow {
+  id: number;
+  timestamp: string;
+  task_type: string;
+  task_summary: string;
+  outcome: string;
+  notes: string | null;
+  workflow_type: string | null;
+  duration_ms: number | null;
+}
+
+export interface FilterMetricsRow {
+  id: number;
+  timestamp: string;
+  filter_name: string;
+  true_positives: number;
+  false_positives: number;
+  false_negatives: number;
+  avg_time_ms: number | null;
+}
+
+export interface HipaaKnowledgeRow {
+  id: number;
+  question: string;
+  answer: string;
+  type: string;
+  source: string | null;
+  cfr_refs: string | null;
+  embedding_hash: string | null;
+}
+
+interface StatsRow {
+  total: number;
+  phi_total: number | null;
+  avg_ms: number | null;
+}
+
+interface SuccessRateRow {
+  total: number;
+  successes: number;
+}
+
+interface FilterPerfRow {
+  runs: number;
+  avg_tp: number;
+  avg_fp: number;
+  avg_fn: number;
+  avg_ms: number;
+}
+
+interface CountRow {
+  count: number;
+}
+
+interface TypeCountRow {
+  type: string;
+  count: number;
+}
+
+// ============================================================================
 // CONF-BASED CONFIG MANAGER
 // ============================================================================
 
@@ -350,7 +441,7 @@ export function getSessionMessages(sessionId: string): Array<{
     WHERE session_id = ? ORDER BY id ASC
   `,
     )
-    .all(sessionId) as any[];
+    .all(sessionId) as Pick<MessageRow, "role" | "content" | "timestamp">[];
 }
 
 /**
@@ -373,7 +464,7 @@ export function endSession(sessionId: string): void {
 export function getRecentSessions(limit: number = 10): Array<{
   id: string;
   provider: string;
-  model: string;
+  model: string | null;
   started_at: string;
   message_count: number;
 }> {
@@ -385,7 +476,10 @@ export function getRecentSessions(limit: number = 10): Array<{
     FROM sessions ORDER BY started_at DESC LIMIT ?
   `,
     )
-    .all(limit) as any[];
+    .all(limit) as Pick<
+    SessionRow,
+    "id" | "provider" | "model" | "started_at" | "message_count"
+  >[];
 }
 
 // ============================================================================
@@ -441,7 +535,7 @@ export function getRedactionStats(): {
     FROM redaction_log
   `,
     )
-    .get() as any;
+    .get() as StatsRow | undefined;
 
   return {
     totalRedactions: result?.total || 0,
@@ -493,7 +587,7 @@ export function getAgentMemory(
 ): Array<{
   task_summary: string;
   outcome: string;
-  notes: string;
+  notes: string | null;
   timestamp: string;
 }> {
   const database = getDatabase();
@@ -507,7 +601,10 @@ export function getAgentMemory(
     LIMIT ?
   `,
     )
-    .all(taskType, limit) as any[];
+    .all(taskType, limit) as Pick<
+    AgentMemoryRow,
+    "task_summary" | "outcome" | "notes" | "timestamp"
+  >[];
 }
 
 /**
@@ -529,7 +626,7 @@ export function getAgentSuccessRate(taskType: string): {
     WHERE task_type = ?
   `,
     )
-    .get(taskType) as any;
+    .get(taskType) as SuccessRateRow | undefined;
 
   const total = result?.total || 0;
   const successes = result?.successes || 0;
@@ -597,7 +694,7 @@ export function getFilterPerformance(filterName: string): {
     WHERE filter_name = ?
   `,
     )
-    .get(filterName) as any;
+    .get(filterName) as FilterPerfRow | undefined;
 
   if (!result || result.runs === 0) return null;
 
@@ -676,7 +773,7 @@ export interface HipaaKnowledge {
   question: string;
   answer: string;
   type: string;
-  source?: string;
+  source?: string | null;
   cfr_refs?: string[];
 }
 
@@ -744,7 +841,12 @@ export function searchHipaaKnowledge(
     LIMIT ?
   `,
     )
-    .all(`%${query}%`, `%${query}%`, `%${query}%`, limit) as any[];
+    .all(
+      `%${query}%`,
+      `%${query}%`,
+      `%${query}%`,
+      limit,
+    ) as HipaaKnowledgeRow[];
 
   return results.map((r) => ({
     id: r.id,
@@ -769,7 +871,7 @@ export function searchByCfr(cfrSection: string): HipaaKnowledge[] {
     WHERE cfr_refs LIKE ?
   `,
     )
-    .all(`%${cfrSection}%`) as any[];
+    .all(`%${cfrSection}%`) as HipaaKnowledgeRow[];
 
   return results.map((r) => ({
     id: r.id,
@@ -798,7 +900,7 @@ export function getHipaaByType(
     LIMIT ?
   `,
     )
-    .all(type, limit) as any[];
+    .all(type, limit) as HipaaKnowledgeRow[];
 
   return results.map((r) => ({
     id: r.id,
@@ -820,17 +922,16 @@ export function getHipaaStats(): {
 } {
   const database = getDatabase();
 
-  const total = (
-    database
-      .prepare(`SELECT COUNT(*) as count FROM hipaa_knowledge`)
-      .get() as any
-  ).count;
+  const totalResult = database
+    .prepare(`SELECT COUNT(*) as count FROM hipaa_knowledge`)
+    .get() as CountRow | undefined;
+  const total = totalResult?.count || 0;
 
   const byTypeResults = database
     .prepare(
       `SELECT type, COUNT(*) as count FROM hipaa_knowledge GROUP BY type`,
     )
-    .all() as any[];
+    .all() as TypeCountRow[];
 
   const byType: Record<string, number> = {};
   for (const r of byTypeResults) {
@@ -842,16 +943,20 @@ export function getHipaaStats(): {
     .prepare(
       `SELECT DISTINCT cfr_refs FROM hipaa_knowledge WHERE cfr_refs IS NOT NULL`,
     )
-    .all() as any[];
+    .all() as Pick<HipaaKnowledgeRow, "cfr_refs">[];
 
   const uniqueCfr = new Set<string>();
   for (const r of cfrResults) {
     try {
-      const refs = JSON.parse(r.cfr_refs);
-      for (const ref of refs) {
-        uniqueCfr.add(ref);
+      if (r.cfr_refs) {
+        const refs = JSON.parse(r.cfr_refs) as string[];
+        for (const ref of refs) {
+          uniqueCfr.add(ref);
+        }
       }
-    } catch {}
+    } catch {
+      // Ignore parse errors
+    }
   }
 
   return {

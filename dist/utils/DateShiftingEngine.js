@@ -6,9 +6,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DateShiftingEngine = void 0;
 class DateShiftingEngine {
+    shiftDays;
+    dateMap = new Map();
+    tokenCounter = 0;
+    sessionId;
     constructor(sessionIdOrShiftDays = 0) {
-        this.dateMap = new Map();
-        this.tokenCounter = 0;
         if (typeof sessionIdOrShiftDays === "string") {
             this.sessionId = sessionIdOrShiftDays;
             this.shiftDays = Math.floor(Math.random() * 365) - 182; // Random shift

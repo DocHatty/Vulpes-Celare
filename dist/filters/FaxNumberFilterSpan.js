@@ -14,6 +14,20 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class FaxNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * Fax number regex pattern sources
+     */
+    static FAX_PATTERN_SOURCES = [
+        // Pattern 1: Explicitly labeled fax numbers
+        // Must have "Fax" or "FAX" label to avoid false positives
+        /\b(?:Fax|FAX)(?:\s+(?:Number|No|#))?\s*[#:]?\s*(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\b/gi,
+        // Pattern 2: "Send to fax" or "Fax results to"
+        /\b(?:send|fax|transmit)(?:\s+(?:to|results))?\s+(?:fax)?\s*[#:]?\s*(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\b/gi,
+    ];
+    /**
+     * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
+     */
+    static COMPILED_PATTERNS = FaxNumberFilterSpan.compilePatterns(FaxNumberFilterSpan.FAX_PATTERN_SOURCES);
     getType() {
         return "FAX";
     }
@@ -83,18 +97,4 @@ class FaxNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.FaxNumberFilterSpan = FaxNumberFilterSpan;
-/**
- * Fax number regex pattern sources
- */
-FaxNumberFilterSpan.FAX_PATTERN_SOURCES = [
-    // Pattern 1: Explicitly labeled fax numbers
-    // Must have "Fax" or "FAX" label to avoid false positives
-    /\b(?:Fax|FAX)(?:\s+(?:Number|No|#))?\s*[#:]?\s*(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\b/gi,
-    // Pattern 2: "Send to fax" or "Fax results to"
-    /\b(?:send|fax|transmit)(?:\s+(?:to|results))?\s+(?:fax)?\s*[#:]?\s*(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\b/gi,
-];
-/**
- * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
- */
-FaxNumberFilterSpan.COMPILED_PATTERNS = FaxNumberFilterSpan.compilePatterns(FaxNumberFilterSpan.FAX_PATTERN_SOURCES);
 //# sourceMappingURL=FaxNumberFilterSpan.js.map

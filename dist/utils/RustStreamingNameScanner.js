@@ -4,9 +4,9 @@ exports.RustStreamingNameScanner = void 0;
 const binding_1 = require("../native/binding");
 const NameDictionary_1 = require("../dictionaries/NameDictionary");
 class RustStreamingNameScanner {
+    scanner = null;
+    initialized = false;
     constructor(overlapUtf16 = 32) {
-        this.scanner = null;
-        this.initialized = false;
         try {
             const binding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
             if (binding.VulpesStreamingNameScanner) {

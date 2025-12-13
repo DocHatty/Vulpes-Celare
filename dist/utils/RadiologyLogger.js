@@ -11,7 +11,7 @@
  * Logging is ENABLED by default for transparency and debugging.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RadiologyLogger = exports.LogLevel = void 0;
+exports.RadiologyLogger = exports.LogFormat = exports.LogLevel = void 0;
 var LogLevel;
 (function (LogLevel) {
     LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
@@ -20,7 +20,17 @@ var LogLevel;
     LogLevel[LogLevel["ERROR"] = 3] = "ERROR";
     LogLevel[LogLevel["NONE"] = 4] = "NONE";
 })(LogLevel || (exports.LogLevel = LogLevel = {}));
+var LogFormat;
+(function (LogFormat) {
+    LogFormat["PRETTY"] = "pretty";
+    LogFormat["JSON"] = "json";
+})(LogFormat || (exports.LogFormat = LogFormat = {}));
 class RadiologyLogger {
+    // These are checked at runtime via getters to support dynamic changes
+    static _enabled = null;
+    static _logLevel = null;
+    static _logFormat = null;
+    static suppressErrors = false;
     static get enabled() {
         if (this._enabled !== null)
             return this._enabled;
@@ -43,6 +53,27 @@ class RadiologyLogger {
     static set logLevel(value) {
         this._logLevel = value;
     }
+    static get logFormat() {
+        if (this._logFormat !== null)
+            return this._logFormat;
+        if (process.env.VULPES_LOG_FORMAT === "json")
+            return LogFormat.JSON;
+        return LogFormat.PRETTY;
+    }
+    static set logFormat(value) {
+        this._logFormat = value;
+    }
+    // Statistics tracking
+    static stats = {
+        phiDetected: 0,
+        phiFiltered: 0,
+        errors: 0,
+        warnings: 0,
+        sessionStart: Date.now(),
+    };
+    // Detection history for current session
+    static detectionHistory = [];
+    static filteredHistory = [];
     // ============================================================================
     // CONFIGURATION
     // ============================================================================
@@ -61,6 +92,12 @@ class RadiologyLogger {
     static getLogLevel() {
         return this.logLevel;
     }
+    static setLogFormat(format) {
+        this.logFormat = format;
+    }
+    static getLogFormat() {
+        return this.logFormat;
+    }
     /** Suppress error output (useful for tests expecting errors) */
     static suppressErrorOutput(suppress) {
         this.suppressErrors = suppress;
@@ -78,53 +115,77 @@ class RadiologyLogger {
         this.filteredHistory = [];
     }
     // ============================================================================
+    // STRUCTURED JSON OUTPUT HELPER
+    // ============================================================================
+    static outputLog(level, category, message, data) {
+        const timestamp = new Date().toISOString();
+        if (this.logFormat === LogFormat.JSON) {
+            // Structured JSON output for production/log aggregation
+            const logEntry = {
+                timestamp,
+                level,
+                category,
+                message,
+                ...(data && { data }),
+            };
+            // Use stderr to keep stdout clean for actual output
+            console.error(JSON.stringify(logEntry));
+        }
+        else {
+            // Pretty format for development
+            const timeStr = timestamp.substring(11, 23);
+            const levelUpper = level.toUpperCase();
+            if (data !== undefined) {
+                console[level](`[${timeStr}] [${levelUpper}] [${category}] ${message}`, data);
+            }
+            else {
+                console[level](`[${timeStr}] [${levelUpper}] [${category}] ${message}`);
+            }
+        }
+    }
+    // ============================================================================
     // BASIC LOGGING
     // ============================================================================
     static debug(category, message, data) {
         if (this.enabled && this.logLevel <= LogLevel.DEBUG) {
-            const timestamp = this.getTimestamp();
-            if (data !== undefined) {
-                console.debug(`[${timestamp}] [DEBUG] [${category}] ${message}`, data);
-            }
-            else {
-                console.debug(`[${timestamp}] [DEBUG] [${category}] ${message}`);
-            }
+            this.outputLog("debug", category, message, data);
         }
     }
     static info(category, message, data) {
         if (this.enabled && this.logLevel <= LogLevel.INFO) {
-            const timestamp = this.getTimestamp();
-            if (data !== undefined) {
-                console.info(`[${timestamp}] [INFO] [${category}] ${message}`, data);
-            }
-            else {
-                console.info(`[${timestamp}] [INFO] [${category}] ${message}`);
-            }
+            this.outputLog("info", category, message, data);
         }
     }
     static warn(category, message, data) {
         if (this.enabled && this.logLevel <= LogLevel.WARN) {
             this.stats.warnings++;
-            const timestamp = this.getTimestamp();
-            if (data !== undefined) {
-                console.warn(`[${timestamp}] [WARN] [${category}] ${message}`, data);
-            }
-            else {
-                console.warn(`[${timestamp}] [WARN] [${category}] ${message}`);
-            }
+            this.outputLog("warn", category, message, data);
         }
     }
     static error(category, message, error) {
         if (!this.suppressErrors && this.logLevel <= LogLevel.ERROR) {
             this.stats.errors++;
-            const timestamp = this.getTimestamp();
-            console.error(`[${timestamp}] [ERROR] [${category}] ${message}`);
-            if (error) {
+            if (this.logFormat === LogFormat.JSON) {
+                const errorData = {};
                 if (error instanceof Error) {
-                    console.error(`  Stack: ${error.stack}`);
+                    errorData.errorMessage = error.message;
+                    errorData.stack = error.stack;
                 }
-                else {
-                    console.error(`  Details:`, error);
+                else if (error !== undefined) {
+                    errorData.details = error;
+                }
+                this.outputLog("error", category, message, Object.keys(errorData).length > 0 ? errorData : undefined);
+            }
+            else {
+                const timestamp = this.getTimestamp();
+                console.error(`[${timestamp}] [ERROR] [${category}] ${message}`);
+                if (error) {
+                    if (error instanceof Error) {
+                        console.error(`  Stack: ${error.stack}`);
+                    }
+                    else {
+                        console.error(`  Details:`, error);
+                    }
                 }
             }
         }
@@ -339,19 +400,4 @@ class RadiologyLogger {
     }
 }
 exports.RadiologyLogger = RadiologyLogger;
-// These are checked at runtime via getters to support dynamic changes
-RadiologyLogger._enabled = null;
-RadiologyLogger._logLevel = null;
-RadiologyLogger.suppressErrors = false;
-// Statistics tracking
-RadiologyLogger.stats = {
-    phiDetected: 0,
-    phiFiltered: 0,
-    errors: 0,
-    warnings: 0,
-    sessionStart: Date.now(),
-};
-// Detection history for current session
-RadiologyLogger.detectionHistory = [];
-RadiologyLogger.filteredHistory = [];
 //# sourceMappingURL=RadiologyLogger.js.map

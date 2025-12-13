@@ -53,6 +53,11 @@ const DEFAULT_CONFIG = {
     phiPrior: 0.15, // ~15% of detected candidates are true PHI (empirical)
 };
 class EnsembleVoter {
+    config;
+    cache;
+    // Mathematical constants
+    static EPSILON = 1e-10; // Prevent log(0) and division by zero
+    static LOG2 = Math.log(2);
     constructor(config = {}) {
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.cache = ComputationCache_1.ComputationCache.getInstance();
@@ -334,9 +339,6 @@ class EnsembleVoter {
     }
 }
 exports.EnsembleVoter = EnsembleVoter;
-// Mathematical constants
-EnsembleVoter.EPSILON = 1e-10; // Prevent log(0) and division by zero
-EnsembleVoter.LOG2 = Math.log(2);
 /**
  * InterPHIDisambiguator - Resolves conflicts between PHI type claims
  *
@@ -350,6 +352,39 @@ EnsembleVoter.LOG2 = Math.log(2);
  * - Eliminates pattern recompilation on every method call (was O(n) per call)
  */
 class InterPHIDisambiguator {
+    // ============ Static Regex Patterns (compiled once) ============
+    // DATE indicators
+    static DATE_INDICATORS = [
+        /\b(born|dob|date of birth|admission|discharge|visit|appointment)\b/i,
+        /\b(on|dated|as of|effective|expires?)\b/i,
+        /\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/i,
+    ];
+    // AGE indicators
+    static AGE_INDICATORS = [
+        /\b(year[- ]?old|yo|y\.?o\.?|aged?)\b/i,
+        /\b(patient is|she is|he is|who is)\s+\d/i,
+    ];
+    // MEASUREMENT indicators
+    static MEASUREMENT_INDICATORS = [
+        /\b(mg|ml|mcg|units?|mmol|mmhg|bpm)\b/i,
+        /\b(level|value|result|reading|score)\b/i,
+        /\d+\s*[\/x×]\s*\d+/i, // Ratios like "9/12" or "120x80"
+    ];
+    // NAME indicators
+    static NAME_INDICATORS = [
+        /\b(patient|mr\.?|mrs\.?|ms\.?|dr\.?|name|signed|by)\b/i,
+        /\b(contact|guardian|spouse|mother|father|son|daughter)\b/i,
+    ];
+    // MEDICATION indicators
+    static MEDICATION_INDICATORS = [
+        /\b(mg|mcg|tablet|capsule|prescribed|taking|dose|daily|prn)\b/i,
+        /\b(medication|drug|rx|prescription)\b/i,
+    ];
+    // DIAGNOSIS indicators
+    static DIAGNOSIS_INDICATORS = [
+        /\b(diagnosis|diagnosed|condition|disease|syndrome|disorder)\b/i,
+        /\b(icd|code|assessment)\b/i,
+    ];
     /**
      * Count pattern matches against context
      */
@@ -437,37 +472,4 @@ class InterPHIDisambiguator {
     }
 }
 exports.InterPHIDisambiguator = InterPHIDisambiguator;
-// ============ Static Regex Patterns (compiled once) ============
-// DATE indicators
-InterPHIDisambiguator.DATE_INDICATORS = [
-    /\b(born|dob|date of birth|admission|discharge|visit|appointment)\b/i,
-    /\b(on|dated|as of|effective|expires?)\b/i,
-    /\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/i,
-];
-// AGE indicators
-InterPHIDisambiguator.AGE_INDICATORS = [
-    /\b(year[- ]?old|yo|y\.?o\.?|aged?)\b/i,
-    /\b(patient is|she is|he is|who is)\s+\d/i,
-];
-// MEASUREMENT indicators
-InterPHIDisambiguator.MEASUREMENT_INDICATORS = [
-    /\b(mg|ml|mcg|units?|mmol|mmhg|bpm)\b/i,
-    /\b(level|value|result|reading|score)\b/i,
-    /\d+\s*[\/x×]\s*\d+/i, // Ratios like "9/12" or "120x80"
-];
-// NAME indicators
-InterPHIDisambiguator.NAME_INDICATORS = [
-    /\b(patient|mr\.?|mrs\.?|ms\.?|dr\.?|name|signed|by)\b/i,
-    /\b(contact|guardian|spouse|mother|father|son|daughter)\b/i,
-];
-// MEDICATION indicators
-InterPHIDisambiguator.MEDICATION_INDICATORS = [
-    /\b(mg|mcg|tablet|capsule|prescribed|taking|dose|daily|prn)\b/i,
-    /\b(medication|drug|rx|prescription)\b/i,
-];
-// DIAGNOSIS indicators
-InterPHIDisambiguator.DIAGNOSIS_INDICATORS = [
-    /\b(diagnosis|diagnosed|condition|disease|syndrome|disorder)\b/i,
-    /\b(icd|code|assessment)\b/i,
-];
 //# sourceMappingURL=EnsembleVoter.js.map

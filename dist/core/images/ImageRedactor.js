@@ -88,13 +88,15 @@ const DEFAULT_POLICY = {
  * ```
  */
 class ImageRedactor {
+    ocrService;
+    policy;
+    initialized = false;
+    initializing = false;
+    initError = null;
+    logger = (0, logger_1.getLogger)();
+    // Reference to the text redaction engine (injected or lazy-loaded)
+    textRedactor = null;
     constructor(policy = {}) {
-        this.initialized = false;
-        this.initializing = false;
-        this.initError = null;
-        this.logger = (0, logger_1.getLogger)();
-        // Reference to the text redaction engine (injected or lazy-loaded)
-        this.textRedactor = null;
         this.policy = { ...DEFAULT_POLICY, ...policy };
         this.ocrService = new OCRService_1.OCRService({
             confidenceThreshold: this.policy.textConfidenceThreshold,

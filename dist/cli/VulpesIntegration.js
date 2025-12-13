@@ -348,6 +348,7 @@ enabled_tools = ["redact_text", "analyze_redaction", "run_tests", "get_system_in
 // INTEGRATION CLASS
 // ============================================================================
 class VulpesIntegration {
+    config;
     constructor(config = {}) {
         this.config = {
             projectDir: config.projectDir || process.cwd(),

@@ -55,6 +55,8 @@ const PhoneticMatcher_1 = require("../utils/PhoneticMatcher");
  * Dictionary initialization error - thrown when dictionaries cannot be loaded
  */
 class DictionaryInitError extends Error {
+    dictionaryType;
+    cause;
     constructor(message, dictionaryType, cause) {
         super(message);
         this.dictionaryType = dictionaryType;
@@ -64,6 +66,13 @@ class DictionaryInitError extends Error {
 }
 exports.DictionaryInitError = DictionaryInitError;
 class NameDictionary {
+    static firstNames = null;
+    static surnames = null;
+    static initialized = false;
+    static initErrors = [];
+    static phoneticMatcher = null;
+    static phoneticInitialized = false;
+    static cachedNameLists = null;
     static isPhoneticEnabled() {
         // Rust phonetic matching is now DEFAULT (promoted from opt-in).
         // Set VULPES_ENABLE_PHONETIC=0 to disable.
@@ -404,11 +413,4 @@ class NameDictionary {
     }
 }
 exports.NameDictionary = NameDictionary;
-NameDictionary.firstNames = null;
-NameDictionary.surnames = null;
-NameDictionary.initialized = false;
-NameDictionary.initErrors = [];
-NameDictionary.phoneticMatcher = null;
-NameDictionary.phoneticInitialized = false;
-NameDictionary.cachedNameLists = null;
 //# sourceMappingURL=NameDictionary.js.map

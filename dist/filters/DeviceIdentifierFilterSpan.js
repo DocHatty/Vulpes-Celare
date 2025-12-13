@@ -19,28 +19,25 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class DeviceIdentifierFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
-    constructor() {
-        super(...arguments);
-        /**
-         * Medical device keywords for context checking
-         */
-        this.DEVICE_KEYWORDS = [
-            "Pacemaker",
-            "Defibrillator",
-            "ICD",
-            "AICD",
-            "CRT",
-            "Implant",
-            "Device",
-            "Prosth",
-            "Stent",
-            "Catheter",
-            "Pump",
-            "Stimulator",
-            "Valve",
-            "Graft",
-        ];
-    }
+    /**
+     * Medical device keywords for context checking
+     */
+    DEVICE_KEYWORDS = [
+        "Pacemaker",
+        "Defibrillator",
+        "ICD",
+        "AICD",
+        "CRT",
+        "Implant",
+        "Device",
+        "Prosth",
+        "Stent",
+        "Catheter",
+        "Pump",
+        "Stimulator",
+        "Valve",
+        "Graft",
+    ];
     getType() {
         return "DEVICE";
     }

@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RustStreamingIdentifierScanner = void 0;
 const binding_1 = require("../native/binding");
 class RustStreamingIdentifierScanner {
+    scanner = null;
     constructor(overlapUtf16 = 64) {
-        this.scanner = null;
         try {
             const binding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
             if (binding.VulpesStreamingIdentifierScanner) {

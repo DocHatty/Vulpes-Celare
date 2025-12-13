@@ -13,6 +13,83 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class AccountNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * Account number pattern definitions (source patterns)
+     */
+    static ACCOUNT_PATTERN_DEFS = [
+        {
+            regex: /\b(?:Account|Acct)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([0-9][0-9-]{5,14})\b/gi,
+            validator: "account",
+            description: "Account number",
+        },
+        {
+            regex: /\b(?:Account|Acct)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{5,20})\b/gi,
+            validator: "alphanumericAccount",
+            description: "Account number (alphanumeric)",
+        },
+        {
+            // ACC: prefix format (common in medical billing)
+            // Matches: "ACC: 97167769", "ACC: 47952040", "ACCT: 12345678"
+            regex: /\b(ACC[T]?:\s*\d{6,14})\b/gi,
+            validator: "accPrefix",
+            description: "ACC: prefixed account",
+        },
+        {
+            regex: /\b(?:Billing|Bill)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([0-9][0-9-]{5,14})\b/gi,
+            validator: "account",
+            description: "Billing number",
+        },
+        {
+            regex: /\b(?:Hospital|Medical\s+Center)(?:\s+(?:Account|Acct))(?:\s+(?:Number|No|#))?\s*[#:]?\s*([0-9][0-9-]{5,14})\b/gi,
+            validator: "account",
+            description: "Hospital account",
+        },
+        {
+            regex: /\b(?:Bank(?:ing)?|Checking|Savings)\s+(?:Account|Acct)(?:\s+(?:Number|No|#))?\s*[:#]?\s*([*\d][-*\d]{3,15})\b/gi,
+            validator: "bank",
+            description: "Bank account",
+        },
+        {
+            regex: /\b(?:Insurance\s+)?Policy(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2,4}-\d{4}-\d{4,8}|[A-Z]{3,4}-\d{5,8}|\d{5}-\d{5,8})\b/gi,
+            validator: "policy",
+            description: "Insurance policy",
+        },
+        {
+            regex: /\b(?:Account|Card)\s+(?:ending\s+in|last\s+4(?:\s+digits)?)[:\s]+([*\d]{4,6})\b/gi,
+            validator: "partial",
+            description: "Partial account",
+        },
+        {
+            regex: /\b(?:Account\s+Number|Patient\s+ID|Member\s+ID|Subscriber\s+ID|Accession\s+(?:Number|No)|Reference\s+(?:Number|No)|Confirmation\s+(?:Number|No)|Document\s+ID)[\s:]+([A-Z]{2,5}-\d{4,12}(?:-\d{4,12})?)\b/gi,
+            validator: "prefixed",
+            description: "Prefixed account",
+        },
+        {
+            regex: /\b([A-Z]{2,5}-\d{6,12})\b/g,
+            validator: "standalonePrefixed",
+            description: "Standalone prefixed ID",
+        },
+        {
+            regex: /\b(?:Group\s+(?:Number|No|#))[\s:]+([A-Z]{3,5}-[A-Z0-9]{4,12}(?:-\d{4})?)\b/gi,
+            validator: "group",
+            description: "Group number",
+        },
+        {
+            regex: /\b((?:BILL|ACCT|INV|PAY)-\d{4}-\d{6,10})\b/gi,
+            validator: "billingWithYear",
+            description: "Billing account with year",
+        },
+        {
+            regex: /\b([A-Z]{2,5}-[A-Z]{2,5}-\d{4,6})\b/g,
+            validator: "genericId",
+            description: "Generic account/transaction ID",
+        },
+    ];
+    /**
+     * PERFORMANCE OPTIMIZATION: Pre-compiled regex patterns (compiled once at class load)
+     * Avoids recompiling 12 patterns on every detect() call
+     */
+    static COMPILED_PATTERNS = AccountNumberFilterSpan.compilePatterns(AccountNumberFilterSpan.ACCOUNT_PATTERN_DEFS.map((p) => p.regex));
     getType() {
         return "ACCOUNT";
     }
@@ -219,81 +296,4 @@ class AccountNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.AccountNumberFilterSpan = AccountNumberFilterSpan;
-/**
- * Account number pattern definitions (source patterns)
- */
-AccountNumberFilterSpan.ACCOUNT_PATTERN_DEFS = [
-    {
-        regex: /\b(?:Account|Acct)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([0-9][0-9-]{5,14})\b/gi,
-        validator: "account",
-        description: "Account number",
-    },
-    {
-        regex: /\b(?:Account|Acct)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{5,20})\b/gi,
-        validator: "alphanumericAccount",
-        description: "Account number (alphanumeric)",
-    },
-    {
-        // ACC: prefix format (common in medical billing)
-        // Matches: "ACC: 97167769", "ACC: 47952040", "ACCT: 12345678"
-        regex: /\b(ACC[T]?:\s*\d{6,14})\b/gi,
-        validator: "accPrefix",
-        description: "ACC: prefixed account",
-    },
-    {
-        regex: /\b(?:Billing|Bill)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([0-9][0-9-]{5,14})\b/gi,
-        validator: "account",
-        description: "Billing number",
-    },
-    {
-        regex: /\b(?:Hospital|Medical\s+Center)(?:\s+(?:Account|Acct))(?:\s+(?:Number|No|#))?\s*[#:]?\s*([0-9][0-9-]{5,14})\b/gi,
-        validator: "account",
-        description: "Hospital account",
-    },
-    {
-        regex: /\b(?:Bank(?:ing)?|Checking|Savings)\s+(?:Account|Acct)(?:\s+(?:Number|No|#))?\s*[:#]?\s*([*\d][-*\d]{3,15})\b/gi,
-        validator: "bank",
-        description: "Bank account",
-    },
-    {
-        regex: /\b(?:Insurance\s+)?Policy(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2,4}-\d{4}-\d{4,8}|[A-Z]{3,4}-\d{5,8}|\d{5}-\d{5,8})\b/gi,
-        validator: "policy",
-        description: "Insurance policy",
-    },
-    {
-        regex: /\b(?:Account|Card)\s+(?:ending\s+in|last\s+4(?:\s+digits)?)[:\s]+([*\d]{4,6})\b/gi,
-        validator: "partial",
-        description: "Partial account",
-    },
-    {
-        regex: /\b(?:Account\s+Number|Patient\s+ID|Member\s+ID|Subscriber\s+ID|Accession\s+(?:Number|No)|Reference\s+(?:Number|No)|Confirmation\s+(?:Number|No)|Document\s+ID)[\s:]+([A-Z]{2,5}-\d{4,12}(?:-\d{4,12})?)\b/gi,
-        validator: "prefixed",
-        description: "Prefixed account",
-    },
-    {
-        regex: /\b([A-Z]{2,5}-\d{6,12})\b/g,
-        validator: "standalonePrefixed",
-        description: "Standalone prefixed ID",
-    },
-    {
-        regex: /\b(?:Group\s+(?:Number|No|#))[\s:]+([A-Z]{3,5}-[A-Z0-9]{4,12}(?:-\d{4})?)\b/gi,
-        validator: "group",
-        description: "Group number",
-    },
-    {
-        regex: /\b((?:BILL|ACCT|INV|PAY)-\d{4}-\d{6,10})\b/gi,
-        validator: "billingWithYear",
-        description: "Billing account with year",
-    },
-    {
-        regex: /\b([A-Z]{2,5}-[A-Z]{2,5}-\d{4,6})\b/g,
-        validator: "genericId",
-        description: "Generic account/transaction ID",
-    },
-];
-/**
- * PERFORMANCE OPTIMIZATION: Pre-compiled regex patterns (compiled once at class load)
- * Avoids recompiling 12 patterns on every detect() call
- */
-AccountNumberFilterSpan.COMPILED_PATTERNS = AccountNumberFilterSpan.compilePatterns(AccountNumberFilterSpan.ACCOUNT_PATTERN_DEFS.map((p) => p.regex));
 //# sourceMappingURL=AccountNumberFilterSpan.js.map

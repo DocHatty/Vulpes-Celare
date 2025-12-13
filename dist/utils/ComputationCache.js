@@ -23,14 +23,21 @@ const lru_cache_1 = require("lru-cache");
  * Computation cache singleton
  */
 class ComputationCache {
+    // Singleton instance
+    static instance = null;
+    // Cache instances
+    similarityCache;
+    entropyCache;
+    documentCache;
+    patternCache;
+    // Statistics
+    stats = {
+        similarity: { hits: 0, misses: 0 },
+        entropy: { hits: 0, misses: 0 },
+        document: { hits: 0, misses: 0 },
+        pattern: { hits: 0, misses: 0 },
+    };
     constructor() {
-        // Statistics
-        this.stats = {
-            similarity: { hits: 0, misses: 0 },
-            entropy: { hits: 0, misses: 0 },
-            document: { hits: 0, misses: 0 },
-            pattern: { hits: 0, misses: 0 },
-        };
         // Initialize caches with appropriate sizes
         this.similarityCache = new lru_cache_1.LRUCache({
             max: 50000, // ~2MB for string pairs
@@ -269,8 +276,6 @@ class ComputationCache {
     }
 }
 exports.ComputationCache = ComputationCache;
-// Singleton instance
-ComputationCache.instance = null;
 // ============ Utility Functions ============
 /**
  * Memoize a function with LRU caching

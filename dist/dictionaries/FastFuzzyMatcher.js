@@ -58,18 +58,25 @@ const DEFAULT_CONFIG = {
     cacheSize: 10000,
 };
 class FastFuzzyMatcher {
+    config;
+    // Primary data structures (TS fallback)
+    exactTerms;
+    deletionIndex;
+    phoneticIndex;
+    // LRU cache for repeated queries
+    queryCache;
+    // Rust accelerator (if available)
+    rustMatcher = null;
+    useRust = false;
+    // Statistics for monitoring
+    stats = {
+        exactHits: 0,
+        deletionHits: 0,
+        phoneticHits: 0,
+        cachHits: 0,
+        misses: 0,
+    };
     constructor(terms, config = {}) {
-        // Rust accelerator (if available)
-        this.rustMatcher = null;
-        this.useRust = false;
-        // Statistics for monitoring
-        this.stats = {
-            exactHits: 0,
-            deletionHits: 0,
-            phoneticHits: 0,
-            cachHits: 0,
-            misses: 0,
-        };
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.exactTerms = new Set();
         this.deletionIndex = new Map();

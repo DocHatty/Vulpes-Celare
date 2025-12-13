@@ -28,13 +28,14 @@ var LogLevel;
  * ImageServiceLogger - Centralized logging for image services
  */
 class ImageServiceLogger extends events_1.EventEmitter {
+    static instance;
+    logLevel = LogLevel.INFO;
+    logs = [];
+    maxLogs = 1000;
+    metrics = new Map();
+    healthStatus = new Map();
     constructor() {
         super();
-        this.logLevel = LogLevel.INFO;
-        this.logs = [];
-        this.maxLogs = 1000;
-        this.metrics = new Map();
-        this.healthStatus = new Map();
     }
     static getInstance() {
         if (!ImageServiceLogger.instance) {

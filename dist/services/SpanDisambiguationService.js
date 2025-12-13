@@ -102,6 +102,8 @@ const AMBIGUOUS_PATTERNS = new Map([
  * Span Disambiguation Service
  */
 class SpanDisambiguationService {
+    confidenceThreshold;
+    windowSize;
     constructor(confidenceThreshold = 0.15, windowSize = 5) {
         this.confidenceThreshold = confidenceThreshold;
         this.windowSize = windowSize;

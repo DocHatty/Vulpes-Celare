@@ -67,11 +67,20 @@ var ModifierAction;
  * - Static regex patterns compiled once
  */
 class ConfidenceModifierService {
+    modifiers = [];
+    // Mathematical constants for smooth confidence handling
+    static EPSILON = 0.001; // Minimum distance from 0 and 1
+    static LOGIT_CLAMP = 0.999; // Prevent infinity in logit
+    // OPTIMIZATION: Early exit thresholds
+    static CONFIDENCE_CEILING = 0.98; // Stop boosting above this
+    static CONFIDENCE_FLOOR = 0.02; // Stop penalizing below this
+    // OPTIMIZATION: Bloom filter for fast keyword membership
+    keywordBloomFilter = null;
+    allKeywordsSet = new Set();
+    // OPTIMIZATION: Pre-compiled static regex patterns
+    static TITLE_PATTERN = /\b(Dr|Mr|Mrs|Ms|Miss|Prof|Professor)\.\s*$/i;
+    static SHORT_NAME_PATTERN = /^[A-Z][a-z]{1,3}$/;
     constructor(modifiers = []) {
-        this.modifiers = [];
-        // OPTIMIZATION: Bloom filter for fast keyword membership
-        this.keywordBloomFilter = null;
-        this.allKeywordsSet = new Set();
         this.modifiers = modifiers;
         this.registerDefaultModifiers();
         this.buildKeywordIndex();
@@ -507,13 +516,4 @@ class ConfidenceModifierService {
     }
 }
 exports.ConfidenceModifierService = ConfidenceModifierService;
-// Mathematical constants for smooth confidence handling
-ConfidenceModifierService.EPSILON = 0.001; // Minimum distance from 0 and 1
-ConfidenceModifierService.LOGIT_CLAMP = 0.999; // Prevent infinity in logit
-// OPTIMIZATION: Early exit thresholds
-ConfidenceModifierService.CONFIDENCE_CEILING = 0.98; // Stop boosting above this
-ConfidenceModifierService.CONFIDENCE_FLOOR = 0.02; // Stop penalizing below this
-// OPTIMIZATION: Pre-compiled static regex patterns
-ConfidenceModifierService.TITLE_PATTERN = /\b(Dr|Mr|Mrs|Ms|Miss|Prof|Professor)\.\s*$/i;
-ConfidenceModifierService.SHORT_NAME_PATTERN = /^[A-Z][a-z]{1,3}$/;
 //# sourceMappingURL=ConfidenceModifierService.js.map

@@ -29,8 +29,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import * as readline from "readline";
-import { spawn, ChildProcess, SpawnOptions, execSync } from "child_process";
+import { spawn, ChildProcess, SpawnOptions } from "child_process";
 import chalk from "chalk";
+import { safeExecSync } from "../utils/SecurityUtils";
 import ora, { Ora } from "ora";
 import boxen from "boxen";
 import figures from "figures";
@@ -369,9 +370,8 @@ export class VulpesAgent {
    */
   private isCopilotInstalled(): boolean {
     try {
-      execSync("copilot --version", {
-        encoding: "utf-8",
-        stdio: ["pipe", "pipe", "pipe"],
+      safeExecSync("copilot", ["--version"], {
+        timeout: 5000,
       });
       return true;
     } catch {
@@ -496,26 +496,23 @@ export class VulpesAgent {
     args: string[],
     env: NodeJS.ProcessEnv,
   ): Promise<void> {
-    // Build command string to avoid DEP0190 deprecation warning
-    // (passing args with shell: true triggers the warning)
-    const escapedArgs = args.map((arg) => {
-      // Escape quotes and wrap in quotes if contains spaces
-      if (arg.includes(" ") || arg.includes('"')) {
-        return `"${arg.replace(/"/g, '\\"')}"`;
-      }
-      return arg;
-    });
-    const fullCommand = `${cmd} ${escapedArgs.join(" ")}`;
-
+    // SECURITY FIX: Spawn without shell to prevent command injection
+    // The command and args are passed separately, not interpolated into a shell string
     const spawnOptions: SpawnOptions = {
       cwd: this.config.workingDir,
       stdio: "inherit",
-      shell: true,
+      shell: false, // SECURITY: Disable shell to prevent injection
       env,
+      // On Windows, we need to find the actual executable
+      ...(process.platform === "win32" && {
+        // Windows needs shell:true for .cmd/.bat scripts from npm
+        // But we validate the command is a known safe value
+        shell: ["claude", "codex", "copilot"].includes(cmd),
+      }),
     };
 
-    // Use command string instead of args array to avoid deprecation
-    this.subprocess = spawn(fullCommand, [], spawnOptions);
+    // Spawn with command and args array (no shell interpolation)
+    this.subprocess = spawn(cmd, args, spawnOptions);
 
     this.subprocess.on("error", (err) => {
       console.error(theme.error(`\n  Failed to start ${cmd}: ${err.message}`));

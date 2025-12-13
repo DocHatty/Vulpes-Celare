@@ -106,6 +106,7 @@ Violations of these rules are prohibited.`,
 // LLM PROVIDERS
 // ============================================================================
 class LLMProviderBase {
+    config;
     constructor(config) {
         this.config = config;
     }
@@ -329,13 +330,16 @@ function createProvider(config) {
 // MAIN LLM INTEGRATION CLASS
 // ============================================================================
 class LLMIntegration {
+    vulpes;
+    provider;
+    config;
+    conversationHistory = [];
+    stats = {
+        messagesProcessed: 0,
+        phiRedacted: 0,
+        tokensUsed: { input: 0, output: 0 },
+    };
     constructor(llmConfig, vulpesConfig) {
-        this.conversationHistory = [];
-        this.stats = {
-            messagesProcessed: 0,
-            phiRedacted: 0,
-            tokensUsed: { input: 0, output: 0 },
-        };
         this.config = llmConfig;
         this.vulpes = new VulpesCelare_1.VulpesCelare(vulpesConfig);
         this.provider = createProvider(llmConfig);

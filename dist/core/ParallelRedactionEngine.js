@@ -38,6 +38,8 @@ const RustApplyKernel_1 = require("../utils/RustApplyKernel");
  * to avoid recompiling patterns on every request.
  */
 class ParallelRedactionEngine {
+    static disambiguationService = new VectorDisambiguationService_1.VectorDisambiguationService();
+    static lastExecutionReport = null;
     /**
      * Get the last execution report for diagnostics
      */
@@ -834,6 +836,4 @@ class ParallelRedactionEngine {
     }
 }
 exports.ParallelRedactionEngine = ParallelRedactionEngine;
-ParallelRedactionEngine.disambiguationService = new VectorDisambiguationService_1.VectorDisambiguationService();
-ParallelRedactionEngine.lastExecutionReport = null;
 //# sourceMappingURL=ParallelRedactionEngine.js.map

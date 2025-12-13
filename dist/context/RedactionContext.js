@@ -20,6 +20,14 @@ const ReplacementContextService_1 = require("../services/ReplacementContextServi
  * Redaction Context - manages token mappings for a request
  */
 class RedactionContext {
+    sessionId;
+    tokenManager;
+    statsTracker;
+    createdAt;
+    referenceDate;
+    dateShiftingEngine;
+    replacementService;
+    contextName;
     constructor(sessionId, contextName = "default", replacementScope = ReplacementContextService_1.ReplacementScope.DOCUMENT) {
         this.sessionId =
             sessionId || Date.now() + "_" + Math.floor(Math.random() * 9000 + 1000);

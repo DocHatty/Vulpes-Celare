@@ -24,15 +24,20 @@ exports.confidenceCalibrator = exports.ConfidenceCalibrator = void 0;
  * ConfidenceCalibrator - Main calibration class
  */
 class ConfidenceCalibrator {
+    plattParams = null;
+    isotonicModel = null;
+    betaParams = null;
+    temperature = 1.0;
+    typeSpecificCalibrators = new Map();
+    calibrationData = [];
+    isFitted = false;
+    preferredMethod = "isotonic";
+    // Calibration parameters
+    static NUM_BINS = 10;
+    static MIN_BIN_COUNT = 5;
+    static PLATT_ITERATIONS = 100;
+    static PLATT_LEARNING_RATE = 0.01;
     constructor(preferredMethod = "isotonic") {
-        this.plattParams = null;
-        this.isotonicModel = null;
-        this.betaParams = null;
-        this.temperature = 1.0;
-        this.typeSpecificCalibrators = new Map();
-        this.calibrationData = [];
-        this.isFitted = false;
-        this.preferredMethod = "isotonic";
         this.preferredMethod = preferredMethod;
     }
     /**
@@ -481,11 +486,6 @@ class ConfidenceCalibrator {
     }
 }
 exports.ConfidenceCalibrator = ConfidenceCalibrator;
-// Calibration parameters
-ConfidenceCalibrator.NUM_BINS = 10;
-ConfidenceCalibrator.MIN_BIN_COUNT = 5;
-ConfidenceCalibrator.PLATT_ITERATIONS = 100;
-ConfidenceCalibrator.PLATT_LEARNING_RATE = 0.01;
 // Export singleton for convenience
 exports.confidenceCalibrator = new ConfidenceCalibrator("isotonic");
 //# sourceMappingURL=ConfidenceCalibrator.js.map

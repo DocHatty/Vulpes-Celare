@@ -30,6 +30,9 @@ function getNativeTokenizer() {
  * Window Service - Extracts context windows around text spans
  */
 class WindowService {
+    static DEFAULT_WINDOW_SIZE = 5;
+    static WORD_BOUNDARY_PATTERN = /\b/;
+    static TOKEN_PATTERN = /\w+|[^\w\s]/g;
     /**
      * Tokenize text with position information
      * Uses regex matchAll to get exact positions, avoiding indexOf bugs
@@ -247,7 +250,4 @@ class WindowService {
     }
 }
 exports.WindowService = WindowService;
-WindowService.DEFAULT_WINDOW_SIZE = 5;
-WindowService.WORD_BOUNDARY_PATTERN = /\b/;
-WindowService.TOKEN_PATTERN = /\w+|[^\w\s]/g;
 //# sourceMappingURL=WindowService.js.map

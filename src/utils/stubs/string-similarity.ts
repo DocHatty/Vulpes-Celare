@@ -88,17 +88,3 @@ export function compareTwoStrings(a: string, b: string): number {
 
   return remember(key, jaroWinkler(left, right));
 }
-
-export function findBestMatch(s: string, arr: string[]) {
-  const ratings = arr.map((target) => ({
-    target,
-    rating: compareTwoStrings(s, target),
-  }));
-  const bestMatch =
-    ratings.reduce(
-      (best, next) => (next.rating > best.rating ? next : best),
-      { target: "", rating: -1 },
-    ) || ratings[0] || { target: "", rating: 0 };
-
-  return { bestMatch, ratings };
-}

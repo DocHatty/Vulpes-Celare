@@ -25,6 +25,7 @@ import * as path from "path";
 import * as readline from "readline";
 import { spawn } from "child_process";
 import chalk from "chalk";
+import { validatePath, safeGrep } from "../utils/SecurityUtils";
 import ora, { Ora } from "ora";
 import boxen from "boxen";
 import figures from "figures";
@@ -607,13 +608,17 @@ export class NativeChat {
   }
 
   private async toolReadFile(filePath: string): Promise<string> {
-    const fullPath = path.resolve(this.config.workingDir, filePath);
-    if (!fs.existsSync(fullPath)) return `File not found: ${filePath}`;
-    const content = fs.readFileSync(fullPath, "utf-8");
-    console.log(
-      theme.success(`    ${figures.tick} Read ${content.length} bytes`),
-    );
-    return content;
+    try {
+      const fullPath = validatePath(this.config.workingDir, filePath);
+      if (!fs.existsSync(fullPath)) return `File not found: ${filePath}`;
+      const content = fs.readFileSync(fullPath, "utf-8");
+      console.log(
+        theme.success(`    ${figures.tick} Read ${content.length} bytes`),
+      );
+      return content;
+    } catch (error: any) {
+      return `Security error: ${error.message}`;
+    }
   }
 
   private async toolWriteFile(
@@ -622,13 +627,17 @@ export class NativeChat {
   ): Promise<string> {
     if (this.config.mode !== "dev")
       return "File writing only allowed in dev mode";
-    const fullPath = path.resolve(this.config.workingDir, filePath);
-    fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-    fs.writeFileSync(fullPath, content);
-    console.log(
-      theme.success(`    ${figures.tick} Wrote ${content.length} bytes`),
-    );
-    return `Wrote ${content.length} bytes to ${filePath}`;
+    try {
+      const fullPath = validatePath(this.config.workingDir, filePath);
+      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+      fs.writeFileSync(fullPath, content);
+      console.log(
+        theme.success(`    ${figures.tick} Wrote ${content.length} bytes`),
+      );
+      return `Wrote ${content.length} bytes to ${filePath}`;
+    } catch (error: any) {
+      return `Security error: ${error.message}`;
+    }
   }
 
   private async toolRunCommand(command: string): Promise<string> {
@@ -674,9 +683,18 @@ export class NativeChat {
     pattern: string,
     searchPath?: string,
   ): Promise<string> {
-    const targetPath = searchPath || this.config.workingDir;
-    const cmd = `grep -r "${pattern}" "${targetPath}" -n --color=never 2>/dev/null | head -50`;
-    return this.toolRunCommand(cmd);
+    try {
+      const targetPath = searchPath
+        ? validatePath(this.config.workingDir, searchPath)
+        : this.config.workingDir;
+      return await safeGrep(pattern, targetPath, {
+        recursive: true,
+        maxResults: 50,
+        cwd: this.config.workingDir,
+      });
+    } catch (error: any) {
+      return `Search error: ${error.message}`;
+    }
   }
 
   private async toolGetSystemInfo(): Promise<string> {

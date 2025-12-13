@@ -25,17 +25,18 @@ var ReplacementScope;
  * Manages consistent token replacement across scopes
  */
 class ReplacementContextService {
+    scope;
+    // DOCUMENT scope: originalValue+filterType → replacement
+    documentMap = new Map();
+    // CONTEXT scope: context+originalValue+filterType → replacement
+    contextMap = new Map();
+    // Statistics
+    stats = {
+        totalReplacements: 0,
+        uniqueValues: 0,
+        consistentReplacements: 0,
+    };
     constructor(scope = ReplacementScope.DOCUMENT) {
-        // DOCUMENT scope: originalValue+filterType → replacement
-        this.documentMap = new Map();
-        // CONTEXT scope: context+originalValue+filterType → replacement
-        this.contextMap = new Map();
-        // Statistics
-        this.stats = {
-            totalReplacements: 0,
-            uniqueValues: 0,
-            consistentReplacements: 0,
-        };
         this.scope = scope;
     }
     /**

@@ -13,6 +13,10 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class NPIFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * Explicit NPI label + 10 digits
+     */
+    static NPI_PATTERN = /\bNPI(?:\s+(?:Number|No|#))?\s*[#:]*\s*([0-9]{10})\b/gi;
     getType() {
         return "NPI";
     }
@@ -80,8 +84,4 @@ class NPIFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.NPIFilterSpan = NPIFilterSpan;
-/**
- * Explicit NPI label + 10 digits
- */
-NPIFilterSpan.NPI_PATTERN = /\bNPI(?:\s+(?:Number|No|#))?\s*[#:]*\s*([0-9]{10})\b/gi;
 //# sourceMappingURL=NPIFilterSpan.js.map

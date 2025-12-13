@@ -64,6 +64,7 @@ const path = __importStar(require("path"));
 const readline = __importStar(require("readline"));
 const child_process_1 = require("child_process");
 const chalk_1 = __importDefault(require("chalk"));
+const SecurityUtils_1 = require("../utils/SecurityUtils");
 const ora_1 = __importDefault(require("ora"));
 const boxen_1 = __importDefault(require("boxen"));
 const figures_1 = __importDefault(require("figures"));
@@ -215,13 +216,15 @@ const VULPES_TOOLS = [
 // NATIVE CHAT CLASS
 // ============================================================================
 class NativeChat {
+    config;
+    vulpes;
+    provider = null;
+    orchestrator = null;
+    messages = [];
+    renderMarkdownEnabled = true;
+    interactiveRedactionActive = false;
+    subagentsEnabled = false;
     constructor(config) {
-        this.provider = null;
-        this.orchestrator = null;
-        this.messages = [];
-        this.renderMarkdownEnabled = true;
-        this.interactiveRedactionActive = false;
-        this.subagentsEnabled = false;
         this.config = {
             provider: config.provider,
             model: config.model,
@@ -533,21 +536,31 @@ class NativeChat {
         return output;
     }
     async toolReadFile(filePath) {
-        const fullPath = path.resolve(this.config.workingDir, filePath);
-        if (!fs.existsSync(fullPath))
-            return `File not found: ${filePath}`;
-        const content = fs.readFileSync(fullPath, "utf-8");
-        console.log(theme.success(`    ${figures_1.default.tick} Read ${content.length} bytes`));
-        return content;
+        try {
+            const fullPath = (0, SecurityUtils_1.validatePath)(this.config.workingDir, filePath);
+            if (!fs.existsSync(fullPath))
+                return `File not found: ${filePath}`;
+            const content = fs.readFileSync(fullPath, "utf-8");
+            console.log(theme.success(`    ${figures_1.default.tick} Read ${content.length} bytes`));
+            return content;
+        }
+        catch (error) {
+            return `Security error: ${error.message}`;
+        }
     }
     async toolWriteFile(filePath, content) {
         if (this.config.mode !== "dev")
             return "File writing only allowed in dev mode";
-        const fullPath = path.resolve(this.config.workingDir, filePath);
-        fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-        fs.writeFileSync(fullPath, content);
-        console.log(theme.success(`    ${figures_1.default.tick} Wrote ${content.length} bytes`));
-        return `Wrote ${content.length} bytes to ${filePath}`;
+        try {
+            const fullPath = (0, SecurityUtils_1.validatePath)(this.config.workingDir, filePath);
+            fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+            fs.writeFileSync(fullPath, content);
+            console.log(theme.success(`    ${figures_1.default.tick} Wrote ${content.length} bytes`));
+            return `Wrote ${content.length} bytes to ${filePath}`;
+        }
+        catch (error) {
+            return `Security error: ${error.message}`;
+        }
     }
     async toolRunCommand(command) {
         return new Promise((resolve) => {
@@ -583,9 +596,19 @@ class NativeChat {
         return files.join("\n");
     }
     async toolSearchCode(pattern, searchPath) {
-        const targetPath = searchPath || this.config.workingDir;
-        const cmd = `grep -r "${pattern}" "${targetPath}" -n --color=never 2>/dev/null | head -50`;
-        return this.toolRunCommand(cmd);
+        try {
+            const targetPath = searchPath
+                ? (0, SecurityUtils_1.validatePath)(this.config.workingDir, searchPath)
+                : this.config.workingDir;
+            return await (0, SecurityUtils_1.safeGrep)(pattern, targetPath, {
+                recursive: true,
+                maxResults: 50,
+                cwd: this.config.workingDir,
+            });
+        }
+        catch (error) {
+            return `Search error: ${error.message}`;
+        }
     }
     async toolGetSystemInfo() {
         const filters = this.vulpes.getActiveFilters();

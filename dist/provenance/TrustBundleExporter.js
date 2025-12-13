@@ -97,6 +97,7 @@ const TRUST_BUNDLE_REQUIRED_FILES = [
  * Creates and verifies cryptographic Trust Bundles for redacted documents.
  */
 class TrustBundleExporter {
+    static nativeBindingCache = undefined;
     static getNativeBinding() {
         if (this.nativeBindingCache !== undefined)
             return this.nativeBindingCache;
@@ -602,5 +603,4 @@ Generated at: ${new Date().toISOString()}
     }
 }
 exports.TrustBundleExporter = TrustBundleExporter;
-TrustBundleExporter.nativeBindingCache = undefined;
 //# sourceMappingURL=TrustBundleExporter.js.map

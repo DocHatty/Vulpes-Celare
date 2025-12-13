@@ -65,6 +65,37 @@ const UniqueIdentifierFilterSpan_1 = require("./filters/UniqueIdentifierFilterSp
 // MAIN CLASS
 // ============================================================================
 class VulpesCelare {
+    filters;
+    policy;
+    config;
+    static ALL_PHI_TYPES = [
+        "name",
+        "ssn",
+        "phone",
+        "email",
+        "address",
+        "date",
+        "mrn",
+        "npi",
+        "dea",
+        "ip",
+        "url",
+        "credit_card",
+        "account",
+        "health_plan",
+        "license",
+        "passport",
+        "vehicle",
+        "device",
+        "biometric",
+        "unique_id",
+        "zip",
+        "fax",
+        "age",
+    ];
+    static VERSION = "1.0.0";
+    static NAME = "Vulpes Celare";
+    static VARIANT = "Hatkoff Redaction Engine";
     constructor(config = {}) {
         this.config = config;
         this.filters = this.buildFilters(config);
@@ -210,34 +241,6 @@ class VulpesCelare {
     }
 }
 exports.VulpesCelare = VulpesCelare;
-VulpesCelare.ALL_PHI_TYPES = [
-    "name",
-    "ssn",
-    "phone",
-    "email",
-    "address",
-    "date",
-    "mrn",
-    "npi",
-    "dea",
-    "ip",
-    "url",
-    "credit_card",
-    "account",
-    "health_plan",
-    "license",
-    "passport",
-    "vehicle",
-    "device",
-    "biometric",
-    "unique_id",
-    "zip",
-    "fax",
-    "age",
-];
-VulpesCelare.VERSION = "1.0.0";
-VulpesCelare.NAME = "Vulpes Celare";
-VulpesCelare.VARIANT = "Hatkoff Redaction Engine";
 // Export streaming redactor
 var StreamingRedactor_1 = require("./StreamingRedactor");
 Object.defineProperty(exports, "StreamingRedactor", { enumerable: true, get: function () { return StreamingRedactor_1.StreamingRedactor; } });

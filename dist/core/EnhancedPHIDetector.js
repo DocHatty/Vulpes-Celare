@@ -59,10 +59,15 @@ const path = __importStar(require("path"));
  * Singleton orchestrator that combines all detection signals
  */
 class EnhancedPHIDetector {
+    static instance;
+    voter;
+    firstNameMatcher = null;
+    surnameMatcher = null;
+    initialized = false;
+    // PERFORMANCE FIX: Use LRUCache instead of manual Map with FIFO eviction
+    // LRUCache provides O(1) eviction of least-recently-used items with TTL support
+    documentCache;
     constructor() {
-        this.firstNameMatcher = null;
-        this.surnameMatcher = null;
-        this.initialized = false;
         this.voter = new EnsembleVoter_1.EnsembleVoter();
         // Initialize LRU cache with proper eviction policy
         this.documentCache = new lru_cache_1.LRUCache({

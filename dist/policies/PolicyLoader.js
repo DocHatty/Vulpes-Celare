@@ -51,6 +51,7 @@ const RadiologyLogger_1 = require("../utils/RadiologyLogger");
  * Policy validation error - thrown when policy structure is invalid
  */
 class PolicyValidationError extends Error {
+    policyName;
     constructor(message, policyName) {
         super(message);
         this.policyName = policyName;
@@ -62,6 +63,8 @@ exports.PolicyValidationError = PolicyValidationError;
  * Policy load error - thrown when policy file cannot be read or parsed
  */
 class PolicyLoadError extends Error {
+    policyPath;
+    cause;
     constructor(message, policyPath, cause) {
         super(message);
         this.policyPath = policyPath;
@@ -74,6 +77,7 @@ exports.PolicyLoadError = PolicyLoadError;
  * Policy Loader - loads and caches redaction policies
  */
 class PolicyLoader {
+    static policyCache = new Map();
     /**
      * Load redaction policy from JSON file
      * Caches parsed policies to avoid re-reading on every request
@@ -169,5 +173,4 @@ class PolicyLoader {
     }
 }
 exports.PolicyLoader = PolicyLoader;
-PolicyLoader.policyCache = new Map();
 //# sourceMappingURL=PolicyLoader.js.map

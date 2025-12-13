@@ -55,6 +55,7 @@ const RadiologyLogger_1 = require("../utils/RadiologyLogger");
  * Hospital dictionary initialization error
  */
 class HospitalDictionaryInitError extends Error {
+    cause;
     constructor(message, cause) {
         super(message);
         this.cause = cause;
@@ -63,6 +64,10 @@ class HospitalDictionaryInitError extends Error {
 }
 exports.HospitalDictionaryInitError = HospitalDictionaryInitError;
 class HospitalDictionary {
+    static hospitals = null;
+    static hospitalPhrases = null;
+    static initialized = false;
+    static initError = null;
     /**
      * Initialize the hospital dictionary from file
      *
@@ -267,8 +272,4 @@ class HospitalDictionary {
     }
 }
 exports.HospitalDictionary = HospitalDictionary;
-HospitalDictionary.hospitals = null;
-HospitalDictionary.hospitalPhrases = null;
-HospitalDictionary.initialized = false;
-HospitalDictionary.initError = null;
 //# sourceMappingURL=HospitalDictionary.js.map

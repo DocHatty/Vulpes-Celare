@@ -54,6 +54,19 @@ function getStreamingBinding() {
  * ```
  */
 class StreamingRedactor {
+    engine;
+    buffer;
+    position;
+    config;
+    flushTimer;
+    sentenceBuffer;
+    totalRedactionCount;
+    nativeKernel;
+    pendingChunks;
+    emitDetections;
+    identifierScanner;
+    nameScanner;
+    pendingNativeDetections;
     constructor(config = {}) {
         this.config = {
             bufferSize: config.bufferSize ?? 100,
@@ -372,6 +385,8 @@ exports.StreamingRedactor = StreamingRedactor;
  * ```
  */
 class WebSocketRedactionHandler {
+    redactor;
+    ws; // WebSocket type (avoiding dependency)
     constructor(ws, config) {
         this.ws = ws;
         this.redactor = new StreamingRedactor(config);

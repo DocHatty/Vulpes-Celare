@@ -50,6 +50,8 @@ const RadiologyLogger_1 = require("../utils/RadiologyLogger");
  * Filter Registry - manages all Span-based redaction filters for parallel execution
  */
 class FilterRegistry {
+    static spanFilters = [];
+    static isInitialized = false;
     /**
      * Initialize all Span-based filters for parallel execution
      */
@@ -144,6 +146,4 @@ class FilterRegistry {
     }
 }
 exports.FilterRegistry = FilterRegistry;
-FilterRegistry.spanFilters = [];
-FilterRegistry.isInitialized = false;
 //# sourceMappingURL=FilterRegistry.js.map

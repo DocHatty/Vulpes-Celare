@@ -19,6 +19,35 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class PassportNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * Context keywords that indicate a passport number
+     */
+    static PASSPORT_KEYWORDS = [
+        "passport",
+        "travel document",
+        "document number",
+        "passport no",
+        "passport #",
+        "passport number",
+        "passport num",
+    ];
+    /**
+     * Passport regex pattern sources
+     */
+    static PASSPORT_PATTERN_SOURCES = [
+        // Contextual passport pattern
+        /\b(?:passport|travel\s*document)(?:\s*(?:no|#|number|num))?[\s:]+([A-Z]{1,2}\d{6,8}|\d{9}|[A-Z0-9]{9})\b/gi,
+        // Canadian passport (1-2 letters + 6-8 digits)
+        /\b([A-Z]{1,2}\d{6,8})\b/g,
+        // US passport (9 alphanumeric)
+        /\b([A-Z]\d{8}|\d{9})\b/g,
+        // UK/EU passport (9 alphanumeric)
+        /\b([A-Z]{2}\d{7}|[A-Z]\d{8})\b/g,
+    ];
+    /**
+     * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
+     */
+    static COMPILED_PATTERNS = PassportNumberFilterSpan.compilePatterns(PassportNumberFilterSpan.PASSPORT_PATTERN_SOURCES);
     getType() {
         return "PASSPORT";
     }
@@ -210,33 +239,4 @@ class PassportNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.PassportNumberFilterSpan = PassportNumberFilterSpan;
-/**
- * Context keywords that indicate a passport number
- */
-PassportNumberFilterSpan.PASSPORT_KEYWORDS = [
-    "passport",
-    "travel document",
-    "document number",
-    "passport no",
-    "passport #",
-    "passport number",
-    "passport num",
-];
-/**
- * Passport regex pattern sources
- */
-PassportNumberFilterSpan.PASSPORT_PATTERN_SOURCES = [
-    // Contextual passport pattern
-    /\b(?:passport|travel\s*document)(?:\s*(?:no|#|number|num))?[\s:]+([A-Z]{1,2}\d{6,8}|\d{9}|[A-Z0-9]{9})\b/gi,
-    // Canadian passport (1-2 letters + 6-8 digits)
-    /\b([A-Z]{1,2}\d{6,8})\b/g,
-    // US passport (9 alphanumeric)
-    /\b([A-Z]\d{8}|\d{9})\b/g,
-    // UK/EU passport (9 alphanumeric)
-    /\b([A-Z]{2}\d{7}|[A-Z]\d{8})\b/g,
-];
-/**
- * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
- */
-PassportNumberFilterSpan.COMPILED_PATTERNS = PassportNumberFilterSpan.compilePatterns(PassportNumberFilterSpan.PASSPORT_PATTERN_SOURCES);
 //# sourceMappingURL=PassportNumberFilterSpan.js.map

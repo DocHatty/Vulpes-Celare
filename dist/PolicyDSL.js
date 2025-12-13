@@ -36,6 +36,34 @@ exports.PolicyTemplates = exports.PolicyCompiler = void 0;
  * Compiles declarative policy language to JSON configuration
  */
 class PolicyCompiler {
+    static VALID_IDENTIFIERS = [
+        'names', 'name',
+        'dates', 'date',
+        'phones', 'phone',
+        'emails', 'email',
+        'ssn',
+        'mrn',
+        'addresses', 'address',
+        'locations', 'location',
+        'organizations', 'organization',
+        'professions', 'profession',
+        'ids', 'id',
+        'ages', 'age',
+        'npi',
+        'credit_cards', 'credit_card',
+        'accounts', 'account',
+        'health_plan',
+        'license',
+        'passport',
+        'vehicle',
+        'device',
+        'biometric',
+        'unique_id',
+        'zip',
+        'fax',
+        'ip',
+        'url'
+    ];
     /**
      * Compile DSL policy string to JSON configuration
      *
@@ -257,42 +285,12 @@ class PolicyCompiler {
     }
 }
 exports.PolicyCompiler = PolicyCompiler;
-PolicyCompiler.VALID_IDENTIFIERS = [
-    'names', 'name',
-    'dates', 'date',
-    'phones', 'phone',
-    'emails', 'email',
-    'ssn',
-    'mrn',
-    'addresses', 'address',
-    'locations', 'location',
-    'organizations', 'organization',
-    'professions', 'profession',
-    'ids', 'id',
-    'ages', 'age',
-    'npi',
-    'credit_cards', 'credit_card',
-    'accounts', 'account',
-    'health_plan',
-    'license',
-    'passport',
-    'vehicle',
-    'device',
-    'biometric',
-    'unique_id',
-    'zip',
-    'fax',
-    'ip',
-    'url'
-];
 /**
  * Policy DSL Templates
  * Pre-defined policy templates in DSL format
  */
 class PolicyTemplates {
-}
-exports.PolicyTemplates = PolicyTemplates;
-PolicyTemplates.HIPAA_STRICT = `
+    static HIPAA_STRICT = `
 policy HIPAA_STRICT {
   description "Full HIPAA Safe Harbor compliance - all 18 identifiers"
   
@@ -318,7 +316,7 @@ policy HIPAA_STRICT {
   threshold 0.5
 }
 `.trim();
-PolicyTemplates.RESEARCH_RELAXED = `
+    static RESEARCH_RELAXED = `
 policy RESEARCH_RELAXED extends HIPAA_STRICT {
   description "IRB-approved research - preserves temporal and geographic context"
   
@@ -337,7 +335,7 @@ policy RESEARCH_RELAXED extends HIPAA_STRICT {
   threshold 0.4
 }
 `.trim();
-PolicyTemplates.RADIOLOGY_DEPT = `
+    static RADIOLOGY_DEPT = `
 policy RADIOLOGY_DEPT {
   description "Radiology department workflow - preserves study identifiers"
   
@@ -355,7 +353,7 @@ policy RADIOLOGY_DEPT {
   threshold 0.6
 }
 `.trim();
-PolicyTemplates.TRAINING = `
+    static TRAINING = `
 policy TRAINING {
   description "Medical education and training"
   
@@ -374,4 +372,6 @@ policy TRAINING {
   threshold 0.5
 }
 `.trim();
+}
+exports.PolicyTemplates = PolicyTemplates;
 //# sourceMappingURL=PolicyDSL.js.map

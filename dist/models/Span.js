@@ -80,6 +80,27 @@ var FilterType;
  * Span - Represents a detected entity in text
  */
 class Span {
+    // Core properties
+    characterStart;
+    characterEnd;
+    text;
+    filterType;
+    confidence;
+    priority;
+    // Context
+    context;
+    window;
+    // Replacement
+    replacement;
+    salt;
+    // Pattern
+    pattern;
+    // Flags
+    applied;
+    ignored;
+    // Disambiguation
+    ambiguousWith;
+    disambiguationScore;
     constructor(metadata) {
         this.characterStart = metadata.characterStart;
         this.characterEnd = metadata.characterEnd;
@@ -169,6 +190,49 @@ exports.Span = Span;
  * instead of O(n²) nested loops.
  */
 class SpanUtils {
+    /**
+     * Filter type specificity ranking (higher = more specific/trustworthy)
+     * More specific types should win over general ones
+     */
+    static TYPE_SPECIFICITY = {
+        // High specificity - structured patterns
+        SSN: 100,
+        MRN: 95,
+        NPI: 95,
+        DEA: 95,
+        CREDIT_CARD: 90,
+        ACCOUNT: 85,
+        LICENSE: 85,
+        PASSPORT: 85,
+        IBAN: 85,
+        HEALTH_PLAN: 85,
+        EMAIL: 80,
+        PHONE: 75,
+        FAX: 75,
+        IP: 75,
+        URL: 75,
+        MAC_ADDRESS: 75,
+        BITCOIN: 75,
+        VEHICLE: 70,
+        DEVICE: 70,
+        BIOMETRIC: 70,
+        // Medium specificity
+        DATE: 60,
+        ZIPCODE: 55,
+        ADDRESS: 50,
+        CITY: 45,
+        STATE: 45,
+        COUNTY: 45,
+        // Lower specificity - context-dependent
+        AGE: 40,
+        RELATIVE_DATE: 40,
+        PROVIDER_NAME: 36, // Slightly higher than NAME since it has title context
+        NAME: 35, // Names can overlap with many things
+        OCCUPATION: 30,
+        CUSTOM: 20,
+    };
+    // Performance flag - can be disabled for debugging
+    static USE_INTERVAL_TREE = true;
     /**
      * Enable or disable interval tree optimization (for debugging)
      */
@@ -376,47 +440,4 @@ class SpanUtils {
     }
 }
 exports.SpanUtils = SpanUtils;
-/**
- * Filter type specificity ranking (higher = more specific/trustworthy)
- * More specific types should win over general ones
- */
-SpanUtils.TYPE_SPECIFICITY = {
-    // High specificity - structured patterns
-    SSN: 100,
-    MRN: 95,
-    NPI: 95,
-    DEA: 95,
-    CREDIT_CARD: 90,
-    ACCOUNT: 85,
-    LICENSE: 85,
-    PASSPORT: 85,
-    IBAN: 85,
-    HEALTH_PLAN: 85,
-    EMAIL: 80,
-    PHONE: 75,
-    FAX: 75,
-    IP: 75,
-    URL: 75,
-    MAC_ADDRESS: 75,
-    BITCOIN: 75,
-    VEHICLE: 70,
-    DEVICE: 70,
-    BIOMETRIC: 70,
-    // Medium specificity
-    DATE: 60,
-    ZIPCODE: 55,
-    ADDRESS: 50,
-    CITY: 45,
-    STATE: 45,
-    COUNTY: 45,
-    // Lower specificity - context-dependent
-    AGE: 40,
-    RELATIVE_DATE: 40,
-    PROVIDER_NAME: 36, // Slightly higher than NAME since it has title context
-    NAME: 35, // Names can overlap with many things
-    OCCUPATION: 30,
-    CUSTOM: 20,
-};
-// Performance flag - can be disabled for debugging
-SpanUtils.USE_INTERVAL_TREE = true;
 //# sourceMappingURL=Span.js.map

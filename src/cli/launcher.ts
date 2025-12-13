@@ -24,6 +24,7 @@ import { VERSION, ENGINE_NAME } from "../index";
 import { handleNativeChat } from "./NativeChat";
 import { handleAgent } from "./Agent";
 import { handleVulpesify } from "./VulpesIntegration";
+import { validateVulpesEnvironment } from "../utils/SecurityUtils";
 
 // ============================================================================
 // THEME
@@ -311,6 +312,14 @@ function pressEnterToContinue(): Promise<void> {
 async function main(): Promise<void> {
   // Suppress logging
   process.env.VULPES_QUIET = "1";
+
+  // Validate environment variables at startup
+  const envValidation = validateVulpesEnvironment();
+  if (!envValidation.valid) {
+    for (const warning of envValidation.warnings) {
+      console.warn(theme.warning(`  ${figures.warning} ${warning}`));
+    }
+  }
 
   // Check for direct command shortcuts
   const args = process.argv.slice(2);

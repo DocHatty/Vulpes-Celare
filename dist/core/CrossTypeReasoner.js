@@ -25,9 +25,14 @@ const Span_1 = require("../models/Span");
  * CrossTypeReasoner - Main reasoning class
  */
 class CrossTypeReasoner {
+    constraints = [];
+    entityTracker = new Map();
+    // Reasoning parameters
+    static CONSISTENCY_BOOST = 0.15;
+    static CONFLICT_PENALTY = 0.25;
+    static MIN_CONFIDENCE_THRESHOLD = 0.3;
+    static PROXIMITY_WINDOW = 200; // characters
     constructor() {
-        this.constraints = [];
-        this.entityTracker = new Map();
         this.initializeConstraints();
     }
     /**
@@ -518,11 +523,6 @@ class CrossTypeReasoner {
     }
 }
 exports.CrossTypeReasoner = CrossTypeReasoner;
-// Reasoning parameters
-CrossTypeReasoner.CONSISTENCY_BOOST = 0.15;
-CrossTypeReasoner.CONFLICT_PENALTY = 0.25;
-CrossTypeReasoner.MIN_CONFIDENCE_THRESHOLD = 0.3;
-CrossTypeReasoner.PROXIMITY_WINDOW = 200; // characters
 // Export singleton for convenience
 exports.crossTypeReasoner = new CrossTypeReasoner();
 //# sourceMappingURL=CrossTypeReasoner.js.map

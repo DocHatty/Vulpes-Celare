@@ -22,6 +22,51 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class DEAFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * Valid first letters for DEA numbers by registrant type:
+     * A, B - Deprecated (older registrations)
+     * C - Practitioner (primary letter for physicians)
+     * D - Pharmacy
+     * E - Exporter
+     * F - Distributor
+     * G - Gateway (for controlled substances ordering)
+     * H - Hospital/Clinic
+     * J - Mid-level Practitioner (Nurse Practitioner, Physician Assistant)
+     * K - Narcotic Treatment Program
+     * L - Laboratory
+     * M - Mid-level Practitioner
+     * P - Manufacturer
+     * R - Reverse Distributor
+     * S - Researcher
+     * T - Analytical Laboratory
+     * U - Narcotic Treatment Program
+     * X - Suboxone/Subutex prescribers (DATA waiver)
+     */
+    static VALID_FIRST_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    /**
+     * DEA pattern definitions
+     */
+    static DEA_PATTERN_SOURCES = [
+        // Pattern 1: Labeled DEA with explicit prefix
+        // Matches: DEA: AB1234567, DEA #AB1234567, DEA Number: AB1234567
+        /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}\d{7})\b/gi,
+        // Pattern 2: Standalone DEA format (strict - valid first letters only)
+        // In practice we prioritize sensitivity over strict registrant typing.
+        // Keep the overall shape strict (2 letters + 7 digits).
+        /\b([A-Z]{2}\d{7})\b/g,
+        // Pattern 3: OCR-tolerant - common substitutions
+        // O→0, l→1, I→1, B→8, S→5 in the digit portion
+        /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}[0-9OoIlBbSs]{7})\b/gi,
+        // Pattern 4: Standalone with OCR errors in digits
+        /\b([A-Z]{2}[0-9OoIlBbSs]{7})\b/g,
+        // Pattern 5: Separator-tolerant (spaces/dashes within digits)
+        /\bDEA\s*[:#-]?\s*([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/gi,
+        /\b([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/g,
+    ];
+    /**
+     * PERFORMANCE OPTIMIZATION: Pre-compiled patterns
+     */
+    static COMPILED_PATTERNS = DEAFilterSpan.compilePatterns(DEAFilterSpan.DEA_PATTERN_SOURCES);
     getType() {
         return "DEA";
     }
@@ -137,49 +182,4 @@ class DEAFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.DEAFilterSpan = DEAFilterSpan;
-/**
- * Valid first letters for DEA numbers by registrant type:
- * A, B - Deprecated (older registrations)
- * C - Practitioner (primary letter for physicians)
- * D - Pharmacy
- * E - Exporter
- * F - Distributor
- * G - Gateway (for controlled substances ordering)
- * H - Hospital/Clinic
- * J - Mid-level Practitioner (Nurse Practitioner, Physician Assistant)
- * K - Narcotic Treatment Program
- * L - Laboratory
- * M - Mid-level Practitioner
- * P - Manufacturer
- * R - Reverse Distributor
- * S - Researcher
- * T - Analytical Laboratory
- * U - Narcotic Treatment Program
- * X - Suboxone/Subutex prescribers (DATA waiver)
- */
-DEAFilterSpan.VALID_FIRST_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-/**
- * DEA pattern definitions
- */
-DEAFilterSpan.DEA_PATTERN_SOURCES = [
-    // Pattern 1: Labeled DEA with explicit prefix
-    // Matches: DEA: AB1234567, DEA #AB1234567, DEA Number: AB1234567
-    /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}\d{7})\b/gi,
-    // Pattern 2: Standalone DEA format (strict - valid first letters only)
-    // In practice we prioritize sensitivity over strict registrant typing.
-    // Keep the overall shape strict (2 letters + 7 digits).
-    /\b([A-Z]{2}\d{7})\b/g,
-    // Pattern 3: OCR-tolerant - common substitutions
-    // O→0, l→1, I→1, B→8, S→5 in the digit portion
-    /\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}[0-9OoIlBbSs]{7})\b/gi,
-    // Pattern 4: Standalone with OCR errors in digits
-    /\b([A-Z]{2}[0-9OoIlBbSs]{7})\b/g,
-    // Pattern 5: Separator-tolerant (spaces/dashes within digits)
-    /\bDEA\s*[:#-]?\s*([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/gi,
-    /\b([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b/g,
-];
-/**
- * PERFORMANCE OPTIMIZATION: Pre-compiled patterns
- */
-DEAFilterSpan.COMPILED_PATTERNS = DEAFilterSpan.compilePatterns(DEAFilterSpan.DEA_PATTERN_SOURCES);
 //# sourceMappingURL=DEAFilterSpan.js.map

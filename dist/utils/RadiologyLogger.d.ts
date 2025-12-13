@@ -16,6 +16,10 @@ export declare enum LogLevel {
     ERROR = 3,
     NONE = 4
 }
+export declare enum LogFormat {
+    PRETTY = "pretty",
+    JSON = "json"
+}
 export interface PHIDetectionLog {
     filterType: string;
     originalText: string;
@@ -36,11 +40,14 @@ export interface PHIFilteredLog {
 export declare class RadiologyLogger {
     private static _enabled;
     private static _logLevel;
+    private static _logFormat;
     private static suppressErrors;
     private static get enabled();
     private static set enabled(value);
     private static get logLevel();
     private static set logLevel(value);
+    private static get logFormat();
+    private static set logFormat(value);
     private static stats;
     private static detectionHistory;
     private static filteredHistory;
@@ -49,14 +56,17 @@ export declare class RadiologyLogger {
     static isEnabled(): boolean;
     static setLogLevel(level: LogLevel): void;
     static getLogLevel(): LogLevel;
+    static setLogFormat(format: LogFormat): void;
+    static getLogFormat(): LogFormat;
     /** Suppress error output (useful for tests expecting errors) */
     static suppressErrorOutput(suppress: boolean): void;
     /** Reset statistics and history */
     static resetSession(): void;
-    static debug(category: string, message: string, data?: any): void;
-    static info(category: string, message: string, data?: any): void;
-    static warn(category: string, message: string, data?: any): void;
-    static error(category: string, message: string, error?: any): void;
+    private static outputLog;
+    static debug(category: string, message: string, data?: Record<string, unknown>): void;
+    static info(category: string, message: string, data?: Record<string, unknown>): void;
+    static warn(category: string, message: string, data?: Record<string, unknown>): void;
+    static error(category: string, message: string, error?: unknown): void;
     /**
      * Log a successful PHI detection
      * This is called when PHI is found and will be redacted

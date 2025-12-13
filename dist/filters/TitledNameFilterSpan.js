@@ -15,44 +15,41 @@ const NameFilterConstants_1 = require("./constants/NameFilterConstants");
 const DocumentVocabulary_1 = require("../vocabulary/DocumentVocabulary");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
 class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
-    constructor() {
-        super(...arguments);
-        /**
-         * Common formal name prefixes
-         */
-        this.PREFIXES = [
-            "Mr",
-            "Mrs",
-            "Ms",
-            "Miss",
-            "Dr",
-            "Prof",
-            "Rev",
-            "Hon",
-            "Capt",
-            "Lt",
-            "Sgt",
-            "Col",
-            "Gen",
-        ];
-        /**
-         * Name suffixes for complete name patterns
-         */
-        this.SUFFIXES = [
-            "Jr",
-            "Sr",
-            "II",
-            "III",
-            "IV",
-            "MD",
-            "PhD",
-            "DDS",
-            "Esq",
-            "RN",
-            "NP",
-            "PA",
-        ];
-    }
+    /**
+     * Common formal name prefixes
+     */
+    PREFIXES = [
+        "Mr",
+        "Mrs",
+        "Ms",
+        "Miss",
+        "Dr",
+        "Prof",
+        "Rev",
+        "Hon",
+        "Capt",
+        "Lt",
+        "Sgt",
+        "Col",
+        "Gen",
+    ];
+    /**
+     * Name suffixes for complete name patterns
+     */
+    SUFFIXES = [
+        "Jr",
+        "Sr",
+        "II",
+        "III",
+        "IV",
+        "MD",
+        "PhD",
+        "DDS",
+        "Esq",
+        "RN",
+        "NP",
+        "PA",
+    ];
     // WHITELIST functionality now provided by NameDetectionUtils.isNonPersonStructureTerm()
     getType() {
         return "PROVIDER_NAME"; // Titled names are provider names - redacted but labeled differently

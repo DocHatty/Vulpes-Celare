@@ -22,50 +22,47 @@ exports.BiometricContextFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
-    constructor() {
-        super(...arguments);
-        /**
-         * Comprehensive biometric keywords
-         */
-        this.BIOMETRIC_KEYWORDS = [
-            "fingerprint",
-            "thumbprint",
-            "voiceprint",
-            "voice print",
-            "retinal scan",
-            "retina scan",
-            "iris scan",
-            "eye scan",
-            "facial recognition",
-            "face recognition",
-            "facial photo",
-            "facial image",
-            "photograph of patient",
-            "photo of patient",
-            "patient photo",
-            "full face photo",
-            "full face photograph",
-            "face photograph",
-            "dna",
-            "genetic marker",
-            "genetic test",
-            "genome",
-            "genomic",
-            "biometric",
-            "biometric id",
-            "biometric identifier",
-            "hand geometry",
-            "palm print",
-            "vein pattern",
-            "gait analysis",
-            "signature dynamic",
-            "keystroke dynamic",
-            "tattoo",
-            "scar",
-            "birthmark",
-            "identifying mark",
-        ];
-    }
+    /**
+     * Comprehensive biometric keywords
+     */
+    BIOMETRIC_KEYWORDS = [
+        "fingerprint",
+        "thumbprint",
+        "voiceprint",
+        "voice print",
+        "retinal scan",
+        "retina scan",
+        "iris scan",
+        "eye scan",
+        "facial recognition",
+        "face recognition",
+        "facial photo",
+        "facial image",
+        "photograph of patient",
+        "photo of patient",
+        "patient photo",
+        "full face photo",
+        "full face photograph",
+        "face photograph",
+        "dna",
+        "genetic marker",
+        "genetic test",
+        "genome",
+        "genomic",
+        "biometric",
+        "biometric id",
+        "biometric identifier",
+        "hand geometry",
+        "palm print",
+        "vein pattern",
+        "gait analysis",
+        "signature dynamic",
+        "keystroke dynamic",
+        "tattoo",
+        "scar",
+        "birthmark",
+        "identifying mark",
+    ];
     getType() {
         return "BIOMETRIC";
     }

@@ -18,6 +18,11 @@ export enum LogLevel {
   NONE = 4,
 }
 
+export enum LogFormat {
+  PRETTY = "pretty",
+  JSON = "json",
+}
+
 export interface PHIDetectionLog {
   filterType: string;
   originalText: string;
@@ -41,6 +46,7 @@ export class RadiologyLogger {
   // These are checked at runtime via getters to support dynamic changes
   private static _enabled: boolean | null = null;
   private static _logLevel: LogLevel | null = null;
+  private static _logFormat: LogFormat | null = null;
   private static suppressErrors = false;
 
   private static get enabled(): boolean {
@@ -66,6 +72,16 @@ export class RadiologyLogger {
 
   private static set logLevel(value: LogLevel) {
     this._logLevel = value;
+  }
+
+  private static get logFormat(): LogFormat {
+    if (this._logFormat !== null) return this._logFormat;
+    if (process.env.VULPES_LOG_FORMAT === "json") return LogFormat.JSON;
+    return LogFormat.PRETTY;
+  }
+
+  private static set logFormat(value: LogFormat) {
+    this._logFormat = value;
   }
 
   // Statistics tracking
@@ -105,6 +121,14 @@ export class RadiologyLogger {
     return this.logLevel;
   }
 
+  static setLogFormat(format: LogFormat) {
+    this.logFormat = format;
+  }
+
+  static getLogFormat(): LogFormat {
+    return this.logFormat;
+  }
+
   /** Suppress error output (useful for tests expecting errors) */
   static suppressErrorOutput(suppress: boolean) {
     this.suppressErrors = suppress;
@@ -124,53 +148,104 @@ export class RadiologyLogger {
   }
 
   // ============================================================================
+  // STRUCTURED JSON OUTPUT HELPER
+  // ============================================================================
+
+  private static outputLog(
+    level: "debug" | "info" | "warn" | "error",
+    category: string,
+    message: string,
+    data?: Record<string, unknown>,
+  ) {
+    const timestamp = new Date().toISOString();
+
+    if (this.logFormat === LogFormat.JSON) {
+      // Structured JSON output for production/log aggregation
+      const logEntry = {
+        timestamp,
+        level,
+        category,
+        message,
+        ...(data && { data }),
+      };
+      // Use stderr to keep stdout clean for actual output
+      console.error(JSON.stringify(logEntry));
+    } else {
+      // Pretty format for development
+      const timeStr = timestamp.substring(11, 23);
+      const levelUpper = level.toUpperCase();
+      if (data !== undefined) {
+        console[level](
+          `[${timeStr}] [${levelUpper}] [${category}] ${message}`,
+          data,
+        );
+      } else {
+        console[level](`[${timeStr}] [${levelUpper}] [${category}] ${message}`);
+      }
+    }
+  }
+
+  // ============================================================================
   // BASIC LOGGING
   // ============================================================================
 
-  static debug(category: string, message: string, data?: any) {
+  static debug(
+    category: string,
+    message: string,
+    data?: Record<string, unknown>,
+  ) {
     if (this.enabled && this.logLevel <= LogLevel.DEBUG) {
-      const timestamp = this.getTimestamp();
-      if (data !== undefined) {
-        console.debug(`[${timestamp}] [DEBUG] [${category}] ${message}`, data);
-      } else {
-        console.debug(`[${timestamp}] [DEBUG] [${category}] ${message}`);
-      }
+      this.outputLog("debug", category, message, data);
     }
   }
 
-  static info(category: string, message: string, data?: any) {
+  static info(
+    category: string,
+    message: string,
+    data?: Record<string, unknown>,
+  ) {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
-      const timestamp = this.getTimestamp();
-      if (data !== undefined) {
-        console.info(`[${timestamp}] [INFO] [${category}] ${message}`, data);
-      } else {
-        console.info(`[${timestamp}] [INFO] [${category}] ${message}`);
-      }
+      this.outputLog("info", category, message, data);
     }
   }
 
-  static warn(category: string, message: string, data?: any) {
+  static warn(
+    category: string,
+    message: string,
+    data?: Record<string, unknown>,
+  ) {
     if (this.enabled && this.logLevel <= LogLevel.WARN) {
       this.stats.warnings++;
-      const timestamp = this.getTimestamp();
-      if (data !== undefined) {
-        console.warn(`[${timestamp}] [WARN] [${category}] ${message}`, data);
-      } else {
-        console.warn(`[${timestamp}] [WARN] [${category}] ${message}`);
-      }
+      this.outputLog("warn", category, message, data);
     }
   }
 
-  static error(category: string, message: string, error?: any) {
+  static error(category: string, message: string, error?: unknown) {
     if (!this.suppressErrors && this.logLevel <= LogLevel.ERROR) {
       this.stats.errors++;
-      const timestamp = this.getTimestamp();
-      console.error(`[${timestamp}] [ERROR] [${category}] ${message}`);
-      if (error) {
+      if (this.logFormat === LogFormat.JSON) {
+        const errorData: Record<string, unknown> = {};
         if (error instanceof Error) {
-          console.error(`  Stack: ${error.stack}`);
-        } else {
-          console.error(`  Details:`, error);
+          errorData.errorMessage = error.message;
+          errorData.stack = error.stack;
+        } else if (error !== undefined) {
+          errorData.details = error;
+        }
+        this.outputLog(
+          "error",
+          category,
+          message,
+          Object.keys(errorData).length > 0 ? errorData : undefined,
+        );
+      } else {
+        const timestamp = this.getTimestamp();
+        console.error(`[${timestamp}] [ERROR] [${category}] ${message}`);
+        if (error) {
+          if (error instanceof Error) {
+            console.error(`  Stack: ${error.stack}`);
+          } else {
+            console.error(`  Details:`, error);
+          }
         }
       }
     }

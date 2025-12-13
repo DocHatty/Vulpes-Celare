@@ -65,11 +65,12 @@ const DEFAULT_CONFIG = {
  * OCRService - Extracts text and bounding boxes from images using Rust Native Core
  */
 class OCRService {
+    config;
+    engine = null;
+    initialized = false;
+    initError = null;
+    logger = (0, logger_1.getLogger)();
     constructor(config = {}) {
-        this.engine = null;
-        this.initialized = false;
-        this.initError = null;
-        this.logger = (0, logger_1.getLogger)();
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.logger.debug(SERVICE_NAME, 'constructor', 'OCRService created', {
             detectionModel: this.config.detectionModelPath,

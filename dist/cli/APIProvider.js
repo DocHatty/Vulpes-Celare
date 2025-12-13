@@ -382,9 +382,12 @@ exports.PROVIDERS = {
 // API PROVIDER CLASS
 // ============================================================================
 class APIProvider {
+    config;
+    apiKey;
+    baseUrl;
+    selectedModel = null;
+    availableModels = [];
     constructor(providerId, apiKey, customBaseUrl) {
-        this.selectedModel = null;
-        this.availableModels = [];
         const provider = exports.PROVIDERS[providerId];
         if (!provider) {
             throw new Error(`Unknown provider: ${providerId}. Available: ${Object.keys(exports.PROVIDERS).join(", ")}`);

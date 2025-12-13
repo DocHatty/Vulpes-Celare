@@ -13,6 +13,16 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class EmailFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * Pre-compiled email regex pattern for maximum performance
+     *
+     * Pattern breakdown:
+     * - Local part: A-Z0-9._%+- (standard email characters)
+     * - @ symbol
+     * - Domain: A-Z0-9.- (standard domain characters)
+     * - TLD: At least 2 characters (com, org, edu, etc.)
+     */
+    static EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
     getType() {
         return "EMAIL";
     }
@@ -55,14 +65,4 @@ class EmailFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.EmailFilterSpan = EmailFilterSpan;
-/**
- * Pre-compiled email regex pattern for maximum performance
- *
- * Pattern breakdown:
- * - Local part: A-Z0-9._%+- (standard email characters)
- * - @ symbol
- * - Domain: A-Z0-9.- (standard domain characters)
- * - TLD: At least 2 characters (com, org, edu, etc.)
- */
-EmailFilterSpan.EMAIL_PATTERN = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
 //# sourceMappingURL=EmailFilterSpan.js.map

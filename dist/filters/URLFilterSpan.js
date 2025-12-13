@@ -14,6 +14,40 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class URLFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * URL regex pattern sources
+     *
+     * Matches:
+     * - http://, https://, ftp:// protocols
+     * - www. prefixed domains
+     * - Domain names with paths and query strings
+     */
+    static URL_PATTERN_SOURCES = [
+        // Standard URLs with protocol or www
+        /\b(?:https?:\/\/|ftp:\/\/|www\.)[^\s<>"{}|\\^`\[\]]+/gi,
+        // Patient portal and healthcare URLs without protocol
+        /\b(?:mychart|myhealth|patient(?:portal)?|epic|cerner|athena|meditech|allscripts|nextgen)[.\-]?[a-z0-9.\-]+\.(?:com|org|net|edu|health|healthcare|med|medical)[^\s<>"{}|\\^`\[\]]*(?:\?[^\s<>"{}|\\^`\[\]]*(?:patient|member|account|user|id|mrn)[^\s<>"{}|\\^`\[\]]*)?/gi,
+        // URLs with patient/member ID query parameters
+        /\b[a-z0-9][a-z0-9.\-]*\.[a-z]{2,}[^\s<>"{}|\\^`\[\]]*\?[^\s<>"{}|\\^`\[\]]*(?:patientid|patient_id|memberid|member_id|accountid|account_id|userid|user_id|mrnid|mrn)=[^\s<>"{}|\\^`\[\]]+/gi,
+        // Healthcare/medical domain URLs without protocol
+        /\b[a-z0-9][a-z0-9.\-]*(?:hospital|medical|health|clinic|care|med|healthcare|physician|doctor|patient)[a-z0-9.\-]*\.[a-z]{2,}[^\s<>"{}|\\^`\[\]]*/gi,
+        // Social media profile URLs
+        /\b(?:linkedin\.com\/in\/|facebook\.com\/|twitter\.com\/|instagram\.com\/|x\.com\/)[^\s<>"{}|\\^`\[\]]+/gi,
+    ];
+    /**
+     * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
+     */
+    static COMPILED_PATTERNS = URLFilterSpan.compilePatterns(URLFilterSpan.URL_PATTERN_SOURCES);
+    /**
+     * Pattern names for debugging
+     */
+    static PATTERN_NAMES = [
+        "Standard URL",
+        "Patient portal URL",
+        "Patient ID URL",
+        "Healthcare domain",
+        "Social media profile",
+    ];
     getType() {
         return "URL";
     }
@@ -99,38 +133,4 @@ class URLFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.URLFilterSpan = URLFilterSpan;
-/**
- * URL regex pattern sources
- *
- * Matches:
- * - http://, https://, ftp:// protocols
- * - www. prefixed domains
- * - Domain names with paths and query strings
- */
-URLFilterSpan.URL_PATTERN_SOURCES = [
-    // Standard URLs with protocol or www
-    /\b(?:https?:\/\/|ftp:\/\/|www\.)[^\s<>"{}|\\^`\[\]]+/gi,
-    // Patient portal and healthcare URLs without protocol
-    /\b(?:mychart|myhealth|patient(?:portal)?|epic|cerner|athena|meditech|allscripts|nextgen)[.\-]?[a-z0-9.\-]+\.(?:com|org|net|edu|health|healthcare|med|medical)[^\s<>"{}|\\^`\[\]]*(?:\?[^\s<>"{}|\\^`\[\]]*(?:patient|member|account|user|id|mrn)[^\s<>"{}|\\^`\[\]]*)?/gi,
-    // URLs with patient/member ID query parameters
-    /\b[a-z0-9][a-z0-9.\-]*\.[a-z]{2,}[^\s<>"{}|\\^`\[\]]*\?[^\s<>"{}|\\^`\[\]]*(?:patientid|patient_id|memberid|member_id|accountid|account_id|userid|user_id|mrnid|mrn)=[^\s<>"{}|\\^`\[\]]+/gi,
-    // Healthcare/medical domain URLs without protocol
-    /\b[a-z0-9][a-z0-9.\-]*(?:hospital|medical|health|clinic|care|med|healthcare|physician|doctor|patient)[a-z0-9.\-]*\.[a-z]{2,}[^\s<>"{}|\\^`\[\]]*/gi,
-    // Social media profile URLs
-    /\b(?:linkedin\.com\/in\/|facebook\.com\/|twitter\.com\/|instagram\.com\/|x\.com\/)[^\s<>"{}|\\^`\[\]]+/gi,
-];
-/**
- * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)
- */
-URLFilterSpan.COMPILED_PATTERNS = URLFilterSpan.compilePatterns(URLFilterSpan.URL_PATTERN_SOURCES);
-/**
- * Pattern names for debugging
- */
-URLFilterSpan.PATTERN_NAMES = [
-    "Standard URL",
-    "Patient portal URL",
-    "Patient ID URL",
-    "Healthcare domain",
-    "Social media profile",
-];
 //# sourceMappingURL=URLFilterSpan.js.map

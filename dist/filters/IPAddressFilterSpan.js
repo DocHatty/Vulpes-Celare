@@ -13,6 +13,13 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class IPAddressFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
+    /**
+     * Pre-compiled IPv4 regex pattern
+     *
+     * Matches: XXX.XXX.XXX.XXX where XXX is 1-3 digits
+     * Validation ensures each octet is 0-255
+     */
+    static IP_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
     getType() {
         return "IP";
     }
@@ -74,11 +81,4 @@ class IPAddressFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.IPAddressFilterSpan = IPAddressFilterSpan;
-/**
- * Pre-compiled IPv4 regex pattern
- *
- * Matches: XXX.XXX.XXX.XXX where XXX is 1-3 digits
- * Validation ensures each octet is 0-255
- */
-IPAddressFilterSpan.IP_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
 //# sourceMappingURL=IPAddressFilterSpan.js.map

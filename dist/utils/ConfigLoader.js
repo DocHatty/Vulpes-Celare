@@ -6,6 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfigLoader = void 0;
 class ConfigLoader {
+    static config = {};
     static load(configPath) {
         return { redaction: { enabled: true, defaultReplacement: "[REDACTED]" } };
     }
@@ -24,5 +25,4 @@ class ConfigLoader {
     }
 }
 exports.ConfigLoader = ConfigLoader;
-ConfigLoader.config = {};
 //# sourceMappingURL=ConfigLoader.js.map

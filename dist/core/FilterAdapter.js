@@ -16,6 +16,9 @@ const RedactionContext_1 = require("../context/RedactionContext");
  * Adapter that converts legacy BaseFilter to SpanBasedFilter
  */
 class FilterAdapter extends SpanBasedFilter_1.SpanBasedFilter {
+    legacyFilter;
+    filterType;
+    priority;
     constructor(legacyFilter, priority) {
         super();
         this.legacyFilter = legacyFilter;

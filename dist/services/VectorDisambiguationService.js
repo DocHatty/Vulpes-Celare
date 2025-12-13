@@ -83,8 +83,9 @@ const STOP_WORDS = new Set([
  * Uses hashing + vector similarity to resolve ambiguous spans
  */
 class VectorDisambiguationService {
+    config;
+    vectorCache = new Map();
     constructor(config = {}) {
-        this.vectorCache = new Map();
         this.config = {
             vectorSize: config.vectorSize ?? 512,
             hashAlgorithm: config.hashAlgorithm ?? "murmur3",

@@ -16,6 +16,23 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocumentStructureAnalyzer = void 0;
 class DocumentStructureAnalyzer {
+    static HEADER_PATTERNS = [
+        /^[\s]*(?:PATIENT|CLINICAL|MEDICAL|HEALTH)\s+(?:INFORMATION|RECORD|HISTORY|SUMMARY)/im,
+        /^[\s]*(?:ADMISSION|DISCHARGE|PROGRESS|OPERATIVE)\s+(?:NOTE|SUMMARY|REPORT)/im,
+        /^[\s]*(?:HISTORY\s+AND\s+PHYSICAL|H&P|CONSULTATION)/im,
+    ];
+    static DEMOGRAPHICS_PATTERNS = [
+        /(?:Patient\s+Name|Name|DOB|Date\s+of\s+Birth|MRN|Medical\s+Record|SSN|Address|Phone)[\s]*:/i,
+        /(?:Age|Sex|Gender|Race|Ethnicity|Marital\s+Status)[\s]*:/i,
+    ];
+    static FOOTER_PATTERNS = [
+        /(?:Electronically\s+signed|Signed|Authenticated)\s+by/i,
+        /(?:Dictated|Transcribed|Reviewed)\s+by/i,
+        /Page\s+\d+\s+of\s+\d+/i,
+        /(?:Confidential|HIPAA|Privacy)/i,
+    ];
+    static LABEL_PATTERN = /([A-Za-z][A-Za-z\s]{2,30})[\s]*:[\s]*/g;
+    static TABLE_INDICATORS = /[\|┃│]|(?:\t{2,})|(?:  {3,})/;
     /**
      * Analyze full document structure
      */
@@ -304,21 +321,4 @@ class DocumentStructureAnalyzer {
     }
 }
 exports.DocumentStructureAnalyzer = DocumentStructureAnalyzer;
-DocumentStructureAnalyzer.HEADER_PATTERNS = [
-    /^[\s]*(?:PATIENT|CLINICAL|MEDICAL|HEALTH)\s+(?:INFORMATION|RECORD|HISTORY|SUMMARY)/im,
-    /^[\s]*(?:ADMISSION|DISCHARGE|PROGRESS|OPERATIVE)\s+(?:NOTE|SUMMARY|REPORT)/im,
-    /^[\s]*(?:HISTORY\s+AND\s+PHYSICAL|H&P|CONSULTATION)/im,
-];
-DocumentStructureAnalyzer.DEMOGRAPHICS_PATTERNS = [
-    /(?:Patient\s+Name|Name|DOB|Date\s+of\s+Birth|MRN|Medical\s+Record|SSN|Address|Phone)[\s]*:/i,
-    /(?:Age|Sex|Gender|Race|Ethnicity|Marital\s+Status)[\s]*:/i,
-];
-DocumentStructureAnalyzer.FOOTER_PATTERNS = [
-    /(?:Electronically\s+signed|Signed|Authenticated)\s+by/i,
-    /(?:Dictated|Transcribed|Reviewed)\s+by/i,
-    /Page\s+\d+\s+of\s+\d+/i,
-    /(?:Confidential|HIPAA|Privacy)/i,
-];
-DocumentStructureAnalyzer.LABEL_PATTERN = /([A-Za-z][A-Za-z\s]{2,30})[\s]*:[\s]*/g;
-DocumentStructureAnalyzer.TABLE_INDICATORS = /[\|┃│]|(?:\t{2,})|(?:  {3,})/;
 //# sourceMappingURL=DocumentStructureAnalyzer.js.map

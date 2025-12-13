@@ -25,6 +25,8 @@ const SpanBasedFilter_1 = require("./SpanBasedFilter");
  * SpanFactory - Static utility class for creating Spans
  */
 class SpanFactory {
+    /** Default context extraction size (characters before/after match) */
+    static CONTEXT_SIZE = 50;
     /**
      * Get default priority for a filter type
      */
@@ -278,6 +280,4 @@ class SpanFactory {
     }
 }
 exports.SpanFactory = SpanFactory;
-/** Default context extraction size (characters before/after match) */
-SpanFactory.CONTEXT_SIZE = 50;
 //# sourceMappingURL=SpanFactory.js.map

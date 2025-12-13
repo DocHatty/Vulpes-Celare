@@ -14,9 +14,7 @@ exports.StatisticsTracker = void 0;
  * Statistics Tracker - counts redaction events by type
  */
 class StatisticsTracker {
-    constructor() {
-        this.stats = new Map();
-    }
+    stats = new Map();
     /**
      * Increment counter for a redaction type
      */

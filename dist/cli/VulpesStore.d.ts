@@ -83,6 +83,59 @@ export declare const ConfigSchema: z.ZodObject<{
 export type VulpesConfig = z.infer<typeof ConfigSchema>;
 export type ApiKeys = z.infer<typeof ApiKeySchema>;
 export type Preferences = z.infer<typeof PreferencesSchema>;
+export interface SessionRow {
+    id: string;
+    provider: string;
+    model: string | null;
+    started_at: string;
+    ended_at: string | null;
+    message_count: number;
+}
+export interface MessageRow {
+    id: number;
+    session_id: string;
+    role: string;
+    content: string;
+    timestamp: string;
+    tokens_used: number | null;
+}
+export interface RedactionLogRow {
+    id: number;
+    timestamp: string;
+    input_hash: string;
+    phi_count: number;
+    phi_types: string | null;
+    execution_ms: number | null;
+    session_id: string | null;
+}
+export interface AgentMemoryRow {
+    id: number;
+    timestamp: string;
+    task_type: string;
+    task_summary: string;
+    outcome: string;
+    notes: string | null;
+    workflow_type: string | null;
+    duration_ms: number | null;
+}
+export interface FilterMetricsRow {
+    id: number;
+    timestamp: string;
+    filter_name: string;
+    true_positives: number;
+    false_positives: number;
+    false_negatives: number;
+    avg_time_ms: number | null;
+}
+export interface HipaaKnowledgeRow {
+    id: number;
+    question: string;
+    answer: string;
+    type: string;
+    source: string | null;
+    cfr_refs: string | null;
+    embedding_hash: string | null;
+}
 /**
  * Type-safe configuration store using Conf
  */
@@ -144,7 +197,7 @@ export declare function endSession(sessionId: string): void;
 export declare function getRecentSessions(limit?: number): Array<{
     id: string;
     provider: string;
-    model: string;
+    model: string | null;
     started_at: string;
     message_count: number;
 }>;
@@ -172,7 +225,7 @@ export declare function recordAgentMemory(taskType: string, taskSummary: string,
 export declare function getAgentMemory(taskType: string, limit?: number): Array<{
     task_summary: string;
     outcome: string;
-    notes: string;
+    notes: string | null;
     timestamp: string;
 }>;
 /**
@@ -214,7 +267,7 @@ export interface HipaaKnowledge {
     question: string;
     answer: string;
     type: string;
-    source?: string;
+    source?: string | null;
     cfr_refs?: string[];
 }
 /**

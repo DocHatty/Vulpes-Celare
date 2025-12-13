@@ -100,12 +100,13 @@ const DEFAULT_CONFIG = {
  * DicomStreamTransformer - Transform stream for real-time DICOM anonymization
  */
 class DicomStreamTransformer extends stream_1.Transform {
+    config;
+    chunks = [];
+    bytesProcessed = 0;
+    imageRedactor = null;
+    nativeBindingCache = undefined;
     constructor(config = {}, options) {
         super(options);
-        this.chunks = [];
-        this.bytesProcessed = 0;
-        this.imageRedactor = null;
-        this.nativeBindingCache = undefined;
         this.config = { ...DEFAULT_CONFIG, ...config };
     }
     /**

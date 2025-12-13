@@ -52,6 +52,12 @@ function isChaosAccelEnabled() {
     return val === undefined || val === "1";
 }
 class OcrChaosDetector {
+    /** Cache of analyzed documents to avoid re-computation */
+    static analysisCache = new Map();
+    static CACHE_MAX_SIZE = 100;
+    // Mathematical constants
+    static LOG2 = Math.log(2);
+    static EPSILON = 1e-10;
     /**
      * Sigmoid function for smooth threshold transitions
      * Formula: sigmoid(x) = 1 / (1 + exp(-x))
@@ -442,10 +448,4 @@ class OcrChaosDetector {
     }
 }
 exports.OcrChaosDetector = OcrChaosDetector;
-/** Cache of analyzed documents to avoid re-computation */
-OcrChaosDetector.analysisCache = new Map();
-OcrChaosDetector.CACHE_MAX_SIZE = 100;
-// Mathematical constants
-OcrChaosDetector.LOG2 = Math.log(2);
-OcrChaosDetector.EPSILON = 1e-10;
 //# sourceMappingURL=OcrChaosDetector.js.map

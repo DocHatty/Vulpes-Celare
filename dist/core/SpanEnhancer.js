@@ -43,14 +43,17 @@ const HIGH_PRECISION_TYPES = new Set([
     Span_1.FilterType.URL,
 ]);
 class SpanEnhancer {
+    detector;
+    config;
+    weightedScorer;
+    // OPTIMIZATION: Track lazy evaluation statistics
+    stats = {
+        totalSpans: 0,
+        lazySkipped: 0,
+        lazyRejected: 0,
+        fullyEvaluated: 0,
+    };
     constructor(config = {}) {
-        // OPTIMIZATION: Track lazy evaluation statistics
-        this.stats = {
-            totalSpans: 0,
-            lazySkipped: 0,
-            lazyRejected: 0,
-            fullyEvaluated: 0,
-        };
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.detector = EnhancedPHIDetector_1.enhancedDetector;
         this.detector.init();

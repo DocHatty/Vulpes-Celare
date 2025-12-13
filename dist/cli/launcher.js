@@ -60,6 +60,7 @@ const index_1 = require("../index");
 const NativeChat_1 = require("./NativeChat");
 const Agent_1 = require("./Agent");
 const VulpesIntegration_1 = require("./VulpesIntegration");
+const SecurityUtils_1 = require("../utils/SecurityUtils");
 // ============================================================================
 // THEME
 // ============================================================================
@@ -292,6 +293,13 @@ function pressEnterToContinue() {
 async function main() {
     // Suppress logging
     process.env.VULPES_QUIET = "1";
+    // Validate environment variables at startup
+    const envValidation = (0, SecurityUtils_1.validateVulpesEnvironment)();
+    if (!envValidation.valid) {
+        for (const warning of envValidation.warnings) {
+            console.warn(theme.warning(`  ${figures_1.default.warning} ${warning}`));
+        }
+    }
     // Check for direct command shortcuts
     const args = process.argv.slice(2);
     if (args.length > 0) {

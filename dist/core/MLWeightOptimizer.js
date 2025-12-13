@@ -28,11 +28,47 @@ const WeightedPHIScorer_1 = require("./WeightedPHIScorer");
  * MLWeightOptimizer - Main optimization class
  */
 class MLWeightOptimizer {
-    constructor() {
-        this.trainingData = [];
-        this.validationData = [];
-        this.bestResult = null;
-    }
+    trainingData = [];
+    validationData = [];
+    bestResult = null;
+    // Optimization parameters
+    static GRID_SEARCH_STEPS = 5; // Steps per dimension
+    static GA_POPULATION_SIZE = 50;
+    static GA_GENERATIONS = 100;
+    static GA_MUTATION_RATE = 0.1;
+    static GA_CROSSOVER_RATE = 0.7;
+    static GA_ELITE_COUNT = 5;
+    // Weight bounds for optimization
+    static WEIGHT_BOUNDS = {
+        // Pattern weights [min, max]
+        lastFirstFormat: [0.80, 0.99],
+        titledName: [0.80, 0.98],
+        patientLabel: [0.75, 0.95],
+        labeledName: [0.75, 0.95],
+        familyRelation: [0.75, 0.95],
+        generalFullName: [0.50, 0.85],
+        highPrecisionPattern: [0.85, 0.99],
+        // Context bonuses [min, max]
+        titleContextBonus: [0.10, 0.40],
+        familyContextBonus: [0.15, 0.45],
+        phiLabelBonus: [0.10, 0.35],
+        clinicalRoleBonus: [0.10, 0.40],
+        // Whitelist penalties [min, max] (negative values)
+        diseaseEponymPenalty: [-0.95, -0.70],
+        diseaseNamePenalty: [-0.95, -0.65],
+        medicationPenalty: [-0.90, -0.60],
+        procedurePenalty: [-0.85, -0.55],
+        anatomicalPenalty: [-0.80, -0.50],
+        sectionHeaderPenalty: [-0.98, -0.80],
+        organizationPenalty: [-0.75, -0.45],
+    };
+    // Voting config bounds
+    static VOTING_BOUNDS = {
+        redactThreshold: [0.50, 0.80],
+        skipThreshold: [0.20, 0.45],
+        phiPrior: [0.10, 0.25],
+    };
+    constructor() { }
     /**
      * Add training documents with ground truth labels
      */
@@ -541,43 +577,6 @@ class MLWeightOptimizer {
     }
 }
 exports.MLWeightOptimizer = MLWeightOptimizer;
-// Optimization parameters
-MLWeightOptimizer.GRID_SEARCH_STEPS = 5; // Steps per dimension
-MLWeightOptimizer.GA_POPULATION_SIZE = 50;
-MLWeightOptimizer.GA_GENERATIONS = 100;
-MLWeightOptimizer.GA_MUTATION_RATE = 0.1;
-MLWeightOptimizer.GA_CROSSOVER_RATE = 0.7;
-MLWeightOptimizer.GA_ELITE_COUNT = 5;
-// Weight bounds for optimization
-MLWeightOptimizer.WEIGHT_BOUNDS = {
-    // Pattern weights [min, max]
-    lastFirstFormat: [0.80, 0.99],
-    titledName: [0.80, 0.98],
-    patientLabel: [0.75, 0.95],
-    labeledName: [0.75, 0.95],
-    familyRelation: [0.75, 0.95],
-    generalFullName: [0.50, 0.85],
-    highPrecisionPattern: [0.85, 0.99],
-    // Context bonuses [min, max]
-    titleContextBonus: [0.10, 0.40],
-    familyContextBonus: [0.15, 0.45],
-    phiLabelBonus: [0.10, 0.35],
-    clinicalRoleBonus: [0.10, 0.40],
-    // Whitelist penalties [min, max] (negative values)
-    diseaseEponymPenalty: [-0.95, -0.70],
-    diseaseNamePenalty: [-0.95, -0.65],
-    medicationPenalty: [-0.90, -0.60],
-    procedurePenalty: [-0.85, -0.55],
-    anatomicalPenalty: [-0.80, -0.50],
-    sectionHeaderPenalty: [-0.98, -0.80],
-    organizationPenalty: [-0.75, -0.45],
-};
-// Voting config bounds
-MLWeightOptimizer.VOTING_BOUNDS = {
-    redactThreshold: [0.50, 0.80],
-    skipThreshold: [0.20, 0.45],
-    phiPrior: [0.10, 0.25],
-};
 // Export singleton for convenience
 exports.mlWeightOptimizer = new MLWeightOptimizer();
 //# sourceMappingURL=MLWeightOptimizer.js.map

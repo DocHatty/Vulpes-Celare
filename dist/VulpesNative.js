@@ -24,6 +24,7 @@ function getNativeBinding() {
  * ```
  */
 class VulpesNative {
+    engine;
     constructor(detModelPath, recModelPath) {
         const binding = getNativeBinding();
         this.engine = new binding.VulpesEngine((0, path_1.resolve)(detModelPath), (0, path_1.resolve)(recModelPath));

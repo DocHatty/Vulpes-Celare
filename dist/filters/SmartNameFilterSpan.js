@@ -22,6 +22,22 @@ const OcrChaosDetector_1 = require("../utils/OcrChaosDetector");
 const RustNameScanner_1 = require("../utils/RustNameScanner");
 class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     // ═══════════════════════════════════════════════════════════════════════════
+    // STATIC CACHED REGEX PATTERNS - Compiled once at class load, not per-call
+    // This is a MAJOR performance optimization (~5-15ms savings per document)
+    // ═══════════════════════════════════════════════════════════════════════════
+    /** Pattern for title prefix at end of lookback text */
+    static TITLE_PREFIX_PATTERN = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`, "i");
+    /** Pattern for titled name in lookback text */
+    static TITLED_NAME_LOOKBACK_PATTERN = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Z][a-zA-Z'-]+(?:\\s+[A-Z][a-zA-Z'-]+)*\\s*$`, "i");
+    /** Pattern for name suffixes (Jr., Sr., III, etc.) */
+    static NAME_SUFFIX_PATTERN = new RegExp(`(?:${NameFilterConstants_1.NAME_SUFFIXES.join("|")})\\.?\\b`, "gi");
+    /** Pattern for title before name in text */
+    static TITLE_BEFORE_NAME_PATTERN = new RegExp(`\\b(${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`, "i");
+    /** Pattern for particle names (van Gogh, de Silva, etc.) */
+    static PARTICLE_NAME_PATTERN = new RegExp(`\\b([A-Z][a-z]+\\s+(?:van|de|von|di|da|du|del|della|la|le|el|al|bin|ibn|af|av|ten|ter|vander|vanden)\\s+[A-Z][a-z]+)\\b`, "gi");
+    /** Credential pattern after name */
+    static CREDENTIAL_AFTER_NAME_PATTERN = /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|FCCP|FAHA|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC|AGNP-C|OTR\/L)\b/i;
+    // ═══════════════════════════════════════════════════════════════════════════
     getType() {
         return "NAME";
     }
@@ -1717,20 +1733,4 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
 }
 exports.SmartNameFilterSpan = SmartNameFilterSpan;
-// ═══════════════════════════════════════════════════════════════════════════
-// STATIC CACHED REGEX PATTERNS - Compiled once at class load, not per-call
-// This is a MAJOR performance optimization (~5-15ms savings per document)
-// ═══════════════════════════════════════════════════════════════════════════
-/** Pattern for title prefix at end of lookback text */
-SmartNameFilterSpan.TITLE_PREFIX_PATTERN = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`, "i");
-/** Pattern for titled name in lookback text */
-SmartNameFilterSpan.TITLED_NAME_LOOKBACK_PATTERN = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Z][a-zA-Z'-]+(?:\\s+[A-Z][a-zA-Z'-]+)*\\s*$`, "i");
-/** Pattern for name suffixes (Jr., Sr., III, etc.) */
-SmartNameFilterSpan.NAME_SUFFIX_PATTERN = new RegExp(`(?:${NameFilterConstants_1.NAME_SUFFIXES.join("|")})\\.?\\b`, "gi");
-/** Pattern for title before name in text */
-SmartNameFilterSpan.TITLE_BEFORE_NAME_PATTERN = new RegExp(`\\b(${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`, "i");
-/** Pattern for particle names (van Gogh, de Silva, etc.) */
-SmartNameFilterSpan.PARTICLE_NAME_PATTERN = new RegExp(`\\b([A-Z][a-z]+\\s+(?:van|de|von|di|da|du|del|della|la|le|el|al|bin|ibn|af|av|ten|ter|vander|vanden)\\s+[A-Z][a-z]+)\\b`, "gi");
-/** Credential pattern after name */
-SmartNameFilterSpan.CREDENTIAL_AFTER_NAME_PATTERN = /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|FCCP|FAHA|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC|AGNP-C|OTR\/L)\b/i;
 //# sourceMappingURL=SmartNameFilterSpan.js.map

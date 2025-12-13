@@ -20,6 +20,292 @@ const RadiologyLogger_1 = require("../utils/RadiologyLogger");
  */
 class FilterHealthCheck {
     /**
+     * HIPAA Safe Harbor identifiers that MUST be covered
+     */
+    static REQUIRED_HIPAA_FILTERS = [
+        "NAME",
+        "EMAIL",
+        "SSN",
+        "PHONE",
+        "FAX",
+        "DATE",
+        "ADDRESS",
+        "ZIPCODE",
+        "MRN",
+        "HEALTHPLAN",
+        "ACCOUNT",
+        "CREDITCARD",
+        "LICENSE",
+        "VEHICLE",
+        "DEVICE",
+        "URL",
+        "IP",
+        "NPI",
+        "BIOMETRIC",
+    ];
+    /**
+     * Test cases for each filter type
+     */
+    static TEST_CASES = [
+        // NAME tests
+        {
+            name: "Titled Name",
+            input: "Dr. Smith",
+            expectedType: "NAME",
+            shouldDetect: true,
+            description: "Doctor title with last name",
+        },
+        {
+            name: "Family Name",
+            input: "Smith, John",
+            expectedType: "NAME",
+            shouldDetect: true,
+            description: "Last, First format",
+        },
+        {
+            name: "Formatted Name",
+            input: "John Smith",
+            expectedType: "NAME",
+            shouldDetect: true,
+            description: "First Last format",
+        },
+        {
+            name: "Family Relationship Name",
+            input: "Wife: Mary Johnson",
+            expectedType: "NAME",
+            shouldDetect: true,
+            description: "Family relationship with name",
+        },
+        {
+            name: "Emergency Contact Name",
+            input: "Emergency Contact: Robert Smith",
+            expectedType: "NAME",
+            shouldDetect: true,
+            description: "Emergency contact with name",
+        },
+        {
+            name: "Child with Age",
+            input: "Daughter: Emma (age 7)",
+            expectedType: "NAME",
+            shouldDetect: true,
+            description: "Child name with age",
+        },
+        // EMAIL tests
+        {
+            name: "Standard Email",
+            input: "john.doe@example.com",
+            expectedType: "EMAIL",
+            shouldDetect: true,
+            description: "Standard email format",
+        },
+        // PHONE tests
+        {
+            name: "Phone with dashes",
+            input: "555-123-4567",
+            expectedType: "PHONE",
+            shouldDetect: true,
+            description: "US phone with dashes",
+        },
+        {
+            name: "Phone with parens",
+            input: "(555) 123-4567",
+            expectedType: "PHONE",
+            shouldDetect: true,
+            description: "US phone with parentheses",
+        },
+        // SSN tests
+        {
+            name: "SSN with dashes",
+            input: "123-45-6789",
+            expectedType: "SSN",
+            shouldDetect: true,
+            description: "SSN in standard format",
+        },
+        {
+            name: "SSN no dashes",
+            input: "123456789",
+            expectedType: "SSN",
+            shouldDetect: true,
+            description: "SSN without separators",
+        },
+        // DATE tests
+        {
+            name: "Date MM/DD/YYYY",
+            input: "12/25/2023",
+            expectedType: "DATE",
+            shouldDetect: true,
+            description: "US date format",
+        },
+        {
+            name: "Date short year",
+            input: "1/15/60",
+            expectedType: "DATE",
+            shouldDetect: true,
+            description: "Short year format",
+        },
+        // ADDRESS tests
+        {
+            name: "Street address",
+            input: "123 Main Street",
+            expectedType: "ADDRESS",
+            shouldDetect: true,
+            description: "Standard street address",
+        },
+        // ZIPCODE tests
+        {
+            name: "ZIP 5-digit",
+            input: "12345",
+            expectedType: "ZIPCODE",
+            shouldDetect: true,
+            description: "5-digit ZIP",
+        },
+        {
+            name: "ZIP+4",
+            input: "12345-6789",
+            expectedType: "ZIPCODE",
+            shouldDetect: true,
+            description: "ZIP+4 format",
+        },
+        // MRN tests
+        {
+            name: "MRN labeled",
+            input: "MRN: 123456",
+            expectedType: "MRN",
+            shouldDetect: true,
+            description: "Labeled medical record number",
+        },
+        // CREDITCARD tests
+        {
+            name: "Credit card",
+            input: "4532-1234-5678-9010",
+            expectedType: "CREDITCARD",
+            shouldDetect: true,
+            description: "Credit card with dashes",
+        },
+        // URL tests
+        {
+            name: "HTTPS URL",
+            input: "https://example.com",
+            expectedType: "URL",
+            shouldDetect: true,
+            description: "Standard HTTPS URL",
+        },
+        // IP tests
+        {
+            name: "IPv4 address",
+            input: "192.168.1.1",
+            expectedType: "IP",
+            shouldDetect: true,
+            description: "IPv4 address",
+        },
+        // ACCOUNT tests
+        {
+            name: "Account number",
+            input: "Account: 123456789",
+            expectedType: "ACCOUNT",
+            shouldDetect: true,
+            description: "Labeled account number",
+        },
+        // NPI tests
+        {
+            name: "NPI labeled",
+            input: "NPI: 1234567890",
+            expectedType: "NPI",
+            shouldDetect: true,
+            description: "National Provider Identifier",
+        },
+        // HEALTHPLAN tests
+        {
+            name: "Policy number",
+            input: "Policy: ABC123456",
+            expectedType: "HEALTHPLAN",
+            shouldDetect: true,
+            description: "Health plan policy number",
+        },
+        // LICENSE tests
+        {
+            name: "License number",
+            input: "License: DL12345",
+            expectedType: "LICENSE",
+            shouldDetect: true,
+            description: "Driver's license",
+        },
+        // FAX tests
+        {
+            name: "Labeled fax number",
+            input: "Fax: (555) 123-4567",
+            expectedType: "FAX",
+            shouldDetect: true,
+            description: "Fax number with label",
+        },
+        {
+            name: "Fax number compact",
+            input: "FAX #: 555-123-4567",
+            expectedType: "FAX",
+            shouldDetect: true,
+            description: "Fax with # symbol",
+        },
+        // VEHICLE tests
+        {
+            name: "VIN labeled",
+            input: "VIN: 1HGBH41JXMN109186",
+            expectedType: "VEHICLE",
+            shouldDetect: true,
+            description: "Vehicle identification number",
+        },
+        {
+            name: "License plate",
+            input: "License Plate: ABC-1234",
+            expectedType: "VEHICLE",
+            shouldDetect: true,
+            description: "Vehicle license plate",
+        },
+        {
+            name: "GPS coordinates",
+            input: "Location: 40.7128, -74.0060",
+            expectedType: "VEHICLE",
+            shouldDetect: true,
+            description: "GPS decimal degrees",
+        },
+        // DEVICE tests
+        {
+            name: "Pacemaker ID",
+            input: "Pacemaker Serial: PM-123456789",
+            expectedType: "DEVICE",
+            shouldDetect: true,
+            description: "Medical device identifier",
+        },
+        {
+            name: "Implant device",
+            input: "Implant Device ID: ICD-9876543",
+            expectedType: "DEVICE",
+            shouldDetect: true,
+            description: "Implanted device serial number",
+        },
+        // BIOMETRIC tests
+        {
+            name: "Fingerprint reference",
+            input: "Fingerprint on file for identification",
+            expectedType: "BIOMETRIC",
+            shouldDetect: true,
+            description: "Biometric fingerprint reference",
+        },
+        {
+            name: "Facial photo reference",
+            input: "Full face photographs were taken",
+            expectedType: "BIOMETRIC",
+            shouldDetect: true,
+            description: "Biometric facial photo",
+        },
+        {
+            name: "Identifying mark",
+            input: "Distinguishing scar on left forearm",
+            expectedType: "BIOMETRIC",
+            shouldDetect: true,
+            description: "Physical identifying characteristic",
+        },
+    ];
+    /**
      * Run comprehensive health check on all filters
      */
     static async runFullHealthCheck() {
@@ -230,290 +516,4 @@ class FilterHealthCheck {
     }
 }
 exports.FilterHealthCheck = FilterHealthCheck;
-/**
- * HIPAA Safe Harbor identifiers that MUST be covered
- */
-FilterHealthCheck.REQUIRED_HIPAA_FILTERS = [
-    "NAME",
-    "EMAIL",
-    "SSN",
-    "PHONE",
-    "FAX",
-    "DATE",
-    "ADDRESS",
-    "ZIPCODE",
-    "MRN",
-    "HEALTHPLAN",
-    "ACCOUNT",
-    "CREDITCARD",
-    "LICENSE",
-    "VEHICLE",
-    "DEVICE",
-    "URL",
-    "IP",
-    "NPI",
-    "BIOMETRIC",
-];
-/**
- * Test cases for each filter type
- */
-FilterHealthCheck.TEST_CASES = [
-    // NAME tests
-    {
-        name: "Titled Name",
-        input: "Dr. Smith",
-        expectedType: "NAME",
-        shouldDetect: true,
-        description: "Doctor title with last name",
-    },
-    {
-        name: "Family Name",
-        input: "Smith, John",
-        expectedType: "NAME",
-        shouldDetect: true,
-        description: "Last, First format",
-    },
-    {
-        name: "Formatted Name",
-        input: "John Smith",
-        expectedType: "NAME",
-        shouldDetect: true,
-        description: "First Last format",
-    },
-    {
-        name: "Family Relationship Name",
-        input: "Wife: Mary Johnson",
-        expectedType: "NAME",
-        shouldDetect: true,
-        description: "Family relationship with name",
-    },
-    {
-        name: "Emergency Contact Name",
-        input: "Emergency Contact: Robert Smith",
-        expectedType: "NAME",
-        shouldDetect: true,
-        description: "Emergency contact with name",
-    },
-    {
-        name: "Child with Age",
-        input: "Daughter: Emma (age 7)",
-        expectedType: "NAME",
-        shouldDetect: true,
-        description: "Child name with age",
-    },
-    // EMAIL tests
-    {
-        name: "Standard Email",
-        input: "john.doe@example.com",
-        expectedType: "EMAIL",
-        shouldDetect: true,
-        description: "Standard email format",
-    },
-    // PHONE tests
-    {
-        name: "Phone with dashes",
-        input: "555-123-4567",
-        expectedType: "PHONE",
-        shouldDetect: true,
-        description: "US phone with dashes",
-    },
-    {
-        name: "Phone with parens",
-        input: "(555) 123-4567",
-        expectedType: "PHONE",
-        shouldDetect: true,
-        description: "US phone with parentheses",
-    },
-    // SSN tests
-    {
-        name: "SSN with dashes",
-        input: "123-45-6789",
-        expectedType: "SSN",
-        shouldDetect: true,
-        description: "SSN in standard format",
-    },
-    {
-        name: "SSN no dashes",
-        input: "123456789",
-        expectedType: "SSN",
-        shouldDetect: true,
-        description: "SSN without separators",
-    },
-    // DATE tests
-    {
-        name: "Date MM/DD/YYYY",
-        input: "12/25/2023",
-        expectedType: "DATE",
-        shouldDetect: true,
-        description: "US date format",
-    },
-    {
-        name: "Date short year",
-        input: "1/15/60",
-        expectedType: "DATE",
-        shouldDetect: true,
-        description: "Short year format",
-    },
-    // ADDRESS tests
-    {
-        name: "Street address",
-        input: "123 Main Street",
-        expectedType: "ADDRESS",
-        shouldDetect: true,
-        description: "Standard street address",
-    },
-    // ZIPCODE tests
-    {
-        name: "ZIP 5-digit",
-        input: "12345",
-        expectedType: "ZIPCODE",
-        shouldDetect: true,
-        description: "5-digit ZIP",
-    },
-    {
-        name: "ZIP+4",
-        input: "12345-6789",
-        expectedType: "ZIPCODE",
-        shouldDetect: true,
-        description: "ZIP+4 format",
-    },
-    // MRN tests
-    {
-        name: "MRN labeled",
-        input: "MRN: 123456",
-        expectedType: "MRN",
-        shouldDetect: true,
-        description: "Labeled medical record number",
-    },
-    // CREDITCARD tests
-    {
-        name: "Credit card",
-        input: "4532-1234-5678-9010",
-        expectedType: "CREDITCARD",
-        shouldDetect: true,
-        description: "Credit card with dashes",
-    },
-    // URL tests
-    {
-        name: "HTTPS URL",
-        input: "https://example.com",
-        expectedType: "URL",
-        shouldDetect: true,
-        description: "Standard HTTPS URL",
-    },
-    // IP tests
-    {
-        name: "IPv4 address",
-        input: "192.168.1.1",
-        expectedType: "IP",
-        shouldDetect: true,
-        description: "IPv4 address",
-    },
-    // ACCOUNT tests
-    {
-        name: "Account number",
-        input: "Account: 123456789",
-        expectedType: "ACCOUNT",
-        shouldDetect: true,
-        description: "Labeled account number",
-    },
-    // NPI tests
-    {
-        name: "NPI labeled",
-        input: "NPI: 1234567890",
-        expectedType: "NPI",
-        shouldDetect: true,
-        description: "National Provider Identifier",
-    },
-    // HEALTHPLAN tests
-    {
-        name: "Policy number",
-        input: "Policy: ABC123456",
-        expectedType: "HEALTHPLAN",
-        shouldDetect: true,
-        description: "Health plan policy number",
-    },
-    // LICENSE tests
-    {
-        name: "License number",
-        input: "License: DL12345",
-        expectedType: "LICENSE",
-        shouldDetect: true,
-        description: "Driver's license",
-    },
-    // FAX tests
-    {
-        name: "Labeled fax number",
-        input: "Fax: (555) 123-4567",
-        expectedType: "FAX",
-        shouldDetect: true,
-        description: "Fax number with label",
-    },
-    {
-        name: "Fax number compact",
-        input: "FAX #: 555-123-4567",
-        expectedType: "FAX",
-        shouldDetect: true,
-        description: "Fax with # symbol",
-    },
-    // VEHICLE tests
-    {
-        name: "VIN labeled",
-        input: "VIN: 1HGBH41JXMN109186",
-        expectedType: "VEHICLE",
-        shouldDetect: true,
-        description: "Vehicle identification number",
-    },
-    {
-        name: "License plate",
-        input: "License Plate: ABC-1234",
-        expectedType: "VEHICLE",
-        shouldDetect: true,
-        description: "Vehicle license plate",
-    },
-    {
-        name: "GPS coordinates",
-        input: "Location: 40.7128, -74.0060",
-        expectedType: "VEHICLE",
-        shouldDetect: true,
-        description: "GPS decimal degrees",
-    },
-    // DEVICE tests
-    {
-        name: "Pacemaker ID",
-        input: "Pacemaker Serial: PM-123456789",
-        expectedType: "DEVICE",
-        shouldDetect: true,
-        description: "Medical device identifier",
-    },
-    {
-        name: "Implant device",
-        input: "Implant Device ID: ICD-9876543",
-        expectedType: "DEVICE",
-        shouldDetect: true,
-        description: "Implanted device serial number",
-    },
-    // BIOMETRIC tests
-    {
-        name: "Fingerprint reference",
-        input: "Fingerprint on file for identification",
-        expectedType: "BIOMETRIC",
-        shouldDetect: true,
-        description: "Biometric fingerprint reference",
-    },
-    {
-        name: "Facial photo reference",
-        input: "Full face photographs were taken",
-        expectedType: "BIOMETRIC",
-        shouldDetect: true,
-        description: "Biometric facial photo",
-    },
-    {
-        name: "Identifying mark",
-        input: "Distinguishing scar on left forearm",
-        expectedType: "BIOMETRIC",
-        shouldDetect: true,
-        description: "Physical identifying characteristic",
-    },
-];
 //# sourceMappingURL=FilterHealthCheck.js.map

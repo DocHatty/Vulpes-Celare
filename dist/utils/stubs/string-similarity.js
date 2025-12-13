@@ -3,7 +3,6 @@
 // Keeps SpanDisambiguationService fast while providing meaningful similarity scores.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.compareTwoStrings = compareTwoStrings;
-exports.findBestMatch = findBestMatch;
 const CACHE_LIMIT = 500;
 const cache = new Map();
 function normalize(value) {
@@ -87,13 +86,5 @@ function compareTwoStrings(a, b) {
     if (cache.has(key))
         return cache.get(key);
     return remember(key, jaroWinkler(left, right));
-}
-function findBestMatch(s, arr) {
-    const ratings = arr.map((target) => ({
-        target,
-        rating: compareTwoStrings(s, target),
-    }));
-    const bestMatch = ratings.reduce((best, next) => (next.rating > best.rating ? next : best), { target: "", rating: -1 }) || ratings[0] || { target: "", rating: 0 };
-    return { bestMatch, ratings };
 }
 //# sourceMappingURL=string-similarity.js.map

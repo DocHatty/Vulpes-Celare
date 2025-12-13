@@ -168,6 +168,9 @@ const CONTEXT_PATTERNS = {
  * WeightedPHIScorer - Main scoring class
  */
 class WeightedPHIScorer {
+    weights;
+    whitelists;
+    decisionThreshold;
     constructor(weights = {}, decisionThreshold = 0.50) {
         this.weights = { ...DEFAULT_WEIGHTS, ...weights };
         this.whitelists = buildMedicalWhitelists();

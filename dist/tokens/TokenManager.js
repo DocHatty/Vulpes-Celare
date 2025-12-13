@@ -15,10 +15,11 @@ exports.TokenManager = void 0;
  * Token Manager - creates and manages redaction tokens
  */
 class TokenManager {
+    sessionId;
+    tokens = new Map();
+    counters = new Map();
+    tokensReinserted = 0;
     constructor(sessionId) {
-        this.tokens = new Map();
-        this.counters = new Map();
-        this.tokensReinserted = 0;
         this.sessionId = sessionId;
     }
     /**

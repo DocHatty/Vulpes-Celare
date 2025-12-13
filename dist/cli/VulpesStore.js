@@ -665,9 +665,10 @@ function getHipaaByType(type, limit = 20) {
  */
 function getHipaaStats() {
     const database = getDatabase();
-    const total = database
+    const totalResult = database
         .prepare(`SELECT COUNT(*) as count FROM hipaa_knowledge`)
-        .get().count;
+        .get();
+    const total = totalResult?.count || 0;
     const byTypeResults = database
         .prepare(`SELECT type, COUNT(*) as count FROM hipaa_knowledge GROUP BY type`)
         .all();
@@ -682,12 +683,16 @@ function getHipaaStats() {
     const uniqueCfr = new Set();
     for (const r of cfrResults) {
         try {
-            const refs = JSON.parse(r.cfr_refs);
-            for (const ref of refs) {
-                uniqueCfr.add(ref);
+            if (r.cfr_refs) {
+                const refs = JSON.parse(r.cfr_refs);
+                for (const ref of refs) {
+                    uniqueCfr.add(ref);
+                }
             }
         }
-        catch { }
+        catch {
+            // Ignore parse errors
+        }
     }
     return {
         total,

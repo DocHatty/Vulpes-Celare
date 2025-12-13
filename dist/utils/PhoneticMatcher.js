@@ -39,13 +39,15 @@ const OCR_SUBSTITUTIONS = {
     "9": "g",
 };
 class PhoneticMatcher {
+    firstNameIndex;
+    surnameIndex;
+    initialized = false;
+    nativeMatcher = null;
+    nativeInstance = null;
+    // Configuration
+    MAX_LEVENSHTEIN_DISTANCE = 2;
+    MIN_NAME_LENGTH = 2;
     constructor() {
-        this.initialized = false;
-        this.nativeMatcher = null;
-        this.nativeInstance = null;
-        // Configuration
-        this.MAX_LEVENSHTEIN_DISTANCE = 2;
-        this.MIN_NAME_LENGTH = 2;
         this.firstNameIndex = this.createEmptyIndex();
         this.surnameIndex = this.createEmptyIndex();
         // Prefer the Rust-native phonetic matcher when available (much faster and avoids JS heavy deps).
