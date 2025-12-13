@@ -19,7 +19,7 @@ Status: validated on synthetic data only. Production use requires i2b2 2014 vali
 
 ```mermaid
 flowchart TD
-    A[Inputs: clinical text] --> B[Vulpes Celare orchestrator (TypeScript)]
+    A[Inputs: clinical text] --> B["Vulpes Celare orchestrator (TypeScript)"]
     A2[Inputs: images / DICOM] --> B
     B --> C{Filters + detectors}
     C --> D[Safe text with PHI removed]
