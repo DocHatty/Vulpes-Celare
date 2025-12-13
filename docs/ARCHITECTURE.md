@@ -5,7 +5,7 @@
 Vulpes Celare is split into two execution domains:
 
 1. **TypeScript/Node.js orchestration**: policies, streaming, filter execution, token mapping, CLI, trust bundles.
-2. **Rust native vision core**: ONNX inference and vision post-processing (OCR and face detection).
+2. **Rust native core**: ONNX inference + selected inner-loop accelerators (vision, crypto, and opt-in text hotspots).
 
 This boundary is intentional: TypeScript stays readable and policy-driven, while Rust owns the performance-critical inference stack.
 
@@ -64,9 +64,16 @@ The native addon (`src/rust/`) owns:
 - UltraFace ONNX inference (face detection)
 - Image preprocessing and post-processing for these models
 - Crypto/provenance primitives used by trust bundles and DICOM hashing (SHA-256, HMAC-SHA256, Merkle root)
-- Text helper(s) for inner-loop acceleration (e.g. phonetic matching)
+- Text inner-loop accelerators (feature-flagged until fully validated):
+  - Phonetic matcher (`VulpesPhoneticMatcher`, `VULPES_ENABLE_PHONETIC=1`)
+  - Tokenization with offsets (`tokenizeWithPositions`, `VULPES_TEXT_ACCEL=1`)
+  - Span overlap pruning (`dropOverlappingSpans`, `VULPES_SPAN_ACCEL=1`)
+  - NAME comma-pattern scanner (`VulpesNameScanner`, `VULPES_NAME_ACCEL=1`, shadow: `VULPES_SHADOW_RUST_NAME=1`)
+  - Post-filter false-positive pruning (`postfilterDecisions`, `VULPES_POSTFILTER_ACCEL=1`, shadow: `VULPES_SHADOW_POSTFILTER=1`)
+  - Multi-identifier scan kernel (`scanAllIdentifiers`, `VULPES_SCAN_ACCEL=1`)
 
 The Node layer should not load a second ONNX Runtime binding into the same process.
+`npm test` enforces this boundary via `scripts/check-onnx-boundary.js`.
 
 ### How Node Loads the Addon
 
@@ -87,6 +94,13 @@ set VULPES_ORT_PATH=C:\path\to\onnxruntime.dll
 REM or
 set ORT_DYLIB_PATH=C:\path\to\onnxruntime.dll
 ```
+
+### ONNX Runtime (macOS/Linux)
+
+macOS/Linux native packaging is currently Windows-first. If you build the native core on macOS/Linux, the same mechanism is used, with these default filenames under `native/`:
+
+- macOS: `libonnxruntime.dylib`
+- Linux: `libonnxruntime.so`
 
 ## Trust Bundles / Provenance
 

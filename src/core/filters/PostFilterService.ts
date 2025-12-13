@@ -12,6 +12,41 @@
 
 import { Span, FilterType } from "../../models/Span";
 import { RadiologyLogger } from "../../utils/RadiologyLogger";
+import { loadNativeBinding } from "../../native/binding";
+
+let cachedPostFilterBinding:
+  | ReturnType<typeof loadNativeBinding>
+  | null
+  | undefined = undefined;
+
+function isPostFilterAccelEnabled(): boolean {
+  return process.env.VULPES_POSTFILTER_ACCEL === "1";
+}
+
+function isPostFilterShadowEnabled(): boolean {
+  return process.env.VULPES_SHADOW_POSTFILTER === "1";
+}
+
+function getPostFilterBinding(): ReturnType<typeof loadNativeBinding> | null {
+  if (cachedPostFilterBinding !== undefined) return cachedPostFilterBinding;
+  try {
+    cachedPostFilterBinding = loadNativeBinding({ configureOrt: false });
+  } catch {
+    cachedPostFilterBinding = null;
+  }
+  return cachedPostFilterBinding;
+}
+
+export type PostFilterShadowReport = {
+  enabled: boolean;
+  rustAvailable: boolean;
+  rustEnabled: boolean;
+  inputSpans: number;
+  tsKept: number;
+  rustKept: number;
+  missingInRust: number;
+  extraInRust: number;
+};
 
 /**
  * Interface for filter strategies
@@ -965,14 +1000,7 @@ export class PostFilterService {
     new FieldLabelFilter(),
   ];
 
-  /**
-   * Apply all post-filter strategies to remove false positives
-   *
-   * @param spans - Detected spans to filter
-   * @param text - Full document text for context
-   * @returns Filtered spans with false positives removed
-   */
-  static filter(spans: Span[], text: string): Span[] {
+  private static filterTs(spans: Span[], text: string): Span[] {
     return spans.filter((span) => {
       for (const strategy of PostFilterService.strategies) {
         if (!strategy.shouldKeep(span, text)) {
@@ -985,6 +1013,103 @@ export class PostFilterService {
       }
       return true;
     });
+  }
+
+  /**
+   * Apply all post-filter strategies to remove false positives
+   *
+   * @param spans - Detected spans to filter
+   * @param text - Full document text for context
+   * @returns Filtered spans with false positives removed
+   */
+  static filter(
+    spans: Span[],
+    text: string,
+    options: { shadowReport?: PostFilterShadowReport } = {},
+  ): Span[] {
+    const wantsRust = isPostFilterAccelEnabled();
+    const wantsShadow = isPostFilterShadowEnabled();
+
+    const binding = wantsRust || wantsShadow ? getPostFilterBinding() : null;
+    const postfilterDecisions = binding?.postfilterDecisions;
+    const rustAvailable = typeof postfilterDecisions === "function";
+
+    const shadowReport = options.shadowReport;
+    if (shadowReport) {
+      shadowReport.enabled = wantsShadow;
+      shadowReport.rustAvailable = rustAvailable;
+      shadowReport.rustEnabled = wantsRust && rustAvailable;
+      shadowReport.inputSpans = spans.length;
+      shadowReport.tsKept = 0;
+      shadowReport.rustKept = 0;
+      shadowReport.missingInRust = 0;
+      shadowReport.extraInRust = 0;
+    }
+
+    const shouldUseRust = wantsRust && rustAvailable;
+
+    const tsFiltered =
+      wantsShadow || !shouldUseRust
+        ? PostFilterService.filterTs(spans, text)
+        : null;
+
+    if (!shouldUseRust) {
+      if (shadowReport && tsFiltered) {
+        shadowReport.tsKept = tsFiltered.length;
+        shadowReport.rustKept = 0;
+        shadowReport.missingInRust = 0;
+        shadowReport.extraInRust = 0;
+      }
+      return tsFiltered ?? PostFilterService.filterTs(spans, text);
+    }
+
+    const decisions = postfilterDecisions!(
+      spans.map((s) => ({
+        filterType: String(s.filterType),
+        text: s.text,
+        confidence: s.confidence,
+      })),
+    );
+
+    const rustFiltered: Span[] = [];
+    for (let i = 0; i < spans.length; i++) {
+      const decision = decisions[i];
+      if (decision?.keep) {
+        rustFiltered.push(spans[i]);
+        continue;
+      }
+      RadiologyLogger.info(
+        "REDACTION",
+        `Post-filter [${decision?.removedBy ?? "Rust"}] removed: "${spans[i].text}"`,
+      );
+    }
+
+    if (shadowReport && tsFiltered) {
+      shadowReport.tsKept = tsFiltered.length;
+      shadowReport.rustKept = rustFiltered.length;
+
+      const tsKept = new Set(
+        tsFiltered.map(
+          (s) => `${s.characterStart}-${s.characterEnd}-${s.filterType}`,
+        ),
+      );
+      const rustKept = new Set(
+        rustFiltered.map(
+          (s) => `${s.characterStart}-${s.characterEnd}-${s.filterType}`,
+        ),
+      );
+
+      let missingInRust = 0;
+      for (const k of tsKept) if (!rustKept.has(k)) missingInRust++;
+
+      let extraInRust = 0;
+      for (const k of rustKept) if (!tsKept.has(k)) extraInRust++;
+
+      shadowReport.missingInRust = missingInRust;
+      shadowReport.extraInRust = extraInRust;
+    }
+
+    return rustFiltered;
   }
 
   /**

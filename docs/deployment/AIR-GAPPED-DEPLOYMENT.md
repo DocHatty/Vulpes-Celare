@@ -73,7 +73,7 @@ An **air-gapped** system has:
 
 ### Software Requirements
 
-- **OS**: Linux (Ubuntu 22.04 LTS recommended), Windows Server 2019+, or macOS
+- **OS**: Linux (Ubuntu 22.04 LTS recommended), Windows Server 2019+, or macOS (native addon packaging is currently Windows-first; JS-only mode runs everywhere)
 - **Runtime**: Node.js 18+ (bundled offline)
 - **Database**: SQLite (bundled) or PostgreSQL (for enterprise)
 - **LLM Runtime**: Ollama (for local models)

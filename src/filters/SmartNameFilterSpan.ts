@@ -32,6 +32,7 @@ import {
   PROVIDER_CREDENTIALS,
 } from "../utils/NameDetectionUtils";
 import { OcrChaosDetector } from "../utils/OcrChaosDetector";
+import { RustNameScanner } from "../utils/RustNameScanner";
 
 export class SmartNameFilterSpan extends SpanBasedFilter {
   // ═══════════════════════════════════════════════════════════════════════════
@@ -86,15 +87,42 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
 
+    const accelMode = process.env.VULPES_NAME_ACCEL;
+    const useRustCommaNames =
+      accelMode === "1" || accelMode === "2" || accelMode === "3";
+    const useRustFirstLastNames = accelMode === "2" || accelMode === "3";
+    const useRustSmartNames = accelMode === "3";
+
     // Pattern 0: Last, First format (medical records)
-    this.detectLastFirstNames(text, spans);
+    if (useRustCommaNames) {
+      this.detectRustLastFirstNames(text, spans);
+    } else {
+      this.detectLastFirstNames(text, spans);
+    }
 
     // Pattern 0a: OCR-tolerant Last, First format (lowercase, OCR errors, comma misplacement)
-    this.detectOcrLastFirstNames(text, spans);
+    this.detectOcrLastFirstNames(text, spans, {
+      skipCommaPatterns: useRustCommaNames,
+    });
 
     // Pattern 0b: Chaos-case Last, First with OCR substitutions
     // Catches: "martinez, l@tonya a.", "gOLdbeeRg ,marTinA"
-    this.detectChaosLastFirstNames(text, spans);
+    if (!useRustCommaNames) {
+      this.detectChaosLastFirstNames(text, spans);
+    }
+
+    // Pattern 0c: First Last (opt-in Rust accelerator, shadow-first rollout)
+    if (useRustFirstLastNames) {
+      this.detectRustFirstLastNames(text, spans);
+    }
+
+    // Rust "smart" scanner: ports the remaining SmartNameFilterSpan pattern families.
+    // Shadow-first rollout is handled via `VULPES_SHADOW_RUST_NAME_SMART=1` (engine report only).
+    // Promotion uses `VULPES_NAME_ACCEL=3` and returns early (skips TS regex passes).
+    if (useRustSmartNames) {
+      this.detectRustSmartNames(text, spans);
+      return spans;
+    }
 
     // Pattern 1: Title + Name
     this.detectTitledNames(text, spans);
@@ -150,6 +178,156 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     this.detectConcatenatedNames(text, spans);
 
     return spans;
+  }
+
+  private detectRustLastFirstNames(text: string, spans: Span[]): void {
+    const detections = RustNameScanner.detectLastFirst(text);
+    if (!detections.length) return;
+
+    for (const d of detections) {
+      const fullName = d.text;
+      const start = d.characterStart;
+      const end = d.characterEnd;
+
+      // Match the same provider-title and credential exclusions as the legacy TS path.
+      const lookbackStart = Math.max(0, start - 30);
+      const textBefore = text.substring(lookbackStart, start);
+      const titleNamePattern = new RegExp(
+        `\\b(${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`,
+        "i",
+      );
+      if (titleNamePattern.test(textBefore)) {
+        continue;
+      }
+
+      const parts = fullName.split(/\s*,\s*/);
+      if (parts.length === 2) {
+        const secondPart = parts[1].split(/\s+/)[0];
+        if (PROVIDER_CREDENTIALS.has(secondPart.toUpperCase())) {
+          continue;
+        }
+      }
+
+      // Keep legacy strict validation for the strict-capitalization pattern only.
+      const needsStrictValidation = d.pattern === "Rust Last, First";
+      if (
+        !this.isWhitelisted(fullName, text) &&
+        (!needsStrictValidation || this.validateLastFirst(fullName))
+      ) {
+        spans.push(
+          new Span({
+            text: fullName,
+            originalValue: fullName,
+            characterStart: start,
+            characterEnd: end,
+            filterType: FilterType.NAME,
+            confidence: d.confidence,
+            priority: this.getPriority(),
+            context: this.getContext(text, start, end - start),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: d.pattern,
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          }),
+        );
+      }
+    }
+  }
+
+  private detectRustFirstLastNames(text: string, spans: Span[]): void {
+    const detections = RustNameScanner.detectFirstLast(text);
+    if (!detections.length) return;
+
+    for (const d of detections) {
+      const fullName = d.text;
+      const start = d.characterStart;
+      const end = d.characterEnd;
+
+      // Exclude provider-title contexts (provider names are handled separately).
+      const lookbackStart = Math.max(0, start - 30);
+      const textBefore = text.substring(lookbackStart, start);
+      const titleNamePattern = new RegExp(
+        `\\b(${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`,
+        "i",
+      );
+      if (titleNamePattern.test(textBefore)) {
+        continue;
+      }
+
+      // Exclude credentials immediately after the match (e.g., "John Smith, MD").
+      const after = text.substring(end, Math.min(text.length, end + 40));
+      if (SmartNameFilterSpan.CREDENTIAL_AFTER_NAME_PATTERN.test(after)) {
+        continue;
+      }
+
+      if (
+        !this.isWhitelisted(fullName, text) &&
+        this.isLikelyPersonName(fullName, text)
+      ) {
+        spans.push(
+          new Span({
+            text: fullName,
+            originalValue: fullName,
+            characterStart: start,
+            characterEnd: end,
+            filterType: FilterType.NAME,
+            confidence: d.confidence,
+            priority: this.getPriority(),
+            context: this.getContext(text, start, end - start),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: d.pattern,
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          }),
+        );
+      }
+    }
+  }
+
+  private detectRustSmartNames(text: string, spans: Span[]): void {
+    const detections = RustNameScanner.detectSmart(text);
+    if (!detections.length) return;
+
+    for (const d of detections) {
+      const fullName = d.text;
+      const start = d.characterStart;
+      const end = d.characterEnd;
+
+      // Preserve the TS validation gates so this rollout remains PHI-safe.
+      if (
+        !this.isWhitelisted(fullName, text) &&
+        this.isLikelyPersonName(fullName, text)
+      ) {
+        spans.push(
+          new Span({
+            text: fullName,
+            originalValue: fullName,
+            characterStart: start,
+            characterEnd: end,
+            filterType: FilterType.NAME,
+            confidence: d.confidence,
+            priority: this.getPriority(),
+            context: this.getContext(text, start, end - start),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: d.pattern,
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          }),
+        );
+      }
+    }
   }
 
   // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
@@ -749,7 +927,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    * - "Alii KelIy" (double i, capital I instead of l)
    * - "ZHAN6, SUSAN" (digit instead of letter)
    */
-  private detectOcrLastFirstNames(text: string, spans: Span[]): void {
+  private detectOcrLastFirstNames(
+    text: string,
+    spans: Span[],
+    options: { skipCommaPatterns?: boolean } = {},
+  ): void {
     const patterns = [
       // ULTRA-PERMISSIVE: ANY case mix, hyphens, apostrophes, dots, spaces
       // Catches: "aNDREA bUI", "arjun al-fasri", "Ka rer Kim-Pqrk", "vladimir p. wrighf"
@@ -798,7 +980,16 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       },
     ];
 
+    const skipCommaPatterns = options.skipCommaPatterns ?? false;
+
     for (const patternObj of patterns) {
+      if (skipCommaPatterns) {
+        // Rust scanner currently covers comma-based Last, First variants; skip those to avoid duplicate work.
+        if (patternObj.regex.source.includes(",")) {
+          continue;
+        }
+      }
+
       const pattern = patternObj.regex;
       pattern.lastIndex = 0;
       let match;
@@ -1822,8 +2013,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const part2 = match[2]; // Second+ capitalized word(s)
 
       // Check if both parts could be names using dictionary
-      const part1IsName = NameDictionary.isFirstName(part1) || NameDictionary.isSurname(part1);
-      const part2IsName = NameDictionary.isSurname(part2) || NameDictionary.isFirstName(part2);
+      const part1IsName =
+        NameDictionary.isFirstName(part1) || NameDictionary.isSurname(part1);
+      const part2IsName =
+        NameDictionary.isSurname(part2) || NameDictionary.isFirstName(part2);
 
       if (part1IsName && part2IsName) {
         // Both parts are in name dictionaries - high confidence this is a name

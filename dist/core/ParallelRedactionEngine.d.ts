@@ -9,6 +9,7 @@
 import { Span } from "../models/Span";
 import { SpanBasedFilter } from "./SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { type PostFilterShadowReport } from "./filters/PostFilterService";
 /**
  * Filter execution result with detailed diagnostics
  */
@@ -33,6 +34,38 @@ export interface RedactionExecutionReport {
     totalExecutionTimeMs: number;
     filterResults: FilterExecutionResult[];
     failedFilters: string[];
+    shadow?: {
+        rustNameLastFirst?: {
+            enabled: boolean;
+            rustCount: number;
+            tsCount: number;
+            missingInRust: number;
+            extraInRust: number;
+        };
+        rustNameFirstLast?: {
+            enabled: boolean;
+            rustCount: number;
+            tsCount: number;
+            missingInRust: number;
+            extraInRust: number;
+        };
+        rustNameSmart?: {
+            enabled: boolean;
+            rustCount: number;
+            tsCount: number;
+            missingInRust: number;
+            extraInRust: number;
+        };
+        postfilter?: PostFilterShadowReport;
+        applySpans?: {
+            enabled: boolean;
+            rustAvailable: boolean;
+            rustEnabled: boolean;
+            spans: number;
+            outputsEqual: boolean;
+            firstDiffAt?: number;
+        };
+    };
 }
 /**
  * Parallel Redaction Engine

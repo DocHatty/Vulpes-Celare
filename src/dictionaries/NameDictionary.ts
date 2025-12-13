@@ -50,6 +50,10 @@ export class NameDictionary {
   private static initErrors: string[] = [];
   private static phoneticMatcher: PhoneticMatcher | null = null;
   private static phoneticInitialized = false;
+  private static cachedNameLists: {
+    firstNames: string[];
+    surnames: string[];
+  } | null = null;
 
   private static isPhoneticEnabled(): boolean {
     return process.env.VULPES_ENABLE_PHONETIC === "1";
@@ -420,5 +424,20 @@ export class NameDictionary {
       firstNames: this.firstNames?.size || 0,
       surnames: this.surnames?.size || 0,
     };
+  }
+
+  /**
+   * Returns the loaded name dictionaries as arrays (lowercased).
+   * Intended for initializing native/Rust accelerators.
+   */
+  static getNameLists(): { firstNames: string[]; surnames: string[] } {
+    if (!this.initialized) this.init();
+
+    if (this.cachedNameLists) return this.cachedNameLists;
+
+    const firstNames = this.firstNames ? Array.from(this.firstNames) : [];
+    const surnames = this.surnames ? Array.from(this.surnames) : [];
+    this.cachedNameLists = { firstNames, surnames };
+    return this.cachedNameLists;
   }
 }

@@ -10,6 +10,7 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { RustScanKernel } from "../utils/RustScanKernel";
 
 export class MRNFilterSpan extends SpanBasedFilter {
   /**
@@ -118,6 +119,30 @@ export class MRNFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    const accelerated = RustScanKernel.getDetections(context, text, "MRN");
+    if (accelerated) {
+      return accelerated.map((d) => {
+        return new Span({
+          text: d.text,
+          originalValue: d.text,
+          characterStart: d.characterStart,
+          characterEnd: d.characterEnd,
+          filterType: FilterType.MRN,
+          confidence: d.confidence,
+          priority: this.getPriority(),
+          context: this.extractContext(text, d.characterStart, d.characterEnd),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: d.pattern,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+      });
+    }
+
     const spans: Span[] = [];
 
     for (let i = 0; i < MRNFilterSpan.COMPILED_PATTERNS.length; i++) {

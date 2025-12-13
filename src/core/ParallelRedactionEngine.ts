@@ -18,7 +18,10 @@ import { FieldLabelWhitelist } from "./FieldLabelWhitelist";
 import { FieldContextDetector, FieldContext } from "./FieldContextDetector";
 import { DocumentVocabulary } from "../vocabulary/DocumentVocabulary";
 import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
-import { PostFilterService } from "./filters/PostFilterService";
+import {
+  PostFilterService,
+  type PostFilterShadowReport,
+} from "./filters/PostFilterService";
 import { SpanEnhancer } from "./SpanEnhancer";
 import { CrossTypeReasoner, crossTypeReasoner } from "./CrossTypeReasoner";
 import {
@@ -26,6 +29,11 @@ import {
   confidenceCalibrator,
 } from "./ConfidenceCalibrator";
 import { isWhitelisted } from "../filters/constants/NameFilterConstants";
+import { RustNameScanner } from "../utils/RustNameScanner";
+import {
+  RustApplyKernel,
+  type RustReplacement,
+} from "../utils/RustApplyKernel";
 
 /**
  * Filter execution result with detailed diagnostics
@@ -52,7 +60,43 @@ export interface RedactionExecutionReport {
   totalExecutionTimeMs: number;
   filterResults: FilterExecutionResult[];
   failedFilters: string[];
+  shadow?: {
+    rustNameLastFirst?: {
+      enabled: boolean;
+      rustCount: number;
+      tsCount: number;
+      missingInRust: number;
+      extraInRust: number;
+    };
+    rustNameFirstLast?: {
+      enabled: boolean;
+      rustCount: number;
+      tsCount: number;
+      missingInRust: number;
+      extraInRust: number;
+    };
+    rustNameSmart?: {
+      enabled: boolean;
+      rustCount: number;
+      tsCount: number;
+      missingInRust: number;
+      extraInRust: number;
+    };
+    postfilter?: PostFilterShadowReport;
+    applySpans?: {
+      enabled: boolean;
+      rustAvailable: boolean;
+      rustEnabled: boolean;
+      spans: number;
+      outputsEqual: boolean;
+      firstDiffAt?: number;
+    };
+  };
 }
+
+type ApplySpansShadowReport = NonNullable<
+  RedactionExecutionReport["shadow"]
+>["applySpans"];
 
 /**
  * Parallel Redaction Engine
@@ -424,8 +468,165 @@ export class ParallelRedactionEngine {
       mergedSpans.length,
     );
 
+    // SHADOW MODE: compare Rust name-scanner output vs TS pipeline (no behavior change).
+    let shadow: RedactionExecutionReport["shadow"] | undefined = undefined;
+    if (process.env.VULPES_SHADOW_RUST_NAME === "1") {
+      try {
+        const rust = RustNameScanner.detectLastFirst(text);
+        const ts = mergedSpans
+          .filter((s) => s.filterType === FilterType.NAME)
+          .filter((s) => s.text.includes(","));
+
+        const rustKeys = new Set(
+          rust.map((r) => `${r.characterStart}-${r.characterEnd}`),
+        );
+        const tsKeys = new Set(
+          ts.map((s) => `${s.characterStart}-${s.characterEnd}`),
+        );
+
+        let missingInRust = 0;
+        for (const k of tsKeys) if (!rustKeys.has(k)) missingInRust++;
+
+        let extraInRust = 0;
+        for (const k of rustKeys) if (!tsKeys.has(k)) extraInRust++;
+
+        shadow = {
+          rustNameLastFirst: {
+            enabled: true,
+            rustCount: rust.length,
+            tsCount: ts.length,
+            missingInRust,
+            extraInRust,
+          },
+        };
+      } catch {
+        shadow = {
+          rustNameLastFirst: {
+            enabled: false,
+            rustCount: 0,
+            tsCount: 0,
+            missingInRust: 0,
+            extraInRust: 0,
+          },
+        };
+      }
+    }
+
+    if (process.env.VULPES_SHADOW_RUST_NAME_FULL === "1") {
+      const baseShadow = shadow ?? {};
+      try {
+        const rust = RustNameScanner.detectFirstLast(text);
+        const ts = mergedSpans.filter((s) => {
+          if (s.filterType !== "NAME") return false;
+          const t = s.text;
+          if (t.includes(",")) return false;
+          const parts = t.trim().split(/\s+/);
+          if (parts.length !== 2 && parts.length !== 3) return false;
+          return parts.every((p) => /^[A-Z][A-Za-z'`.-]{1,30}$/.test(p));
+        });
+
+        const rustKeys = new Set(
+          rust.map((s) => `${s.characterStart}-${s.characterEnd}`),
+        );
+        const tsKeys = new Set(
+          ts.map((s) => `${s.characterStart}-${s.characterEnd}`),
+        );
+
+        let missingInRust = 0;
+        for (const k of tsKeys) if (!rustKeys.has(k)) missingInRust++;
+
+        let extraInRust = 0;
+        for (const k of rustKeys) if (!tsKeys.has(k)) extraInRust++;
+
+        shadow = {
+          ...baseShadow,
+          rustNameFirstLast: {
+            enabled: true,
+            rustCount: rust.length,
+            tsCount: ts.length,
+            missingInRust,
+            extraInRust,
+          },
+        };
+      } catch {
+        shadow = {
+          ...baseShadow,
+          rustNameFirstLast: {
+            enabled: false,
+            rustCount: 0,
+            tsCount: 0,
+            missingInRust: 0,
+            extraInRust: 0,
+          },
+        };
+      }
+    }
+
+    if (process.env.VULPES_SHADOW_RUST_NAME_SMART === "1") {
+      const baseShadow = shadow ?? {};
+      try {
+        const rust = RustNameScanner.detectSmart(text);
+        const ts = mergedSpans.filter((s) => s.filterType === FilterType.NAME);
+
+        const rustKeys = new Set(
+          rust.map((s) => `${s.characterStart}-${s.characterEnd}`),
+        );
+        const tsKeys = new Set(
+          ts.map((s) => `${s.characterStart}-${s.characterEnd}`),
+        );
+
+        let missingInRust = 0;
+        for (const k of tsKeys) if (!rustKeys.has(k)) missingInRust++;
+
+        let extraInRust = 0;
+        for (const k of rustKeys) if (!tsKeys.has(k)) extraInRust++;
+
+        shadow = {
+          ...baseShadow,
+          rustNameSmart: {
+            enabled: true,
+            rustCount: rust.length,
+            tsCount: ts.length,
+            missingInRust,
+            extraInRust,
+          },
+        };
+      } catch {
+        shadow = {
+          ...baseShadow,
+          rustNameSmart: {
+            enabled: false,
+            rustCount: 0,
+            tsCount: 0,
+            missingInRust: 0,
+            extraInRust: 0,
+          },
+        };
+      }
+    }
+
+    const postfilterShadow: PostFilterShadowReport | undefined =
+      process.env.VULPES_SHADOW_POSTFILTER === "1"
+        ? {
+            enabled: true,
+            rustAvailable: false,
+            rustEnabled: false,
+            inputSpans: mergedSpans.length,
+            tsKept: 0,
+            rustKept: 0,
+            missingInRust: 0,
+            extraInRust: 0,
+          }
+        : undefined;
+
+    if (postfilterShadow) {
+      shadow = { ...(shadow ?? {}), postfilter: postfilterShadow };
+    }
+
     // STEP 4: Post-filter to remove false positives (using PostFilterService)
-    const validSpans = PostFilterService.filter(mergedSpans, text);
+    const validSpans = PostFilterService.filter(mergedSpans, text, {
+      shadowReport: postfilterShadow,
+    });
     RadiologyLogger.pipelineStage(
       "POST-FILTER",
       `Final false positive removal: ${mergedSpans.length} -> ${validSpans.length}`,
@@ -433,7 +634,12 @@ export class ParallelRedactionEngine {
     );
 
     // STEP 5: Apply all spans at once
-    const redactedText = this.applySpans(text, validSpans, context);
+    const applyResult = this.applySpans(text, validSpans, context);
+    const redactedText = applyResult.text;
+
+    if (applyResult.shadow) {
+      shadow = { ...(shadow ?? {}), applySpans: applyResult.shadow };
+    }
 
     const totalTime = Date.now() - startTime;
 
@@ -451,6 +657,7 @@ export class ParallelRedactionEngine {
       totalExecutionTimeMs: totalTime,
       filterResults,
       failedFilters,
+      ...(shadow ? { shadow } : {}),
     };
 
     // Log comprehensive summary
@@ -525,16 +732,21 @@ export class ParallelRedactionEngine {
     text: string,
     spans: Span[],
     context: RedactionContext,
-  ): string {
+  ): { text: string; shadow?: ApplySpansShadowReport } {
     // Sort by position (reverse) so we can replace without messing up positions
     const sortedSpans = [...spans].sort(
       (a, b) => b.characterStart - a.characterStart,
     );
 
-    let result = text;
+    const replacements: RustReplacement[] = [];
     for (const span of sortedSpans) {
       // Create token for this span
       const token = context.createToken(span.filterType, span.text);
+      replacements.push({
+        characterStart: span.characterStart,
+        characterEnd: span.characterEnd,
+        replacement: token,
+      });
 
       // Log PHI detection with full details
       const contextStart = Math.max(0, span.characterStart - 30);
@@ -552,17 +764,69 @@ export class ParallelRedactionEngine {
         pattern: span.pattern || undefined,
       });
 
-      // Replace span with token
-      result =
-        result.substring(0, span.characterStart) +
-        token +
-        result.substring(span.characterEnd);
-
       span.replacement = token;
       span.applied = true;
     }
 
-    return result;
+    const applyShadowEnabled = process.env.VULPES_SHADOW_APPLY_SPANS === "1";
+    const rustAvailable = RustApplyKernel.isAvailable();
+    const rustEnabled = process.env.VULPES_APPLY_SPANS_ACCEL === "1";
+
+    const applyInTs = (input: string, reps: RustReplacement[]): string => {
+      const sorted = [...reps].sort(
+        (a, b) => b.characterStart - a.characterStart,
+      );
+      let out = input;
+      for (const r of sorted) {
+        out =
+          out.substring(0, r.characterStart) +
+          r.replacement +
+          out.substring(r.characterEnd);
+      }
+      return out;
+    };
+
+    const rustOutput = RustApplyKernel.apply(text, replacements);
+    const usedRust = rustOutput !== null;
+    const chosen = usedRust ? rustOutput : applyInTs(text, replacements);
+
+    let shadow: ApplySpansShadowReport | undefined = undefined;
+    if (applyShadowEnabled) {
+      const tsOutput = applyInTs(text, replacements);
+      const rustShadowOutput =
+        rustOutput ?? RustApplyKernel.applyUnsafe(text, replacements);
+
+      const outputsEqual =
+        rustShadowOutput !== null ? tsOutput === rustShadowOutput : true;
+
+      let firstDiffAt: number | undefined = undefined;
+      if (!outputsEqual && rustShadowOutput) {
+        const max = Math.min(tsOutput.length, rustShadowOutput.length);
+        for (let i = 0; i < max; i++) {
+          if (tsOutput[i] !== rustShadowOutput[i]) {
+            firstDiffAt = i;
+            break;
+          }
+        }
+        if (
+          firstDiffAt === undefined &&
+          tsOutput.length !== rustShadowOutput.length
+        ) {
+          firstDiffAt = max;
+        }
+      }
+
+      shadow = {
+        enabled: true,
+        rustAvailable,
+        rustEnabled,
+        spans: spans.length,
+        outputsEqual,
+        ...(firstDiffAt !== undefined ? { firstDiffAt } : {}),
+      };
+    }
+
+    return { text: chosen, ...(shadow ? { shadow } : {}) };
   }
 
   /**

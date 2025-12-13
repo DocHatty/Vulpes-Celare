@@ -17,11 +17,9 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { RustScanKernel } from "../utils/RustScanKernel";
 
 export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
   /**
@@ -163,6 +161,35 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    const accelerated = RustScanKernel.getDetections(
+      context,
+      text,
+      "UNIQUE_ID",
+    );
+    if (accelerated) {
+      return accelerated.map((d) => {
+        return new Span({
+          text: d.text,
+          originalValue: d.text,
+          characterStart: d.characterStart,
+          characterEnd: d.characterEnd,
+          // Preserve legacy behavior: unique IDs are tokenized as ACCOUNT-like identifiers.
+          filterType: FilterType.ACCOUNT,
+          confidence: d.confidence,
+          priority: this.getPriority(),
+          context: this.extractContext(text, d.characterStart, d.characterEnd),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: d.pattern,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+      });
+    }
+
     const spans: Span[] = [];
 
     // Pattern 1: Brand prefix IDs (PLANETFIT-392847, DELTA-847392SK)
@@ -193,7 +220,7 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
     // Pattern: BRAND-ALPHANUMERIC (1-3 segments)
     const pattern = new RegExp(
       `\\b((?:${prefixPattern})(?:-[A-Z0-9]+){1,3})\\b`,
-      "gi"
+      "gi",
     );
 
     pattern.lastIndex = 0;
@@ -235,7 +262,7 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
         context: this.extractContext(
           text,
           match.index,
-          match.index + idCode.length
+          match.index + idCode.length,
         ),
         window: [],
         replacement: null,
@@ -279,7 +306,7 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
         context: this.extractContext(
           text,
           match.index,
-          match.index + fullMatch.length
+          match.index + fullMatch.length,
         ),
         window: [],
         replacement: null,
@@ -334,7 +361,7 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
           context: this.extractContext(
             text,
             absoluteStart,
-            absoluteStart + idCode.length
+            absoluteStart + idCode.length,
           ),
           window: [],
           replacement: null,
@@ -376,7 +403,7 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
         context: this.extractContext(
           text,
           match.index,
-          match.index + fullMatch.length
+          match.index + fullMatch.length,
         ),
         window: [],
         replacement: null,
@@ -416,7 +443,7 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
         context: this.extractContext(
           text,
           match.index,
-          match.index + fullMatch.length
+          match.index + fullMatch.length,
         ),
         window: [],
         replacement: null,

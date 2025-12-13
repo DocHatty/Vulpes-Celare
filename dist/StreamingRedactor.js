@@ -20,6 +20,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebSocketRedactionHandler = exports.StreamingRedactor = void 0;
 const VulpesCelare_1 = require("./VulpesCelare");
+const binding_1 = require("./native/binding");
+const RustStreamingIdentifierScanner_1 = require("./utils/RustStreamingIdentifierScanner");
+const RustStreamingNameScanner_1 = require("./utils/RustStreamingNameScanner");
+let cachedStreamingBinding = undefined;
+function getStreamingBinding() {
+    if (cachedStreamingBinding !== undefined)
+        return cachedStreamingBinding;
+    try {
+        cachedStreamingBinding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
+    }
+    catch {
+        cachedStreamingBinding = null;
+    }
+    return cachedStreamingBinding;
+}
 /**
  * StreamingRedactor - Real-time PHI redaction for streaming text
  *
@@ -44,14 +59,33 @@ class StreamingRedactor {
             bufferSize: config.bufferSize ?? 100,
             flushTimeout: config.flushTimeout ?? 500,
             engineConfig: config.engineConfig,
-            mode: config.mode ?? 'sentence'
+            mode: config.mode ?? "sentence",
+            overlapSize: config.overlapSize ?? 32,
+            emitDetections: config.emitDetections ?? process.env.VULPES_STREAM_DETECTIONS === "1",
         };
         this.engine = new VulpesCelare_1.VulpesCelare(this.config.engineConfig || {});
-        this.buffer = '';
+        this.buffer = "";
         this.position = 0;
         this.flushTimer = null;
-        this.sentenceBuffer = '';
+        this.sentenceBuffer = "";
         this.totalRedactionCount = 0;
+        this.pendingChunks = [];
+        this.emitDetections = this.config.emitDetections;
+        this.identifierScanner = this.emitDetections
+            ? new RustStreamingIdentifierScanner_1.RustStreamingIdentifierScanner(Math.max(64, this.config.overlapSize))
+            : null;
+        this.nameScanner = this.emitDetections
+            ? new RustStreamingNameScanner_1.RustStreamingNameScanner(Math.max(32, this.config.overlapSize))
+            : null;
+        this.pendingNativeDetections = [];
+        const wantsKernel = process.env.VULPES_STREAM_KERNEL === "1";
+        const binding = wantsKernel ? getStreamingBinding() : null;
+        if (wantsKernel && binding?.VulpesStreamingKernel) {
+            this.nativeKernel = new binding.VulpesStreamingKernel(this.config.mode, this.config.bufferSize, this.config.overlapSize);
+        }
+        else {
+            this.nativeKernel = null;
+        }
     }
     /**
      * Process an async iterable stream of text chunks
@@ -79,6 +113,9 @@ class StreamingRedactor {
             const result = await this.processChunk(chunk);
             if (result) {
                 yield result;
+                while (this.pendingChunks.length > 0) {
+                    yield this.pendingChunks.shift();
+                }
             }
         }
         // Flush any remaining buffer
@@ -94,25 +131,89 @@ class StreamingRedactor {
      * @returns Redacted chunk if buffer is ready to flush, null otherwise
      */
     async processChunk(chunk) {
+        const pendingFirst = this.pendingChunks.length > 0 ? this.pendingChunks.shift() : null;
+        if (this.emitDetections) {
+            const identifierDetections = this.identifierScanner?.push(chunk) ?? [];
+            const nameDetections = this.nameScanner?.push(chunk) ?? [];
+            if (identifierDetections.length > 0) {
+                this.pendingNativeDetections.push(...identifierDetections.map((d) => ({
+                    filterType: d.filterType,
+                    characterStart: d.characterStart,
+                    characterEnd: d.characterEnd,
+                    text: d.text,
+                    confidence: d.confidence,
+                    pattern: d.pattern,
+                })));
+            }
+            if (nameDetections.length > 0) {
+                this.pendingNativeDetections.push(...nameDetections.map((d) => ({
+                    filterType: "NAME",
+                    characterStart: d.characterStart,
+                    characterEnd: d.characterEnd,
+                    text: d.text,
+                    confidence: d.confidence,
+                    pattern: d.pattern,
+                })));
+            }
+            if (this.pendingNativeDetections.length > 1) {
+                this.pendingNativeDetections.sort((a, b) => a.characterStart - b.characterStart);
+            }
+        }
         // Add to buffer
-        this.buffer += chunk;
-        this.sentenceBuffer += chunk;
+        if (this.nativeKernel) {
+            this.nativeKernel.push(chunk);
+        }
+        else {
+            this.buffer += chunk;
+            this.sentenceBuffer += chunk;
+        }
         // Reset flush timer
         this.resetFlushTimer();
         // Check if we should flush based on mode
-        if (this.config.mode === 'sentence') {
-            // Flush on sentence boundaries
-            if (this.shouldFlushSentence()) {
-                return await this.flushBuffer();
+        if (this.nativeKernel) {
+            let firstProduced = null;
+            while (true) {
+                const segment = this.nativeKernel.popSegment(false);
+                if (!segment)
+                    break;
+                const produced = await this.redactAndAdvance(segment);
+                if (!firstProduced)
+                    firstProduced = produced;
+                else
+                    this.pendingChunks.push(produced);
             }
+            if (pendingFirst) {
+                if (firstProduced)
+                    this.pendingChunks.unshift(firstProduced);
+                return pendingFirst;
+            }
+            return firstProduced;
         }
         else {
-            // Flush when buffer reaches size limit
-            if (this.buffer.length >= this.config.bufferSize) {
-                return await this.flushBuffer();
+            if (this.config.mode === "sentence") {
+                // Flush on sentence boundaries
+                if (this.shouldFlushSentence()) {
+                    const produced = await this.flushBuffer();
+                    if (pendingFirst) {
+                        this.pendingChunks.unshift(produced);
+                        return pendingFirst;
+                    }
+                    return produced;
+                }
+            }
+            else {
+                // Flush when buffer reaches size limit
+                if (this.buffer.length >= this.config.bufferSize) {
+                    const produced = await this.flushBuffer();
+                    if (pendingFirst) {
+                        this.pendingChunks.unshift(produced);
+                        return pendingFirst;
+                    }
+                    return produced;
+                }
             }
         }
-        return null;
+        return pendingFirst;
     }
     /**
      * Force flush of current buffer
@@ -122,6 +223,12 @@ class StreamingRedactor {
         if (this.flushTimer) {
             clearTimeout(this.flushTimer);
             this.flushTimer = null;
+        }
+        if (this.nativeKernel) {
+            const segment = this.nativeKernel.popSegment(true);
+            if (!segment)
+                return null;
+            return await this.redactAndAdvance(segment);
         }
         if (this.buffer.length === 0) {
             return null;
@@ -134,7 +241,7 @@ class StreamingRedactor {
     getStats() {
         return {
             totalRedactionCount: this.totalRedactionCount,
-            position: this.position
+            position: this.position,
         };
     }
     /**
@@ -142,10 +249,15 @@ class StreamingRedactor {
      * Useful for starting a new stream
      */
     reset() {
-        this.buffer = '';
-        this.sentenceBuffer = '';
+        this.buffer = "";
+        this.sentenceBuffer = "";
         this.position = 0;
         this.totalRedactionCount = 0;
+        this.pendingChunks = [];
+        this.nativeKernel?.reset();
+        this.identifierScanner?.reset();
+        this.nameScanner?.reset();
+        this.pendingNativeDetections = [];
         if (this.flushTimer) {
             clearTimeout(this.flushTimer);
             this.flushTimer = null;
@@ -167,14 +279,58 @@ class StreamingRedactor {
         // Update state
         this.position += textToRedact.length;
         this.totalRedactionCount += result.redactionCount;
-        this.buffer = '';
-        this.sentenceBuffer = '';
+        this.buffer = "";
+        this.sentenceBuffer = "";
         return {
             text: result.text,
             containsRedactions: result.redactionCount > 0,
             redactionCount: result.redactionCount,
-            position: startPosition
+            position: startPosition,
         };
+    }
+    async redactAndAdvance(textToRedact) {
+        const startPosition = this.position;
+        const result = await this.engine.process(textToRedact);
+        this.position += textToRedact.length;
+        this.totalRedactionCount += result.redactionCount;
+        const chunk = {
+            text: result.text,
+            containsRedactions: result.redactionCount > 0,
+            redactionCount: result.redactionCount,
+            position: startPosition,
+        };
+        if (this.emitDetections && this.pendingNativeDetections.length > 0) {
+            const endPosition = startPosition + textToRedact.length;
+            const ready = [];
+            const remaining = [];
+            for (const d of this.pendingNativeDetections) {
+                if (d.characterEnd <= startPosition) {
+                    // Already emitted; drop.
+                    continue;
+                }
+                if (d.characterEnd <= endPosition) {
+                    const relStart = Math.max(0, d.characterStart - startPosition);
+                    const relEnd = Math.max(0, d.characterEnd - startPosition);
+                    if (relEnd > relStart) {
+                        ready.push({
+                            filterType: d.filterType,
+                            start: relStart,
+                            end: relEnd,
+                            text: d.text,
+                            confidence: d.confidence,
+                            pattern: d.pattern,
+                        });
+                    }
+                    continue;
+                }
+                remaining.push(d);
+            }
+            if (ready.length > 0) {
+                chunk.nativeDetections = ready;
+            }
+            this.pendingNativeDetections = remaining;
+        }
+        return chunk;
     }
     resetFlushTimer() {
         if (this.flushTimer) {
@@ -242,8 +398,8 @@ class WebSocketRedactionHandler {
             }
             // Send stats before closing
             this.ws.send(JSON.stringify({
-                type: 'stats',
-                data: this.redactor.getStats()
+                type: "stats",
+                data: this.redactor.getStats(),
             }));
         }
         catch (error) {
@@ -252,14 +408,14 @@ class WebSocketRedactionHandler {
     }
     sendChunk(chunk) {
         this.ws.send(JSON.stringify({
-            type: 'chunk',
-            data: chunk
+            type: "chunk",
+            data: chunk,
         }));
     }
     sendError(error) {
         this.ws.send(JSON.stringify({
-            type: 'error',
-            message: error.message || 'Redaction error'
+            type: "error",
+            message: error.message || "Redaction error",
         }));
     }
 }

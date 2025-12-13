@@ -23,6 +23,8 @@ const SpanEnhancer_1 = require("./SpanEnhancer");
 const CrossTypeReasoner_1 = require("./CrossTypeReasoner");
 const ConfidenceCalibrator_1 = require("./ConfidenceCalibrator");
 const NameFilterConstants_1 = require("../filters/constants/NameFilterConstants");
+const RustNameScanner_1 = require("../utils/RustNameScanner");
+const RustApplyKernel_1 = require("../utils/RustApplyKernel");
 /**
  * Parallel Redaction Engine
  * Orchestrates parallel filter execution and span merging
@@ -257,11 +259,160 @@ class ParallelRedactionEngine {
         // STEP 3: Resolve overlaps and deduplicate
         const mergedSpans = Span_1.SpanUtils.dropOverlappingSpans(disambiguatedSpans);
         RadiologyLogger_1.RadiologyLogger.pipelineStage("OVERLAP", `Resolved overlapping spans: ${disambiguatedSpans.length} -> ${mergedSpans.length}`, mergedSpans.length);
+        // SHADOW MODE: compare Rust name-scanner output vs TS pipeline (no behavior change).
+        let shadow = undefined;
+        if (process.env.VULPES_SHADOW_RUST_NAME === "1") {
+            try {
+                const rust = RustNameScanner_1.RustNameScanner.detectLastFirst(text);
+                const ts = mergedSpans
+                    .filter((s) => s.filterType === Span_1.FilterType.NAME)
+                    .filter((s) => s.text.includes(","));
+                const rustKeys = new Set(rust.map((r) => `${r.characterStart}-${r.characterEnd}`));
+                const tsKeys = new Set(ts.map((s) => `${s.characterStart}-${s.characterEnd}`));
+                let missingInRust = 0;
+                for (const k of tsKeys)
+                    if (!rustKeys.has(k))
+                        missingInRust++;
+                let extraInRust = 0;
+                for (const k of rustKeys)
+                    if (!tsKeys.has(k))
+                        extraInRust++;
+                shadow = {
+                    rustNameLastFirst: {
+                        enabled: true,
+                        rustCount: rust.length,
+                        tsCount: ts.length,
+                        missingInRust,
+                        extraInRust,
+                    },
+                };
+            }
+            catch {
+                shadow = {
+                    rustNameLastFirst: {
+                        enabled: false,
+                        rustCount: 0,
+                        tsCount: 0,
+                        missingInRust: 0,
+                        extraInRust: 0,
+                    },
+                };
+            }
+        }
+        if (process.env.VULPES_SHADOW_RUST_NAME_FULL === "1") {
+            const baseShadow = shadow ?? {};
+            try {
+                const rust = RustNameScanner_1.RustNameScanner.detectFirstLast(text);
+                const ts = mergedSpans.filter((s) => {
+                    if (s.filterType !== "NAME")
+                        return false;
+                    const t = s.text;
+                    if (t.includes(","))
+                        return false;
+                    const parts = t.trim().split(/\s+/);
+                    if (parts.length !== 2 && parts.length !== 3)
+                        return false;
+                    return parts.every((p) => /^[A-Z][A-Za-z'`.-]{1,30}$/.test(p));
+                });
+                const rustKeys = new Set(rust.map((s) => `${s.characterStart}-${s.characterEnd}`));
+                const tsKeys = new Set(ts.map((s) => `${s.characterStart}-${s.characterEnd}`));
+                let missingInRust = 0;
+                for (const k of tsKeys)
+                    if (!rustKeys.has(k))
+                        missingInRust++;
+                let extraInRust = 0;
+                for (const k of rustKeys)
+                    if (!tsKeys.has(k))
+                        extraInRust++;
+                shadow = {
+                    ...baseShadow,
+                    rustNameFirstLast: {
+                        enabled: true,
+                        rustCount: rust.length,
+                        tsCount: ts.length,
+                        missingInRust,
+                        extraInRust,
+                    },
+                };
+            }
+            catch {
+                shadow = {
+                    ...baseShadow,
+                    rustNameFirstLast: {
+                        enabled: false,
+                        rustCount: 0,
+                        tsCount: 0,
+                        missingInRust: 0,
+                        extraInRust: 0,
+                    },
+                };
+            }
+        }
+        if (process.env.VULPES_SHADOW_RUST_NAME_SMART === "1") {
+            const baseShadow = shadow ?? {};
+            try {
+                const rust = RustNameScanner_1.RustNameScanner.detectSmart(text);
+                const ts = mergedSpans.filter((s) => s.filterType === Span_1.FilterType.NAME);
+                const rustKeys = new Set(rust.map((s) => `${s.characterStart}-${s.characterEnd}`));
+                const tsKeys = new Set(ts.map((s) => `${s.characterStart}-${s.characterEnd}`));
+                let missingInRust = 0;
+                for (const k of tsKeys)
+                    if (!rustKeys.has(k))
+                        missingInRust++;
+                let extraInRust = 0;
+                for (const k of rustKeys)
+                    if (!tsKeys.has(k))
+                        extraInRust++;
+                shadow = {
+                    ...baseShadow,
+                    rustNameSmart: {
+                        enabled: true,
+                        rustCount: rust.length,
+                        tsCount: ts.length,
+                        missingInRust,
+                        extraInRust,
+                    },
+                };
+            }
+            catch {
+                shadow = {
+                    ...baseShadow,
+                    rustNameSmart: {
+                        enabled: false,
+                        rustCount: 0,
+                        tsCount: 0,
+                        missingInRust: 0,
+                        extraInRust: 0,
+                    },
+                };
+            }
+        }
+        const postfilterShadow = process.env.VULPES_SHADOW_POSTFILTER === "1"
+            ? {
+                enabled: true,
+                rustAvailable: false,
+                rustEnabled: false,
+                inputSpans: mergedSpans.length,
+                tsKept: 0,
+                rustKept: 0,
+                missingInRust: 0,
+                extraInRust: 0,
+            }
+            : undefined;
+        if (postfilterShadow) {
+            shadow = { ...(shadow ?? {}), postfilter: postfilterShadow };
+        }
         // STEP 4: Post-filter to remove false positives (using PostFilterService)
-        const validSpans = PostFilterService_1.PostFilterService.filter(mergedSpans, text);
+        const validSpans = PostFilterService_1.PostFilterService.filter(mergedSpans, text, {
+            shadowReport: postfilterShadow,
+        });
         RadiologyLogger_1.RadiologyLogger.pipelineStage("POST-FILTER", `Final false positive removal: ${mergedSpans.length} -> ${validSpans.length}`, validSpans.length);
         // STEP 5: Apply all spans at once
-        const redactedText = this.applySpans(text, validSpans, context);
+        const applyResult = this.applySpans(text, validSpans, context);
+        const redactedText = applyResult.text;
+        if (applyResult.shadow) {
+            shadow = { ...(shadow ?? {}), applySpans: applyResult.shadow };
+        }
         const totalTime = Date.now() - startTime;
         // Generate execution report
         const failedFilters = filterResults
@@ -276,6 +427,7 @@ class ParallelRedactionEngine {
             totalExecutionTimeMs: totalTime,
             filterResults,
             failedFilters,
+            ...(shadow ? { shadow } : {}),
         };
         // Log comprehensive summary
         RadiologyLogger_1.RadiologyLogger.redactionSummary({
@@ -323,10 +475,15 @@ class ParallelRedactionEngine {
     static applySpans(text, spans, context) {
         // Sort by position (reverse) so we can replace without messing up positions
         const sortedSpans = [...spans].sort((a, b) => b.characterStart - a.characterStart);
-        let result = text;
+        const replacements = [];
         for (const span of sortedSpans) {
             // Create token for this span
             const token = context.createToken(span.filterType, span.text);
+            replacements.push({
+                characterStart: span.characterStart,
+                characterEnd: span.characterEnd,
+                replacement: token,
+            });
             // Log PHI detection with full details
             const contextStart = Math.max(0, span.characterStart - 30);
             const contextEnd = Math.min(text.length, span.characterEnd + 30);
@@ -341,15 +498,55 @@ class ParallelRedactionEngine {
                 context: contextSnippet,
                 pattern: span.pattern || undefined,
             });
-            // Replace span with token
-            result =
-                result.substring(0, span.characterStart) +
-                    token +
-                    result.substring(span.characterEnd);
             span.replacement = token;
             span.applied = true;
         }
-        return result;
+        const applyShadowEnabled = process.env.VULPES_SHADOW_APPLY_SPANS === "1";
+        const rustAvailable = RustApplyKernel_1.RustApplyKernel.isAvailable();
+        const rustEnabled = process.env.VULPES_APPLY_SPANS_ACCEL === "1";
+        const applyInTs = (input, reps) => {
+            const sorted = [...reps].sort((a, b) => b.characterStart - a.characterStart);
+            let out = input;
+            for (const r of sorted) {
+                out =
+                    out.substring(0, r.characterStart) +
+                        r.replacement +
+                        out.substring(r.characterEnd);
+            }
+            return out;
+        };
+        const rustOutput = RustApplyKernel_1.RustApplyKernel.apply(text, replacements);
+        const usedRust = rustOutput !== null;
+        const chosen = usedRust ? rustOutput : applyInTs(text, replacements);
+        let shadow = undefined;
+        if (applyShadowEnabled) {
+            const tsOutput = applyInTs(text, replacements);
+            const rustShadowOutput = rustOutput ?? RustApplyKernel_1.RustApplyKernel.applyUnsafe(text, replacements);
+            const outputsEqual = rustShadowOutput !== null ? tsOutput === rustShadowOutput : true;
+            let firstDiffAt = undefined;
+            if (!outputsEqual && rustShadowOutput) {
+                const max = Math.min(tsOutput.length, rustShadowOutput.length);
+                for (let i = 0; i < max; i++) {
+                    if (tsOutput[i] !== rustShadowOutput[i]) {
+                        firstDiffAt = i;
+                        break;
+                    }
+                }
+                if (firstDiffAt === undefined &&
+                    tsOutput.length !== rustShadowOutput.length) {
+                    firstDiffAt = max;
+                }
+            }
+            shadow = {
+                enabled: true,
+                rustAvailable,
+                rustEnabled,
+                spans: spans.length,
+                outputsEqual,
+                ...(firstDiffAt !== undefined ? { firstDiffAt } : {}),
+            };
+        }
+        return { text: chosen, ...(shadow ? { shadow } : {}) };
     }
     /**
      * Apply field context information to spans

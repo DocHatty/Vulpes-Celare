@@ -1,6 +1,6 @@
 # Vulpes Celare - Internal Assessment Summary
 
-**Last Updated:** 2025-12-12  
+**Last Updated:** 2025-12-13  
 **Scope:** documentation and feature status alignment
 
 ## Snapshot
@@ -14,6 +14,8 @@
 - Rust native vision core: implemented (`src/rust/`)
   - OCR inference (PaddleOCR ONNX)
   - Face detection inference (UltraFace ONNX)
+- Rust text accelerators: implemented and feature-flagged (tokenization, span overlap, name scanning, post-filter pruning)
+- Guardrail: JS-side ONNX bindings are blocked in `npm test` (`scripts/check-onnx-boundary.js`)
 
 ## Documentation Index
 

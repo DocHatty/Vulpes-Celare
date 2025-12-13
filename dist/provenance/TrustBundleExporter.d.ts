@@ -28,7 +28,7 @@
  *
  * // Verify bundle
  * const verification = await TrustBundleExporter.verify('patient-note.red');
- * console.log(verification.valid ? 'âœ“ VERIFIED' : 'âœ— INVALID');
+ * console.log(verification.valid ? '✔ VERIFIED' : '✖ INVALID');
  * ```
  */
 import { RedactionResult } from "../VulpesCelare";
@@ -253,9 +253,9 @@ export declare class TrustBundleExporter {
      * ```typescript
      * const result = await TrustBundleExporter.verify('./trust-bundle.red');
      * if (result.valid) {
-     *   console.log('âœ“ Bundle verified');
+     *   console.log('✔ Bundle verified');
      * } else {
-     *   console.error('âœ— Verification failed:', result.errors);
+     *   console.error('✖ Verification failed:', result.errors);
      * }
      * ```
      */

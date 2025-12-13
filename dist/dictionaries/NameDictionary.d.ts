@@ -38,6 +38,7 @@ export declare class NameDictionary {
     private static initErrors;
     private static phoneticMatcher;
     private static phoneticInitialized;
+    private static cachedNameLists;
     private static isPhoneticEnabled;
     private static getPhoneticThreshold;
     /**
@@ -113,6 +114,14 @@ export declare class NameDictionary {
     static getStats(): {
         firstNames: number;
         surnames: number;
+    };
+    /**
+     * Returns the loaded name dictionaries as arrays (lowercased).
+     * Intended for initializing native/Rust accelerators.
+     */
+    static getNameLists(): {
+        firstNames: string[];
+        surnames: string[];
     };
 }
 //# sourceMappingURL=NameDictionary.d.ts.map

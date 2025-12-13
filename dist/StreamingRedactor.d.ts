@@ -16,7 +16,7 @@
  *
  * @module StreamingRedactor
  */
-import { VulpesCelareConfig } from './VulpesCelare';
+import { VulpesCelareConfig } from "./VulpesCelare";
 export interface StreamingRedactorConfig {
     /**
      * Buffer size in characters before flushing to redaction engine
@@ -41,7 +41,21 @@ export interface StreamingRedactorConfig {
      * 'sentence' = better accuracy, higher latency
      * Default: 'sentence'
      */
-    mode?: 'immediate' | 'sentence';
+    mode?: "immediate" | "sentence";
+    /**
+     * Keep this many characters buffered as overlap when using the native streaming kernel.
+     * Larger overlap improves cross-chunk continuity at the cost of re-processing a small tail.
+     * Default: 32
+     */
+    overlapSize?: number;
+    /**
+     * Emit native streaming detections (identifiers + rolling name scan) alongside redacted chunks.
+     * This does not change redaction output; it is intended for profiling/telemetry and safe rollout.
+     *
+     * Can also be enabled with `VULPES_STREAM_DETECTIONS=1`.
+     * Default: false
+     */
+    emitDetections?: boolean;
 }
 export interface StreamingChunk {
     /**
@@ -60,6 +74,18 @@ export interface StreamingChunk {
      * Position in the overall stream
      */
     position: number;
+    /**
+     * Optional native detections that fall fully within this emitted chunk.
+     * Indices are relative to this chunk (0..chunk.text.length in UTF-16 code units).
+     */
+    nativeDetections?: {
+        filterType: string;
+        start: number;
+        end: number;
+        text: string;
+        confidence: number;
+        pattern: string;
+    }[];
 }
 /**
  * StreamingRedactor - Real-time PHI redaction for streaming text
@@ -87,6 +113,12 @@ export declare class StreamingRedactor {
     private flushTimer;
     private sentenceBuffer;
     private totalRedactionCount;
+    private nativeKernel;
+    private pendingChunks;
+    private emitDetections;
+    private identifierScanner;
+    private nameScanner;
+    private pendingNativeDetections;
     constructor(config?: StreamingRedactorConfig);
     /**
      * Process an async iterable stream of text chunks
@@ -136,6 +168,7 @@ export declare class StreamingRedactor {
     reset(): void;
     private shouldFlushSentence;
     private flushBuffer;
+    private redactAndAdvance;
     private resetFlushTimer;
 }
 /**

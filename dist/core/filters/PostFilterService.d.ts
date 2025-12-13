@@ -10,6 +10,16 @@
  * @module core/filters
  */
 import { Span } from "../../models/Span";
+export type PostFilterShadowReport = {
+    enabled: boolean;
+    rustAvailable: boolean;
+    rustEnabled: boolean;
+    inputSpans: number;
+    tsKept: number;
+    rustKept: number;
+    missingInRust: number;
+    extraInRust: number;
+};
 /**
  * Interface for filter strategies
  */
@@ -111,6 +121,7 @@ declare class FieldLabelFilter implements IPostFilterStrategy {
  */
 export declare class PostFilterService {
     private static readonly strategies;
+    private static filterTs;
     /**
      * Apply all post-filter strategies to remove false positives
      *
@@ -118,7 +129,9 @@ export declare class PostFilterService {
      * @param text - Full document text for context
      * @returns Filtered spans with false positives removed
      */
-    static filter(spans: Span[], text: string): Span[];
+    static filter(spans: Span[], text: string, options?: {
+        shadowReport?: PostFilterShadowReport;
+    }): Span[];
     /**
      * Get list of active strategy names
      */

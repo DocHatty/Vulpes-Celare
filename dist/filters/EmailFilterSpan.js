@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
+const RustScanKernel_1 = require("../utils/RustScanKernel");
 class EmailFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "EMAIL";
@@ -19,13 +20,35 @@ class EmailFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         return SpanBasedFilter_1.FilterPriority.EMAIL;
     }
     detect(text, config, context) {
+        const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "EMAIL");
+        if (accelerated) {
+            return accelerated.map((d) => {
+                return new Span_1.Span({
+                    text: d.text,
+                    originalValue: d.text,
+                    characterStart: d.characterStart,
+                    characterEnd: d.characterEnd,
+                    filterType: Span_1.FilterType.EMAIL,
+                    confidence: d.confidence,
+                    priority: this.getPriority(),
+                    context: this.extractContext(text, d.characterStart, d.characterEnd),
+                    window: [],
+                    replacement: null,
+                    salt: null,
+                    pattern: d.pattern,
+                    applied: false,
+                    ignored: false,
+                    ambiguousWith: [],
+                    disambiguationScore: null,
+                });
+            });
+        }
         const spans = [];
         const pattern = EmailFilterSpan.EMAIL_PATTERN;
         pattern.lastIndex = 0; // Reset regex
         let match;
         while ((match = pattern.exec(text)) !== null) {
-            const span = this.createSpanFromMatch(text, match, Span_1.FilterType.EMAIL, 0.95 // High confidence for email
-            );
+            const span = this.createSpanFromMatch(text, match, Span_1.FilterType.EMAIL, 0.95);
             spans.push(span);
         }
         return spans;

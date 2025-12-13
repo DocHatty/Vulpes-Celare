@@ -54,6 +54,10 @@ TypeScript orchestrates policies and workflows; Rust owns ONNX inference and vis
 
 The same native addon also provides **crypto/provenance helpers** (SHA-256, HMAC-SHA256, Merkle root) used by trust bundles and DICOM hashing.
 
+### Optional Rust Text Accelerators
+
+Additional Rust accelerators exist for text hotspots (tokenization, span overlap + span application, name scanning, post-filter pruning, and a multi-identifier scan kernel for regex-heavy filters). They are feature-flagged until fully validated; see `docs/internal/PROFILING.md`.
+
 ### ONNX Runtime (Windows)
 
 Windows builds ship with a bundled ONNX Runtime CPU DLL at `native/onnxruntime.dll` pinned to the version required by the Rust `ort` crate (1.22.x).
@@ -65,6 +69,17 @@ set VULPES_ORT_PATH=C:\path\to\onnxruntime.dll
 REM or
 set ORT_DYLIB_PATH=C:\path\to\onnxruntime.dll
 ```
+
+### ONNX Runtime (macOS/Linux)
+
+macOS/Linux native packaging is currently Windows-first. The engine still runs in JS-only mode on other platforms, but the native addon + pinned ORT bundle may require a source build until prebuilds are published.
+
+If you build the native core on macOS/Linux, it expects a pinned ORT shared library at:
+
+- macOS: `native/libonnxruntime.dylib`
+- Linux: `native/libonnxruntime.so`
+
+If it’s missing, you can fetch the pinned CPU build with `npm run native:ort:download`, or override with `VULPES_ORT_PATH`/`ORT_DYLIB_PATH`.
 
 ## CLI
 
@@ -79,6 +94,7 @@ vulpes --help       # All options
 ## Build & Test (Repo)
 
 ```bash
+npm run native:install
 npm run native:build
 npm run build
 npm test

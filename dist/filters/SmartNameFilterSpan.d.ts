@@ -26,6 +26,9 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
     detect(text: string, config: any, context: RedactionContext): Span[];
+    private detectRustLastFirstNames;
+    private detectRustFirstLastNames;
+    private detectRustSmartNames;
     /**
      * Check if a titled name is a PROVIDER name (should NOT be redacted)
      * Provider names with professional titles or credentials are NOT patient PHI

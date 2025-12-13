@@ -13,6 +13,9 @@
     "build": "npm run clean && tsc && node scripts/copy-assets.js",
     "build:watch": "tsc --watch",
     "native:build": "node scripts/build-native.js",
+    "native:ort:download": "node scripts/download-ort.js",
+    "native:install": "node scripts/install-native.js",
+    "postinstall": "node scripts/install-native.js",
     "test:preflight": "node scripts/check-onnx-boundary.js",
     "test": "npm run test:preflight && node tests/master-suite/run.js --profile HIPAA_STRICT --seed=1337",
     "test:strict": "npm run test:preflight && node tests/master-suite/run.js --profile HIPAA_STRICT --seed=1337 --strict-exit",
@@ -54,6 +57,7 @@
     "url": "https://github.com/DocHatty/Vulpes-Celare.git"
   },
   "homepage": "https://github.com/DocHatty/Vulpes-Celare#readme",
+  "vulpesOrtVersion": "1.22.0",
   "engines": {
     "node": ">=16.0.0"
   },

@@ -52,3 +52,7 @@ The CLI stores configuration in `~/.vulpes/`:
 ```
 
 Security note: this directory contains API keys and is excluded from git. Never commit credentials.
+
+## Native Addon Support
+
+The Rust native addon is packaged Windows-first today. On macOS/Linux, Vulpes still runs in JS-only mode, and native features may require a local source build until prebuilds are published.

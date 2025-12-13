@@ -320,10 +320,10 @@ async function main() {
       await VulpesCortex.initialize();
       cortex = VulpesCortex;
       log(
-        "  âœ“ Vulpes Cortex initialized (advanced learning + history consultation)\n",
+        "  ✓ Vulpes Cortex initialized (advanced learning + history consultation)\n",
       );
     } catch (e) {
-      console.warn(`  âš  Vulpes Cortex failed to initialize: ${e.message}\n`);
+      console.warn(`  ✗ Vulpes Cortex failed to initialize: ${e.message}\n`);
     }
   }
 
@@ -334,11 +334,9 @@ async function main() {
       learningEngine = new LearningEngine(
         path.join(__dirname, "..", "results"),
       );
-      log("  âœ“ Learning engine initialized (legacy mode)\n");
+      log("  ✓ Learning engine initialized (legacy mode)\n");
     } catch (e) {
-      console.warn(
-        `  âš  Learning engine failed to initialize: ${e.message}\n`,
-      );
+      console.warn(`  ✗ Learning engine failed to initialize: ${e.message}\n`);
     }
   }
 
@@ -461,11 +459,11 @@ async function main() {
 
       cortexAnalysis.recommendation = recommendation;
 
-      log("  âœ“ Pattern analysis complete");
-      log("  âœ“ History consulted");
-      log("  âœ“ Insights generated");
+      log("  ✓ Pattern analysis complete");
+      log("  ✓ History consulted");
+      log("  ✓ Insights generated");
       log(
-        `  âœ“ Top recommendation: ${recommendation.recommendation?.summary || "Review results"}`,
+        `  ✓ Top recommendation: ${recommendation.recommendation?.summary || "Review results"}`,
       );
     } else if (learningEngine) {
       log("\nPHASE 5: Learning from results (legacy mode)...\n");
@@ -507,7 +505,7 @@ async function main() {
             5,
           )) {
             log(
-              `    â€¢ ${pattern.category} (${pattern.phiType}): ${pattern.remediation || "Review"}`,
+              `    • ${pattern.category} (${pattern.phiType}): ${pattern.remediation || "Review"}`,
             );
           }
         }
@@ -671,26 +669,42 @@ async function main() {
 
       if (meetsStrict) {
         log("\n  PASS (HIPAA_STRICT)\n");
-        printLLMActionChecklist(assessment.results, smartGradeResults, "PASS");
+        printLLMActionChecklistPretty(
+          assessment.results,
+          smartGradeResults,
+          "PASS",
+        );
         process.exit(0);
       }
 
       log("\n  NEEDS IMPROVEMENT (HIPAA_STRICT)\n");
-      printLLMActionChecklist(assessment.results, smartGradeResults, "IMPROVE");
+      printLLMActionChecklistPretty(
+        assessment.results,
+        smartGradeResults,
+        "IMPROVE",
+      );
       process.exit(shouldFailProcess ? 1 : 0);
     }
 
     if (sensitivity >= 95 && passingGrades.includes(grade)) {
-      log("\n  âœ“ PASS\n");
-      printLLMActionChecklist(assessment.results, smartGradeResults, "PASS");
+      log("\n  ✓ PASS\n");
+      printLLMActionChecklistPretty(
+        assessment.results,
+        smartGradeResults,
+        "PASS",
+      );
       process.exit(0);
     } else {
-      log("\n  âœ— NEEDS IMPROVEMENT\n");
-      printLLMActionChecklist(assessment.results, smartGradeResults, "IMPROVE");
+      log("\n  ✗ NEEDS IMPROVEMENT\n");
+      printLLMActionChecklistPretty(
+        assessment.results,
+        smartGradeResults,
+        "IMPROVE",
+      );
       process.exit(shouldFailProcess ? 1 : 0);
     }
   } catch (error) {
-    console.error(`\nâŒ Assessment failed: ${error.message}`);
+    console.error(`\n✗ Assessment failed: ${error.message}`);
     console.error(error.stack);
     process.exit(2);
   }
@@ -885,6 +899,77 @@ function printLLMActionChecklist(results, smartGradeResults, status) {
   lines.push("");
 
   log(lines.join("\n"));
+}
+
+function printLLMActionChecklistPretty(results, smartGradeResults, status) {
+  const metrics = results.metrics || {};
+  const failures = results.failures || [];
+
+  const failuresByType = {};
+  for (const f of failures) {
+    if (!failuresByType[f.phiType]) failuresByType[f.phiType] = [];
+    failuresByType[f.phiType].push(f);
+  }
+
+  const sortedTypes = Object.entries(failuresByType).sort(
+    (a, b) => b[1].length - a[1].length,
+  );
+
+  const sens = (metrics.sensitivity || 0).toFixed(2);
+  const spec = (metrics.specificity || 0).toFixed(2);
+  const f1 = (metrics.f1Score || 0).toFixed(2);
+  const f2 = (metrics.f2Score || 0).toFixed(2);
+  const grade = (
+    smartGradeResults?.scores?.grade ||
+    metrics.grade ||
+    "?"
+  ).toString();
+
+  log(
+    "\n" +
+      fmt.metricsBox({ sensitivity: sens, specificity: spec, f1, f2, grade }) +
+      "\n",
+  );
+
+  if (status !== "IMPROVE") return;
+
+  const topType = sortedTypes[0]?.[0] || "UNKNOWN";
+  const topCount = sortedTypes[0]?.[1]?.length || 0;
+  const topExamples = sortedTypes[0]?.[1]?.slice(0, 3) || [];
+
+  const items = [
+    `TOP FAILURE: ${topType} (${topCount} missed)`,
+    { header: `EXAMPLES OF MISSED ${topType}:` },
+    ...topExamples.map((f) => ({
+      indent: `"${String(f.value).substring(0, 60)}"  (${f.errorLevel || "clean"})`,
+    })),
+    { header: "DO THIS NOW:" },
+    "1. READ the relevant filter or dictionary",
+    { indent: "Filters:      src/filters/" },
+    { indent: "Dictionaries: src/dictionaries/" },
+    "2. EDIT the file to catch the missed values",
+    { indent: "Add pattern/regex for the formats shown above" },
+    { indent: "Or add missing entries to the dictionary" },
+    "3. RUN the test again",
+    { indent: "node tests/master-suite/run.js --log-file" },
+    "4. COMPARE metrics",
+    { indent: "Better? Keep the change, continue to next failure" },
+    { indent: "Worse?  Revert with: git checkout <file>" },
+    { header: "ALL FAILURES BY TYPE" },
+    ...(sortedTypes.length > 0
+      ? sortedTypes.map(([type, items]) => ({
+          indent: `${type.padEnd(20)} ${items.length} missed`,
+        }))
+      : [{ indent: "None!" }]),
+    { header: "CORTEX MCP SERVER" },
+    { indent: "Start:  node tests/master-suite/cortex --server" },
+    {
+      indent:
+        "Tools:  analyze_test_results, consult_history, get_recommendation",
+    },
+  ];
+
+  log("\n" + fmt.actionChecklist("IMPROVEMENT CHECKLIST", items) + "\n");
 }
 
 main();

@@ -7,6 +7,13 @@ pub mod crypto;
 pub mod phonetic;
 pub mod span;
 pub mod tokenize;
+pub mod name;
+pub mod postfilter;
+pub mod streaming;
+pub mod name_stream;
+pub mod scan;
+pub mod apply;
+pub mod scan_stream;
 use vision::OcrEngine;
 
 #[napi]

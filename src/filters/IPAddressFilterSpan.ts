@@ -10,6 +10,7 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { RustScanKernel } from "../utils/RustScanKernel";
 
 export class IPAddressFilterSpan extends SpanBasedFilter {
   /**
@@ -18,8 +19,7 @@ export class IPAddressFilterSpan extends SpanBasedFilter {
    * Matches: XXX.XXX.XXX.XXX where XXX is 1-3 digits
    * Validation ensures each octet is 0-255
    */
-  private static readonly IP_PATTERN =
-    /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
+  private static readonly IP_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
 
   getType(): string {
     return "IP";
@@ -30,6 +30,30 @@ export class IPAddressFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    const accelerated = RustScanKernel.getDetections(context, text, "IP");
+    if (accelerated) {
+      return accelerated.map((d) => {
+        return new Span({
+          text: d.text,
+          originalValue: d.text,
+          characterStart: d.characterStart,
+          characterEnd: d.characterEnd,
+          filterType: FilterType.IP,
+          confidence: d.confidence,
+          priority: this.getPriority(),
+          context: this.extractContext(text, d.characterStart, d.characterEnd),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: d.pattern,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+      });
+    }
+
     const spans: Span[] = [];
     const pattern = IPAddressFilterSpan.IP_PATTERN;
     pattern.lastIndex = 0; // Reset regex
@@ -44,7 +68,7 @@ export class IPAddressFilterSpan extends SpanBasedFilter {
           text,
           match,
           FilterType.IP,
-          0.95 // High confidence for valid IPs
+          0.95, // High confidence for valid IPs
         );
         spans.push(span);
       }

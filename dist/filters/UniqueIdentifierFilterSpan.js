@@ -20,6 +20,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UniqueIdentifierFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
+const RustScanKernel_1 = require("../utils/RustScanKernel");
 class UniqueIdentifierFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "UNIQUE_ID";
@@ -28,6 +29,30 @@ class UniqueIdentifierFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         return SpanBasedFilter_1.FilterPriority.ACCOUNT; // Same priority as account numbers
     }
     detect(text, config, context) {
+        const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "UNIQUE_ID");
+        if (accelerated) {
+            return accelerated.map((d) => {
+                return new Span_1.Span({
+                    text: d.text,
+                    originalValue: d.text,
+                    characterStart: d.characterStart,
+                    characterEnd: d.characterEnd,
+                    // Preserve legacy behavior: unique IDs are tokenized as ACCOUNT-like identifiers.
+                    filterType: Span_1.FilterType.ACCOUNT,
+                    confidence: d.confidence,
+                    priority: this.getPriority(),
+                    context: this.extractContext(text, d.characterStart, d.characterEnd),
+                    window: [],
+                    replacement: null,
+                    salt: null,
+                    pattern: d.pattern,
+                    applied: false,
+                    ignored: false,
+                    ambiguousWith: [],
+                    disambiguationScore: null,
+                });
+            });
+        }
         const spans = [];
         // Pattern 1: Brand prefix IDs (PLANETFIT-392847, DELTA-847392SK)
         this.detectBrandPrefixIds(text, spans);

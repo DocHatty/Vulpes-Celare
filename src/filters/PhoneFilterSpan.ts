@@ -11,6 +11,7 @@ import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { ValidationUtils } from "../utils/ValidationUtils";
+import { RustScanKernel } from "../utils/RustScanKernel";
 
 export class PhoneFilterSpan extends SpanBasedFilter {
   /**
@@ -156,6 +157,30 @@ export class PhoneFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    const accelerated = RustScanKernel.getDetections(context, text, "PHONE");
+    if (accelerated) {
+      return accelerated.map((d) => {
+        return new Span({
+          text: d.text,
+          originalValue: d.text,
+          characterStart: d.characterStart,
+          characterEnd: d.characterEnd,
+          filterType: FilterType.PHONE,
+          confidence: d.confidence,
+          priority: this.getPriority(),
+          context: this.extractContext(text, d.characterStart, d.characterEnd),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: d.pattern,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+      });
+    }
+
     const spans: Span[] = [];
     const seen = new Set<string>();
 
@@ -172,7 +197,9 @@ export class PhoneFilterSpan extends SpanBasedFilter {
 
           // Skip if preceding label indicates this is an NPI
           const windowStart = Math.max(0, offset - 20);
-          const labelWindow = source.substring(windowStart, offset).toLowerCase();
+          const labelWindow = source
+            .substring(windowStart, offset)
+            .toLowerCase();
           if (labelWindow.includes("npi")) {
             continue;
           }

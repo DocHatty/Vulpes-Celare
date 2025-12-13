@@ -12,6 +12,7 @@ exports.PhoneFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const ValidationUtils_1 = require("../utils/ValidationUtils");
+const RustScanKernel_1 = require("../utils/RustScanKernel");
 class PhoneFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "PHONE";
@@ -20,6 +21,29 @@ class PhoneFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         return SpanBasedFilter_1.FilterPriority.PHONE;
     }
     detect(text, config, context) {
+        const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "PHONE");
+        if (accelerated) {
+            return accelerated.map((d) => {
+                return new Span_1.Span({
+                    text: d.text,
+                    originalValue: d.text,
+                    characterStart: d.characterStart,
+                    characterEnd: d.characterEnd,
+                    filterType: Span_1.FilterType.PHONE,
+                    confidence: d.confidence,
+                    priority: this.getPriority(),
+                    context: this.extractContext(text, d.characterStart, d.characterEnd),
+                    window: [],
+                    replacement: null,
+                    salt: null,
+                    pattern: d.pattern,
+                    applied: false,
+                    ignored: false,
+                    ambiguousWith: [],
+                    disambiguationScore: null,
+                });
+            });
+        }
         const spans = [];
         const seen = new Set();
         const processText = (source) => {
@@ -34,7 +58,9 @@ class PhoneFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                         continue;
                     // Skip if preceding label indicates this is an NPI
                     const windowStart = Math.max(0, offset - 20);
-                    const labelWindow = source.substring(windowStart, offset).toLowerCase();
+                    const labelWindow = source
+                        .substring(windowStart, offset)
+                        .toLowerCase();
                     if (labelWindow.includes("npi")) {
                         continue;
                     }

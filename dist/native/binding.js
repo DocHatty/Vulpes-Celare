@@ -17,7 +17,13 @@ function loadNativeBinding(options = {}) {
             process.env.ORT_DYLIB_PATH = (0, path_1.resolve)(process.env.VULPES_ORT_PATH);
         }
         if (!process.env.ORT_DYLIB_PATH) {
-            process.env.ORT_DYLIB_PATH = (0, path_1.resolve)(__dirname, "../../native/onnxruntime.dll");
+            const platform = process.platform;
+            const ortName = platform === "win32"
+                ? "onnxruntime.dll"
+                : platform === "darwin"
+                    ? "libonnxruntime.dylib"
+                    : "libonnxruntime.so";
+            process.env.ORT_DYLIB_PATH = (0, path_1.resolve)(__dirname, `../../native/${ortName}`);
         }
     }
     const platform = process.platform;
@@ -39,7 +45,7 @@ function loadNativeBinding(options = {}) {
     }
     catch (e) {
         throw new Error("Vulpes native binding not found. Ensure the Rust core is built. " +
-            "Run: cd src/rust && cargo build --release");
+            "Run: npm run native:install (preferred) or npm run native:build");
     }
 }
 //# sourceMappingURL=binding.js.map

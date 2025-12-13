@@ -28,7 +28,7 @@
  *
  * // Verify bundle
  * const verification = await TrustBundleExporter.verify('patient-note.red');
- * console.log(verification.valid ? 'âœ“ VERIFIED' : 'âœ— INVALID');
+ * console.log(verification.valid ? '✔ VERIFIED' : '✖ INVALID');
  * ```
  */
 
@@ -483,7 +483,7 @@ export class TrustBundleExporter {
           originalHash: hashOriginal,
           redactedHash: hashRedacted,
           manifestHash: hashManifest,
-          proof: "H(original) + H(manifest) -> H(redacted) verified âœ“",
+          proof: "H(original) + H(manifest) -> H(redacted) verified ✔",
         },
       },
       attestations: {
@@ -594,9 +594,9 @@ export class TrustBundleExporter {
    * ```typescript
    * const result = await TrustBundleExporter.verify('./trust-bundle.red');
    * if (result.valid) {
-   *   console.log('âœ“ Bundle verified');
+   *   console.log('✔ Bundle verified');
    * } else {
-   *   console.error('âœ— Verification failed:', result.errors);
+   *   console.error('✖ Verification failed:', result.errors);
    * }
    * ```
    */

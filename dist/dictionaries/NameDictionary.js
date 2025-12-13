@@ -385,6 +385,20 @@ class NameDictionary {
             surnames: this.surnames?.size || 0,
         };
     }
+    /**
+     * Returns the loaded name dictionaries as arrays (lowercased).
+     * Intended for initializing native/Rust accelerators.
+     */
+    static getNameLists() {
+        if (!this.initialized)
+            this.init();
+        if (this.cachedNameLists)
+            return this.cachedNameLists;
+        const firstNames = this.firstNames ? Array.from(this.firstNames) : [];
+        const surnames = this.surnames ? Array.from(this.surnames) : [];
+        this.cachedNameLists = { firstNames, surnames };
+        return this.cachedNameLists;
+    }
 }
 exports.NameDictionary = NameDictionary;
 NameDictionary.firstNames = null;
@@ -393,4 +407,5 @@ NameDictionary.initialized = false;
 NameDictionary.initErrors = [];
 NameDictionary.phoneticMatcher = null;
 NameDictionary.phoneticInitialized = false;
+NameDictionary.cachedNameLists = null;
 //# sourceMappingURL=NameDictionary.js.map
