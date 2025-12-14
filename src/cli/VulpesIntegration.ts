@@ -133,7 +133,13 @@ export const CLAUDE_CODE_HOOKS = {
 // Load comprehensive templates from files, with fallback to embedded content
 function loadTemplate(filename: string, fallback: string): string {
   try {
-    const templatePath = path.join(__dirname, "..", "..", "templates", filename);
+    const templatePath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "templates",
+      filename,
+    );
     if (fs.existsSync(templatePath)) {
       return fs.readFileSync(templatePath, "utf-8");
     }
@@ -164,7 +170,10 @@ export function getCodexAgentsMd(): string {
 
 export function getCopilotInstructions(): string {
   if (!_copilotTemplate) {
-    _copilotTemplate = loadTemplate("COPILOT_INSTRUCTIONS_TEMPLATE.md", "# Vulpes Celare\nHIPAA PHI Redaction Engine");
+    _copilotTemplate = loadTemplate(
+      "COPILOT_INSTRUCTIONS_TEMPLATE.md",
+      "# Vulpes Celare\nHIPAA PHI Redaction Engine",
+    );
   }
   return _copilotTemplate;
 }
@@ -381,14 +390,13 @@ vulpes redact "Patient text here"
 export const CODEX_MCP_CONFIG = `
 # Vulpes Celare MCP Server
 # Provides PHI redaction tools to Codex
+# INSTALL: npm install -g vulpes-celare
 
 [mcp_servers.vulpes]
-command = "node"
-args = ["node_modules/vulpes-celare/dist/mcp/server.js"]
-env = { VULPES_MODE = "dev" }
-startup_timeout_sec = 10
+command = "vulpes-mcp"
+args = []
+startup_timeout_sec = 120
 tool_timeout_sec = 60
-enabled_tools = ["redact_text", "analyze_redaction", "run_tests", "get_system_info"]
 `;
 
 // ============================================================================
@@ -454,9 +462,13 @@ export class VulpesIntegration {
 
     // Fast path: check if claude is in PATH by looking for shim files
     const pathDirs = (process.env.PATH || "").split(path.delimiter);
-    for (const dir of pathDirs.slice(0, 10)) { // Check first 10 dirs max
+    for (const dir of pathDirs.slice(0, 10)) {
+      // Check first 10 dirs max
       try {
-        const claudeCmd = path.join(dir, process.platform === "win32" ? "claude.cmd" : "claude");
+        const claudeCmd = path.join(
+          dir,
+          process.platform === "win32" ? "claude.cmd" : "claude",
+        );
         if (fs.existsSync(claudeCmd)) return true;
       } catch {
         continue;
@@ -479,9 +491,13 @@ export class VulpesIntegration {
 
     // Fast path: check if codex is in PATH by looking for shim files
     const pathDirs = (process.env.PATH || "").split(path.delimiter);
-    for (const dir of pathDirs.slice(0, 10)) { // Check first 10 dirs max
+    for (const dir of pathDirs.slice(0, 10)) {
+      // Check first 10 dirs max
       try {
-        const codexCmd = path.join(dir, process.platform === "win32" ? "codex.cmd" : "codex");
+        const codexCmd = path.join(
+          dir,
+          process.platform === "win32" ? "codex.cmd" : "codex",
+        );
         if (fs.existsSync(codexCmd)) return true;
       } catch {
         continue;
@@ -777,10 +793,10 @@ export class VulpesIntegration {
 # Provides HIPAA-compliant PHI redaction tools
 
 [mcp_servers.vulpes]
-command = "node"
-args = ["${path.join(this.config.projectDir, "dist", "mcp", "server.js").replace(/\\/g, "/")}"]
-env = { VULPES_MODE = "${this.config.mode}", VULPES_PROJECT_DIR = "${this.config.projectDir.replace(/\\/g, "/")}" }
-startup_timeout_sec = 10
+command = "vulpes-mcp"
+args = []
+env = { VULPES_MODE = "${this.config.mode}" }
+startup_timeout_sec = 120
 tool_timeout_sec = 60
 `;
       config += vulpesConfig;
@@ -1046,9 +1062,11 @@ tool_timeout_sec = 60
     if (!config.includes("[mcp_servers.vulpes]")) {
       const vulpesConfig = `
 [mcp_servers.vulpes]
-command = "node"
-args = ["${path.join(this.config.projectDir, "dist", "mcp", "server.js").replace(/\\/g, "/")}"]
-env = { VULPES_MODE = "${this.config.mode}", VULPES_PROJECT_DIR = "${this.config.projectDir.replace(/\\/g, "/")}" }
+command = "vulpes-mcp"
+args = []
+env = { VULPES_MODE = "${this.config.mode}" }
+startup_timeout_sec = 120
+tool_timeout_sec = 60
 `;
       config += vulpesConfig;
       fs.writeFileSync(configPath, config);

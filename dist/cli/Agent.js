@@ -314,7 +314,7 @@ class VulpesAgent {
     async startCodex() {
         const args = [];
         // Model selection
-        args.push("--model", this.config.model || "o3");
+        args.push("--model", this.config.model || "gpt-5.2");
         // DEEP INTEGRATION: Codex reads AGENTS.md automatically
         // We ensure it exists in ensureVulpesified()
         // DEEP INTEGRATION: Enable full auto mode for dev
@@ -331,7 +331,7 @@ class VulpesAgent {
         };
         console.log(theme.info(`\n  Starting Codex with Vulpes integration...\n`));
         console.log(theme.muted(`  ${figures_1.default.tick} AGENTS.md loaded with Vulpes instructions`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Model: ${this.config.model || "o3"}`));
+        console.log(theme.muted(`  ${figures_1.default.tick} Model: ${this.config.model || "gpt-5.2"}`));
         console.log(theme.muted(`  ${figures_1.default.tick} MCP server: vulpes (if configured)\n`));
         await this.spawnAgent("codex", args, env);
     }

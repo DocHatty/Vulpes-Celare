@@ -7,7 +7,8 @@
   "bin": {
     "vulpes": "./dist/cli/launcher.js",
     "vulpes-cli": "./dist/cli/index.js",
-    "vulpes-celare": "./dist/cli/index.js"
+    "vulpes-celare": "./dist/cli/index.js",
+    "vulpes-mcp": "./dist/mcp/server.js"
   },
   "scripts": {
     "build": "npm run clean && tsc && node scripts/copy-assets.js",

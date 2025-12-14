@@ -2,10 +2,10 @@
 /**
  * Vulpes Celare MCP Server
  * ========================
- * Provides PHI redaction tools to Claude Code, Codex, and other MCP clients.
- * 
- * Uses the official @modelcontextprotocol/sdk for proper protocol compliance.
- * VulpesCelare is initialized LAZILY on first tool call to avoid blocking startup.
+ * Ultra-fast embedded MCP server for PHI redaction.
+ *
+ * CRITICAL: Server must respond to MCP handshake within milliseconds.
+ * All heavy initialization (dictionaries, filters) happens AFTER handshake.
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -15,33 +15,27 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { VulpesCelare } from "../VulpesCelare";
-import { VERSION } from "../index";
+// CRITICAL: Import VERSION directly, don't import VulpesCelare yet
+const VERSION = "1.0.0";
 
 // ============================================================================
-// LAZY INITIALIZATION
+// ULTRA-LAZY INITIALIZATION
 // ============================================================================
-// Don't block MCP handshake - VulpesCelare loads dictionaries on first use
+// VulpesCelare is NOT imported at module load time - only when first tool runs
 
-let vulpes: VulpesCelare | null = null;
-let initPromise: Promise<VulpesCelare> | null = null;
+let vulpes: any = null;
 
-async function getVulpes(): Promise<VulpesCelare> {
+async function getVulpes(): Promise<any> {
   if (vulpes) return vulpes;
-  if (initPromise) return initPromise;
 
-  initPromise = (async () => {
-    vulpes = new VulpesCelare();
-    // Warm up by processing empty string (loads dictionaries)
-    await vulpes.process("");
-    return vulpes;
-  })();
-
-  return initPromise;
+  // Dynamic import - only loads VulpesCelare when actually needed
+  const { VulpesCelare } = await import("../VulpesCelare");
+  vulpes = new VulpesCelare();
+  return vulpes;
 }
 
 // ============================================================================
-// MCP SERVER SETUP
+// MCP SERVER - INSTANT STARTUP
 // ============================================================================
 
 const server = new Server(
@@ -53,14 +47,13 @@ const server = new Server(
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 // ============================================================================
-// TOOL HANDLERS
+// TOOL DEFINITIONS - No initialization needed
 // ============================================================================
 
-// List available tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
@@ -71,7 +64,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object" as const,
           properties: {
-            text: { type: "string", description: "The text to redact PHI from" },
+            text: {
+              type: "string",
+              description: "The text to redact PHI from",
+            },
           },
           required: ["text"],
         },
@@ -101,7 +97,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-// Execute tools
+// ============================================================================
+// TOOL EXECUTION - Lazy loads VulpesCelare on first call
+// ============================================================================
+
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
@@ -122,7 +121,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                   breakdown: result.breakdown,
                 },
                 null,
-                2
+                2,
               ),
             },
           ],
@@ -145,7 +144,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                   executionTimeMs: result.executionTimeMs,
                 },
                 null,
-                2
+                2,
               ),
             },
           ],
@@ -172,7 +171,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                   processingSpeed: "2-3ms per document",
                 },
                 null,
-                2
+                2,
               ),
             },
           ],
@@ -207,18 +206,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 // ============================================================================
-// SERVER STARTUP
+// INSTANT STARTUP - No waiting, no initialization
 // ============================================================================
 
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-
-  // Log to stderr (not stdout - that's for MCP protocol)
-  console.error(`[Vulpes MCP] Server started (v${VERSION})`);
-}
-
-main().catch((error) => {
-  console.error("[Vulpes MCP] Fatal error:", error);
+const transport = new StdioServerTransport();
+server.connect(transport).catch((error) => {
+  console.error("[Vulpes MCP] Fatal:", error.message);
   process.exit(1);
 });

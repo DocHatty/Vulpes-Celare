@@ -288,7 +288,9 @@ export class VulpesAgent {
     let mcpRegistered = false;
     if (require("fs").existsSync(mcpSettingsPath)) {
       try {
-        const settings = JSON.parse(require("fs").readFileSync(mcpSettingsPath, "utf-8"));
+        const settings = JSON.parse(
+          require("fs").readFileSync(mcpSettingsPath, "utf-8"),
+        );
         mcpRegistered = settings.mcpServers?.vulpes !== undefined;
       } catch {
         // Ignore parse errors
@@ -379,7 +381,7 @@ export class VulpesAgent {
     const args: string[] = [];
 
     // Model selection
-    args.push("--model", this.config.model || "o3");
+    args.push("--model", this.config.model || "gpt-5.2");
 
     // DEEP INTEGRATION: Codex reads AGENTS.md automatically
     // We ensure it exists in ensureVulpesified()
@@ -405,7 +407,7 @@ export class VulpesAgent {
       ),
     );
     console.log(
-      theme.muted(`  ${figures.tick} Model: ${this.config.model || "o3"}`),
+      theme.muted(`  ${figures.tick} Model: ${this.config.model || "gpt-5.2"}`),
     );
     console.log(
       theme.muted(`  ${figures.tick} MCP server: vulpes (if configured)\n`),
@@ -974,17 +976,17 @@ ${theme.muted("  Or just paste text to redact it!")}
     console.log(
       boxen(
         `${theme.primary.bold("VULPES AGENT")}\n` +
-        `${theme.muted(ENGINE_NAME + " v" + VERSION)}\n\n` +
-        `${theme.muted("Mode:")} ${this.getModeDisplay()}\n` +
-        `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}\n\n` +
-        (this.config.mode === "dev"
-          ? `${theme.warning(figures.warning)} ${theme.warning("Full codebase access enabled")}\n` +
-          `${theme.warning(figures.warning)} ${theme.warning("Only use with synthetic/test data")}`
-          : this.config.mode === "qa"
-            ? `${theme.info(figures.info)} Can compare original vs redacted\n` +
-            `${theme.info(figures.info)} Read-only codebase access`
-            : `${theme.success(figures.tick)} Production mode - original text hidden\n` +
-            `${theme.success(figures.tick)} Safe for real patient data`),
+          `${theme.muted(ENGINE_NAME + " v" + VERSION)}\n\n` +
+          `${theme.muted("Mode:")} ${this.getModeDisplay()}\n` +
+          `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}\n\n` +
+          (this.config.mode === "dev"
+            ? `${theme.warning(figures.warning)} ${theme.warning("Full codebase access enabled")}\n` +
+              `${theme.warning(figures.warning)} ${theme.warning("Only use with synthetic/test data")}`
+            : this.config.mode === "qa"
+              ? `${theme.info(figures.info)} Can compare original vs redacted\n` +
+                `${theme.info(figures.info)} Read-only codebase access`
+              : `${theme.success(figures.tick)} Production mode - original text hidden\n` +
+                `${theme.success(figures.tick)} Safe for real patient data`),
         {
           padding: 1,
           margin: { top: 1, bottom: 0 },

@@ -2,10 +2,10 @@
 /**
  * Vulpes Celare MCP Server
  * ========================
- * Provides PHI redaction tools to Claude Code, Codex, and other MCP clients.
+ * Ultra-fast embedded MCP server for PHI redaction.
  *
- * Uses the official @modelcontextprotocol/sdk for proper protocol compliance.
- * VulpesCelare is initialized LAZILY on first tool call to avoid blocking startup.
+ * CRITICAL: Server must respond to MCP handshake within milliseconds.
+ * All heavy initialization (dictionaries, filters) happens AFTER handshake.
  */
 export {};
 //# sourceMappingURL=server.d.ts.map
