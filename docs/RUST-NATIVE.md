@@ -27,10 +27,10 @@ All accelerators can be individually disabled via environment variables for debu
 
 ## Environment Variables
 
-**All accelerators default to ON** (production-ready). Set to `0` to disable and use TypeScript fallback for debugging or validation.
+**Default Behavior**: All accelerators are enabled when the native addon is available and no explicit disable flags are set. Set to `0` to disable and use TypeScript fallback.
 
-| Variable | Controls | Default | Status |
-|----------|----------|---------|--------|
+| Variable | Controls | Default (Native Available) | Status |
+|----------|----------|----------------------------|--------|
 | `VULPES_ENABLE_PHONETIC` | Phonetic name matching | ON | Production |
 | `VULPES_TEXT_ACCEL` | Text normalization, digit extraction, Luhn | ON | Production |
 | `VULPES_SPAN_ACCEL` | Span overlap pruning | ON | Production |
@@ -42,6 +42,8 @@ All accelerators can be individually disabled via environment variables for debu
 | `VULPES_FUZZY_ACCEL` | Fuzzy name matching | ON | Production |
 | `VULPES_CHAOS_ACCEL` | OCR chaos detection | ON | Production |
 | `VULPES_INTERVAL_ACCEL` | Interval tree operations | ON | Production |
+
+**Note**: If the native addon fails to load (e.g., on unsupported platforms), the system automatically falls back to TypeScript implementations.
 
 ## Module Inventory
 

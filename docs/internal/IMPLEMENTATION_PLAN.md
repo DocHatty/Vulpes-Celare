@@ -15,7 +15,7 @@ This plan tracks remaining work after the Rust vision migration (OCR + face infe
 - Trust bundle exporter writes ZIP `.red` and verifier supports ZIP bundles.
 - DICOM anonymization re-encodes safely via `dcmjs`.
 - Rust crypto helpers (SHA-256, HMAC-SHA256, Merkle root) used by trust bundles and DICOM hashing.
-- Rust-native text accelerators (production-ready, enabled by default):
+- Rust-native text accelerators (available and active when native addon loads):
   - Phonetic matcher for OCR-tolerant name matching (`VulpesPhoneticMatcher`)
   - Tokenization with offsets for token windows (`tokenizeWithPositions`)
   - Span overlap pruning (`dropOverlappingSpans`)
@@ -35,9 +35,9 @@ This plan tracks remaining work after the Rust vision migration (OCR + face infe
    - Use `docs/internal/PROFILING.md`, `npm run test:bench`, and `node scripts/profile-filters.js`.
    - Add targeted CPU profiles for large notes and long streams.
 
-2. **Rust text inner-loop accelerations (production-ready, enabled by default)**
-   - All major accelerators are now production-ready and enabled by default
-   - Continue monitoring performance and accuracy metrics
+2. **Rust text inner-loop accelerations (available and tested)**
+   - All major accelerators are implemented and active when native addon is available
+   - Continue monitoring performance and accuracy metrics in production deployments
    - Consider additional optimizations based on profiling results
 
 3. **Streaming kernel**
