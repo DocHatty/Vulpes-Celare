@@ -246,7 +246,6 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     // Pattern 8: Possessive forms
     this.detectPossessiveNames(text, spans);
 
-
     // Pattern 9a: Labeled names with OCR/noisy spacing (Patient: MAR1A G0NZ ALEZ)
     this.detectLabeledOcrNames(text, spans);
 
@@ -275,7 +274,6 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
     return spans;
   }
-
 
   // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
 
@@ -789,8 +787,6 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     }
   }
 
-
-
   /**
    * Pattern 0a: OCR-Tolerant Last, First format
    *
@@ -1075,8 +1071,6 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
     return true;
   }
-
-
 
   /**
    * Pattern 9a: Labeled names with noisy/OCR spelling
