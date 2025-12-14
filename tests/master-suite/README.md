@@ -5,7 +5,7 @@
 This is the **authoritative, unbiased test suite** for the Vulpes Celare PHI redaction engine. It has been completely redesigned with the following principles:
 
 1. **UNBIASED TESTING**: Tests PHI detection without favoring specific implementations
-2. **COMPREHENSIVE COVERAGE**: All 18 HIPAA Safe Harbor identifiers tested
+2. **COMPREHENSIVE COVERAGE**: All 18 HIPAA Safe Harbor identifiers + extended (28 filters, 20+ PHI types)
 3. **REALISTIC SCENARIOS**: Tests the engine as an integrated system, not isolated components
 4. **STRICT GRADING**: Clinical-grade thresholds appropriate for safety-critical applications
 5. **MULTI-PASS ANALYSIS**: Detection → Grading → Deep Investigation workflow
@@ -59,21 +59,27 @@ master-suite/
 ## Test Workflow
 
 ### Phase 1: Full Test Suite Execution
+
 The **ENTIRE** test suite runs without interruption:
+
 - Generates N test documents (default: 200)
 - Each document contains 20-50+ PHI items
 - Documents include realistic OCR errors, typos, and formatting variations
 - Engine processes each document as an integrated system
 
 ### Phase 2: Comprehensive Metric Calculation
+
 After all documents are processed:
+
 - Calculate sensitivity (PHI correctly redacted)
 - Calculate specificity (non-PHI correctly preserved)
 - Calculate precision, recall, F1 score
 - Track performance by PHI type, error level, and document type
 
 ### Phase 3: Deep Investigation
+
 Only after grading is complete:
+
 - Analyze failure patterns
 - Identify root causes
 - Generate actionable recommendations
@@ -94,7 +100,7 @@ The suite includes comprehensive, realistic medical documents:
 
 ## PHI Types Tested
 
-All 18 HIPAA Safe Harbor identifiers:
+**All 18 HIPAA Safe Harbor identifiers + Extended Coverage (20+ types):**
 
 | Type | Description | Examples |
 |------|-------------|----------|
@@ -103,7 +109,7 @@ All 18 HIPAA Safe Harbor identifiers:
 | DATE | Dates (DOB, admission, etc.) | "01/15/1985" |
 | PHONE | Phone numbers | "(555) 123-4567" |
 | FAX | Fax numbers | "Fax: 555-987-6543" |
-| EMAIL | Email addresses | "john.smith@email.com" |
+| EMAIL | Email addresses | "<john.smith@email.com>" |
 | ADDRESS | Street addresses | "123 Main St" |
 | ZIPCODE | ZIP codes | "12345-6789" |
 | MRN | Medical record numbers | "MRN-2024-123456" |
@@ -111,11 +117,13 @@ All 18 HIPAA Safe Harbor identifiers:
 | HEALTH_PLAN_ID | Insurance member IDs | "XYZ123456789" |
 | CREDIT_CARD | Credit card numbers | "4111-1111-1111-1111" |
 | IP | IP addresses | "192.168.1.100" |
-| URL | Patient portal URLs | "https://portal.com/patient/123" |
+| URL | Patient portal URLs | "<https://portal.com/patient/123>" |
 | VIN | Vehicle identification | "1HGBH41JXMN109186" |
 | LICENSE_PLATE | License plates | "ABC-1234" |
 | AGE_90_PLUS | Ages 90 and over | "92 years old" |
-| NPI/DEA | Provider identifiers | "1234567890" |
+| NPI | National Provider Identifier | "1234567890" |
+| DEA | DEA numbers | "AB1234567" |
+| DEVICE_ID | Device identifiers | "DEV-123456-IOS" |
 
 ## Error Simulation
 
@@ -130,6 +138,7 @@ Realistic document degradation:
 | extreme | Severe degradation | 5% |
 
 ### Error Types
+
 - **OCR substitutions**: O↔0, l↔1↔I, S↔5, B↔8, G↔6
 - **Typos**: Adjacent key substitutions
 - **Transpositions**: Character swaps
@@ -157,11 +166,13 @@ Score = (Sensitivity × 0.70) + (Specificity × 0.20) + (Precision × 0.10)
 ```
 
 **Penalties** (safety-critical failures):
+
 - Missed SSN: -10 points each
 - Missed Patient Name: -8 points each
 - Missed DOB: -5 points each
 
 **Bonuses** (perfect categories):
+
 - Perfect SSN detection: +3 points
 - Perfect Name detection: +3 points
 - Perfect Date detection: +2 points
@@ -169,6 +180,7 @@ Score = (Sensitivity × 0.70) + (Specificity × 0.20) + (Precision × 0.10)
 ### Hard Caps
 
 Sensitivity below threshold caps the maximum grade:
+
 - <90% sensitivity → Max grade: F (score capped at 30)
 - <95% sensitivity → Max grade: C (score capped at 70)
 - <98% sensitivity → Max grade: A- (no cap)
@@ -194,6 +206,7 @@ Sensitivity below threshold caps the maximum grade:
 Results saved to `tests/results/`:
 
 ### JSON File
+
 ```json
 {
   "meta": { "timestamp": "...", "version": "3.0.0" },
@@ -214,7 +227,9 @@ Results saved to `tests/results/`:
 ```
 
 ### Text Report
+
 Human-readable report with:
+
 - Final grade and score
 - Confusion matrix
 - Performance by PHI type
@@ -256,6 +271,7 @@ The suite also tests that non-PHI is NOT redacted:
 ## Changelog
 
 ### v3.0.0 (Current)
+
 - Complete redesign with unbiased testing methodology
 - Clinical-grade strict grading schema
 - Multi-pass analysis workflow (Detection → Grading → Investigation)
@@ -265,7 +281,9 @@ The suite also tests that non-PHI is NOT redacted:
 - Machine-readable and human-readable output
 
 ### v2.0.0
+
 - Initial master suite consolidation
 
 ### v1.x
+
 - Individual test files (deprecated)

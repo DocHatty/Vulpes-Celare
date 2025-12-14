@@ -6,7 +6,7 @@ This document maps Vulpes Celare's features to specific HIPAA Privacy Rule requi
 
 ## Executive Summary
 
-Vulpes Celare is a **technical safeguard** that implements the HIPAA Safe Harbor de-identification method (45 CFR § 164.514(b)(2)) through automated removal of all 18 PHI identifiers. While technology alone cannot ensure HIPAA compliance (which requires organizational policies, procedures, and training), Vulpes Celare provides the foundational infrastructure for compliant clinical AI deployments.
+Vulpes Celare is a **technical safeguard** that implements the HIPAA Safe Harbor de-identification method (45 CFR § 164.514(b)(2)) through automated removal of all 18 PHI identifiers. The system **exceeds** Safe Harbor requirements with 28 specialized filters detecting 20+ distinct PHI types. While technology alone cannot ensure HIPAA compliance (which requires organizational policies, procedures, and training), Vulpes Celare provides the foundational infrastructure for compliant clinical AI deployments.
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ Vulpes Celare is a **technical safeguard** that implements the HIPAA Safe Harbor
 
 **Regulation**: 45 CFR § 164.514(b)(2)
 
-The Safe Harbor method requires removal of the following 18 identifiers:
+The Safe Harbor method requires removal of the following 18 identifiers. **Vulpes Celare exceeds these requirements with 28 specialized filters detecting 20+ distinct PHI types:**
 
 | # | Identifier | Vulpes Celare Implementation | Filter(s) |
 |---|------------|------------------------------|-----------|
@@ -44,9 +44,23 @@ The Safe Harbor method requires removal of the following 18 identifiers:
 | 13 | **Device identifiers and serial numbers** | ✅ Medical device ID detection | `DeviceIdentifierFilterSpan` |
 | 14 | **Web URLs** | ✅ URL detection | `URLFilterSpan` |
 | 15 | **IP addresses** | ✅ IPv4 and IPv6 detection | `IPAddressFilterSpan` |
-| 16 | **Biometric identifiers** | ✅ Context-based detection | `BiometricContextFilterSpan` |
-| 17 | **Full-face photographs** | ⚠️ Not applicable (text-only system) | N/A |
-| 18 | **Any other unique identifying number** | ✅ Pattern-based detection | `UniqueIdentifierFilterSpan`, `NPIFilterSpan`, `PassportNumberFilterSpan` |
+| 16 | **Biometric identifiers** | ✅ Context-based detection + Vision | `BiometricContextFilterSpan` + Rust UltraFace |
+| 17 | **Full-face photographs** | ✅ Rust vision module | UltraFace detection (`src/rust/src/vision/face.rs`) |
+| 18 | **Any other unique identifying number** | ✅ Pattern-based detection | `UniqueIdentifierFilterSpan`, `NPIFilterSpan`, `PassportNumberFilterSpan`, `CreditCardFilterSpan`, `DeviceIdentifierFilterSpan` |
+
+### Extended Coverage (Beyond HIPAA 18)
+
+Vulpes Celare provides additional filters for comprehensive protection:
+
+| Extended Type | Filter | Description |
+|--------------|--------|-------------|
+| NPI | `NPIFilterSpan` | National Provider Identifiers |
+| DEA | `DEAFilterSpan` | Drug Enforcement Administration numbers |
+| VIN | `VehicleIdentifierFilterSpan` | Vehicle Identification Numbers |
+| LICENSE_PLATE | `VehicleIdentifierFilterSpan` | License plate numbers |
+| CREDIT_CARD | `CreditCardFilterSpan` | Financial card numbers |
+| DEVICE_ID | `DeviceIdentifierFilterSpan` | Medical device identifiers |
+| PASSPORT | `PassportNumberFilterSpan` | Passport numbers |
 
 ### Ages Over 89
 
@@ -89,6 +103,7 @@ The Safe Harbor method requires removal of the following 18 identifiers:
 | **Encryption and Decryption** | Cryptographic hashing of all operations | SHA-256 hashes in provenance layer |
 
 **Recommendations**:
+
 ```typescript
 // Implement user authentication in your application
 const engine = new VulpesCelare();
@@ -129,6 +144,7 @@ const result = await engine.process(note);
 | **Mechanisms to ensure ePHI is not improperly altered or destroyed** | Hash chain verification ensures data integrity |
 
 ✅ **Implementation**:
+
 - Every document has cryptographic fingerprint
 - Tampering detection via hash verification
 - Merkle tree provides tamper-evident audit trail
@@ -140,6 +156,7 @@ const result = await engine.process(note);
 | **Technical security measures to guard against unauthorized access** | System processes data locally; network security is application responsibility |
 
 **Recommendations**:
+
 ```typescript
 // Use HTTPS for all API calls
 app.use(helmet());
@@ -259,7 +276,7 @@ console.log("PHI removed:", result.redactionCount);
 
 Vulpes Celare is software; physical safeguards are the responsibility of the deploying organization.
 
-### Recommendations:
+### Recommendations
 
 | Safeguard | Implementation |
 |-----------|----------------|
@@ -476,6 +493,7 @@ Re-identification Risk = 1 - Sensitivity
 ```
 
 However, due to **overlapping safeguards**:
+
 - Multiple filters check for same PHI types
 - Context-aware disambiguation
 - Manual review (recommended for high-risk data)
@@ -546,7 +564,7 @@ Use this checklist for your organization's HIPAA compliance assessment:
 
 - [ ] Vulpes Celare installed and tested
 - [ ] Policy configured (maximum, research, custom)
-- [ ] All 18 Safe Harbor identifiers covered
+- [ ] All 18 Safe Harbor identifiers covered (28 filters, 20+ PHI types)
 - [ ] Audit logging enabled
 - [ ] Cryptographic provenance configured
 - [ ] Test suite passing (99%+ sensitivity)
@@ -610,8 +628,9 @@ Use this checklist for your organization's HIPAA compliance assessment:
 ## Contact
 
 For compliance questions specific to your deployment:
-- 📧 Email: compliance@vulpes-celare.org
-- 💬 Discussion: https://github.com/DocHatty/Vulpes-Celare/discussions
-- 🐛 Issues: https://github.com/DocHatty/Vulpes-Celare/issues
+
+- 📧 Email: <compliance@vulpes-celare.org>
+- 💬 Discussion: <https://github.com/DocHatty/Vulpes-Celare/discussions>
+- 🐛 Issues: <https://github.com/DocHatty/Vulpes-Celare/issues>
 
 For legal advice, consult a qualified healthcare attorney.

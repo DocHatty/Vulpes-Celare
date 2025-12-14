@@ -741,11 +741,23 @@
       "timestamp": "2025-12-13T20:40:33.082Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765733355126",
+      "timestamp": "2025-12-14T17:29:15.126Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765733608216",
+      "timestamp": "2025-12-14T17:33:28.216Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 124,
+    "total": 126,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 123
+    "noHistoryFound": 125
   }
 }

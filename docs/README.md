@@ -45,7 +45,7 @@ Vulpes Celare is a Rust-accelerated, open-source PHI redaction engine designed f
 
 | Document | Description | Audience |
 |----------|-------------|----------|
-| `legal/COMMERCIAL_LICENSE.md` | Commercial licensing information | Enterprise customers |
+| `../LICENSE` | AGPL-3.0 license | All users |
 
 ### Internal (Development)
 

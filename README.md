@@ -11,7 +11,7 @@
 | Sensitivity | 99%+ | Synthetic corpus, see `docs/BENCHMARKS.md` |
 | Specificity | 96%+ | Synthetic corpus, see `docs/BENCHMARKS.md` |
 | Speed | <10ms | Typical clinical notes, Rust-accelerated |
-| Coverage | 18/18 | HIPAA Safe Harbor identifiers |
+| Coverage | 18/18+ | HIPAA Safe Harbor + extended (28 filters, 20+ PHI types) |
 
 **Status**: Engine is production-ready with comprehensive test coverage (99%+ sensitivity on synthetic data). i2b2 2014 clinical validation pending. **Recommended deployment**: Pilot testing in controlled environments, research workflows, and de-identification pipelines. Critical care deployments should complete institution-specific validation.
 
@@ -65,7 +65,7 @@ PHI never crosses the network boundary. The LLM only sees tokenized placeholders
 
 ## Why Vulpes Celare?
 
-**🏥 Built for Healthcare** - Designed specifically for clinical AI systems, trauma centers, research facilities, and healthcare infrastructure. HIPAA Safe Harbor compliant with all 18 identifiers covered.
+**🏥 Built for Healthcare** - Designed specifically for clinical AI systems, trauma centers, research facilities, and healthcare infrastructure. Exceeds HIPAA Safe Harbor with 28 specialized filters covering 20+ PHI types (all 18 HIPAA identifiers plus NPI, DEA, VIN, and more).
 
 **⚡ High Performance** - Rust-accelerated architecture delivers significant performance improvements on compute-intensive operations (see `docs/BENCHMARKS.md` for methodology). Process typical clinical notes in <10ms. Real-time streaming for dictation workflows.
 
@@ -97,18 +97,23 @@ const cleanDicom = await anonymizeDicomBuffer(dicomData);
 ## Use Cases
 
 ### 🤖 Clinical AI & LLM Integration
+
 Safely integrate GPT-4, Claude, or Gemini into clinical workflows. Redact PHI before sending to LLMs, restore it after response. See `examples/integrations/LLM-INTEGRATIONS.md` for production examples with OpenAI, Anthropic, AWS Bedrock, and more.
 
 ### 🏥 Trauma Centers & Emergency Medicine
+
 Air-gapped deployment for maximum security. No network calls, all processing local. Suitable for DoD facilities, VA medical centers, and high-security environments. **Note**: Institution-specific validation recommended for critical care deployments. See `docs/deployment/AIR-GAPPED-DEPLOYMENT.md`.
 
 ### 🔬 Medical Research
+
 De-identify datasets for research while preserving temporal and clinical context. IRB-approved limited dataset policies available. Policy DSL makes it easy to customize redaction rules. See `examples/policy-dsl/POLICY-DSL.md`.
 
 ### 📱 Real-Time Dictation
+
 Streaming redaction for live clinical documentation. Process dictation in real-time with <10ms latency per chunk. Rust streaming kernels handle incremental detection. See `examples/streaming/STREAMING-API.md`.
 
 ### 🏗️ PACS & Medical Imaging
+
 DICOM anonymization with safe re-encoding. Image redaction removes faces and OCR text. Trust bundles provide tamper-evident audit trails. See `docs/IMAGE-DICOM.md`.
 
 ## Documentation
@@ -189,8 +194,8 @@ Native sanity check (loads the `.node` addon): `node scripts/test_simple.js`
 
 ## License
 
-AGPL-3.0-only with a commercial license option. See `docs/legal/COMMERCIAL_LICENSE.md`.
+AGPL-3.0-only. See `LICENSE` for details.
 
 ## Contributing
 
-Validation contributions are especially valuable: i2b2 testing, pilot feedback, and security audits.
+Contributions are welcome! Validation contributions are especially valuable: i2b2 testing, pilot feedback, and security audits.

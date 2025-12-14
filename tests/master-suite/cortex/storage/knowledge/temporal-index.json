@@ -933,6 +933,24 @@
         "t_valid_from": "2025-12-13T20:40:33.073Z",
         "t_valid_until": null
       }
+    ],
+    "2025-12-14": [
+      {
+        "type": "TestRun",
+        "id": "run_1765733355114_jse9cxo0a",
+        "t_recorded": "2025-12-14T17:29:15.114Z",
+        "t_occurred": "2025-12-14T17:29:15.114Z",
+        "t_valid_from": "2025-12-14T17:29:15.114Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765733608206_jse9cxo0a",
+        "t_recorded": "2025-12-14T17:33:28.206Z",
+        "t_occurred": "2025-12-14T17:33:28.206Z",
+        "t_valid_from": "2025-12-14T17:33:28.206Z",
+        "t_valid_until": null
+      }
     ]
   },
   "byOccurredTime": {
@@ -1869,10 +1887,46 @@
         "t_valid_from": "2025-12-13T20:40:33.073Z",
         "t_valid_until": null
       }
+    ],
+    "2025-12-14": [
+      {
+        "type": "TestRun",
+        "id": "run_1765733355114_jse9cxo0a",
+        "t_recorded": "2025-12-14T17:29:15.114Z",
+        "t_occurred": "2025-12-14T17:29:15.114Z",
+        "t_valid_from": "2025-12-14T17:29:15.114Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765733608206_jse9cxo0a",
+        "t_recorded": "2025-12-14T17:33:28.206Z",
+        "t_occurred": "2025-12-14T17:33:28.206Z",
+        "t_valid_from": "2025-12-14T17:33:28.206Z",
+        "t_valid_until": null
+      }
     ]
   },
   "byValidityPeriod": {},
   "timeline": [
+    {
+      "type": "TestRun",
+      "id": "run_1765733608206_jse9cxo0a",
+      "t_recorded": "2025-12-14T17:33:28.206Z",
+      "t_occurred": "2025-12-14T17:33:28.206Z",
+      "t_valid_from": "2025-12-14T17:33:28.206Z",
+      "t_valid_until": null,
+      "timestamp": 1765733608206
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765733355114_jse9cxo0a",
+      "t_recorded": "2025-12-14T17:29:15.114Z",
+      "t_occurred": "2025-12-14T17:29:15.114Z",
+      "t_valid_from": "2025-12-14T17:29:15.114Z",
+      "t_valid_until": null,
+      "timestamp": 1765733355114
+    },
     {
       "type": "TestRun",
       "id": "run_1765658433073_kd8v5anek",

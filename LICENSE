@@ -1,11 +1,8 @@
 # GNU Affero General Public License v3.0 (AGPL-3.0)
 
-Copyright (C) 2024-2025 DocHatty
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+by the Free Software Foundation, version 3.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,75 +12,20 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-The full text of the AGPL-3.0 license can be found at:
-https://www.gnu.org/licenses/agpl-3.0.html
+Full license text: https://www.gnu.org/licenses/agpl-3.0.html
 
 ---
 
-## Commercial License Exception
+## Contributors
 
-Organizations with annual revenue exceeding $1,000,000 USD that wish to use 
-Vulpes Celare in ways not permitted by AGPL-3.0 may obtain a commercial license.
-
-Commercial licensing is required for:
-- Integration into proprietary/closed-source products
-- Offering Vulpes Celare as a managed service without open-sourcing the service
-- Using Vulpes Celare in applications where AGPL compliance is not feasible
-- Redistributing Vulpes Celare without AGPL obligations
-
-For commercial licensing inquiries, contact: github.com/DocHatty/Vulpes-Celare
+This project was created and is maintained by community contributors.
+See GitHub commit history for attribution.
 
 ---
 
-## Free Use Under AGPL-3.0
+## Commercial Use
 
-The following uses are always permitted under AGPL-3.0 without commercial license:
-- Personal projects and individual use
-- Academic research and educational purposes
-- Non-profit healthcare organizations (any size)
-- Government healthcare facilities
-- Open source projects (GPL-compatible)
-- Organizations with annual revenue under $1,000,000 USD
-- Internal use within organizations (not offering as a service to others)
+This software is provided under AGPL-3.0 only.
+Commercial licensing is not currently available.
 
----
-
-## Additional Terms
-
-### Network Use Provision
-If you run a modified version of Vulpes Celare on a server and let others 
-interact with it there, you must provide them access to the source code of 
-your modified version. This is the key difference from regular GPL.
-
-### Patent Grant
-Each contributor grants you a non-exclusive, worldwide, royalty-free patent 
-license under the contributor's essential patent claims, to make, use, sell, 
-offer for sale, import and otherwise run, modify and propagate the contents 
-of its contributor version.
-
-### No Warranty
-This software is provided "as is" without warranty of any kind, either 
-expressed or implied, including, but not limited to, the implied warranties 
-of merchantability and fitness for a particular purpose. The entire risk as 
-to the quality and performance of the software is with you.
-
----
-
-## Compliance
-
-To comply with AGPL-3.0 when using or distributing Vulpes Celare:
-
-1. **If you modify and distribute the software:**
-   - Include this LICENSE file
-   - Make your source code available
-   - License your modifications under AGPL-3.0
-
-2. **If you run it as a network service:**
-   - Provide a way for users to download the complete source code
-   - Include any modifications you've made
-   - This applies even if you don't distribute the software
-
-3. **If you're unsure:**
-   - Read the full AGPL-3.0 text at https://www.gnu.org/licenses/agpl-3.0.html
-   - Consult with legal counsel
-   - Contact us for clarification or commercial licensing options
+For questions about licensing, open an issue on GitHub.

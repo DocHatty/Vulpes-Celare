@@ -19,15 +19,8 @@ Thank you for your interest in contributing!
 By contributing, you agree to these terms:
 
 1. **You retain copyright** to your contributions
-2. **Dual license grant:**
-   - To the community: AGPL-3.0
-   - To the project maintainer: Right to sublicense commercially
+2. **License grant:** Your contributions are licensed under AGPL-3.0
 3. **Sign-off required:** Add `Signed-off-by: Your Name <email>` to commits
-
-**Why?** This ensures the project can:
-
-- Remain open source for researchers and small organizations
-- Offer commercial licenses to large enterprises (funding development)
 
 **For minor contributions** (typos, small docs), the CLA is implicitly accepted via GitHub ToS.
 
