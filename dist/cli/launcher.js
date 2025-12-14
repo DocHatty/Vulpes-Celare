@@ -48,6 +48,7 @@ const readline = __importStar(require("readline"));
 const chalk_1 = __importDefault(require("chalk"));
 const figures_1 = __importDefault(require("figures"));
 const index_1 = require("../index");
+const Logger_1 = require("../utils/Logger");
 // Lazy load heavy modules only when needed
 let handleNativeChat;
 let handleAgent;
@@ -208,18 +209,23 @@ async function showMainMenu() {
     printBanner(true);
     printMenu("CHOOSE YOUR MODE:", MAIN_OPTIONS, false);
     const choice = await prompt(theme.secondary("  Your choice: "));
+    Logger_1.logger.debug("Main menu selection", { choice });
     if (choice === "q" || choice === "quit" || choice === "exit") {
+        Logger_1.logger.info("User quit from main menu");
         console.log(theme.info("\n  Goodbye!\n"));
         process.exit(0);
     }
     await loadModules();
     if (choice === "1") {
+        Logger_1.logger.info("Starting Native Chat mode");
         await handleNativeChat({ mode: "dev", verbose: false, skipBanner: true });
     }
     else if (choice === "2") {
+        Logger_1.logger.info("Opening Agent submenu");
         await showAgentSubmenu();
     }
     else {
+        Logger_1.logger.warn("Invalid main menu choice", { choice });
         console.log(theme.error(`\n  Invalid choice: ${choice}`));
         await showMainMenu();
     }
@@ -264,12 +270,15 @@ async function showAgentSubmenu() {
     printBanner(false, true); // Compact banner without stats, with clear
     printMenu("SELECT AI BACKEND:", AGENT_OPTIONS, true);
     const choice = await prompt(theme.secondary("  Your choice: "));
+    Logger_1.logger.debug("Agent submenu selection", { choice });
     if (choice === "b" || choice === "back") {
+        Logger_1.logger.debug("User went back to main menu");
         await showMainMenu();
         return;
     }
     const backend = AGENT_OPTIONS.find((b) => b.key === choice);
     if (backend) {
+        Logger_1.logger.info("Starting Agent mode", { backend: backend.name });
         // Don't call silentVulpesify here - handleAgent already does ensureVulpesified
         await handleAgent({
             mode: "dev",
@@ -278,6 +287,7 @@ async function showAgentSubmenu() {
         });
     }
     else {
+        Logger_1.logger.warn("Invalid agent submenu choice", { choice });
         console.log(theme.error(`\n  Invalid choice: ${choice}`));
         await showAgentSubmenu();
     }
@@ -304,6 +314,14 @@ async function main() {
     // DEP0190: shell + args warning - we validate commands are safe
     process.removeAllListeners("warning");
     process.env.VULPES_QUIET = "1";
+    // Log startup
+    Logger_1.logger.info("Vulpes CLI started", {
+        version: index_1.VERSION,
+        args: process.argv.slice(2),
+        cwd: process.cwd(),
+        platform: process.platform,
+        nodeVersion: process.version,
+    });
     const args = process.argv.slice(2);
     if (args.length > 0) {
         const cmd = args[0].toLowerCase();
@@ -364,7 +382,9 @@ ${theme.muted("For full CLI options: vulpes <command> --help")}
 `);
 }
 main().catch((err) => {
+    Logger_1.logger.exception("Fatal error in main", err);
     console.error(theme.error(`\nError: ${err.message}`));
+    console.error(theme.muted(`  Log file: ${Logger_1.logger.getLogFilePath()}`));
     process.exit(1);
 });
 //# sourceMappingURL=launcher.js.map

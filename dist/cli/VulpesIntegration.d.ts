@@ -93,6 +93,10 @@ export declare class VulpesIntegration {
     constructor(config?: Partial<IntegrationConfig>);
     private log;
     checkStatus(): Promise<IntegrationStatus>;
+    /**
+     * Fast CLI detection - avoids slow execSync calls
+     * Uses file existence checks instead of spawning subprocesses
+     */
     private isClaudeCodeInstalled;
     private isCodexInstalled;
     private areClaudeHooksConfigured;

@@ -38,6 +38,7 @@ import figures from "figures";
 
 import { VulpesCelare, RedactionResult } from "../VulpesCelare";
 import { VERSION, ENGINE_NAME } from "../index";
+import { logger } from "../utils/Logger";
 import {
   getSystemPrompt,
   SYSTEM_PROMPT_COMPACT,
@@ -216,13 +217,23 @@ export class VulpesAgent {
   // ══════════════════════════════════════════════════════════════════════════
 
   async start(): Promise<void> {
+    logger.info("VulpesAgent.start()", {
+      backend: this.config.backend,
+      mode: this.config.mode,
+      workingDir: this.config.workingDir,
+      autoVulpesify: this.config.autoVulpesify,
+    });
+
     // Banner is now printed by launcher, don't duplicate
     // this.printBanner();
 
     // Auto-vulpesify if enabled
     if (this.config.autoVulpesify) {
+      logger.debug("Running ensureVulpesified");
       await this.ensureVulpesified();
     }
+
+    logger.info(`Starting backend: ${this.config.backend}`);
 
     switch (this.config.backend) {
       case "claude":
@@ -268,10 +279,26 @@ export class VulpesAgent {
       require("path").join(this.config.workingDir, "AGENTS.md"),
     );
 
+    // Also check if MCP is already registered
+    const mcpSettingsPath = require("path").join(
+      this.config.workingDir,
+      ".claude",
+      "settings.json",
+    );
+    let mcpRegistered = false;
+    if (require("fs").existsSync(mcpSettingsPath)) {
+      try {
+        const settings = JSON.parse(require("fs").readFileSync(mcpSettingsPath, "utf-8"));
+        mcpRegistered = settings.mcpServers?.vulpes !== undefined;
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
     // Check if we need to install integrations
     const needsClaudeSetup =
       this.config.backend === "claude" &&
-      (!claudeMdExists || !slashCommandsExist);
+      (!claudeMdExists || !slashCommandsExist || !mcpRegistered);
 
     const needsCodexSetup = this.config.backend === "codex" && !agentsMdExists;
 
@@ -294,11 +321,13 @@ export class VulpesAgent {
   // ══════════════════════════════════════════════════════════════════════════
 
   private async startClaudeCode(): Promise<void> {
+    logger.info("startClaudeCode called");
     const args: string[] = [];
 
     // Model selection
     if (this.config.model) {
       args.push("--model", this.config.model);
+      logger.debug("Using model", { model: this.config.model });
     }
 
     // DEEP INTEGRATION: Use short append-system-prompt (CLAUDE.md has full context)
@@ -319,6 +348,12 @@ export class VulpesAgent {
         process.env.CLAUDE_CODE_GIT_BASH_PATH ||
         "C:\\Program Files\\Git\\bin\\bash.exe",
     };
+
+    logger.debug("Claude Code environment", {
+      VULPES_AGENT_MODE: env.VULPES_AGENT_MODE,
+      VULPES_WORKING_DIR: env.VULPES_WORKING_DIR,
+      args: args,
+    });
 
     console.log(
       theme.info(`\n  Starting Claude Code with Vulpes integration...\n`),
@@ -527,13 +562,29 @@ export class VulpesAgent {
       shell: needsShell,
     };
 
+    logger.info(`Spawning agent: ${cmd}`, {
+      cmd,
+      args,
+      cwd: this.config.workingDir,
+      needsShell,
+      platform: process.platform,
+    });
+
     this.subprocess = spawn(cmd, args, spawnOptions);
+    logger.debug(`Subprocess spawned`, { pid: this.subprocess.pid });
 
     this.subprocess.on("error", (err) => {
+      logger.error(`Failed to spawn ${cmd}`, {
+        error: err.message,
+        code: (err as NodeJS.ErrnoException).code,
+        path: (err as NodeJS.ErrnoException).path,
+      });
+
       console.error(theme.error(`\n  Failed to start ${cmd}: ${err.message}`));
       console.log(
         theme.muted(`  Make sure ${cmd} is installed and in your PATH\n`),
       );
+      console.log(theme.muted(`  Log file: ${logger.getLogFilePath()}\n`));
 
       if (cmd === "claude") {
         console.log(
@@ -555,9 +606,17 @@ export class VulpesAgent {
       process.exit(1);
     });
 
-    this.subprocess.on("exit", (code) => {
+    this.subprocess.on("exit", (code, signal) => {
+      logger.info(`Agent ${cmd} exited`, { code, signal });
       console.log(theme.muted(`\n  ${cmd} exited with code ${code}`));
       process.exit(code || 0);
+    });
+
+    // Log any unexpected close
+    this.subprocess.on("close", (code, signal) => {
+      if (code !== 0) {
+        logger.warn(`Agent ${cmd} closed unexpectedly`, { code, signal });
+      }
     });
   }
 
@@ -915,17 +974,17 @@ ${theme.muted("  Or just paste text to redact it!")}
     console.log(
       boxen(
         `${theme.primary.bold("VULPES AGENT")}\n` +
-          `${theme.muted(ENGINE_NAME + " v" + VERSION)}\n\n` +
-          `${theme.muted("Mode:")} ${this.getModeDisplay()}\n` +
-          `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}\n\n` +
-          (this.config.mode === "dev"
-            ? `${theme.warning(figures.warning)} ${theme.warning("Full codebase access enabled")}\n` +
-              `${theme.warning(figures.warning)} ${theme.warning("Only use with synthetic/test data")}`
-            : this.config.mode === "qa"
-              ? `${theme.info(figures.info)} Can compare original vs redacted\n` +
-                `${theme.info(figures.info)} Read-only codebase access`
-              : `${theme.success(figures.tick)} Production mode - original text hidden\n` +
-                `${theme.success(figures.tick)} Safe for real patient data`),
+        `${theme.muted(ENGINE_NAME + " v" + VERSION)}\n\n` +
+        `${theme.muted("Mode:")} ${this.getModeDisplay()}\n` +
+        `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}\n\n` +
+        (this.config.mode === "dev"
+          ? `${theme.warning(figures.warning)} ${theme.warning("Full codebase access enabled")}\n` +
+          `${theme.warning(figures.warning)} ${theme.warning("Only use with synthetic/test data")}`
+          : this.config.mode === "qa"
+            ? `${theme.info(figures.info)} Can compare original vs redacted\n` +
+            `${theme.info(figures.info)} Read-only codebase access`
+            : `${theme.success(figures.tick)} Production mode - original text hidden\n` +
+            `${theme.success(figures.tick)} Safe for real patient data`),
         {
           padding: 1,
           margin: { top: 1, bottom: 0 },

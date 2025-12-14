@@ -413,6 +413,10 @@ class VulpesCortexServer {
     // Execute a tool
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
+
+      // LAZY INIT: Load modules on first tool call
+      await this.ensureInitialized();
+
       startOperation("TOOL", name, args);
       log(`Tool call: ${name}`);
       debug(`Full args: ${JSON.stringify(args)}`);
@@ -483,6 +487,7 @@ class VulpesCortexServer {
     // Get a specific prompt
     this.server.setRequestHandler(GetPromptRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
+      await this.ensureInitialized();
       console.error(`[Vulpes Cortex] Prompt request: ${name}`);
 
       try {
@@ -538,6 +543,7 @@ class VulpesCortexServer {
       ReadResourceRequestSchema,
       async (request) => {
         const { uri } = request.params;
+        await this.ensureInitialized();
         console.error(`[Vulpes Cortex] Resource request: ${uri}`);
 
         try {
@@ -616,14 +622,16 @@ class VulpesCortexServer {
     debug(`Options: ${JSON.stringify(options)}`);
     debug(`DEBUG_MODE: ${DEBUG_MODE}`);
 
-    // Initialize modules first
-    await this.initialize();
+    // LAZY INITIALIZATION: Don't block MCP handshake
+    // Modules will be initialized on first tool call
+    // This makes the server respond instantly to Claude Code
 
-    // Create server
+    // Create server FIRST (fast)
     this.createServer();
 
     if (options.daemon) {
-      // DAEMON MODE: Start HTTP health server that keeps process alive
+      // DAEMON MODE: Initialize modules upfront since we're a background server
+      await this.initialize();
       const port = options.port || 3100;
       await this.startDaemon(port);
     } else {
@@ -642,10 +650,21 @@ class VulpesCortexServer {
       console.error(
         `[Vulpes Cortex] Server: ${MCP_CONFIG.name} v${MCP_CONFIG.version}`,
       );
+      console.error(
+        "[Vulpes Cortex] Modules will initialize on first tool call (lazy loading)",
+      );
 
       // Keep process alive - the SDK handles the message loop
       await new Promise(() => { }); // Never resolves
     }
+  }
+
+  /**
+   * Ensure modules are initialized (lazy initialization)
+   */
+  async ensureInitialized() {
+    if (this.initialized) return;
+    await this.initialize();
   }
 
   /**

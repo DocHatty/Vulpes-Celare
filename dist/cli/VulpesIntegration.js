@@ -384,25 +384,51 @@ class VulpesIntegration {
             },
         };
     }
+    /**
+     * Fast CLI detection - avoids slow execSync calls
+     * Uses file existence checks instead of spawning subprocesses
+     */
     isClaudeCodeInstalled() {
-        try {
-            const result = require("child_process").execSync("claude --version 2>&1", { encoding: "utf-8" });
-            return result.includes("claude");
+        // Fast path: check common install locations on Windows
+        if (process.platform === "win32") {
+            const npmGlobal = path.join(process.env.APPDATA || "", "npm", "claude.cmd");
+            if (fs.existsSync(npmGlobal))
+                return true;
         }
-        catch {
-            return false;
+        // Fast path: check if claude is in PATH by looking for shim files
+        const pathDirs = (process.env.PATH || "").split(path.delimiter);
+        for (const dir of pathDirs.slice(0, 10)) { // Check first 10 dirs max
+            try {
+                const claudeCmd = path.join(dir, process.platform === "win32" ? "claude.cmd" : "claude");
+                if (fs.existsSync(claudeCmd))
+                    return true;
+            }
+            catch {
+                continue;
+            }
         }
+        return false;
     }
     isCodexInstalled() {
-        try {
-            const result = require("child_process").execSync("codex --version 2>&1", {
-                encoding: "utf-8",
-            });
-            return true;
+        // Fast path: check common install locations on Windows
+        if (process.platform === "win32") {
+            const npmGlobal = path.join(process.env.APPDATA || "", "npm", "codex.cmd");
+            if (fs.existsSync(npmGlobal))
+                return true;
         }
-        catch {
-            return false;
+        // Fast path: check if codex is in PATH by looking for shim files
+        const pathDirs = (process.env.PATH || "").split(path.delimiter);
+        for (const dir of pathDirs.slice(0, 10)) { // Check first 10 dirs max
+            try {
+                const codexCmd = path.join(dir, process.platform === "win32" ? "codex.cmd" : "codex");
+                if (fs.existsSync(codexCmd))
+                    return true;
+            }
+            catch {
+                continue;
+            }
         }
+        return false;
     }
     areClaudeHooksConfigured() {
         const settingsPath = path.join(this.config.projectDir, ".claude", "settings.json");
@@ -549,27 +575,26 @@ class VulpesIntegration {
         console.log(theme.success(`  ${figures_1.default.tick} Installed ${Object.keys(exports.CLAUDE_SLASH_COMMANDS).length} slash commands`));
     }
     async registerClaudeMcp() {
-        const globalSettingsPath = path.join(this.config.homeDir, ".claude.json");
+        // Register in PROJECT-LEVEL .claude/settings.json (this is where Claude Code reads MCP config)
+        const projectSettingsPath = path.join(this.config.projectDir, ".claude", "settings.json");
         let settings = {};
-        if (fs.existsSync(globalSettingsPath)) {
+        if (fs.existsSync(projectSettingsPath)) {
             try {
-                settings = JSON.parse(fs.readFileSync(globalSettingsPath, "utf-8"));
+                settings = JSON.parse(fs.readFileSync(projectSettingsPath, "utf-8"));
             }
             catch {
                 settings = {};
             }
         }
+        // Add MCP server config - use the Cortex server for full learning capabilities
         settings.mcpServers = settings.mcpServers || {};
         settings.mcpServers.vulpes = {
             command: "node",
-            args: [path.join(this.config.projectDir, "dist", "mcp", "server.js")],
-            env: {
-                VULPES_MODE: this.config.mode,
-                VULPES_PROJECT_DIR: this.config.projectDir,
-            },
+            args: ["tests/master-suite/cortex/mcp/server.js", "--daemon"],
+            cwd: ".",
         };
-        fs.writeFileSync(globalSettingsPath, JSON.stringify(settings, null, 2));
-        console.log(theme.success(`  ${figures_1.default.tick} Registered Vulpes MCP server`));
+        fs.writeFileSync(projectSettingsPath, JSON.stringify(settings, null, 2));
+        console.log(theme.success(`  ${figures_1.default.tick} Registered Vulpes MCP server in .claude/settings.json`));
     }
     // ══════════════════════════════════════════════════════════════════════════
     // CODEX INTEGRATION
@@ -779,29 +804,28 @@ tool_timeout_sec = 60
      * Silent MCP registration for Claude Code
      */
     async registerClaudeCodeMcpSilent() {
-        const claudeConfigPath = path.join(this.config.homeDir, ".claude.json");
-        let claudeConfig = {};
-        if (fs.existsSync(claudeConfigPath)) {
+        // Register in PROJECT-LEVEL .claude/settings.json
+        const projectSettingsPath = path.join(this.config.projectDir, ".claude", "settings.json");
+        let settings = {};
+        if (fs.existsSync(projectSettingsPath)) {
             try {
-                claudeConfig = JSON.parse(fs.readFileSync(claudeConfigPath, "utf-8"));
+                settings = JSON.parse(fs.readFileSync(projectSettingsPath, "utf-8"));
             }
             catch {
-                claudeConfig = {};
+                settings = {};
             }
         }
-        if (!claudeConfig.mcpServers) {
-            claudeConfig.mcpServers = {};
+        if (!settings.mcpServers) {
+            settings.mcpServers = {};
         }
-        if (!claudeConfig.mcpServers.vulpes) {
-            claudeConfig.mcpServers.vulpes = {
+        if (!settings.mcpServers.vulpes) {
+            // Use Cortex MCP server for full learning capabilities
+            settings.mcpServers.vulpes = {
                 command: "node",
-                args: [path.join(this.config.projectDir, "dist", "mcp", "server.js")],
-                env: {
-                    VULPES_MODE: this.config.mode,
-                    VULPES_PROJECT_DIR: this.config.projectDir,
-                },
+                args: ["tests/master-suite/cortex/mcp/server.js", "--daemon"],
+                cwd: ".",
             };
-            fs.writeFileSync(claudeConfigPath, JSON.stringify(claudeConfig, null, 2));
+            fs.writeFileSync(projectSettingsPath, JSON.stringify(settings, null, 2));
         }
     }
     /**

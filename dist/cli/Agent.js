@@ -76,6 +76,7 @@ const boxen_1 = __importDefault(require("boxen"));
 const figures_1 = __importDefault(require("figures"));
 const VulpesCelare_1 = require("../VulpesCelare");
 const index_1 = require("../index");
+const Logger_1 = require("../utils/Logger");
 const SystemPrompts_1 = require("./SystemPrompts");
 const VulpesIntegration_1 = require("./VulpesIntegration");
 // ============================================================================
@@ -202,12 +203,20 @@ class VulpesAgent {
     // MAIN ENTRY POINT
     // ══════════════════════════════════════════════════════════════════════════
     async start() {
+        Logger_1.logger.info("VulpesAgent.start()", {
+            backend: this.config.backend,
+            mode: this.config.mode,
+            workingDir: this.config.workingDir,
+            autoVulpesify: this.config.autoVulpesify,
+        });
         // Banner is now printed by launcher, don't duplicate
         // this.printBanner();
         // Auto-vulpesify if enabled
         if (this.config.autoVulpesify) {
+            Logger_1.logger.debug("Running ensureVulpesified");
             await this.ensureVulpesified();
         }
+        Logger_1.logger.info(`Starting backend: ${this.config.backend}`);
         switch (this.config.backend) {
             case "claude":
                 await this.startClaudeCode();
@@ -237,9 +246,21 @@ class VulpesAgent {
         const claudeMdExists = require("fs").existsSync(require("path").join(this.config.workingDir, "CLAUDE.md"));
         const slashCommandsExist = require("fs").existsSync(require("path").join(this.config.workingDir, ".claude", "commands", "vulpes-redact.md"));
         const agentsMdExists = require("fs").existsSync(require("path").join(this.config.workingDir, "AGENTS.md"));
+        // Also check if MCP is already registered
+        const mcpSettingsPath = require("path").join(this.config.workingDir, ".claude", "settings.json");
+        let mcpRegistered = false;
+        if (require("fs").existsSync(mcpSettingsPath)) {
+            try {
+                const settings = JSON.parse(require("fs").readFileSync(mcpSettingsPath, "utf-8"));
+                mcpRegistered = settings.mcpServers?.vulpes !== undefined;
+            }
+            catch {
+                // Ignore parse errors
+            }
+        }
         // Check if we need to install integrations
         const needsClaudeSetup = this.config.backend === "claude" &&
-            (!claudeMdExists || !slashCommandsExist);
+            (!claudeMdExists || !slashCommandsExist || !mcpRegistered);
         const needsCodexSetup = this.config.backend === "codex" && !agentsMdExists;
         if (needsClaudeSetup || needsCodexSetup) {
             console.log(theme.info("\n  Setting up Vulpes integration...\n"));
@@ -256,10 +277,12 @@ class VulpesAgent {
     // CLAUDE CODE - FULL INTEGRATION
     // ══════════════════════════════════════════════════════════════════════════
     async startClaudeCode() {
+        Logger_1.logger.info("startClaudeCode called");
         const args = [];
         // Model selection
         if (this.config.model) {
             args.push("--model", this.config.model);
+            Logger_1.logger.debug("Using model", { model: this.config.model });
         }
         // DEEP INTEGRATION: Use short append-system-prompt (CLAUDE.md has full context)
         // Note: --system-prompt-file only works in print mode, not interactive
@@ -274,6 +297,11 @@ class VulpesAgent {
             CLAUDE_CODE_GIT_BASH_PATH: process.env.CLAUDE_CODE_GIT_BASH_PATH ||
                 "C:\\Program Files\\Git\\bin\\bash.exe",
         };
+        Logger_1.logger.debug("Claude Code environment", {
+            VULPES_AGENT_MODE: env.VULPES_AGENT_MODE,
+            VULPES_WORKING_DIR: env.VULPES_WORKING_DIR,
+            args: args,
+        });
         console.log(theme.info(`\n  Starting Claude Code with Vulpes integration...\n`));
         console.log(theme.muted(`  ${figures_1.default.tick} Vulpes context injected`));
         console.log(theme.muted(`  ${figures_1.default.tick} CLAUDE.md provides full context`));
@@ -417,10 +445,24 @@ class VulpesAgent {
             env,
             shell: needsShell,
         };
+        Logger_1.logger.info(`Spawning agent: ${cmd}`, {
+            cmd,
+            args,
+            cwd: this.config.workingDir,
+            needsShell,
+            platform: process.platform,
+        });
         this.subprocess = (0, child_process_1.spawn)(cmd, args, spawnOptions);
+        Logger_1.logger.debug(`Subprocess spawned`, { pid: this.subprocess.pid });
         this.subprocess.on("error", (err) => {
+            Logger_1.logger.error(`Failed to spawn ${cmd}`, {
+                error: err.message,
+                code: err.code,
+                path: err.path,
+            });
             console.error(theme.error(`\n  Failed to start ${cmd}: ${err.message}`));
             console.log(theme.muted(`  Make sure ${cmd} is installed and in your PATH\n`));
+            console.log(theme.muted(`  Log file: ${Logger_1.logger.getLogFilePath()}\n`));
             if (cmd === "claude") {
                 console.log(theme.muted("  Install: npm install -g @anthropic-ai/claude-code"));
             }
@@ -433,9 +475,16 @@ class VulpesAgent {
             }
             process.exit(1);
         });
-        this.subprocess.on("exit", (code) => {
+        this.subprocess.on("exit", (code, signal) => {
+            Logger_1.logger.info(`Agent ${cmd} exited`, { code, signal });
             console.log(theme.muted(`\n  ${cmd} exited with code ${code}`));
             process.exit(code || 0);
+        });
+        // Log any unexpected close
+        this.subprocess.on("close", (code, signal) => {
+            if (code !== 0) {
+                Logger_1.logger.warn(`Agent ${cmd} closed unexpectedly`, { code, signal });
+            }
         });
     }
     // ══════════════════════════════════════════════════════════════════════════

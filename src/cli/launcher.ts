@@ -12,6 +12,7 @@ import chalk from "chalk";
 import figures from "figures";
 
 import { VERSION, ENGINE_NAME } from "../index";
+import { logger } from "../utils/Logger";
 
 // Lazy load heavy modules only when needed
 let handleNativeChat: typeof import("./NativeChat").handleNativeChat;
@@ -214,8 +215,10 @@ async function showMainMenu(): Promise<void> {
   printMenu("CHOOSE YOUR MODE:", MAIN_OPTIONS, false);
 
   const choice = await prompt(theme.secondary("  Your choice: "));
+  logger.debug("Main menu selection", { choice });
 
   if (choice === "q" || choice === "quit" || choice === "exit") {
+    logger.info("User quit from main menu");
     console.log(theme.info("\n  Goodbye!\n"));
     process.exit(0);
   }
@@ -223,10 +226,13 @@ async function showMainMenu(): Promise<void> {
   await loadModules();
 
   if (choice === "1") {
+    logger.info("Starting Native Chat mode");
     await handleNativeChat({ mode: "dev", verbose: false, skipBanner: true });
   } else if (choice === "2") {
+    logger.info("Opening Agent submenu");
     await showAgentSubmenu();
   } else {
+    logger.warn("Invalid main menu choice", { choice });
     console.log(theme.error(`\n  Invalid choice: ${choice}`));
     await showMainMenu();
   }
@@ -275,14 +281,17 @@ async function showAgentSubmenu(): Promise<void> {
   printMenu("SELECT AI BACKEND:", AGENT_OPTIONS, true);
 
   const choice = await prompt(theme.secondary("  Your choice: "));
+  logger.debug("Agent submenu selection", { choice });
 
   if (choice === "b" || choice === "back") {
+    logger.debug("User went back to main menu");
     await showMainMenu();
     return;
   }
 
   const backend = AGENT_OPTIONS.find((b) => b.key === choice);
   if (backend) {
+    logger.info("Starting Agent mode", { backend: backend.name });
     // Don't call silentVulpesify here - handleAgent already does ensureVulpesified
     await handleAgent({
       mode: "dev",
@@ -290,6 +299,7 @@ async function showAgentSubmenu(): Promise<void> {
       verbose: false,
     });
   } else {
+    logger.warn("Invalid agent submenu choice", { choice });
     console.log(theme.error(`\n  Invalid choice: ${choice}`));
     await showAgentSubmenu();
   }
@@ -319,6 +329,15 @@ async function main(): Promise<void> {
   // DEP0190: shell + args warning - we validate commands are safe
   process.removeAllListeners("warning");
   process.env.VULPES_QUIET = "1";
+
+  // Log startup
+  logger.info("Vulpes CLI started", {
+    version: VERSION,
+    args: process.argv.slice(2),
+    cwd: process.cwd(),
+    platform: process.platform,
+    nodeVersion: process.version,
+  });
 
   const args = process.argv.slice(2);
 
@@ -389,6 +408,8 @@ ${theme.muted("For full CLI options: vulpes <command> --help")}
 }
 
 main().catch((err) => {
+  logger.exception("Fatal error in main", err);
   console.error(theme.error(`\nError: ${err.message}`));
+  console.error(theme.muted(`  Log file: ${logger.getLogFilePath()}`));
   process.exit(1);
 });
