@@ -38,6 +38,7 @@ coverage/
 .nyc_output/
 tests/results/
 tests/master-suite/cortex/storage/
+test_*.png
 
 # Temporary
 tmp/

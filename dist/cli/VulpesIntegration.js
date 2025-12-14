@@ -65,6 +65,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VulpesIntegration = exports.CODEX_MCP_CONFIG = exports.CODEX_AGENTS_MD = exports.CLAUDE_SLASH_COMMANDS = exports.CLAUDE_MD_CONTENT = exports.CLAUDE_CODE_HOOKS = void 0;
+exports.getClaudeMdContent = getClaudeMdContent;
+exports.getCodexAgentsMd = getCodexAgentsMd;
+exports.getCopilotInstructions = getCopilotInstructions;
 exports.handleVulpesify = handleVulpesify;
 exports.handleIntegrationStatus = handleIntegrationStatus;
 const fs = __importStar(require("fs"));
@@ -73,9 +76,7 @@ const os = __importStar(require("os"));
 const chalk_1 = __importDefault(require("chalk"));
 const figures_1 = __importDefault(require("figures"));
 const index_1 = require("../index");
-// ============================================================================
-// THEME
-// ============================================================================
+// --- Theme ---
 const theme = {
     primary: chalk_1.default.hex("#FF6B35"),
     secondary: chalk_1.default.hex("#4ECDC4"),
@@ -86,9 +87,7 @@ const theme = {
     info: chalk_1.default.hex("#3498DB"),
     muted: chalk_1.default.hex("#95A5A6"),
 };
-// ============================================================================
-// CLAUDE CODE HOOK DEFINITIONS
-// ============================================================================
+// --- Claude Code Hook Definitions ---
 /**
  * Claude Code hooks configuration for Vulpes integration
  * These hooks intercept tool calls to add PHI redaction capabilities
@@ -133,10 +132,44 @@ exports.CLAUDE_CODE_HOOKS = {
         },
     ],
 };
-// ============================================================================
-// CLAUDE.MD CONTENT
-// ============================================================================
-exports.CLAUDE_MD_CONTENT = `# Vulpes Celare Integration
+// --- Template Loading ---
+// Load comprehensive templates from files, with fallback to embedded content
+function loadTemplate(filename, fallback) {
+    try {
+        const templatePath = path.join(__dirname, "..", "..", "templates", filename);
+        if (fs.existsSync(templatePath)) {
+            return fs.readFileSync(templatePath, "utf-8");
+        }
+    }
+    catch {
+        // Use fallback
+    }
+    return fallback;
+}
+// Cache loaded templates
+let _claudeTemplate = null;
+let _codexTemplate = null;
+let _copilotTemplate = null;
+function getClaudeMdContent() {
+    if (!_claudeTemplate) {
+        _claudeTemplate = loadTemplate("CLAUDE_TEMPLATE.md", CLAUDE_MD_FALLBACK);
+    }
+    return _claudeTemplate;
+}
+function getCodexAgentsMd() {
+    if (!_codexTemplate) {
+        _codexTemplate = loadTemplate("CODEX_AGENTS_TEMPLATE.md", exports.CODEX_AGENTS_MD);
+    }
+    return _codexTemplate;
+}
+function getCopilotInstructions() {
+    if (!_copilotTemplate) {
+        _copilotTemplate = loadTemplate("COPILOT_INSTRUCTIONS_TEMPLATE.md", "# Vulpes Celare\nHIPAA PHI Redaction Engine");
+    }
+    return _copilotTemplate;
+}
+// --- Fallback Content ---
+const CLAUDE_MD_FALLBACK = `# Vulpes Celare Integration
 
 This project uses **Vulpes Celare** for HIPAA-compliant PHI redaction.
 
@@ -198,9 +231,9 @@ tests/
 3. Run tests: \`npm run build && npm test\`
 4. Check metrics before/after
 `;
-// ============================================================================
-// SLASH COMMANDS FOR CLAUDE CODE
-// ============================================================================
+// Backwards compatibility export
+exports.CLAUDE_MD_CONTENT = CLAUDE_MD_FALLBACK;
+// --- Slash Commands ---
 exports.CLAUDE_SLASH_COMMANDS = {
     "vulpes-redact": `# Vulpes PHI Redaction
 

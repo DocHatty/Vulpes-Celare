@@ -36,9 +36,7 @@ import figures from "figures";
 import { VERSION, ENGINE_NAME } from "../index";
 import { getSystemPrompt, SYSTEM_PROMPT_COMPACT } from "./SystemPrompts";
 
-// ============================================================================
-// TYPES
-// ============================================================================
+// --- Types ---
 
 export interface IntegrationConfig {
   projectDir: string;
@@ -65,9 +63,7 @@ export interface IntegrationStatus {
   };
 }
 
-// ============================================================================
-// THEME
-// ============================================================================
+// --- Theme ---
 
 const theme = {
   primary: chalk.hex("#FF6B35"),
@@ -80,9 +76,7 @@ const theme = {
   muted: chalk.hex("#95A5A6"),
 };
 
-// ============================================================================
-// CLAUDE CODE HOOK DEFINITIONS
-// ============================================================================
+// --- Claude Code Hook Definitions ---
 
 /**
  * Claude Code hooks configuration for Vulpes integration
@@ -134,11 +128,50 @@ export const CLAUDE_CODE_HOOKS = {
   ],
 };
 
-// ============================================================================
-// CLAUDE.MD CONTENT
-// ============================================================================
+// --- Template Loading ---
 
-export const CLAUDE_MD_CONTENT = `# Vulpes Celare Integration
+// Load comprehensive templates from files, with fallback to embedded content
+function loadTemplate(filename: string, fallback: string): string {
+  try {
+    const templatePath = path.join(__dirname, "..", "..", "templates", filename);
+    if (fs.existsSync(templatePath)) {
+      return fs.readFileSync(templatePath, "utf-8");
+    }
+  } catch {
+    // Use fallback
+  }
+  return fallback;
+}
+
+// Cache loaded templates
+let _claudeTemplate: string | null = null;
+let _codexTemplate: string | null = null;
+let _copilotTemplate: string | null = null;
+
+export function getClaudeMdContent(): string {
+  if (!_claudeTemplate) {
+    _claudeTemplate = loadTemplate("CLAUDE_TEMPLATE.md", CLAUDE_MD_FALLBACK);
+  }
+  return _claudeTemplate;
+}
+
+export function getCodexAgentsMd(): string {
+  if (!_codexTemplate) {
+    _codexTemplate = loadTemplate("CODEX_AGENTS_TEMPLATE.md", CODEX_AGENTS_MD);
+  }
+  return _codexTemplate;
+}
+
+export function getCopilotInstructions(): string {
+  if (!_copilotTemplate) {
+    _copilotTemplate = loadTemplate("COPILOT_INSTRUCTIONS_TEMPLATE.md", "# Vulpes Celare\nHIPAA PHI Redaction Engine");
+  }
+  return _copilotTemplate;
+}
+
+// --- Fallback Content ---
+
+const CLAUDE_MD_FALLBACK = `# Vulpes Celare Integration
 
 This project uses **Vulpes Celare** for HIPAA-compliant PHI redaction.
 
@@ -201,9 +234,10 @@ tests/
 4. Check metrics before/after
 `;
 
-// ============================================================================
-// SLASH COMMANDS FOR CLAUDE CODE
-// ============================================================================
+// Backwards compatibility export
+export const CLAUDE_MD_CONTENT = CLAUDE_MD_FALLBACK;
+
+// --- Slash Commands ---
 
 export const CLAUDE_SLASH_COMMANDS = {
   "vulpes-redact": `# Vulpes PHI Redaction
