@@ -73,7 +73,7 @@ PHI never crosses the network boundary. The LLM only sees tokenized placeholders
 
 **🔍 Fully Inspectable** - Open source TypeScript + Rust. No black-box ML models. Every decision is auditable for HIPAA compliance officers. TypeScript fallbacks for all accelerators ensure cross-platform compatibility.
 
-**🚀 Production Ready** - Trust bundles for tamper-evident provenance. Comprehensive test suite. Battle-tested on 220+ synthetic medical documents with 99%+ sensitivity.
+**🚀 Production Ready** - Trust bundles for tamper-evident provenance. Comprehensive test suite. Battle-tested on thousands of synthetic medical documents with 99%+ sensitivity.
 
 ## Quick Start
 
