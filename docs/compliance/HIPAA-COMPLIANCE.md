@@ -197,8 +197,8 @@ const assessment = {
   confidence: `${(testResults.sensitivity * 100).toFixed(1)}%`,
   testingBasis: `${testResults.totalDocuments} documents`,
   residualIdentifiers: [],
-  recommendation: reidentificationRisk < 0.01 
-    ? 'Acceptable for HIPAA Safe Harbor' 
+  recommendation: reidentificationRisk < 0.01
+    ? 'Acceptable for HIPAA Safe Harbor'
     : 'Manual review recommended'
 };
 
@@ -338,15 +338,15 @@ if (auditEntry.destination === 'external-llm' && result.redactionCount < expecte
 ```typescript
 async function safeSend(note: string, llmProvider: LLM) {
   const result = await engine.process(note);
-  
+
   // Validate redaction
   const validator = new RedactionValidator();
   const validation = await validator.validate(result);
-  
+
   if (!validation.safe) {
     throw new Error('Redaction validation failed - cannot send');
   }
-  
+
   // Safe to send
   return await llmProvider.complete(result.text);
 }

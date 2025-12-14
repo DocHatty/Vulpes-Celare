@@ -220,8 +220,8 @@ A redaction policy is a JSON configuration file that controls which filters are 
   "name": "attending-only",
   "description": "Preserve attending physician names, redact residents",
   "filters": {
-    "names": { 
-      "enabled": true, 
+    "names": {
+      "enabled": true,
       "confidenceThreshold": 0.4,
       "customRules": {
         "preserveAttending": true,
@@ -244,7 +244,7 @@ A redaction policy is a JSON configuration file that controls which filters are 
   "name": "accession-numbers",
   "description": "Redact study accession numbers in addition to standard PHI",
   "filters": {
-    "ids": { 
+    "ids": {
       "enabled": true,
       "customPatterns": [
         {
@@ -271,7 +271,7 @@ A redaction policy is a JSON configuration file that controls which filters are 
   "name": "age-85-threshold",
   "description": "More conservative age redaction at 85 instead of 90",
   "filters": {
-    "ages": { 
+    "ages": {
       "enabled": true,
       "thresholdAge": 85
     }

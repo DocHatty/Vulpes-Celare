@@ -1,9 +1,9 @@
 /**
  * Image Service Logger and Error Handling
- * 
+ *
  * Provides structured logging, error boundaries, and debugging mechanisms
  * for all image processing services.
- * 
+ *
  * @module core/images/logger
  */
 

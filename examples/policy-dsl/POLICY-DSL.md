@@ -25,13 +25,13 @@ import { PolicyCompiler } from 'vulpes-celare';
 const dsl = `
 policy HIPAA_STRICT {
   description "Full HIPAA Safe Harbor compliance"
-  
+
   redact names
   redact dates
   redact addresses
   redact ssn
   redact phones
-  
+
   threshold 0.5
 }
 `;
@@ -80,7 +80,7 @@ policy POLICY_NAME {
 ```
 policy RADIOLOGY {
   description "Radiology department workflow policy"
-  
+
   redact names
   redact ssn
 }
@@ -146,7 +146,7 @@ keep locations
 ```
 policy MY_POLICY {
   redact names
-  
+
   threshold 0.5  // 0.0 = permissive, 1.0 = strict
 }
 ```
@@ -161,7 +161,7 @@ policy MY_POLICY {
 // Base policy
 policy HIPAA_STRICT {
   description "Full HIPAA compliance"
-  
+
   redact names
   redact dates
   redact addresses
@@ -169,19 +169,19 @@ policy HIPAA_STRICT {
   redact phones
   redact emails
   redact mrn
-  
+
   threshold 0.5
 }
 
 // Research policy extends base
 policy RESEARCH_RELAXED extends HIPAA_STRICT {
   description "IRB-approved research with temporal context"
-  
+
   // Override: keep dates for temporal analysis
   keep dates
   keep ages
   keep locations
-  
+
   // Lower threshold for research
   threshold 0.4
 }
@@ -199,11 +199,11 @@ policy RESEARCH_RELAXED extends HIPAA_STRICT {
 policy RADIOLOGY {
   // Redact patient names, but keep referring physician names
   redact names where context != "referring_physician"
-  
+
   // Keep internal MRNs, redact external ones
   keep mrn where context == "internal"
   redact mrn where context == "external"
-  
+
   // Keep department phones, redact patient phones
   keep phones where type == "department"
   redact phones where type == "patient"
@@ -222,7 +222,7 @@ policy RADIOLOGY {
 const hipaa = `
 policy HIPAA_STRICT {
   description "Full HIPAA Safe Harbor compliance - all 18 identifiers"
-  
+
   redact names
   redact addresses
   redact dates
@@ -241,7 +241,7 @@ policy HIPAA_STRICT {
   redact biometric
   redact unique_id
   redact ages where age > 89
-  
+
   threshold 0.5
 }
 `;
@@ -255,7 +255,7 @@ const policy = PolicyCompiler.compile(hipaa);
 const research = `
 policy RESEARCH_RELAXED extends HIPAA_STRICT {
   description "IRB-approved research - preserves temporal and geographic context"
-  
+
   // Redact direct identifiers
   redact names
   redact ssn
@@ -263,13 +263,13 @@ policy RESEARCH_RELAXED extends HIPAA_STRICT {
   redact phones
   redact emails
   redact addresses
-  
+
   // Keep for research analysis
   keep dates
   keep ages
   keep locations
   keep organizations
-  
+
   threshold 0.4
 }
 `;
@@ -283,20 +283,20 @@ const policy = PolicyCompiler.compile(research);
 const radiology = `
 policy RADIOLOGY_DEPT {
   description "Radiology workflow - preserves study identifiers"
-  
+
   // Redact patient identifiers
   redact names
   redact ssn
   redact phones
   redact emails
   redact addresses
-  
+
   // Keep for internal workflow
   keep mrn
   keep dates
   keep ages
   keep organizations
-  
+
   threshold 0.6
 }
 `;
@@ -310,7 +310,7 @@ const policy = PolicyCompiler.compile(radiology);
 const training = `
 policy TRAINING {
   description "Medical education and training cases"
-  
+
   // Remove all direct identifiers
   redact names
   redact ssn
@@ -318,13 +318,13 @@ policy TRAINING {
   redact phones
   redact emails
   redact addresses
-  
+
   // Keep clinical context
   keep dates
   keep ages where age < 90
   keep organizations
   keep professions
-  
+
   threshold 0.5
 }
 `;
@@ -338,7 +338,7 @@ const policy = PolicyCompiler.compile(training);
 const fortress = `
 policy TRAUMA_FORTRESS {
   description "Maximum security for trauma centers and DoD facilities"
-  
+
   // Redact EVERYTHING
   redact names
   redact dates
@@ -360,7 +360,7 @@ policy TRAUMA_FORTRESS {
   redact ages
   redact locations
   redact organizations
-  
+
   threshold 0.7
 }
 `;
@@ -391,14 +391,14 @@ const policy = PolicyCompiler.compile(fortress);
 ```typescript
 policy RESEARCH_RELAXED {
   description "IRB-approved research"
-  
+
   redact names
   redact ssn
   redact mrn
-  
+
   keep dates
   keep ages
-  
+
   threshold 0.4
 }
 ```
@@ -426,10 +426,10 @@ import { PolicyCompiler } from 'vulpes-celare';
 
 try {
   const policy = PolicyCompiler.compile(dsl);
-  
+
   // Validate compiled policy
   const validation = PolicyCompiler.validate(policy);
-  
+
   if (!validation.valid) {
     console.error('Policy errors:', validation.errors);
   } else {
@@ -482,7 +482,7 @@ function generatePolicyForDepartment(dept: string): string {
       }
     `;
   }
-  
+
   // Default policy
   return PolicyTemplates.HIPAA_STRICT;
 }
@@ -549,12 +549,12 @@ policies/
 ```
 policy RESEARCH {
   description "IRB-approved research protocol"
-  
+
   redact names
   redact ssn
   keep dates
   keep ages
-  
+
   threshold 0.4
 }
 ```
@@ -603,7 +603,7 @@ policy RESEARCH {
 // ✅ Good: Clear description
 policy RADIOLOGY {
   description "Radiology dept workflow - preserves internal IDs for PACS integration"
-  
+
   redact names
   keep mrn
 }

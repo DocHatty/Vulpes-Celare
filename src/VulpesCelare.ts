@@ -176,7 +176,7 @@ export class VulpesCelare {
      }
   ) {
     this.config = config;
-    
+
     // Use injected providers or fall back to internal implementations
     if (dependencies?.filterProvider) {
       this.filters = dependencies.filterProvider.getFilters(config);

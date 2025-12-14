@@ -75,16 +75,16 @@ export class DocumentStructureAnalyzer {
     const hasHeaders = this.HEADER_PATTERNS.some(p => p.test(text));
     const hasFooters = this.FOOTER_PATTERNS.some(p => p.test(text));
     const hasTables = this.TABLE_INDICATORS.test(text);
-    
+
     // Count labeled fields
     const labelMatches = text.match(this.LABEL_PATTERN) || [];
     const hasLabeledFields = labelMatches.length > 3;
-    
+
     // Calculate densities
     const lines = text.split('\n');
     let formLines = 0;
     let narrativeLines = 0;
-    
+
     for (const line of lines) {
       if (/^[A-Za-z\s]+:\s*.+/.test(line)) {
         formLines++;
@@ -92,11 +92,11 @@ export class DocumentStructureAnalyzer {
         narrativeLines++;
       }
     }
-    
+
     const totalLines = Math.max(1, lines.length);
     const formFieldDensity = formLines / totalLines;
     const narrativeDensity = narrativeLines / totalLines;
-    
+
     // Determine document type
     let type: DocumentType;
     if (formFieldDensity > 0.4 && narrativeDensity < 0.2) {
@@ -131,7 +131,7 @@ export class DocumentStructureAnalyzer {
    */
   static getPositionContext(text: string, offset: number, profile?: DocumentProfile): StructuralPosition {
     profile = profile || this.analyzeDocument(text);
-    
+
     // Find section
     let sectionType: SectionType = 'BODY';
     for (const section of profile.sections) {
@@ -140,10 +140,10 @@ export class DocumentStructureAnalyzer {
         break;
       }
     }
-    
+
     // Find nearest label
     const { label, distance } = this.findNearestLabel(text, offset);
-    
+
     // Determine field context
     let fieldContext: FieldContext;
     if (label && distance < 50) {
@@ -157,16 +157,16 @@ export class DocumentStructureAnalyzer {
     } else {
       fieldContext = 'FREE_TEXT';
     }
-    
+
     // Check for table column header
     const columnHeader = fieldContext === 'TABLE_CELL' ? this.findColumnHeader(text, offset) : null;
-    
+
     // Calculate confidence based on how clear the structure is
     let confidence = 0.7;
     if (fieldContext === 'LABELED' && distance < 20) confidence = 0.95;
     else if (fieldContext === 'TABLE_CELL' && columnHeader) confidence = 0.9;
     else if (profile.type === 'FORM' && fieldContext === 'STRUCTURED') confidence = 0.85;
-    
+
     return {
       documentType: profile.type,
       sectionType,
@@ -184,11 +184,11 @@ export class DocumentStructureAnalyzer {
    */
   static getContextBoost(position: StructuralPosition, phiType: string): number {
     let boost = 0;
-    
+
     // Label proximity is very strong signal
     if (position.fieldContext === 'LABELED' && position.nearestLabel) {
       const label = position.nearestLabel.toLowerCase();
-      
+
       // Type-specific label matching
       if (phiType === 'NAME') {
         if (/\b(name|patient|member|client|contact|guardian)\b/.test(label)) {
@@ -216,19 +216,19 @@ export class DocumentStructureAnalyzer {
         }
       }
     }
-    
+
     // Demographics section boost for identity-related PHI
     if (position.sectionType === 'DEMOGRAPHICS') {
       if (['NAME', 'DATE', 'SSN', 'ADDRESS', 'PHONE', 'MRN'].includes(phiType)) {
         boost += 0.10;
       }
     }
-    
+
     // Signature section - likely provider names, reduce patient name confidence
     if (position.sectionType === 'SIGNATURE' && phiType === 'NAME') {
       boost -= 0.15; // More likely to be provider name
     }
-    
+
     // Table context with relevant header
     if (position.columnHeader) {
       const header = position.columnHeader.toLowerCase();
@@ -238,7 +238,7 @@ export class DocumentStructureAnalyzer {
         boost += 0.20;
       }
     }
-    
+
     return Math.max(-0.3, Math.min(0.4, boost)); // Clamp to reasonable range
   }
 
@@ -257,7 +257,7 @@ export class DocumentStructureAnalyzer {
 
       // Check for section markers
       let newSectionType: SectionType | null = null;
-      
+
       if (this.HEADER_PATTERNS.some(p => p.test(line))) {
         newSectionType = 'HEADER';
       } else if (this.DEMOGRAPHICS_PATTERNS.some(p => p.test(line))) {
@@ -276,7 +276,7 @@ export class DocumentStructureAnalyzer {
           currentSection.endOffset = lineStart - 1;
           sections.push(currentSection);
         }
-        
+
         // Start new section
         currentSection = {
           type: newSectionType,
@@ -285,7 +285,7 @@ export class DocumentStructureAnalyzer {
           labels: [],
         };
       }
-      
+
       // Collect labels in current section
       if (currentSection) {
         const labelMatch = line.match(/^([A-Za-z][A-Za-z\s]{2,25}):/);
@@ -307,16 +307,16 @@ export class DocumentStructureAnalyzer {
     // Look backwards for labels
     const searchStart = Math.max(0, offset - 100);
     const searchText = text.substring(searchStart, offset);
-    
+
     // Find last label in search range
     const labelRegex = /([A-Za-z][A-Za-z\s]{2,30})[\s]*:[\s]*/g;
     let lastMatch: RegExpExecArray | null = null;
     let match: RegExpExecArray | null;
-    
+
     while ((match = labelRegex.exec(searchText)) !== null) {
       lastMatch = match;
     }
-    
+
     if (lastMatch) {
       const labelEnd = searchStart + lastMatch.index + lastMatch[0].length;
       return {
@@ -324,7 +324,7 @@ export class DocumentStructureAnalyzer {
         distance: offset - labelEnd,
       };
     }
-    
+
     return { label: null, distance: Infinity };
   }
 
@@ -333,7 +333,7 @@ export class DocumentStructureAnalyzer {
     const lineStart = text.lastIndexOf('\n', offset) + 1;
     const lineEnd = text.indexOf('\n', offset);
     const line = text.substring(lineStart, lineEnd === -1 ? undefined : lineEnd);
-    
+
     // Table indicators: pipes, multiple tabs, aligned columns
     return /[\|┃│]/.test(line) || /\t.*\t/.test(line) || /  {4,}/.test(line);
   }
@@ -341,7 +341,7 @@ export class DocumentStructureAnalyzer {
   private static isInList(text: string, offset: number): boolean {
     const lineStart = text.lastIndexOf('\n', offset) + 1;
     const lineText = text.substring(lineStart, lineStart + 10);
-    
+
     return /^[\s]*[-•*\d+.]\s/.test(lineText);
   }
 
@@ -349,16 +349,16 @@ export class DocumentStructureAnalyzer {
     // Look up to find header row
     const lineStart = text.lastIndexOf('\n', offset) + 1;
     const line = text.substring(lineStart, text.indexOf('\n', offset));
-    
+
     // Find column position
     const colPosition = offset - lineStart;
-    
+
     // Search backwards for header row (usually has === or --- after it, or is first row)
     let searchPos = lineStart;
     while (searchPos > 0) {
       const prevLineStart = text.lastIndexOf('\n', searchPos - 2) + 1;
       const prevLine = text.substring(prevLineStart, searchPos - 1);
-      
+
       // Check if this might be a header row
       if (/^[A-Za-z\s\|]+$/.test(prevLine) && !/^\s*$/.test(prevLine)) {
         // Try to extract column at similar position
@@ -369,12 +369,12 @@ export class DocumentStructureAnalyzer {
           return words[columnIndex];
         }
       }
-      
+
       // Stop if we've gone too far
       if (lineStart - prevLineStart > 500) break;
       searchPos = prevLineStart;
     }
-    
+
     return null;
   }
 }

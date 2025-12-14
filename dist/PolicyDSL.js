@@ -293,7 +293,7 @@ class PolicyTemplates {
     static HIPAA_STRICT = `
 policy HIPAA_STRICT {
   description "Full HIPAA Safe Harbor compliance - all 18 identifiers"
-  
+
   redact names
   redact addresses
   redact dates
@@ -312,63 +312,63 @@ policy HIPAA_STRICT {
   redact biometric
   redact unique_id
   redact ages where age > 89
-  
+
   threshold 0.5
 }
 `.trim();
     static RESEARCH_RELAXED = `
 policy RESEARCH_RELAXED extends HIPAA_STRICT {
   description "IRB-approved research - preserves temporal and geographic context"
-  
+
   redact names
   redact ssn
   redact mrn
   redact phones
   redact emails
   redact addresses
-  
+
   keep dates
   keep ages
   keep locations
   keep organizations
-  
+
   threshold 0.4
 }
 `.trim();
     static RADIOLOGY_DEPT = `
 policy RADIOLOGY_DEPT {
   description "Radiology department workflow - preserves study identifiers"
-  
+
   redact names where context != "referring_physician"
   redact ssn
   redact phones where type != "department"
   redact emails
   redact addresses
-  
+
   keep mrn where context == "internal"
   keep dates
   keep ages
   keep organizations where type == "hospital"
-  
+
   threshold 0.6
 }
 `.trim();
     static TRAINING = `
 policy TRAINING {
   description "Medical education and training"
-  
+
   redact names
   redact ssn
   redact mrn
   redact phones
   redact emails
   redact addresses
-  
+
   keep dates
   keep ages where age < 90
   keep organizations
   keep professions
-  
+
   threshold 0.5
 }
 `.trim();

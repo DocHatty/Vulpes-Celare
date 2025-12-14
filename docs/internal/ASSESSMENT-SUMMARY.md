@@ -1,6 +1,6 @@
 # Vulpes Celare - Internal Assessment Summary
 
-**Last Updated:** 2025-12-13  
+**Last Updated:** 2025-12-13
 **Scope:** documentation and feature status alignment
 
 ## Snapshot

@@ -1,6 +1,6 @@
 # VULPES CELARE TEST SYSTEM AUDIT REPORT
 ## HIPAA Safe Harbor Compliance Verification
-**Audit Date:** December 2024  
+**Audit Date:** December 2024
 **Standard:** HIPAA Privacy Rule 164.514(b) Safe Harbor Method
 
 ---
@@ -79,7 +79,7 @@ The code correctly implements:
 ### Gold Standard Alignment:
 Per PMC research on clinical de-identification, systems should report:
 - Recall (Sensitivity) - IMPLEMENTED
-- Precision - IMPLEMENTED  
+- Precision - IMPLEMENTED
 - F1-score - IMPLEMENTED
 - F2-score (recall-weighted) - NOT IMPLEMENTED (recommended for de-identification)
 

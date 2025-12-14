@@ -1,27 +1,27 @@
 /**
  * VULPES CELARE - POLICY DSL (Domain-Specific Language)
- * 
+ *
  * Declarative policy language for PHI redaction rules.
  * Simplifies policy creation for non-developers while maintaining full power.
- * 
+ *
  * Features:
  * - Human-readable syntax
  * - Policy inheritance (extends)
  * - Conditional rules (where clauses)
  * - Type-safe compilation to JSON
  * - Validation and error reporting
- * 
+ *
  * @module PolicyDSL
- * 
+ *
  * @example
  * ```
  * policy RESEARCH_RELAXED {
  *   description "IRB-approved research with temporal analysis"
- *   
+ *
  *   redact names
  *   redact ssn
  *   redact mrn
- *   
+ *
  *   keep dates
  *   keep ages
  *   keep locations
@@ -87,10 +87,10 @@ export class PolicyCompiler {
 
   /**
    * Compile DSL policy string to JSON configuration
-   * 
+   *
    * @param dsl - Policy DSL string
    * @returns Compiled JSON policy
-   * 
+   *
    * @example
    * ```typescript
    * const policy = PolicyCompiler.compile(`
@@ -224,12 +224,12 @@ export class PolicyCompiler {
    */
   private static normalizeIdentifier(identifier: string): string {
     const normalized = identifier.toLowerCase().replace(/-/g, '_');
-    
+
     // Handle plurals
     const singular = normalized.endsWith('s') ? normalized.slice(0, -1) : normalized;
-    
+
     // Validate
-    if (!this.VALID_IDENTIFIERS.includes(normalized) && 
+    if (!this.VALID_IDENTIFIERS.includes(normalized) &&
         !this.VALID_IDENTIFIERS.includes(singular)) {
       throw new Error(`Invalid identifier: ${identifier}`);
     }
@@ -256,12 +256,12 @@ export class PolicyCompiler {
     // Process rules
     for (const rule of definition.rules) {
       const filterName = this.getFilterName(rule.identifier);
-      
+
       if (rule.type === 'redact') {
         filters[filterName] = {
           enabled: true
         };
-        
+
         if (rule.condition) {
           filters[filterName].condition = rule.condition;
         }
@@ -349,7 +349,7 @@ export class PolicyTemplates {
   static readonly HIPAA_STRICT = `
 policy HIPAA_STRICT {
   description "Full HIPAA Safe Harbor compliance - all 18 identifiers"
-  
+
   redact names
   redact addresses
   redact dates
@@ -368,7 +368,7 @@ policy HIPAA_STRICT {
   redact biometric
   redact unique_id
   redact ages where age > 89
-  
+
   threshold 0.5
 }
 `.trim();
@@ -376,19 +376,19 @@ policy HIPAA_STRICT {
   static readonly RESEARCH_RELAXED = `
 policy RESEARCH_RELAXED extends HIPAA_STRICT {
   description "IRB-approved research - preserves temporal and geographic context"
-  
+
   redact names
   redact ssn
   redact mrn
   redact phones
   redact emails
   redact addresses
-  
+
   keep dates
   keep ages
   keep locations
   keep organizations
-  
+
   threshold 0.4
 }
 `.trim();
@@ -396,18 +396,18 @@ policy RESEARCH_RELAXED extends HIPAA_STRICT {
   static readonly RADIOLOGY_DEPT = `
 policy RADIOLOGY_DEPT {
   description "Radiology department workflow - preserves study identifiers"
-  
+
   redact names where context != "referring_physician"
   redact ssn
   redact phones where type != "department"
   redact emails
   redact addresses
-  
+
   keep mrn where context == "internal"
   keep dates
   keep ages
   keep organizations where type == "hospital"
-  
+
   threshold 0.6
 }
 `.trim();
@@ -415,19 +415,19 @@ policy RADIOLOGY_DEPT {
   static readonly TRAINING = `
 policy TRAINING {
   description "Medical education and training"
-  
+
   redact names
   redact ssn
   redact mrn
   redact phones
   redact emails
   redact addresses
-  
+
   keep dates
   keep ages where age < 90
   keep organizations
   keep professions
-  
+
   threshold 0.5
 }
 `.trim();
