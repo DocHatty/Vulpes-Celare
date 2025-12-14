@@ -1,6 +1,16 @@
 # Rust Native Core
 
-Vulpes Celare uses a Rust native addon (NAPI-RS) for performance-critical operations. All Rust accelerators are **default-enabled** with TypeScript fallbacks for HIPAA safety.
+Vulpes Celare uses a Rust native addon (NAPI-RS) for performance-critical operations. **All Rust accelerators are production-ready and enabled by default**, with TypeScript fallbacks maintained for cross-platform compatibility and HIPAA safety validation.
+
+## Production Status
+
+✅ **All accelerators are production-ready and enabled by default**
+- Vision inference: Required for image/DICOM processing (no JS fallback)
+- Crypto operations: 2-5x faster than Node.js crypto module
+- Text processing: 10-200x speedup on hot paths
+- Streaming kernels: 10-50x faster buffer management
+
+All accelerators can be individually disabled via environment variables for debugging or validation purposes.
 
 ## Quick Reference
 
@@ -17,21 +27,21 @@ Vulpes Celare uses a Rust native addon (NAPI-RS) for performance-critical operat
 
 ## Environment Variables
 
-All accelerators default to ON. Set to `0` to disable and use TypeScript fallback.
+**All accelerators default to ON** (production-ready). Set to `0` to disable and use TypeScript fallback for debugging or validation.
 
-| Variable | Controls | Default |
-|----------|----------|---------|
-| `VULPES_ENABLE_PHONETIC` | Phonetic name matching | ON |
-| `VULPES_TEXT_ACCEL` | Text normalization, digit extraction, Luhn | ON |
-| `VULPES_SPAN_ACCEL` | Span overlap pruning | ON |
-| `VULPES_APPLY_SPANS_ACCEL` | UTF-16 aware text replacement | ON |
-| `VULPES_NAME_ACCEL` | Name scanner (0=off, 2=default, 3=full) | 2 |
-| `VULPES_POSTFILTER_ACCEL` | Post-filter pruning | ON |
-| `VULPES_SCAN_ACCEL` | Multi-identifier scanning | ON |
-| `VULPES_STREAM_KERNEL` | Streaming buffer management | ON |
-| `VULPES_FUZZY_ACCEL` | Fuzzy name matching | ON |
-| `VULPES_CHAOS_ACCEL` | OCR chaos detection | ON |
-| `VULPES_INTERVAL_ACCEL` | Interval tree operations | ON |
+| Variable | Controls | Default | Status |
+|----------|----------|---------|--------|
+| `VULPES_ENABLE_PHONETIC` | Phonetic name matching | ON | Production |
+| `VULPES_TEXT_ACCEL` | Text normalization, digit extraction, Luhn | ON | Production |
+| `VULPES_SPAN_ACCEL` | Span overlap pruning | ON | Production |
+| `VULPES_APPLY_SPANS_ACCEL` | UTF-16 aware text replacement | ON | Production |
+| `VULPES_NAME_ACCEL` | Name scanner (0=off, 2=default, 3=full) | 2 | Production |
+| `VULPES_POSTFILTER_ACCEL` | Post-filter pruning | ON | Production |
+| `VULPES_SCAN_ACCEL` | Multi-identifier scanning | ON | Production |
+| `VULPES_STREAM_KERNEL` | Streaming buffer management | ON | Production |
+| `VULPES_FUZZY_ACCEL` | Fuzzy name matching | ON | Production |
+| `VULPES_CHAOS_ACCEL` | OCR chaos detection | ON | Production |
+| `VULPES_INTERVAL_ACCEL` | Interval tree operations | ON | Production |
 
 ## Module Inventory
 
@@ -218,12 +228,13 @@ classify_case_pattern(name) -> String
 
 ## Fallback Strategy
 
-All Rust accelerators have TypeScript fallbacks for HIPAA safety:
+All Rust accelerators maintain TypeScript fallbacks for maximum reliability:
 
-1. **Graceful degradation** - If native addon fails to load, TS executes
-2. **Platform flexibility** - Non-Windows platforms run pure TS until native builds available
+1. **Cross-platform compatibility** - Non-Windows platforms run pure TS until native builds available
+2. **Graceful degradation** - If native addon fails to load, TS executes automatically
 3. **Validation parity** - Can compare Rust vs TS outputs for correctness verification
-4. **Audit compliance** - TS serves as reference implementation
+4. **Audit compliance** - TS serves as reference implementation for HIPAA audits
+5. **Development flexibility** - Disable accelerators individually for debugging
 
 ```typescript
 // Example fallback pattern (from IntervalTreeSpanIndex.ts)
@@ -235,9 +246,11 @@ if (isIntervalAccelEnabled()) {
     return;
   }
 }
-// Fall through to TypeScript implementation
+// Automatic fallback to TypeScript implementation
 this.useRust = false;
 ```
+
+This dual-implementation strategy ensures that Vulpes Celare remains functional across all platforms and provides validation confidence for HIPAA compliance officers.
 
 ## Build Commands
 

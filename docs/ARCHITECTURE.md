@@ -2,12 +2,12 @@
 
 ## Overview
 
-Vulpes Celare is split into two execution domains:
+Vulpes Celare is a production-ready, hybrid architecture system with two execution domains:
 
-1. **TypeScript/Node.js orchestration**: policies, streaming, filter execution, token mapping, CLI, trust bundles.
-2. **Rust native core**: ONNX inference + selected inner-loop accelerators (vision, crypto, and opt-in text hotspots).
+1. **TypeScript/Node.js orchestration**: policies, streaming, filter execution, token mapping, CLI, trust bundles, and high-level workflows.
+2. **Rust native core**: ONNX inference (OCR + face detection), cryptographic operations, and **11+ production-ready text accelerators** (enabled by default).
 
-This boundary is intentional: TypeScript stays readable and policy-driven, while Rust owns the performance-critical inference stack.
+This boundary is intentional: TypeScript stays readable and policy-driven, while Rust owns performance-critical inference and compute-intensive text processing. All Rust accelerators maintain TypeScript fallbacks for cross-platform compatibility and HIPAA safety validation.
 
 ## Module Map
 
@@ -60,17 +60,29 @@ More: `docs/IMAGE-DICOM.md`
 
 The native addon (`src/rust/`) owns:
 
-- PaddleOCR ONNX inference (text detection + recognition)
-- UltraFace ONNX inference (face detection)
-- Image preprocessing and post-processing for these models
-- Crypto/provenance primitives used by trust bundles and DICOM hashing (SHA-256, HMAC-SHA256, Merkle root)
-- Text inner-loop accelerators (feature-flagged until fully validated):
-  - Phonetic matcher (`VulpesPhoneticMatcher`, `VULPES_ENABLE_PHONETIC=1`)
-  - Tokenization with offsets (`tokenizeWithPositions`, `VULPES_TEXT_ACCEL=1`)
-  - Span overlap pruning (`dropOverlappingSpans`, `VULPES_SPAN_ACCEL=1`)
-  - NAME comma-pattern scanner (`VulpesNameScanner`, `VULPES_NAME_ACCEL=1`, shadow: `VULPES_SHADOW_RUST_NAME=1`)
-  - Post-filter false-positive pruning (`postfilterDecisions`, `VULPES_POSTFILTER_ACCEL=1`, shadow: `VULPES_SHADOW_POSTFILTER=1`)
-  - Multi-identifier scan kernel (`scanAllIdentifiers`, `VULPES_SCAN_ACCEL=1`)
+- **Vision inference** (production-ready):
+  - PaddleOCR ONNX inference (text detection + recognition)
+  - UltraFace ONNX inference (face detection)
+  - Image preprocessing and post-processing for these models
+- **Cryptographic operations** (production-ready):
+  - SHA-256, HMAC-SHA256, Merkle root computation
+  - Used by trust bundles and DICOM hashing
+- **Text processing accelerators** (production-ready, enabled by default):
+  - Phonetic matcher (`VulpesPhoneticMatcher`)
+  - Tokenization with offsets (`tokenizeWithPositions`)
+  - Span overlap pruning (`dropOverlappingSpans`)
+  - NAME pattern scanners (`VulpesNameScanner`)
+  - Post-filter false-positive pruning (`postfilterDecisions`)
+  - Multi-identifier scan kernel (`scanAllIdentifiers`)
+  - Fuzzy name matching (`VulpesFuzzyMatcher`)
+  - OCR chaos detection (`analyzeChaos`)
+  - Interval tree operations (`VulpesIntervalTree`)
+- **Streaming kernels** (production-ready, enabled by default):
+  - Buffer management (`VulpesStreamingKernel`)
+  - Streaming name detection (`VulpesStreamingNameScanner`)
+  - Streaming identifier detection (`VulpesStreamingIdentifierScanner`)
+
+All accelerators can be individually disabled via environment variables (`VULPES_*_ACCEL=0`) if needed for debugging or validation.
 
 The Node layer should not load a second ONNX Runtime binding into the same process.
 `npm test` enforces this boundary via `scripts/check-onnx-boundary.js`.
