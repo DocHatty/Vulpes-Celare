@@ -1,18 +1,18 @@
 /**
  * CortexPythonBridge - Bridge to Python Intelligence Services
- * 
+ *
  * This module enables Vulpes Celare to leverage Python's superior
  * data science ecosystem for offline tasks:
- * 
+ *
  * - Training and fine-tuning OCR/detection models
  * - Large-scale audit log analysis (Pandas/PyArrow)
  * - ONNX model export for deployment back to Node.js
- * 
+ *
  * Architecture:
  * - Spawns Python as a sidecar process on-demand
  * - Communicates via IPC (stdin/stdout JSON) or Parquet files
  * - Python process is NOT in the hot path (offline only)
- * 
+ *
  * @module core/cortex/python/CortexPythonBridge
  */
 
@@ -83,17 +83,17 @@ const DEFAULT_CONFIG: Required<CortexBridgeConfig> = {
 
 /**
  * CortexPythonBridge - Interface to Python intelligence services
- * 
+ *
  * @example
  * ```typescript
  * const bridge = new CortexPythonBridge();
- * 
+ *
  * // Check if Python is available
  * const pythonReady = await bridge.checkPythonAvailable();
  * if (!pythonReady) {
  *     console.log('Python not available - install Python 3.9+ and dependencies');
  * }
- * 
+ *
  * // Run analysis on audit logs
  * const result = await bridge.executeTask({
  *     task: 'ANALYZE_AUDIT_LOGS',
@@ -102,7 +102,7 @@ const DEFAULT_CONFIG: Required<CortexBridgeConfig> = {
  *         lookbackDays: 30,
  *     },
  * });
- * 
+ *
  * console.log('Analysis result:', result);
  * ```
  */

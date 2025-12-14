@@ -231,7 +231,7 @@ Human-readable report with:
   run: |
     npm run build
     node tests/master-suite/run.js --json-only > results.json
-    
+
 - name: Check Sensitivity Threshold
   run: |
     SENSITIVITY=$(jq '.metrics.sensitivity' results.json)

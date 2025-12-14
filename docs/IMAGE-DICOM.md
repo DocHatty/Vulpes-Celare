@@ -1,4 +1,4 @@
-﻿# Images & DICOM
+# Images & DICOM
 
 This page covers Vulpes Celare's **image redaction** (faces + OCR text) and **DICOM anonymization** features.
 

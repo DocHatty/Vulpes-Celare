@@ -1,6 +1,6 @@
 /**
  * Tests for Image Redaction Services
- * 
+ *
  * @jest-environment node
  */
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * VULPES CELARE - TRUST BUNDLE EXPORTER
  *
  * Redaction Evidence Document (RED) - Universal Format for Cryptographic Provenance

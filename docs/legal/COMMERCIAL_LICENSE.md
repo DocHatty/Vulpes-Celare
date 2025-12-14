@@ -1,9 +1,9 @@
 # Commercial License for Vulpes Celare
 
-Vulpes Celare is licensed under AGPL-3.0, which requires that any modifications 
+Vulpes Celare is licensed under AGPL-3.0, which requires that any modifications
 and any software that uses Vulpes Celare be released under AGPL-3.0 as well.
 
-If your use case doesn't fit with AGPL-3.0's requirements, we offer commercial 
+If your use case doesn't fit with AGPL-3.0's requirements, we offer commercial
 licenses for organizations with annual revenue exceeding $1,000,000 USD.
 
 ## When You Need a Commercial License
@@ -16,12 +16,12 @@ You need a commercial license if your organization:
 
 ## What a Commercial License Provides
 
-✅ Use Vulpes Celare in proprietary products  
-✅ Offer Vulpes Celare as a managed service  
-✅ Keep your modifications private  
-✅ Redistribute without AGPL obligations  
-✅ Priority support and SLA (optional)  
-✅ Access to enterprise features (optional)  
+✅ Use Vulpes Celare in proprietary products
+✅ Offer Vulpes Celare as a managed service
+✅ Keep your modifications private
+✅ Redistribute without AGPL obligations
+✅ Priority support and SLA (optional)
+✅ Access to enterprise features (optional)
 ✅ Indemnification (optional)
 
 ## Pricing Structure
@@ -60,25 +60,25 @@ Response time: 24-48 hours
 
 ## FAQ
 
-**Q: We're a $50M company but only using it internally. Do we need a license?**  
+**Q: We're a $50M company but only using it internally. Do we need a license?**
 A: No. Internal use is fine under AGPL-3.0.
 
-**Q: We're a $500k startup building a closed-source product. Do we need a license?**  
+**Q: We're a $500k startup building a closed-source product. Do we need a license?**
 A: No. Organizations under $1M revenue can use freely, even in proprietary products.
 
-**Q: We're building an open-source project. Do we need a license?**  
+**Q: We're building an open-source project. Do we need a license?**
 A: No. Open source projects use it freely under AGPL-3.0.
 
-**Q: We want to keep our modifications private. Do we need a license?**  
+**Q: We want to keep our modifications private. Do we need a license?**
 A: If your revenue > $1M and modifications aren't released publicly, yes.
 
-**Q: What if we grow past $1M revenue while using it?**  
+**Q: What if we grow past $1M revenue while using it?**
 A: Contact us. We offer reasonable transition arrangements for growing startups.
 
-**Q: Can we try it first before committing to a commercial license?**  
+**Q: Can we try it first before committing to a commercial license?**
 A: Yes! Use it under AGPL-3.0 to evaluate. When you're ready to go to production with closed-source code, then obtain a commercial license.
 
-**Q: Do you offer evaluation/pilot licenses?**  
+**Q: Do you offer evaluation/pilot licenses?**
 A: Yes. Contact us to discuss evaluation terms for large organizations.
 
 ## Why Dual Licensing?

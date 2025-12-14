@@ -1,6 +1,6 @@
 /**
  * DICOM Processing Module - Barrel Export
- * 
+ *
  * @module core/dicom
  */
 

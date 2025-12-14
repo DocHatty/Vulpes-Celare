@@ -35,7 +35,7 @@ async function analyzeNote(clinicalNote: string) {
   // Step 1: Redact PHI
   const engine = new VulpesCelare();
   const redactionResult = await engine.process(clinicalNote);
-  
+
   // Step 2: Send safe text to OpenAI
   const completion = await openai.chat.completions.create({
     model: 'gpt-4',
@@ -50,11 +50,11 @@ async function analyzeNote(clinicalNote: string) {
       }
     ]
   });
-  
+
   // Step 3: Restore PHI in response (optional)
   const response = completion.choices[0].message.content;
   const restoredResponse = await engine.restore(response, redactionResult.tokenMap);
-  
+
   return {
     safeResponse: response,
     fullResponse: restoredResponse,
@@ -75,13 +75,13 @@ import OpenAI from 'openai';
 async function streamingAnalysis(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redactionResult = await engine.process(clinicalNote);
-  
+
   const stream = await openai.chat.completions.create({
     model: 'gpt-4',
     messages: [{ role: 'user', content: redactionResult.text }],
     stream: true
   });
-  
+
   for await (const chunk of stream) {
     const content = chunk.choices[0]?.delta?.content || '';
     process.stdout.write(content);
@@ -95,7 +95,7 @@ async function streamingAnalysis(clinicalNote: string) {
 async function clinicalDecisionSupport(note: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(note);
-  
+
   const completion = await openai.chat.completions.create({
     model: 'gpt-4',
     messages: [{ role: 'user', content: redacted.text }],
@@ -117,7 +117,7 @@ async function clinicalDecisionSupport(note: string) {
     ],
     function_call: 'auto'
   });
-  
+
   return completion.choices[0].message;
 }
 ```
@@ -139,7 +139,7 @@ const anthropic = new Anthropic({
 async function analyzeWithClaude(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const message = await anthropic.messages.create({
     model: 'claude-3-opus-20240229',
     max_tokens: 1024,
@@ -150,7 +150,7 @@ async function analyzeWithClaude(clinicalNote: string) {
       }
     ]
   });
-  
+
   return {
     response: message.content[0].text,
     usage: message.usage,
@@ -168,14 +168,14 @@ async function analyzeWithClaude(clinicalNote: string) {
 async function streamWithClaude(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const stream = await anthropic.messages.create({
     model: 'claude-3-opus-20240229',
     max_tokens: 1024,
     messages: [{ role: 'user', content: redacted.text }],
     stream: true
   });
-  
+
   for await (const event of stream) {
     if (event.type === 'content_block_delta') {
       process.stdout.write(event.delta.text);
@@ -190,7 +190,7 @@ async function streamWithClaude(clinicalNote: string) {
 async function claudeWithTools(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const message = await anthropic.messages.create({
     model: 'claude-3-opus-20240229',
     max_tokens: 1024,
@@ -210,7 +210,7 @@ async function claudeWithTools(clinicalNote: string) {
     ],
     messages: [{ role: 'user', content: redacted.text }]
   });
-  
+
   return message;
 }
 ```
@@ -230,11 +230,11 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 async function analyzeWithGemini(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   const result = await model.generateContent(redacted.text);
   const response = await result.response;
-  
+
   return {
     text: response.text(),
     redactionStats: {
@@ -251,10 +251,10 @@ async function analyzeWithGemini(clinicalNote: string) {
 async function streamWithGemini(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   const result = await model.generateContentStream(redacted.text);
-  
+
   for await (const chunk of result.stream) {
     const chunkText = chunk.text();
     process.stdout.write(chunkText);
@@ -280,13 +280,13 @@ const client = new OpenAIClient(
 async function analyzeWithAzure(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const deploymentId = 'gpt-4';
   const result = await client.getChatCompletions(
     deploymentId,
     [{ role: 'user', content: redacted.text }]
   );
-  
+
   return {
     response: result.choices[0].message.content,
     redactionStats: {
@@ -312,7 +312,7 @@ const bedrock = new BedrockRuntimeClient({ region: 'us-east-1' });
 async function analyzeWithBedrock(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const input = {
     modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
     contentType: 'application/json',
@@ -328,11 +328,11 @@ async function analyzeWithBedrock(clinicalNote: string) {
       ]
     })
   };
-  
+
   const command = new InvokeModelCommand(input);
   const response = await bedrock.send(command);
   const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-  
+
   return {
     response: responseBody.content[0].text,
     redactionStats: {
@@ -356,7 +356,7 @@ import ollama from 'ollama';
 async function analyzeWithOllama(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const response = await ollama.chat({
     model: 'llama2',
     messages: [
@@ -366,7 +366,7 @@ async function analyzeWithOllama(clinicalNote: string) {
       }
     ]
   });
-  
+
   return {
     response: response.message.content,
     redactionStats: {
@@ -383,13 +383,13 @@ async function analyzeWithOllama(clinicalNote: string) {
 async function streamWithOllama(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const stream = await ollama.chat({
     model: 'llama2',
     messages: [{ role: 'user', content: redacted.text }],
     stream: true
   });
-  
+
   for await (const chunk of stream) {
     process.stdout.write(chunk.message.content);
   }
@@ -411,9 +411,9 @@ import { RunnableSequence } from '@langchain/core/runnables';
 const redactPHI = async (input: { text: string }) => {
   const engine = new VulpesCelare();
   const result = await engine.process(input.text);
-  return { 
+  return {
     text: result.text,
-    tokenMap: result.tokenMap 
+    tokenMap: result.tokenMap
   };
 };
 
@@ -445,11 +445,11 @@ const chain = new ConversationChain({
 async function chatWithRedaction(userMessage: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(userMessage);
-  
+
   const response = await chain.call({
     input: redacted.text
   });
-  
+
   return response.response;
 }
 ```
@@ -519,7 +519,7 @@ import { Agent, Task, Crew } from '@crewai/crewai';
 class SafeHealthcareAgent {
   private engine: VulpesCelare;
   private agent: Agent;
-  
+
   constructor(role: string, goal: string, backstory: string) {
     this.engine = new VulpesCelare();
     this.agent = new Agent({
@@ -529,16 +529,16 @@ class SafeHealthcareAgent {
       verbose: true
     });
   }
-  
+
   async execute(input: string): Promise<string> {
     // Redact before processing
     const redacted = await this.engine.process(input);
-    
+
     // Execute agent task
     const result = await this.agent.execute({
       description: redacted.text
     });
-    
+
     return result;
   }
 }
@@ -577,22 +577,22 @@ import { AssistantAgent, UserProxyAgent } from 'autogen';
 async function createSafeConversation(clinicalNote: string) {
   const engine = new VulpesCelare();
   const redacted = await engine.process(clinicalNote);
-  
+
   const assistant = new AssistantAgent({
     name: 'MedicalAssistant',
     systemMessage: 'You are a medical AI assistant working with de-identified data.'
   });
-  
+
   const userProxy = new UserProxyAgent({
     name: 'User',
     humanInputMode: 'NEVER',
     maxConsecutiveAutoReply: 5
   });
-  
+
   await userProxy.initiateChat(assistant, {
     message: redacted.text
   });
-  
+
   return userProxy.lastMessage;
 }
 ```
@@ -619,10 +619,10 @@ const phiRedactionMiddleware = async (
   if (req.body.text || req.body.content) {
     const engine = new VulpesCelare();
     const field = req.body.text ? 'text' : 'content';
-    
+
     try {
       const result = await engine.process(req.body[field]);
-      
+
       // Store original and redacted
       req.body[`${field}_original`] = req.body[field];
       req.body[field] = result.text;
@@ -631,7 +631,7 @@ const phiRedactionMiddleware = async (
         processingMs: result.executionTimeMs
       };
       req.body.tokenMap = result.tokenMap; // For restoration
-      
+
       next();
     } catch (error) {
       res.status(500).json({ error: 'Redaction failed', details: error.message });
@@ -648,7 +648,7 @@ app.use('/api/ai/*', phiRedactionMiddleware);
 app.post('/api/ai/analyze', async (req, res) => {
   // req.body.text is now safe to send to LLM
   const llmResponse = await yourLLMFunction(req.body.text);
-  
+
   res.json({
     response: llmResponse,
     redactionStats: req.body.redactionStats
@@ -677,7 +677,7 @@ app = FastAPI()
 async def redact_phi(text: str) -> dict:
     """
     Call Vulpes Celare via Node.js subprocess
-    
+
     WARNING: This is a simplified example for demonstration.
     In production, use one of the following approaches:
     1. HTTP microservice (recommended)
@@ -686,12 +686,12 @@ async def redact_phi(text: str) -> dict:
     4. Native Python binding (if available)
     """
     # Security note: Use file-based IPC to avoid code injection
-    
+
     # Write text to temporary file to avoid injection
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as f:
         f.write(text)
         temp_path = f.name
-    
+
     try:
         result = subprocess.run(
             ['node', '-e', f'''
@@ -728,7 +728,7 @@ async def analyze(
     """
     # text is already redacted via dependency
     llm_response = your_llm_function(redaction_result["text"])
-    
+
     return {
         "response": llm_response,
         "redaction_stats": {
@@ -747,10 +747,10 @@ async def phi_redaction_middleware(request: Request, call_next):
     if request.url.path.startswith("/api/ai/"):
         # Store original body
         body_bytes = await request.body()
-        
+
         try:
             body = json.loads(body_bytes)
-            
+
             if "text" in body:
                 redaction_result = await redact_phi(body["text"])
                 body["text"] = redaction_result["text"]
@@ -758,15 +758,15 @@ async def phi_redaction_middleware(request: Request, call_next):
                     "phi_removed": redaction_result["redactionCount"],
                     "processing_ms": redaction_result["executionTimeMs"]
                 }
-                
+
                 # Create new request with modified body
                 async def receive():
                     return {"type": "http.request", "body": json.dumps(body).encode()}
-                
+
                 request._receive = receive
         except json.JSONDecodeError:
             pass  # Not JSON, continue without modification
-    
+
     response = await call_next(request)
     return response
 
@@ -775,7 +775,7 @@ async def analyze(request: Request):
     body = await request.json()
     # body["text"] is now safe
     llm_response = your_llm_function(body["text"])
-    
+
     return {
         "response": llm_response,
         "redaction_stats": body.get("redaction_stats")

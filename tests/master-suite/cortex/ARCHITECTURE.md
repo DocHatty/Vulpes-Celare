@@ -40,7 +40,7 @@ DATABASE (SQLite local file)
 ### 2. Single Source of Truth
 
 - **ResultProcessor** - ALL result processing logic lives here
-- **Services** - ALL business logic lives here  
+- **Services** - ALL business logic lives here
 - No duplication between MCP and API layers
 
 ### 3. HIPAA Compliance (Local Only)

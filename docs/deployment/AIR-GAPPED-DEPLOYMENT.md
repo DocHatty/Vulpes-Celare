@@ -217,9 +217,9 @@ async function airgappedAnalysis(clinicalNote: string) {
     policy: 'trauma-fortress'
   });
   const redacted = await engine.process(clinicalNote);
-  
+
   console.log(`PHI removed: ${redacted.redactionCount} elements`);
-  
+
   // Step 2: Analyze with local LLM (no network call)
   const response = await fetch('http://localhost:11434/api/generate', {
     method: 'POST',
@@ -229,9 +229,9 @@ async function airgappedAnalysis(clinicalNote: string) {
       stream: false
     })
   });
-  
+
   const analysis = await response.json();
-  
+
   return {
     redacted: redacted.text,
     analysis: analysis.response

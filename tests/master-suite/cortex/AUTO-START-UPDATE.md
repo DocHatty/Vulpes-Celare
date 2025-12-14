@@ -42,13 +42,13 @@ async function runTestsViaAPI(args, modules) {
   // STEP 0: AUTO-START (NEW!)
   console.error('[Cortex MCP] Ensuring API server is running...');
   const apiStatus = await ensureAPIServerRunning();
-  
+
   if (apiStatus.started) {
     console.error('[Cortex MCP] ✓ API server auto-started');
   } else {
     console.error('[Cortex MCP] ✓ API server already running');
   }
-  
+
   // STEP 1: Queue test (works because API is now guaranteed to be running)
   const result = await queueTest(...);
   ...
@@ -171,14 +171,14 @@ Before proceeding, we wait for API to be ready:
 ```javascript
 async function waitForAPIReady() {
   const startTime = Date.now();
-  
+
   while (Date.now() - startTime < 30000) {
     if (await isAPIServerRunning()) {
       return true;  // ✓ API is ready
     }
     await sleep(500);  // Check every 500ms
   }
-  
+
   throw new Error('API did not start in 30 seconds');
 }
 ```
@@ -196,11 +196,11 @@ return {
 
 ## 🎯 SUMMARY
 
-✅ **Zero Manual Steps** - API starts automatically when needed  
-✅ **Detached Process** - Runs independently in background  
-✅ **Health Checking** - Waits until API is actually ready  
-✅ **Graceful Fallback** - Clear error messages if auto-start fails  
-✅ **Persistent** - API stays running between MCP restarts  
+✅ **Zero Manual Steps** - API starts automatically when needed
+✅ **Detached Process** - Runs independently in background
+✅ **Health Checking** - Waits until API is actually ready
+✅ **Graceful Fallback** - Clear error messages if auto-start fails
+✅ **Persistent** - API stays running between MCP restarts
 
 **THE INTEGRATION IS NOW FULLY AUTOMATIC!**
 

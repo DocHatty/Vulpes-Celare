@@ -13,7 +13,7 @@ Vulpes Cortex is a self-learning, self-improving test intelligence system for PH
 It follows MCP (Model Context Protocol) gold standards and is designed to be:
 
 - **Plug-and-play**: Auto-discovers and handshakes with any LLM/IDE/SDK
-- **Self-running**: Operates autonomously with minimal intervention  
+- **Self-running**: Operates autonomously with minimal intervention
 - **Self-learning**: Remembers everything, learns from every change
 - **History-consulting**: ALWAYS checks what was tried before making recommendations
 
@@ -133,7 +133,7 @@ curl http://localhost:3100/health
 
 Configure in your Claude Desktop settings:
 
-**Location**: 
+**Location**:
 - Mac/Linux: `~/.config/claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
