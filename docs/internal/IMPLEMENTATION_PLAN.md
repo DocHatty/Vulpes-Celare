@@ -15,7 +15,7 @@ This plan tracks remaining work after the Rust vision migration (OCR + face infe
 - Trust bundle exporter writes ZIP `.red` and verifier supports ZIP bundles.
 - DICOM anonymization re-encodes safely via `dcmjs`.
 - Rust crypto helpers (SHA-256, HMAC-SHA256, Merkle root) used by trust bundles and DICOM hashing.
-- Rust-native text accelerators (available and active when native addon loads):
+- Rust-native text accelerators (enabled by default when native addon is available):
   - Phonetic matcher for OCR-tolerant name matching (`VulpesPhoneticMatcher`)
   - Tokenization with offsets for token windows (`tokenizeWithPositions`)
   - Span overlap pruning (`dropOverlappingSpans`)

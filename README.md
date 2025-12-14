@@ -67,7 +67,7 @@ PHI never crosses the network boundary. The LLM only sees tokenized placeholders
 
 **🏥 Built for Healthcare** - Designed specifically for clinical AI systems, trauma centers, research facilities, and healthcare infrastructure. HIPAA Safe Harbor compliant with all 18 identifiers covered.
 
-**⚡ Blazing Fast** - Rust-accelerated architecture delivers significant performance improvements (10-200x faster than pure JavaScript on benchmarked operations). Process typical clinical notes in <10ms. Real-time streaming for dictation workflows. See `docs/BENCHMARKS.md` for methodology.
+**⚡ High Performance** - Rust-accelerated architecture delivers significant performance improvements on compute-intensive operations (see `docs/BENCHMARKS.md` for methodology). Process typical clinical notes in <10ms. Real-time streaming for dictation workflows.
 
 **🔒 Security First** - Air-gapped by default, zero cloud dependencies. Deploy confidently in DoD facilities, VA medical centers, and high-security environments. Full offline operation.
 

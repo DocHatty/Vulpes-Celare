@@ -30,14 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Policy DSL for declarative redaction rules
 
 #### Rust Native Accelerators (Production-Ready)
-- **Vision Processing**: PaddleOCR and UltraFace ONNX inference (required)
-- **Cryptographic Operations**: SHA-256, HMAC-SHA256, Merkle root (2-5x speedup)
-- **Text Processing**: Tokenization, span operations, normalization (10-50x speedup)
-- **Name Detection**: Phonetic matching, fuzzy matching, pattern scanning (50-200x speedup)
-- **Identifier Scanning**: Multi-identifier scan kernel (50-100x speedup)
-- **Streaming Kernels**: Buffer management, incremental detection (10-50x speedup)
-- **Data Structures**: Interval tree operations, span overlap (10-20x speedup)
-- **OCR Quality**: Chaos detection for confidence scoring (5-15x speedup)
+- **Vision Processing**: PaddleOCR and UltraFace ONNX inference (required for image/DICOM)
+- **Cryptographic Operations**: SHA-256, HMAC-SHA256, Merkle root (see `docs/RUST-NATIVE.md` for details)
+- **Text Processing**: Tokenization, span operations, normalization (see `docs/RUST-NATIVE.md` for details)
+- **Name Detection**: Phonetic matching, fuzzy matching, pattern scanning (see `docs/RUST-NATIVE.md` for details)
+- **Identifier Scanning**: Multi-identifier scan kernel (see `docs/RUST-NATIVE.md` for details)
+- **Streaming Kernels**: Buffer management, incremental detection (see `docs/RUST-NATIVE.md` for details)
+- **Data Structures**: Interval tree operations, span overlap (see `docs/RUST-NATIVE.md` for details)
+- **OCR Quality**: Chaos detection for confidence scoring (see `docs/RUST-NATIVE.md` for details)
+
+All Rust accelerators are enabled by default when the native addon is available. TypeScript fallbacks ensure cross-platform compatibility.
 
 #### Identity Filters
 - NameFilter with context awareness

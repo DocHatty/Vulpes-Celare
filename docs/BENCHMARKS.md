@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Vulpes Celare is a **production-ready, open-source HIPAA PHI redaction engine** that combines the best of rules-based and ML-inspired approaches. Our Rust-accelerated architecture delivers **significant performance improvements** (10-200x faster than pure JavaScript on specific benchmarked operations such as tokenization, span operations, and pattern matching).
+Vulpes Celare is a **production-ready, open-source HIPAA PHI redaction engine** that combines rules-based pattern matching with advanced algorithmic techniques (phonetic matching, fuzzy string matching, context scoring).
 
 **Key Differentiators:**
 - ✅ **Air-gapped by default** - No cloud dependencies, full offline operation
@@ -11,7 +11,7 @@ Vulpes Celare is a **production-ready, open-source HIPAA PHI redaction engine** 
 - ✅ **Fully inspectable** - Open source, TypeScript + Rust, no black-box ML
 - ✅ **HIPAA Safe Harbor compliant** - All 18 identifiers covered with comprehensive filters
 
-**Performance Note**: Specific speedup factors vary by operation type, input characteristics, and platform. Benchmarks are available in `tests/performance-benchmark.js` and `tests/benchmarks/performance.bench.ts`. Typical clinical notes (500-2000 words) process in <10ms on Windows x64 with native accelerators enabled.
+**Performance Note**: Rust-accelerated architecture delivers significant performance improvements over pure JavaScript on compute-intensive operations. Specific speedup factors vary by operation type, input characteristics, and platform. Benchmarks are available in `tests/performance-benchmark.js` and `tests/benchmarks/performance.bench.ts`. Typical clinical notes (500-2000 words) process in <10ms on Windows x64 with native accelerators enabled.
 
 ## Scope
 
