@@ -194,7 +194,7 @@ Native sanity check (loads the `.node` addon): `node scripts/test_simple.js`
 
 ## License
 
-AGPL-3.0-only. See `LICENSE` for details.
+Interim license (pending Apache 2.0). Research and non-commercial use permitted. See `LICENSE` for details.
 
 ## Contributing
 

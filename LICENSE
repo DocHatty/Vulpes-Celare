@@ -1,31 +1,20 @@
-# GNU Affero General Public License v3.0 (AGPL-3.0)
+Copyright 2025 Vulpes-Celare Contributors
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, version 3.
+INTERIM LICENSE - Pending formal Apache 2.0 release
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+Intellectual property ownership is currently being clarified with the
+author's institution. Formal open source licensing (anticipated: Apache
+License 2.0) will be applied once ownership is confirmed.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+Permitted:
+  ✓ Viewing and studying this code
+  ✓ Non-commercial research and evaluation
+  ✓ Academic citation
 
-Full license text: https://www.gnu.org/licenses/agpl-3.0.html
+Not Permitted (without written permission):
+  ✗ Commercial use
+  ✗ Redistribution
+  ✗ Incorporation into other software
 
----
-
-## Contributors
-
-This project was created and is maintained by community contributors.
-See GitHub commit history for attribution.
-
----
-
-## Commercial Use
-
-This software is provided under AGPL-3.0 only.
-Commercial licensing is not currently available.
-
-For questions about licensing, open an issue on GitHub.
+For commercial licensing, consulting inquiries, or questions:
+Open an issue on GitHub or contact the maintainers directly.
