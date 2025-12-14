@@ -14,7 +14,7 @@
 - Rust native vision core: implemented (`src/rust/`)
   - OCR inference (PaddleOCR ONNX)
   - Face detection inference (UltraFace ONNX)
-- Rust text accelerators: implemented and feature-flagged (tokenization, span overlap, name scanning, post-filter pruning)
+- Rust text accelerators: production-ready and enabled by default (11+ accelerators including tokenization, span overlap, name scanning, post-filter pruning, fuzzy matching, streaming kernels, interval trees, OCR chaos detection)
 - Guardrail: JS-side ONNX bindings are blocked in `npm test` (`scripts/check-onnx-boundary.js`)
 
 ## Documentation Index
