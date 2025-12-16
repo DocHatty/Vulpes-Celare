@@ -41,8 +41,78 @@ const path = require("path");
 // Import async API-based test execution
 const { runTestsViaAPI } = require("./tools-api-integration");
 // Import API auto-start for status checks
-const { checkApiHealth, ensureApiRunning, API_PORT } = require("../core/api-autostart");
+const {
+  checkApiHealth,
+  ensureApiRunning,
+  API_PORT,
+} = require("../core/api-autostart");
+const fs = require("fs");
 const TOOLS = [
+  // ─────────────────────────────────────────────────────────────────────────
+  // ANALYSIS PROTOCOL TOOLS - MUST USE BEFORE FIXING
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    name: "check_analysis_protocol",
+    description: `MANDATORY: Call this BEFORE making any fixes. Returns:
+- Known issues from SESSION_ISSUES.md
+- Reminder of the analysis protocol
+- Whether deep analysis is required based on failure count
+
+This tool enforces the pattern-vs-pipeline investigation requirement.`,
+    inputSchema: {
+      type: "object",
+      properties: {
+        failureCount: {
+          type: "number",
+          description:
+            "Number of test failures (triggers deep analysis if > 50)",
+        },
+        phiType: {
+          type: "string",
+          description: "PHI type being investigated (NAME, DATE, etc.)",
+        },
+      },
+    },
+  },
+  {
+    name: "log_session_issue",
+    description: `Log a structural issue discovered during work. Issues are saved to docs/SESSION_ISSUES.md for future sessions.
+
+Use this when you notice:
+- Architectural problems
+- Technical debt
+- Hardcoded values that should be config
+- Pipeline complexity issues
+- Duplicate logic across filters`,
+    inputSchema: {
+      type: "object",
+      properties: {
+        issue: {
+          type: "string",
+          description: "Brief description of the issue",
+        },
+        type: {
+          type: "string",
+          enum: ["Architectural", "Pattern", "Config", "Performance", "Other"],
+          description: "Category of issue",
+        },
+        files: {
+          type: "string",
+          description: "Affected file(s)",
+        },
+        severity: {
+          type: "string",
+          enum: ["Critical", "High", "Medium", "Low"],
+          description: "Issue severity",
+        },
+        notes: {
+          type: "string",
+          description: "Additional context or recommendations",
+        },
+      },
+      required: ["issue", "type", "severity"],
+    },
+  },
   // ─────────────────────────────────────────────────────────────────────────
   // TEST EXECUTION - THE MAIN TOOL
   // ─────────────────────────────────────────────────────────────────────────
@@ -482,6 +552,13 @@ Use this when experiencing issues or before starting a testing session.`,
 
 async function executeTool(name, args, modules) {
   switch (name) {
+    // ANALYSIS PROTOCOL TOOLS - MUST USE BEFORE FIXING
+    case "check_analysis_protocol":
+      return checkAnalysisProtocol(args, modules);
+
+    case "log_session_issue":
+      return logSessionIssue(args, modules);
+
     // TEST EXECUTION - PRIMARY TOOL
     case "run_tests":
       return runTests(args, modules);
@@ -561,8 +638,192 @@ async function executeTool(name, args, modules) {
 
 async function runTests(args, modules) {
   // Use async API-based execution instead of synchronous blocking
-  console.error('[Cortex MCP] Using async API-based test execution');
+  console.error("[Cortex MCP] Using async API-based test execution");
   return await runTestsViaAPI(args, modules);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANALYSIS PROTOCOL TOOLS
+// These tools enforce the deep analysis methodology
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function checkAnalysisProtocol(args, modules) {
+  const { failureCount = 0, phiType } = args || {};
+  const projectRoot = path.resolve(__dirname, "../../../../");
+  const sessionIssuesPath = path.join(projectRoot, "docs", "SESSION_ISSUES.md");
+
+  const result = {
+    timestamp: new Date().toISOString(),
+    requiresDeepAnalysis: failureCount > 50,
+    protocol: {
+      phase1_research: [
+        "DO NOT immediately start fixing patterns",
+        "First, investigate the STRUCTURAL causes",
+        "Use extended thinking for complex analysis",
+        "Check if this is a PATTERN problem or PIPELINE problem",
+      ],
+      phase2_investigate: [
+        "Run: npm run build && npm test",
+        "Analyze failure distribution by PHI type",
+        "Check for cascading failures from shared code",
+        "Look for systemic issues, not just individual patterns",
+      ],
+      phase3_document: [
+        "Log any structural issues discovered to SESSION_ISSUES.md",
+        "Note architectural problems for future sessions",
+        "Track hardcoded values that should be config",
+      ],
+    },
+    knownIssues: [],
+    reminder: null,
+  };
+
+  // Read known issues from SESSION_ISSUES.md
+  try {
+    if (fs.existsSync(sessionIssuesPath)) {
+      const content = fs.readFileSync(sessionIssuesPath, "utf8");
+      // Parse critical and high severity issues
+      const criticalMatch = content.match(
+        /## Critical Issues\s*([\s\S]*?)(?=##|$)/,
+      );
+      const highMatch = content.match(/## High Priority\s*([\s\S]*?)(?=##|$)/);
+
+      if (criticalMatch) {
+        const criticalIssues = criticalMatch[1]
+          .match(/### [^\n]+/g)
+          ?.map((h) => h.replace("### ", "").trim());
+        if (criticalIssues)
+          result.knownIssues.push(
+            ...criticalIssues.map((i) => ({ severity: "CRITICAL", issue: i })),
+          );
+      }
+      if (highMatch) {
+        const highIssues = highMatch[1]
+          .match(/### [^\n]+/g)
+          ?.map((h) => h.replace("### ", "").trim());
+        if (highIssues)
+          result.knownIssues.push(
+            ...highIssues.map((i) => ({ severity: "HIGH", issue: i })),
+          );
+      }
+    }
+  } catch (e) {
+    result.knownIssues.push({
+      severity: "INFO",
+      issue: "Could not read SESSION_ISSUES.md: " + e.message,
+    });
+  }
+
+  // Add specific reminder based on context
+  if (failureCount > 50) {
+    result.reminder = `
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  ⚠️  DEEP ANALYSIS REQUIRED - ${failureCount} FAILURES DETECTED
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  STOP! Before making any fixes:                                              ║
+║  1. Investigate WHY these failures are occurring                             ║
+║  2. Check if this is a PATTERN problem or PIPELINE problem                   ║
+║  3. Look for structural/architectural issues                                 ║
+║  4. Document findings in docs/SESSION_ISSUES.md                              ║
+║  5. Use extended thinking for complex root cause analysis                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝`;
+  } else if (phiType) {
+    result.reminder = `
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  📋  ANALYSIS PROTOCOL for ${phiType}
+├──────────────────────────────────────────────────────────────────────────────┤
+│  Before editing any ${phiType} filter:
+│  1. Check if spans are being detected (pattern issue)                        │
+│  2. Check if spans are being filtered out downstream (pipeline issue)        │
+│  3. Review PostFilterService for hardcoded exclusions                        │
+│  4. Document any structural issues found                                     │
+└──────────────────────────────────────────────────────────────────────────────┘`;
+  }
+
+  return result;
+}
+
+async function logSessionIssue(args, modules) {
+  const { issue, type, files, severity, notes } = args;
+
+  if (!issue || !type || !severity) {
+    throw new Error("Required fields: issue, type, severity");
+  }
+
+  const projectRoot = path.resolve(__dirname, "../../../../");
+  const sessionIssuesPath = path.join(projectRoot, "docs", "SESSION_ISSUES.md");
+
+  // Create docs directory if it doesn't exist
+  const docsDir = path.dirname(sessionIssuesPath);
+  if (!fs.existsSync(docsDir)) {
+    fs.mkdirSync(docsDir, { recursive: true });
+  }
+
+  // Read existing content or create new
+  let content = "";
+  if (fs.existsSync(sessionIssuesPath)) {
+    content = fs.readFileSync(sessionIssuesPath, "utf8");
+  } else {
+    content = `# Session Issues Tracker
+
+This file tracks structural and architectural issues discovered during sessions.
+Issues are logged automatically via the \`log_session_issue\` MCP tool.
+
+## Critical Issues
+
+## High Priority
+
+## Medium Priority
+
+## Low Priority
+
+## Resolved Issues
+
+---
+`;
+  }
+
+  // Determine which section to add to based on severity
+  const sectionMap = {
+    Critical: "## Critical Issues",
+    High: "## High Priority",
+    Medium: "## Medium Priority",
+    Low: "## Low Priority",
+  };
+
+  const sectionHeader = sectionMap[severity] || "## Medium Priority";
+  const issueId = `${type.charAt(0)}${Date.now().toString(36).slice(-4).toUpperCase()}`;
+
+  const newEntry = `
+### ${issueId}: ${issue}
+- **Type**: ${type}
+- **Severity**: ${severity}
+- **Files**: ${files || "Not specified"}
+- **Logged**: ${new Date().toISOString().split("T")[0]}
+${notes ? `- **Notes**: ${notes}` : ""}
+`;
+
+  // Insert the new issue after the section header
+  const sectionIndex = content.indexOf(sectionHeader);
+  if (sectionIndex !== -1) {
+    const insertPoint = sectionIndex + sectionHeader.length;
+    content =
+      content.slice(0, insertPoint) + newEntry + content.slice(insertPoint);
+  } else {
+    // Section not found, add at end
+    content += "\n" + sectionHeader + newEntry;
+  }
+
+  // Write back
+  fs.writeFileSync(sessionIssuesPath, content, "utf8");
+
+  return {
+    success: true,
+    issueId,
+    message: `Issue logged as ${issueId} in docs/SESSION_ISSUES.md`,
+    severity,
+    location: sessionIssuesPath,
+  };
 }
 
 async function analyzeTestResults(args, modules) {
@@ -990,7 +1251,9 @@ async function runDiagnostics(args, modules) {
     port: API_PORT,
     running: apiHealth.running,
     autoStartEnabled: true,
-    status: apiHealth.running ? "✓ running" : "✗ not running (will auto-start when needed)",
+    status: apiHealth.running
+      ? "✓ running"
+      : "✗ not running (will auto-start when needed)",
   };
   if (apiHealth.status) {
     diagnostics.apiServer.uptime = apiHealth.status.uptime;
