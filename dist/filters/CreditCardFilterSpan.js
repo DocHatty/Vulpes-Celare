@@ -58,7 +58,7 @@ class CreditCardFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "CREDITCARD");
-        if (accelerated) {
+        if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
                 return new Span_1.Span({
                     text: d.text,

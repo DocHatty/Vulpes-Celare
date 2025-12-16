@@ -69,7 +69,7 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
       text,
       "CREDITCARD",
     );
-    if (accelerated) {
+    if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
         return new Span({
           text: d.text,

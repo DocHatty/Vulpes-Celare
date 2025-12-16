@@ -200,7 +200,8 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "DATE");
-        if (accelerated) {
+        // Only use Rust results if we got actual detections (empty array is truthy!)
+        if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
                 return new Span_1.Span({
                     text: d.text,
@@ -224,27 +225,149 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         }
         const spans = [];
         const seen = new Set();
-        const processText = (source) => {
+        const processText = (source, originalText, isNormalized = false) => {
             for (const pattern of DateFilterSpan.COMPILED_PATTERNS) {
                 pattern.lastIndex = 0; // Reset regex
                 let match;
                 while ((match = pattern.exec(source)) !== null) {
-                    const key = `${match.index}-${match[0].length}`;
+                    // For normalized text, find the corrupted version in original
+                    let originalMatch = match[0];
+                    let startIndex = match.index;
+                    let endIndex = match.index + match[0].length;
+                    if (isNormalized && source !== originalText) {
+                        // Find the approximate location in original text
+                        // Use the matched value to search for a corrupted version nearby
+                        const found = this.findCorruptedDateInOriginal(originalText, match[0], match.index);
+                        if (found) {
+                            originalMatch = found.text;
+                            startIndex = found.start;
+                            endIndex = found.end;
+                        }
+                        else {
+                            // CRITICAL: If we can't map back to original, skip this span
+                            // Using normalized positions with original text causes mismatches
+                            continue;
+                        }
+                    }
+                    const key = `${startIndex}-${endIndex}`;
                     if (seen.has(key))
                         continue;
-                    const span = this.createSpanFromMatch(text, match, Span_1.FilterType.DATE, 0.95);
+                    const span = new Span_1.Span({
+                        text: originalMatch,
+                        originalValue: originalMatch,
+                        characterStart: startIndex,
+                        characterEnd: endIndex,
+                        filterType: Span_1.FilterType.DATE,
+                        confidence: isNormalized ? 0.85 : 0.95,
+                        priority: this.getPriority(),
+                        context: this.extractContext(originalText, startIndex, endIndex),
+                        window: [],
+                        replacement: null,
+                        salt: null,
+                        pattern: isNormalized
+                            ? "OCR-normalized date"
+                            : pattern.source.substring(0, 30),
+                        applied: false,
+                        ignored: false,
+                        ambiguousWith: [],
+                        disambiguationScore: null,
+                    });
                     spans.push(span);
                     seen.add(key);
                 }
             }
         };
-        processText(text);
+        processText(text, text, false);
         // OCR-normalized pass to catch O/0, l/1, S/5 swaps that dodge regexes
         const normalized = ValidationUtils_1.ValidationUtils.normalizeOCR(text);
         if (normalized !== text) {
-            processText(normalized);
+            processText(normalized, text, true);
+        }
+        // Structural OCR normalization pass - handles double punctuation, misplaced spaces
+        const structuralNormalized = this.normalizeOCRStructure(text);
+        if (structuralNormalized !== text && structuralNormalized !== normalized) {
+            processText(structuralNormalized, text, true);
         }
         return spans;
+    }
+    /**
+     * Find a corrupted date in the original text that corresponds to a normalized match
+     * Uses fuzzy matching to locate the original corrupted version
+     */
+    findCorruptedDateInOriginal(originalText, normalizedMatch, approxIndex) {
+        // Search in a window around the approximate index
+        // The window needs to be larger because normalization can change string length
+        const windowSize = Math.max(50, normalizedMatch.length * 3);
+        const searchStart = Math.max(0, approxIndex - windowSize);
+        const searchEnd = Math.min(originalText.length, approxIndex + normalizedMatch.length + windowSize);
+        const searchWindow = originalText.substring(searchStart, searchEnd);
+        // Look for date-like patterns in the original that could normalize to our match
+        // Pattern: digits and date separators with possible OCR corruption AND space corruption
+        // Must handle: "6/2/ 2021", "01/1 6/23", "4/2 2/24" (spaces within digit sequences)
+        const corruptedPattern = /[\dOoIlSsBbGg|]{1,4}[\s]*[\/\-]+[\s]*[\dOoIlSsBbGg|\s]{1,5}[\s]*[\/\-]+[\s]*[\dOoIlSsBbGg|\s]{2,6}/gi;
+        let bestMatch = null;
+        let bestScore = 0;
+        let m;
+        while ((m = corruptedPattern.exec(searchWindow)) !== null) {
+            const candidate = m[0];
+            const candidateNormalized = this.normalizeOCRStructure(candidate);
+            // Check if normalizing this candidate gives us something close to our match
+            if (this.datesMatch(candidateNormalized, normalizedMatch)) {
+                const score = candidate.length; // Prefer longer matches
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = {
+                        text: candidate,
+                        start: searchStart + m.index,
+                        end: searchStart + m.index + candidate.length,
+                    };
+                }
+            }
+        }
+        return bestMatch;
+    }
+    /**
+     * Check if two date strings match (allowing for minor variations)
+     */
+    datesMatch(a, b) {
+        // Normalize both and compare
+        const cleanA = a.replace(/\s+/g, "").toLowerCase();
+        const cleanB = b.replace(/\s+/g, "").toLowerCase();
+        return cleanA === cleanB;
+    }
+    /**
+     * Normalize structural OCR errors in date-like patterns
+     * Handles issues that character substitution alone can't fix:
+     * - Double punctuation: "9//2" → "9/2", "07--16" → "07-16"
+     * - Misplaced spaces: "9//2 2/54" → "9/22/54", "2023- 0-08" → "2023-10-08"
+     * - Leading/trailing spaces around separators: "05/14 //2024" → "05/14/2024"
+     * - Space-corrupted digit sequences: "05/1 7/73" → "05/17/73"
+     */
+    normalizeOCRStructure(text) {
+        let result = text;
+        // Step 1: Character substitutions (OCR letter→digit)
+        result = ValidationUtils_1.ValidationUtils.normalizeOCR(result);
+        // Step 2: Fix double separators: // → /, -- → -
+        result = result.replace(/[-]{2,}/g, "-");
+        result = result.replace(/[/]{2,}/g, "/");
+        // Step 3: Remove spaces around date separators
+        // "05/14 //2024" → "05/14/2024", "2023- 0-08" → "2023-0-08"
+        result = result.replace(/\s*([/-])\s*/g, "$1");
+        // Step 4: Aggressive space removal within date-like patterns
+        // Pattern: digit(s) separator digit space digit separator...
+        // "05/1 7/73" → "05/17/73", "12/2 0/2020" → "12/20/2020"
+        // This regex finds date-like sequences and removes internal spaces
+        result = result.replace(/(\d{1,2}[-/])(\d)\s+(\d)([-/]\d{2,4})/g, "$1$2$3$4");
+        // Step 5: Handle space in year portion: "05/17/7 3" → "05/17/73"
+        result = result.replace(/(\d{1,2}[-/]\d{1,2}[-/])(\d)\s+(\d{1,3})\b/g, "$1$2$3");
+        // Step 6: Handle space in month portion: "0 5/17/73" → "05/17/73"
+        result = result.replace(/\b(\d)\s+(\d)([-/]\d{1,2}[-/]\d{2,4})/g, "$1$2$3");
+        // Step 7: Handle ISO dates with spaces: "2023- 10-22" → "2023-10-22"
+        // Already covered by step 3, but also handle "2023 -10-22"
+        result = result.replace(/(\d{4})\s+([-/])(\d)/g, "$1$2$3");
+        // Step 8: Handle multiple consecutive spaces that might remain
+        result = result.replace(/\s{2,}/g, " ");
+        return result;
     }
 }
 exports.DateFilterSpan = DateFilterSpan;

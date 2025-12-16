@@ -104,9 +104,14 @@ class AgeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     /**
      * Pattern 2: Labeled ages in medical records
      * Matches: "Age: 91", "Patient Age: 94", "DOB/Age: 92"
+     * Also handles large whitespace gaps common in form-style documents:
+     *   "Age:            90 years"
+     *   "Age:                    99 years old"
      */
     detectLabeledAges(text, spans) {
-        const pattern = /\b(?:patient\s+)?age\s*[:\-=]\s*(\d{2,3})(?:\s*(?:years?|y\.?o\.?|yo))?\b/gi;
+        // Updated pattern to handle large whitespace gaps (common in medical forms)
+        // Uses \s* to allow any amount of whitespace between label and value
+        const pattern = /\b(?:patient\s+)?age\s*[:\-=]\s*(\d{2,3})(?:\s*(?:years?\s*(?:old)?|y\.?o\.?|yo))?\b/gi;
         pattern.lastIndex = 0;
         let match;
         while ((match = pattern.exec(text)) !== null) {

@@ -54,5 +54,23 @@ export declare class DateFilterSpan extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
     detect(text: string, config: any, context: RedactionContext): Span[];
+    /**
+     * Find a corrupted date in the original text that corresponds to a normalized match
+     * Uses fuzzy matching to locate the original corrupted version
+     */
+    private findCorruptedDateInOriginal;
+    /**
+     * Check if two date strings match (allowing for minor variations)
+     */
+    private datesMatch;
+    /**
+     * Normalize structural OCR errors in date-like patterns
+     * Handles issues that character substitution alone can't fix:
+     * - Double punctuation: "9//2" → "9/2", "07--16" → "07-16"
+     * - Misplaced spaces: "9//2 2/54" → "9/22/54", "2023- 0-08" → "2023-10-08"
+     * - Leading/trailing spaces around separators: "05/14 //2024" → "05/14/2024"
+     * - Space-corrupted digit sequences: "05/1 7/73" → "05/17/73"
+     */
+    private normalizeOCRStructure;
 }
 //# sourceMappingURL=DateFilterSpan.d.ts.map

@@ -120,7 +120,7 @@ export class HealthPlanNumberFilterSpan extends SpanBasedFilter {
       text,
       "HEALTHPLAN",
     );
-    if (accelerated) {
+    if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
         return new Span({
           text: d.text,

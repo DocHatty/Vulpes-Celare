@@ -44,7 +44,7 @@ export class FaxNumberFilterSpan extends SpanBasedFilter {
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const accelerated = RustScanKernel.getDetections(context, text, "FAX");
-    if (accelerated) {
+    if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
         return new Span({
           text: d.text,

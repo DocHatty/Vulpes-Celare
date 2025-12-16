@@ -27,6 +27,9 @@ export declare class AgeFilterSpan extends SpanBasedFilter {
     /**
      * Pattern 2: Labeled ages in medical records
      * Matches: "Age: 91", "Patient Age: 94", "DOB/Age: 92"
+     * Also handles large whitespace gaps common in form-style documents:
+     *   "Age:            90 years"
+     *   "Age:                    99 years old"
      */
     private detectLabeledAges;
     /**

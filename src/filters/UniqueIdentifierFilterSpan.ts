@@ -166,7 +166,7 @@ export class UniqueIdentifierFilterSpan extends SpanBasedFilter {
       text,
       "UNIQUE_ID",
     );
-    if (accelerated) {
+    if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
         return new Span({
           text: d.text,

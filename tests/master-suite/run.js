@@ -223,7 +223,8 @@ let MTSamplesCorpus = null;
 let runMTSamplesValidation = null;
 try {
   MTSamplesCorpus = {
-    generateCorpus: require("./corpus/mtsamples-corpus-generator").generateCorpus,
+    generateCorpus: require("./corpus/mtsamples-corpus-generator")
+      .generateCorpus,
     quickGenerate: require("./corpus/mtsamples-corpus-generator").quickGenerate,
     loadMTSamples: require("./corpus/mtsamples-loader").loadMTSamples,
   };
@@ -246,8 +247,35 @@ try {
 // PARSE COMMAND LINE ARGUMENTS
 // ============================================================================
 const args = process.argv.slice(2);
+
+// ============================================================================
+// MINIMUM SAMPLE SIZE ENFORCEMENT
+// ============================================================================
+// Statistical validity requires adequate sample sizes. Small samples produce
+// unreliable metrics that can mislead development decisions.
+//
+// Minimum requirements:
+//   - Default test: 200 documents (statistically meaningful)
+//   - Quick/debug: 50 documents (with explicit --allow-small flag)
+//   - Anything under 50: blocked unless --allow-small is passed
+//
+// Why 200? At 97% sensitivity with ~30 PHI per doc:
+//   - 200 docs = ~6000 PHI instances
+//   - 95% CI width: ~0.5% (meaningful precision)
+//   - 50 docs = ~1500 PHI instances
+//   - 95% CI width: ~1.0% (barely acceptable)
+//   - 20 docs = ~600 PHI instances
+//   - 95% CI width: ~1.6% (unreliable for decision-making)
+// ============================================================================
+
+const MINIMUM_SAMPLE_SIZES = {
+  PRODUCTION: 200, // For real metrics and CI/CD
+  DEBUG: 50, // For quick iteration (requires --allow-small)
+  ABSOLUTE_MIN: 20, // Never go below this, even with --allow-small
+};
+
 const options = {
-  documentCount: 50, // Reduced from 200 - same coverage, 4x faster
+  documentCount: 200, // DEFAULT TO STATISTICALLY VALID SAMPLE SIZE
   verbose: false,
   jsonOnly: false,
   profile: "HIPAA_STRICT", // Default to production-grade grading
@@ -260,6 +288,7 @@ const options = {
   cortexReport: false,
   cortexInsights: false,
   corpus: "synthetic", // synthetic, mtsamples, hybrid
+  allowSmallSample: false, // Must be explicit to use small samples
 };
 
 // Helper to suppress output in JSON-only mode
@@ -285,8 +314,9 @@ for (const arg of args) {
   }
   if (arg === "--verbose") options.verbose = true;
   if (arg === "--json-only") options.jsonOnly = true;
-  if (arg === "--quick") options.documentCount = 20; // Fast iteration
-  if (arg === "--full") options.documentCount = 200; // Original full suite
+  if (arg === "--allow-small") options.allowSmallSample = true;
+  if (arg === "--quick") options.documentCount = 50; // Debug iteration (requires --allow-small)
+  if (arg === "--full") options.documentCount = 200; // Standard full suite
   if (arg === "--thorough") options.documentCount = 500;
   if (arg === "--learn") options.learn = true;
   if (arg === "--no-learn") options.learn = false;
@@ -313,6 +343,106 @@ for (const arg of args) {
 
 // Setup logging after parsing args
 setupLogging();
+
+// ============================================================================
+// ENFORCE MINIMUM SAMPLE SIZE
+// ============================================================================
+// Block tests with inadequate sample sizes unless explicitly allowed.
+// This prevents misleading metrics from being used for decision-making.
+// ============================================================================
+
+function enforceMinimumSampleSize() {
+  const count = options.documentCount;
+
+  // Box drawing helper - consistent 80-char width
+  const W = 80;
+  const line = (content, pad = 2) => {
+    const inner = W - 2; // Account for left and right borders
+    const text = " ".repeat(pad) + content;
+    return "║" + text + " ".repeat(Math.max(0, inner - text.length)) + "║";
+  };
+  const top = "╔" + "═".repeat(W - 2) + "╗";
+  const mid = "╠" + "═".repeat(W - 2) + "╣";
+  const bot = "╚" + "═".repeat(W - 2) + "╝";
+  const blank = "║" + " ".repeat(W - 2) + "║";
+
+  // Absolute minimum - never allow below this
+  if (count < MINIMUM_SAMPLE_SIZES.ABSOLUTE_MIN) {
+    const minVal = MINIMUM_SAMPLE_SIZES.ABSOLUTE_MIN;
+    console.error(`
+${top}
+${line("SAMPLE SIZE TOO SMALL - TEST BLOCKED", 2)}
+${mid}
+${blank}
+${line(`Requested: ${count} documents`, 2)}
+${line(`Minimum:   ${minVal} documents (absolute floor)`, 2)}
+${blank}
+${line(`Sample sizes below ${minVal} produce statistically meaningless results.`, 2)}
+${line("The confidence intervals are too wide for any reliable conclusions.", 2)}
+${blank}
+${line("Use --count=200 for statistically valid metrics (recommended)", 2)}
+${line("Use --count=50 --allow-small for quick debug iteration", 2)}
+${blank}
+${bot}
+`);
+    process.exit(1);
+  }
+
+  // Below production minimum - require explicit flag
+  if (count < MINIMUM_SAMPLE_SIZES.PRODUCTION && !options.allowSmallSample) {
+    const recVal = MINIMUM_SAMPLE_SIZES.PRODUCTION;
+    const phiCount = (count * 30).toLocaleString();
+    const ciWidth = (1.6 * Math.sqrt(200 / count)).toFixed(1);
+    console.error(`
+${top}
+${line("SAMPLE SIZE BELOW RECOMMENDED MINIMUM", 2)}
+${mid}
+${blank}
+${line(`Requested:   ${count} documents`, 2)}
+${line(`Recommended: ${recVal} documents (for statistically valid metrics)`, 2)}
+${blank}
+${line("WHY THIS MATTERS:", 2)}
+${line(`  ${count} docs = ~${phiCount} PHI instances -> 95% CI width: ~${ciWidth}%`, 2)}
+${line("  200 docs = ~6,000 PHI instances -> 95% CI width: ~0.5%", 2)}
+${blank}
+${line("Small samples can show +/-2% swings that are just noise, not real changes.", 2)}
+${blank}
+${line("OPTIONS:", 2)}
+${line("  npm test                    -> Runs with 200 docs (recommended)", 2)}
+${line("  npm test -- --allow-small   -> Allow smaller sample (debugging only)", 2)}
+${line("  npm test -- --thorough      -> Run 500 docs (high confidence)", 2)}
+${blank}
+${bot}
+`);
+    process.exit(1);
+  }
+
+  // Warn if using small sample even with flag
+  if (count < MINIMUM_SAMPLE_SIZES.PRODUCTION && options.allowSmallSample) {
+    const warnTop = "┌" + "─".repeat(W - 2) + "┐";
+    const warnBot = "└" + "─".repeat(W - 2) + "┘";
+    const warnLine = (content, pad = 2) => {
+      const inner = W - 2;
+      const text = " ".repeat(pad) + content;
+      return "│" + text + " ".repeat(Math.max(0, inner - text.length)) + "│";
+    };
+    const warnBlank = "│" + " ".repeat(W - 2) + "│";
+
+    console.warn(`
+${warnTop}
+${warnLine(`SMALL SAMPLE SIZE (${count} docs) - METRICS MAY BE UNRELIABLE`, 2)}
+${warnBlank}
+${warnLine("You've explicitly allowed a small sample with --allow-small.", 2)}
+${warnLine("Results are suitable for quick iteration but NOT for final validation.", 2)}
+${warnBlank}
+${warnLine("For production-grade metrics, run: npm test (uses 200 docs)", 2)}
+${warnBot}
+`);
+  }
+}
+
+// Run enforcement
+enforceMinimumSampleSize();
 
 // ============================================================================
 // MOCK ELECTRON FOR TESTING
@@ -419,16 +549,24 @@ async function main() {
     if (options.corpus === "mtsamples") {
       // Delegate to MTSamples validation runner
       if (!runMTSamplesValidation) {
-        console.error("\n  ✗ MTSamples corpus not available. Run with default synthetic corpus.");
-        console.error("    Install: Ensure corpus/ directory exists with MTSamples modules.\n");
+        console.error(
+          "\n  ✗ MTSamples corpus not available. Run with default synthetic corpus.",
+        );
+        console.error(
+          "    Install: Ensure corpus/ directory exists with MTSamples modules.\n",
+        );
         process.exit(2);
       }
 
       log(`\n  Corpus: MTSamples (real clinical documents)\n`);
       log(fmt.headerBox("MTSAMPLES VALIDATION"));
 
-      const mode = options.documentCount <= 50 ? "quick" : 
-                   options.documentCount >= 200 ? "full" : "default";
+      const mode =
+        options.documentCount <= 50
+          ? "quick"
+          : options.documentCount >= 200
+            ? "full"
+            : "default";
 
       await runMTSamplesValidation({
         mode,
@@ -453,7 +591,9 @@ async function main() {
 
     // Default: SYNTHETIC corpus
     if (options.corpus === "synthetic" || options.corpus === "hybrid") {
-      log(`\n  Corpus: ${options.corpus === "hybrid" ? "HYBRID - Synthetic Phase" : "Synthetic (generated documents)"}\n`);
+      log(
+        `\n  Corpus: ${options.corpus === "hybrid" ? "HYBRID - Synthetic Phase" : "Synthetic (generated documents)"}\n`,
+      );
     }
 
     // Create assessment instance
