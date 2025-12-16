@@ -1,2 +1,30 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# ============================================================================
+# Linguist configuration for GitHub language statistics
+# ============================================================================
+
+# Mark dist/ as generated code (excluded from language stats)
+# These are compiled TypeScript outputs, not source code
+dist/** linguist-generated
+
+# Mark node_modules as vendored (excluded from stats)
+node_modules/** linguist-vendored
+
+# Mark test fixtures and storage as generated/data
+tests/master-suite/cortex/storage/** linguist-generated
+
+# Ensure Rust source files are properly detected
+src/rust/**/*.rs linguist-detectable
+src/rust/Cargo.toml linguist-detectable
+src/rust/Cargo.lock linguist-generated
+
+# Ensure TypeScript is the primary source language
+src/**/*.ts linguist-detectable
+
+# Mark declaration files as generated (they're compiled output)
+dist/**/*.d.ts linguist-generated
+
+# Mark source maps as generated
+**/*.map linguist-generated
