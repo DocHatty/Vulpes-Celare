@@ -885,11 +885,41 @@
       "timestamp": "2025-12-16T16:28:36.342Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765904700890",
+      "timestamp": "2025-12-16T17:05:00.890Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765905092878",
+      "timestamp": "2025-12-16T17:11:32.878Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765905436255",
+      "timestamp": "2025-12-16T17:17:16.255Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765906010080",
+      "timestamp": "2025-12-16T17:26:50.080Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765906070856",
+      "timestamp": "2025-12-16T17:27:50.856Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 148,
+    "total": 153,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 147
+    "noHistoryFound": 152
   }
 }

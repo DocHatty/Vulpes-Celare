@@ -49,6 +49,15 @@ export declare class AddressFilterSpan extends SpanBasedFilter {
     getPriority(): number;
     detect(text: string, config: any, context: RedactionContext): Span[];
     /**
+     * OCR-corrupted suffix variants - maps common OCR errors to their correct suffix
+     * Key: regex pattern, Value: confidence penalty (1.0 = no penalty)
+     */
+    private static readonly OCR_SUFFIX_PATTERNS;
+    /**
+     * Check if a word matches an OCR-corrupted suffix
+     */
+    private static matchesOCRSuffix;
+    /**
      * Detect addresses with lowercase, mixed case, or OCR corruption
      * Examples: "8007 marketneadows", "1493 front crossing, bldg 372", "7416 ceNTER OpiNT"
      */

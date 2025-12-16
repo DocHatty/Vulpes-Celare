@@ -61,5 +61,10 @@ export declare class AgeFilterSpan extends SpanBasedFilter {
      * Check for strong age-related context that makes a standalone number likely an age
      */
     private hasStrongAgeContext;
+    /**
+     * Pattern 7: Ages in demographic lines
+     * Matches standalone ages in demographic context: "92 M", "98 F", "103 Male"
+     */
+    private detectDemographicAges;
 }
 //# sourceMappingURL=AgeFilterSpan.d.ts.map

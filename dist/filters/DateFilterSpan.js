@@ -71,6 +71,18 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // ===== SPACE-TOLERANT OCR FORMATS =====
         // Handles accidental spaces from OCR: "10/24 /1961", "03/2 5/1985", "07 /21/1956"
         /\b\d{1,2}\s*[-/]\s*\d{1,2}\s*[-/]\s*(?:19|20)\d{2}\b/g,
+        // Space before final separator: "05/13 /1941", "9/15 /24", "10/02 /98", "10-25 -1979"
+        /\b\d{1,2}[-/]\d{1,2}\s+[-/]\s*(?:19|20)?\d{2,4}\b/g,
+        // Dash with space after day: "10-25 -1979", "07-19 -022"
+        /\b\d{1,2}-\d{1,2}\s+-\s*\d{2,4}\b/g,
+        // Space within day component: "9/1 5/24", "10/2 4/1961"
+        /\b\d{1,2}[-/]\d\s+\d[-/](?:19|20)?\d{2,4}\b/g,
+        // Space after year separator in ISO: "1964- 11-28", "2023- 04-15"
+        /\b(?:19|20)\d{2}[-/]\s+\d{1,2}[-/]\d{1,2}\b/g,
+        // Space before year separator in ISO: "1964 -11-28"
+        /\b(?:19|20)\d{2}\s+[-/]\d{1,2}[-/]\d{1,2}\b/g,
+        // Space in middle of ISO: "2024-0 5-15", "1985-1 2-25"
+        /\b(?:19|20)\d{2}[-/]\d\s+\d[-/]\d{1,2}\b/g,
         // Extra digit from OCR scan errors: "055/13/1996", "011/20/1963", "033/25/1985"
         /\b0\d{2}[-/]\d{1,2}[-/](?:19|20)\d{2}\b/g,
         /\b\d{1,2}[-/]0\d{2}[-/](?:19|20)\d{2}\b/g,
@@ -119,6 +131,22 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         /\b\d{1,2}[-/]\d{1,2}[-/][SsGg0-9]{2}\b/gi,
         // "1051--1986" - typo in year part + double dash
         /\b\d{2,4}--\d{2,4}\b/g,
+        // Z for 2, ! for 1 in dates: "6/2o /Z024", "11!/1Z/23"
+        /\b\d{1,2}[!1]?[-/]\d{1,2}[oO0]?\s*[-/]\s*[Zz2][Oo0]\d{2}\b/gi,
+        // Exclamation for 1: "11!/12/23", "01!/06/24"
+        /\b\d{1,2}![-/]\d{1,2}[-/]\d{2,4}\b/g,
+        /\b\d{1,2}[-/]\d{1,2}![-/]\d{2,4}\b/g,
+        // Mixed OCR with spaces: "6/2o /Z024" pattern
+        /\b\d{1,2}[-/]\d[oO0]?\s*[-/]\s*[Zz]?\d{2,4}\b/gi,
+        // ===== MISSING SEPARATOR PATTERNS =====
+        // Missing separator between day and year: "09/2423" for "09/24/23", "05/1590" for "05/15/90"
+        /\b(0?[1-9]|1[0-2])[-/](\d{2})(\d{2})\b/g,
+        // Missing separator in 4-digit year: "09/242023" for "09/24/2023"
+        /\b(0?[1-9]|1[0-2])[-/](\d{2})((?:19|20)\d{2})\b/g,
+        // Short form with concatenated date: "7/220" for "7/2/20", "8/315" for "8/3/15"
+        /\b([1-9]|1[0-2])[-/](\d)(\d{2})\b/g,
+        // Space in short year date: "7/2 /20", "8/3 /15"
+        /\b\d{1,2}[-/]\d{1,2}\s+[-/]\s*\d{2}\b/g,
         // ===== ISO FORMAT =====
         // YYYY/MM/DD or YYYY-MM-DD
         /\b(19|20)\d{2}[-/](0?[1-9]|1[0-2])[-/](0?[1-9]|[12]\d|3[01])\b/g,

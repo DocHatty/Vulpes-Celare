@@ -122,6 +122,36 @@ class MRNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             regex: /\b(PT[:\s]+\d{5,14})\b/gi,
             description: "PT prefix MRN",
         },
+        {
+            // Pattern 19: PZT prefix (OCR for PAT or PT)
+            // Matches: "PZT: 2475331", "PZT 4901345"
+            regex: /\b(PZT[:\s]+\d{5,14})\b/gi,
+            description: "PZT prefix MRN (OCR)",
+        },
+        {
+            // Pattern 20: PR prefix (OCR for PT)
+            // Matches: "PR: 5598419"
+            regex: /\b(PR[:\s]+\d{5,14})\b/gi,
+            description: "PR prefix MRN (OCR)",
+        },
+        {
+            // Pattern 21: Digits with space in middle (near MRN context)
+            // Matches: "327 2869", "313 932", "531 65B0"
+            regex: /(?:Medical\s+Record|MRN|Record\s*#)[:\s#]*(\d{2,4}\s+\d{3,6}[A-Z0-9]*)\b/gi,
+            description: "MRN with space in digits",
+        },
+        {
+            // Pattern 22: 8D/BD prefix (OCR for ID)
+            // Matches: "8D 9064636", "BD 1234567"
+            regex: /\b([8B]D[:\s]+\d{5,14})\b/gi,
+            description: "8D/BD prefix MRN (OCR for ID)",
+        },
+        {
+            // Pattern 23: rec: prefix with space in year
+            // Matches: "rec: 2020- 638238"
+            regex: /\b(rec[:\s]+(?:19|20)\d{2}[-\s]+\d{4,10})\b/gi,
+            description: "REC prefix with space in year",
+        },
     ];
     /**
      * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)

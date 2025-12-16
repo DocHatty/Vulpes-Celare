@@ -78,13 +78,28 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      */
     detectLabeledNameFields(text, spans) {
         const pattern = /\b(?:name|patient\s+name|member\s+name|legal\s+name(?:\s*\([^)]*\))?|patient)\s*:\s*([^\r\n]{2,120})/gim;
-        const terminator = /\b(?:preferred\s+name|date\s+of\s+birth|dob|medical\s+record|member\s+id|member\s+id|group|mrn|id)\b/i;
+        // Terminators: field labels OR sentence/clause markers that indicate end of name
+        const terminator = /\b(?:preferred\s+name|date\s+of\s+birth|dob|medical\s+record|member\s+id|group|mrn|id|arrived|presented|presents|was\s+seen|is\s+a|is\s+an|came|visited|scheduled|admitted|discharged|referred|transferred|diagnosed|complains|reports|states|denies|has\s+been|will\s+be|for\s+(?:consultation|evaluation|follow|treatment|surgery|procedure|review|assessment))\b/i;
+        // Additional sentence boundary markers
+        const sentenceBoundary = /[.!?;]|\s{2,}|\t/;
         const covered = new Set(spans.map((s) => `${s.characterStart}-${s.characterEnd}`));
         let match;
         pattern.lastIndex = 0;
         while ((match = pattern.exec(text)) !== null) {
             const rawFieldValue = match[1];
-            const cutAt = rawFieldValue.search(terminator);
+            // Find the earliest terminator (field label, sentence marker, or verb phrase)
+            const terminatorMatch = rawFieldValue.search(terminator);
+            const sentenceMatch = rawFieldValue.search(sentenceBoundary);
+            let cutAt = -1;
+            if (terminatorMatch >= 0 && sentenceMatch >= 0) {
+                cutAt = Math.min(terminatorMatch, sentenceMatch);
+            }
+            else if (terminatorMatch >= 0) {
+                cutAt = terminatorMatch;
+            }
+            else if (sentenceMatch >= 0) {
+                cutAt = sentenceMatch;
+            }
             const rawCandidate = (cutAt >= 0 ? rawFieldValue.slice(0, cutAt) : rawFieldValue).replace(/\s+$/g, "");
             const trimmedLeft = rawCandidate.length - rawCandidate.trimStart().length;
             const trimmedRight = rawCandidate.length - rawCandidate.trimEnd().length;
@@ -101,6 +116,9 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             const tokens = candidateText.split(/\s+/).filter(Boolean);
             const hasStrongMarker = /[,.'-]/.test(candidateText);
             if (tokens.length < 2 && !hasStrongMarker)
+                continue;
+            // Names should be 2-4 tokens max (First Last, First M. Last, First Middle Last)
+            if (tokens.length > 4)
                 continue;
             // Avoid swallowing the next label if we accidentally included it.
             if (terminator.test(candidateText))
@@ -433,15 +451,63 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * Pattern 1: Patient + Mixed Case Name
      */
     detectPatientNames(text, spans) {
+        // Common verbs/words that should NOT be part of a name
+        const nonNameWords = new Set([
+            "arrived",
+            "presented",
+            "presents",
+            "came",
+            "visited",
+            "scheduled",
+            "admitted",
+            "discharged",
+            "referred",
+            "transferred",
+            "diagnosed",
+            "complains",
+            "reports",
+            "states",
+            "denies",
+            "was",
+            "is",
+            "has",
+            "will",
+            "for",
+            "with",
+            "at",
+            "on",
+            "in",
+            "to",
+            "from",
+            "by",
+            "dob",
+            "mrn",
+            "age",
+            "sex",
+            "gender",
+            "phone",
+            "address",
+            "email",
+        ]);
         const pattern = /\b(?:Patient|Pt|Subject|Individual|Client)[ \t:]+([A-Z][a-z]+(?:[ \t]+[A-Z]\.?[ \t]*)?(?:[ \t]+[A-Z][a-z]+){1,2})\b/gi;
         pattern.lastIndex = 0;
         let match;
         while ((match = pattern.exec(text)) !== null) {
-            const name = match[1];
+            let name = match[1];
             const fullMatch = match[0];
             const matchPos = match.index;
+            // Trim trailing non-name words from the match
+            const words = name.split(/\s+/);
+            while (words.length > 1 &&
+                nonNameWords.has(words[words.length - 1].toLowerCase())) {
+                words.pop();
+            }
+            name = words.join(" ");
+            // Skip if only one word left after trimming
+            if (words.length < 2)
+                continue;
             // Find position of name within full match
-            const nameStart = matchPos + fullMatch.indexOf(name);
+            const nameStart = matchPos + fullMatch.indexOf(match[1]);
             const nameEnd = nameStart + name.length;
             const span = new Span_1.Span({
                 text: name,

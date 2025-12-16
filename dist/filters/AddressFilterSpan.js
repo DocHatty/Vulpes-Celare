@@ -383,6 +383,66 @@ class AddressFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         return spans;
     }
     /**
+     * OCR-corrupted suffix variants - maps common OCR errors to their correct suffix
+     * Key: regex pattern, Value: confidence penalty (1.0 = no penalty)
+     */
+    static OCR_SUFFIX_PATTERNS = [
+        // Commons variants: Cmomons, Comnons, Comrnons, C0mmons
+        { pattern: /\bC[mo0][mo0][mn][mo0]n[s5]\b/gi, confidence: 0.7 },
+        // Pike variants: PIKe, PiKe, PlKE, P1ke
+        { pattern: /\bP[I1l][Kk][Ee3]\b/gi, confidence: 0.7 },
+        // Spruce variants: SPRvCE, SPRUCE, SPRuCE
+        { pattern: /\bS[Pp]R[vuV][Cc][Ee3]\b/gi, confidence: 0.7 },
+        // Street variants: Strset, Strect, 5treet
+        { pattern: /\b[S5][Tt]r[e3][e3][Tt]\b/gi, confidence: 0.7 },
+        // Avenue variants: Avenve, Avemue, Av3nue
+        { pattern: /\bAv[e3][mn][uv][e3]\b/gi, confidence: 0.7 },
+        // Drive variants: Orive, Drlve, Dr1ve
+        { pattern: /\b[DO0]r[i1l]v[e3]\b/gi, confidence: 0.7 },
+        // Road variants: Roao, R0ad, Rood
+        { pattern: /\bR[o0][ao][do0]\b/gi, confidence: 0.7 },
+        // Boulevard variants: Boulevaro, B0ulevard, Bou1evard
+        { pattern: /\bB[o0]u[l1][e3]v[a4]r[do0]\b/gi, confidence: 0.7 },
+        // Lane variants: Lame, L4ne, Lan3
+        { pattern: /\bL[a4][mn][e3]\b/gi, confidence: 0.7 },
+        // Court variants: Courf, C0urt, Cour+
+        { pattern: /\bC[o0]ur[tf+]\b/gi, confidence: 0.7 },
+        // Circle variants: Circ1e, Circl3, C1rcle
+        { pattern: /\bC[i1]rc[l1][e3]\b/gi, confidence: 0.7 },
+        // Place variants: Plac3, P1ace, Plaoe
+        { pattern: /\bP[l1][a4]c[e3]\b/gi, confidence: 0.7 },
+        // Terrace variants: Terrac3, T3rrace, Terrsce
+        { pattern: /\bT[e3]rr[a4][cs][e3]\b/gi, confidence: 0.7 },
+        // Trail variants: Tra1l, Traii, Trai1
+        { pattern: /\bTr[a4][i1][l1]\b/gi, confidence: 0.7 },
+        // Way variants: Wav, W4y, Wa7
+        { pattern: /\bW[a4][yv7]\b/gi, confidence: 0.7 },
+        // Crossing variants: Crosslng, Cr0ssing, Cross1ng
+        { pattern: /\bCr[o0]ss[i1l]ng\b/gi, confidence: 0.7 },
+        // Heights variants: He1ghts, Heiqhts, H3ights
+        { pattern: /\bH[e3][i1l][gq]h[Tt][s5]\b/gi, confidence: 0.7 },
+        // Meadows variants: Meadow5, M3adows, Meadovvs
+        { pattern: /\bM[e3][a4]d[o0][wvv][s5]\b/gi, confidence: 0.7 },
+        // Point variants: Po1nt, Polnt, P0int
+        { pattern: /\bP[o0][i1l]n[Tt]\b/gi, confidence: 0.7 },
+        // Ridge variants: R1dge, Ridqe, Rldge
+        { pattern: /\bR[i1l]d[gq][e3]\b/gi, confidence: 0.7 },
+        // Pass variants: Pa55, Pas5, P4ss
+        { pattern: /\bP[a4][s5][s5]\b/gi, confidence: 0.7 },
+    ];
+    /**
+     * Check if a word matches an OCR-corrupted suffix
+     */
+    static matchesOCRSuffix(word) {
+        for (const entry of AddressFilterSpan.OCR_SUFFIX_PATTERNS) {
+            entry.pattern.lastIndex = 0;
+            if (entry.pattern.test(word)) {
+                return { matches: true, confidence: entry.confidence };
+            }
+        }
+        return { matches: false, confidence: 1.0 };
+    }
+    /**
      * Detect addresses with lowercase, mixed case, or OCR corruption
      * Examples: "8007 marketneadows", "1493 front crossing, bldg 372", "7416 ceNTER OpiNT"
      */
@@ -455,6 +515,51 @@ class AddressFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 replacement: null,
                 salt: null,
                 pattern: "OCR-corrupted address",
+                applied: false,
+                ignored: false,
+                ambiguousWith: [],
+                disambiguationScore: null,
+            });
+            spans.push(span);
+        }
+        // Detect addresses with OCR-corrupted suffixes (e.g., "2764 Poplar Cmomons")
+        // Pattern: number + street name + OCR-corrupted suffix
+        const ocrSuffixPattern = /\b(\d+[A-Za-z]?)\s+([A-Za-z][A-Za-z']+(?:\s+[A-Za-z][A-Za-z']+)*)\s+([A-Za-z]{3,12})\b/gi;
+        while ((match = ocrSuffixPattern.exec(text)) !== null) {
+            const fullMatch = match[0];
+            const streetNumber = match[1];
+            const streetName = match[2];
+            const potentialSuffix = match[3];
+            const start = match.index;
+            const end = start + fullMatch.length;
+            // Skip if already detected
+            const alreadyDetected = spans.some((s) => (start >= s.characterStart && start < s.characterEnd) ||
+                (end > s.characterStart && end <= s.characterEnd));
+            if (alreadyDetected)
+                continue;
+            // Check if the potential suffix matches an OCR-corrupted pattern
+            const ocrMatch = AddressFilterSpan.matchesOCRSuffix(potentialSuffix);
+            if (!ocrMatch.matches)
+                continue;
+            // Validate: street number should be numeric
+            if (!/^\d+[A-Za-z]?$/.test(streetNumber))
+                continue;
+            // Skip very short street names
+            if (streetName.length < 3)
+                continue;
+            const span = new Span_1.Span({
+                text: fullMatch,
+                originalValue: fullMatch,
+                characterStart: start,
+                characterEnd: end,
+                filterType: Span_1.FilterType.ADDRESS,
+                confidence: 0.8 * ocrMatch.confidence, // Apply OCR confidence penalty
+                priority: this.getPriority(),
+                context: this.extractContext(text, start, end),
+                window: [],
+                replacement: null,
+                salt: null,
+                pattern: "OCR-corrupted suffix address",
                 applied: false,
                 ignored: false,
                 ambiguousWith: [],

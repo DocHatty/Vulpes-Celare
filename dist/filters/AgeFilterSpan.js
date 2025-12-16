@@ -38,6 +38,8 @@ class AgeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         this.detectContextualAges(text, spans);
         // Pattern 6: Standalone 90+ numbers with nearby age context
         this.detectStandaloneAgesWithContext(text, spans);
+        // Pattern 7: Ages in demographic lines (92 M, 98 F, etc.)
+        this.detectDemographicAges(text, spans);
         return spans;
     }
     /**
@@ -382,10 +384,17 @@ class AgeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * Check for strong age-related context that makes a standalone number likely an age
      */
     hasStrongAgeContext(text, matchIndex, matchLength) {
-        const contextWindow = 30;
+        const contextWindow = 50; // Increased window for better context detection
         const start = Math.max(0, matchIndex - contextWindow);
         const end = Math.min(text.length, matchIndex + matchLength + contextWindow);
         const surroundingText = text.substring(start, end).toLowerCase();
+        // Text immediately before and after the number
+        const textBefore = text
+            .substring(Math.max(0, matchIndex - 20), matchIndex)
+            .toLowerCase();
+        const textAfter = text
+            .substring(matchIndex + matchLength, Math.min(text.length, matchIndex + matchLength + 20))
+            .toLowerCase();
         // Strong context indicators that this number is an age
         const strongContextPatterns = [
             /\bage\s*[:=-]?\s*$/i, // "Age: " before
@@ -397,8 +406,82 @@ class AgeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             /^\s*(male|female|man|woman)\b/i, // gender after age
             /\belderly\b/i, // elderly context
             /\bgeriatric\b/i, // geriatric context
+            /\bdob\b/i, // DOB context (often near age)
+            /\bborn\b/i, // birth context
+            /\bbirthday\b/i, // birthday context
         ];
-        return strongContextPatterns.some((pattern) => pattern.test(surroundingText));
+        if (strongContextPatterns.some((pattern) => pattern.test(surroundingText))) {
+            return true;
+        }
+        // Check for medical document structure patterns
+        // In medical documents, standalone numbers after field labels are often ages
+        const fieldLabelPattern = /(?:age|patient\s+age|pt\s+age)\s*[:=-]?\s*$/i;
+        if (fieldLabelPattern.test(textBefore)) {
+            return true;
+        }
+        // Check for "X years" pattern after the number (common OCR corruption of "years old")
+        if (/^\s*(?:years?|yrs?|y)\b/i.test(textAfter)) {
+            return true;
+        }
+        // Check for demographic context: "92 M" or "98 F" (age followed by gender abbreviation)
+        if (/^\s*[MF]\b/i.test(textAfter)) {
+            return true;
+        }
+        // Check for age in parenthetical context: "(98)" after patient name
+        const parenBefore = text.substring(Math.max(0, matchIndex - 1), matchIndex);
+        const parenAfter = text.substring(matchIndex + matchLength, matchIndex + matchLength + 1);
+        if (parenBefore === "(" && parenAfter === ")") {
+            // Check if this looks like a patient age context
+            const beforeParen = text
+                .substring(Math.max(0, matchIndex - 50), matchIndex - 1)
+                .toLowerCase();
+            if (/\b(?:patient|pt|name|mr\.|mrs\.|ms\.|dr\.)\b/.test(beforeParen)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Pattern 7: Ages in demographic lines
+     * Matches standalone ages in demographic context: "92 M", "98 F", "103 Male"
+     */
+    detectDemographicAges(text, spans) {
+        // Pattern: 2-3 digit number followed by M/F or Male/Female
+        const pattern = /\b(9\d|1[0-2]\d)\s*([MF]|Male|Female)\b/gi;
+        pattern.lastIndex = 0;
+        let match;
+        // Track already detected positions
+        const detectedPositions = new Set(spans.map((s) => `${s.characterStart}-${s.characterEnd}`));
+        while ((match = pattern.exec(text)) !== null) {
+            const ageStr = match[1];
+            const age = parseInt(ageStr, 10);
+            if (age < 90 || age > 125)
+                continue;
+            const fullMatch = match[0];
+            const posKey = `${match.index}-${match.index + fullMatch.length}`;
+            if (detectedPositions.has(posKey))
+                continue;
+            const span = new Span_1.Span({
+                text: fullMatch,
+                originalValue: fullMatch,
+                characterStart: match.index,
+                characterEnd: match.index + fullMatch.length,
+                filterType: Span_1.FilterType.AGE,
+                confidence: 0.92,
+                priority: this.getPriority(),
+                context: this.extractContext(text, match.index, match.index + fullMatch.length),
+                window: [],
+                replacement: "90+ " + match[2],
+                salt: null,
+                pattern: "Demographic age 90+",
+                applied: false,
+                ignored: false,
+                ambiguousWith: [],
+                disambiguationScore: null,
+            });
+            spans.push(span);
+            detectedPositions.add(posKey);
+        }
     }
 }
 exports.AgeFilterSpan = AgeFilterSpan;
