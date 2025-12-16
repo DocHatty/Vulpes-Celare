@@ -284,9 +284,8 @@ class VulpesAgent {
             args.push("--model", this.config.model);
             Logger_1.logger.debug("Using model", { model: this.config.model });
         }
-        // DEEP INTEGRATION: Use short append-system-prompt (CLAUDE.md has full context)
-        // Note: --system-prompt-file only works in print mode, not interactive
-        args.push("--append-system-prompt", "You are VULPESIFIED. This project uses Vulpes Celare for HIPAA PHI redaction. See CLAUDE.md for full capabilities. Commands: /vulpes-redact, /vulpes-analyze, /vulpes-info");
+        // CLAUDE.md already provides full Vulpes context, so we skip --append-system-prompt
+        // This also avoids Windows shell quoting issues when shell:true is used
         // DEEP INTEGRATION: Set environment for hooks
         const env = {
             ...process.env,
