@@ -187,6 +187,7 @@ module.exports = {
   SeededRandom,
   getGlobalRng,
   seedGlobal,
+  setSeed: seedGlobal, // Alias for backward compatibility
   resetGlobal,
   random,
   randomInt,
