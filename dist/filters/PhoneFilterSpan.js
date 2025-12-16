@@ -127,6 +127,18 @@ class PhoneFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         /\b\d{3}\s+\d{3}\s+\d{3}\b/g,
         // International with OCR: "Z316712479" (10 chars starting with letter)
         /\b[A-Za-z]\d{9}\b/g,
+        // ===== ADDITIONAL OCR CORRUPTION PATTERNS =====
+        // Extra digit after area code: "(957)7 12-9413" - extra 7 after closing paren
+        /\(\d{3}\)\d\s+\d{2}[-.]?\d{4}\b/g,
+        // Missing open paren with close paren: "730) 724- 5302"
+        /\b\d{3}\)\s*\d{3}[-.\s]+\d{4}\b/g,
+        // Double dash between segments: "457--3657999", "204-937--9063"
+        /\b\d{3}--\d{3,4}[-.]?\d{3,4}\b/g,
+        /\b\d{3}[-.]?\d{3}--\d{4}\b/g,
+        // Exclamation for 1: "662.22.1!67"
+        /\b\d{3}[.\s]\d{2}[.\s]\d[!]\d{2}\b/g,
+        // Extra close paren: "+1 (746)) 616-1986"
+        /\+?1?\s*\(\d{3}\)\)+\s*\d{3}[-.]?\d{4}\b/g,
     ];
     /**
      * PERFORMANCE OPTIMIZATION: Pre-compiled regex patterns (compiled once at class load)

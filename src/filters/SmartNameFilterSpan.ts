@@ -116,7 +116,12 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         const end = d.characterEnd;
 
         // Match exclusions
-        if (TITLE_PLUS_TRAILING_WORD_PATTERN.test(text.substring(Math.max(0, start - 30), start))) continue;
+        if (
+          TITLE_PLUS_TRAILING_WORD_PATTERN.test(
+            text.substring(Math.max(0, start - 30), start),
+          )
+        )
+          continue;
 
         const parts = fullName.split(/\s*,\s*/);
         if (parts.length === 2) {
@@ -125,25 +130,30 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         }
 
         const needsStrictValidation = d.pattern === "Rust Last, First";
-        if (!this.isWhitelisted(fullName, text) && (!needsStrictValidation || this.validateLastFirst(fullName))) {
-          spans.push(new Span({
-            text: fullName,
-            originalValue: fullName,
-            characterStart: start,
-            characterEnd: end,
-            filterType: FilterType.NAME,
-            confidence: d.confidence,
-            priority: this.getPriority(),
-            context: this.getContext(text, start, end - start),
-            window: [],
-            replacement: null,
-            salt: null,
-            pattern: d.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
-          }));
+        if (
+          !this.isWhitelisted(fullName, text) &&
+          (!needsStrictValidation || this.validateLastFirst(fullName))
+        ) {
+          spans.push(
+            new Span({
+              text: fullName,
+              originalValue: fullName,
+              characterStart: start,
+              characterEnd: end,
+              filterType: FilterType.NAME,
+              confidence: d.confidence,
+              priority: this.getPriority(),
+              context: this.getContext(text, start, end - start),
+              window: [],
+              replacement: null,
+              salt: null,
+              pattern: d.pattern,
+              applied: false,
+              ignored: false,
+              ambiguousWith: [],
+              disambiguationScore: null,
+            }),
+          );
         }
       }
 
@@ -154,28 +164,43 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         const start = d.characterStart;
         const end = d.characterEnd;
 
-        if (TITLE_TRAILING_PATTERN.test(text.substring(Math.max(0, start - 30), start))) continue;
-        if (PROVIDER_CONTEXT_CREDENTIAL_AFTER_NAME_PATTERN.test(text.substring(end, Math.min(text.length, end + 40)))) continue;
+        if (
+          TITLE_TRAILING_PATTERN.test(
+            text.substring(Math.max(0, start - 30), start),
+          )
+        )
+          continue;
+        if (
+          PROVIDER_CONTEXT_CREDENTIAL_AFTER_NAME_PATTERN.test(
+            text.substring(end, Math.min(text.length, end + 40)),
+          )
+        )
+          continue;
 
-        if (!this.isWhitelisted(fullName, text) && this.isLikelyPersonName(fullName, text)) {
-          spans.push(new Span({
-            text: fullName,
-            originalValue: fullName,
-            characterStart: start,
-            characterEnd: end,
-            filterType: FilterType.NAME,
-            confidence: d.confidence,
-            priority: this.getPriority(),
-            context: this.getContext(text, start, end - start),
-            window: [],
-            replacement: null,
-            salt: null,
-            pattern: d.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
-          }));
+        if (
+          !this.isWhitelisted(fullName, text) &&
+          this.isLikelyPersonName(fullName, text)
+        ) {
+          spans.push(
+            new Span({
+              text: fullName,
+              originalValue: fullName,
+              characterStart: start,
+              characterEnd: end,
+              filterType: FilterType.NAME,
+              confidence: d.confidence,
+              priority: this.getPriority(),
+              context: this.getContext(text, start, end - start),
+              window: [],
+              replacement: null,
+              salt: null,
+              pattern: d.pattern,
+              applied: false,
+              ignored: false,
+              ambiguousWith: [],
+              disambiguationScore: null,
+            }),
+          );
         }
       }
 
@@ -183,29 +208,41 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const smartDets = RustNameScanner.detectSmart(text);
       for (const d of smartDets) {
         const fullName = d.text;
-        if (!this.isWhitelisted(fullName, text) && this.isLikelyPersonName(fullName, text)) {
-          spans.push(new Span({
-            text: fullName,
-            originalValue: fullName,
-            characterStart: d.characterStart,
-            characterEnd: d.characterEnd,
-            filterType: FilterType.NAME,
-            confidence: d.confidence,
-            priority: this.getPriority(),
-            context: this.getContext(text, d.characterStart, d.characterEnd - d.characterStart),
-            window: [],
-            replacement: null,
-            salt: null,
-            pattern: d.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
-          }));
+        if (
+          !this.isWhitelisted(fullName, text) &&
+          this.isLikelyPersonName(fullName, text)
+        ) {
+          spans.push(
+            new Span({
+              text: fullName,
+              originalValue: fullName,
+              characterStart: d.characterStart,
+              characterEnd: d.characterEnd,
+              filterType: FilterType.NAME,
+              confidence: d.confidence,
+              priority: this.getPriority(),
+              context: this.getContext(
+                text,
+                d.characterStart,
+                d.characterEnd - d.characterStart,
+              ),
+              window: [],
+              replacement: null,
+              salt: null,
+              pattern: d.pattern,
+              applied: false,
+              ignored: false,
+              ambiguousWith: [],
+              disambiguationScore: null,
+            }),
+          );
         }
       }
     } else {
-      RadiologyLogger.warn("SMART_NAME", "Rust scanner unavailable - relying on simplified fallback.");
+      RadiologyLogger.warn(
+        "SMART_NAME",
+        "Rust scanner unavailable - relying on simplified fallback.",
+      );
     }
 
     // -----------------------------------------------------------------------
@@ -271,6 +308,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     // Pattern 16: Concatenated names (no space between first and last)
     // Catches: "DeborahHarris", "JohnSmith", "MaryJohnson"
     this.detectConcatenatedNames(text, spans);
+
+    // Pattern 17: OCR-corrupted names with digits/symbols in the middle
+    // Catches: "Charl4s", "Muel1er", "M@ria", "Hernandcz"
+    this.detectOcrCorruptedNames(text, spans);
 
     return spans;
   }
@@ -995,6 +1036,10 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
   /**
    * Comprehensive OCR character normalization for name detection
    * Based on research: common OCR confusions from scanning medical documents
+   *
+   * NOTE: Some digits map to multiple possible letters. We use the most common:
+   * - 4 → a (but could also be e in some fonts)
+   * - 1 → l (but could also be i)
    */
   private normalizeOcrChars(text: string): string {
     return (
@@ -1015,6 +1060,29 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         .replace(/7/g, "t")
         .replace(/2/g, "z")
     );
+  }
+
+  /**
+   * Alternative OCR normalization treating 4 as 'e' instead of 'a'
+   * Some OCR engines confuse 4 with e (especially in fonts where e has a horizontal bar)
+   * Examples: "Charl4s" → "Charles", "H4nry" → "Henry"
+   */
+  private normalizeOcrCharsAlt(text: string): string {
+    return text
+      .replace(/0/g, "o")
+      .replace(/1/g, "l")
+      .replace(/\|/g, "l")
+      .replace(/!/g, "i")
+      .replace(/5/g, "s")
+      .replace(/@/g, "a")
+      .replace(/\$/g, "s")
+      .replace(/8/g, "b")
+      .replace(/6/g, "g")
+      .replace(/9/g, "g")
+      .replace(/3/g, "e")
+      .replace(/4/g, "e") // KEY DIFFERENCE: 4 → e
+      .replace(/7/g, "t")
+      .replace(/2/g, "z");
   }
 
   /**
@@ -1828,5 +1896,108 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       }
     }
     return false;
+  }
+
+  /**
+   * Pattern 17: OCR-Corrupted Names with Digits/Symbols in Middle
+   *
+   * Catches names where OCR has substituted digits or symbols for letters:
+   * - "Charl4s" → "Charles" (4 for e)
+   * - "Muel1er" → "Mueller" (1 for l)
+   * - "M@ria" → "Maria" (@ for a)
+   * - "Jennif3r" → "Jennifer" (3 for e)
+   * - "Hernandcz" → "Hernandez" (c for e - letter confusion)
+   * - "Y0ussef" → "Youssef" (0 for o)
+   *
+   * Strategy:
+   * 1. Find words that look like names but have OCR corruption (digit/symbol inside)
+   * 2. Normalize using both OCR mappings (4→a and 4→e variants)
+   * 3. Check if normalized version matches a known name
+   * 4. If match, capture the original corrupted version
+   */
+  private detectOcrCorruptedNames(text: string, spans: Span[]): void {
+    // Pattern: Capital letter, then mix of letters/digits/symbols that could be OCR errors
+    // Must have at least one digit or symbol in the middle (not just letters)
+    // Examples: "Charl4s", "M@ria", "Muel1er", "Y0ussef"
+    const ocrNamePattern =
+      /\b([A-Z][a-zA-Z0-9@$!|]{2,}(?:\s+[A-Za-z0-9@$!|][a-zA-Z0-9@$!|]{1,}){0,2})\b/g;
+
+    let match;
+    while ((match = ocrNamePattern.exec(text)) !== null) {
+      const candidate = match[0];
+      const start = match.index;
+      const end = start + candidate.length;
+
+      // Must contain at least one OCR-suspicious character (digit or symbol in letter position)
+      if (!/[0-9@$!|]/.test(candidate)) continue;
+
+      // Skip if already detected
+      if (this.overlapsExisting(start, end, spans)) continue;
+
+      // Skip if in provider context
+      if (this.isInProviderContext(candidate, start, text)) continue;
+
+      // Try both OCR normalizations
+      const normalized1 = this.normalizeOcrChars(candidate);
+      const normalized2 = this.normalizeOcrCharsAlt(candidate);
+
+      // Check each word in the candidate
+      const words = candidate.split(/\s+/);
+      const normalizedWords1 = normalized1.split(/\s+/);
+      const normalizedWords2 = normalized2.split(/\s+/);
+
+      let matchCount = 0;
+      let totalWords = words.length;
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const norm1 = normalizedWords1[i]?.toLowerCase() || "";
+        const norm2 = normalizedWords2[i]?.toLowerCase() || "";
+
+        // Skip very short words
+        if (word.length < 2) continue;
+
+        // Check if normalized version is a known name
+        const isFirstName1 = NameDictionary.isFirstName(norm1);
+        const isFirstName2 = NameDictionary.isFirstName(norm2);
+        const isSurname1 = NameDictionary.isSurname(norm1);
+        const isSurname2 = NameDictionary.isSurname(norm2);
+
+        if (isFirstName1 || isFirstName2 || isSurname1 || isSurname2) {
+          matchCount++;
+        }
+      }
+
+      // Require at least one word to match a known name after normalization
+      if (matchCount === 0) continue;
+
+      // Calculate confidence based on match ratio
+      const confidence = matchCount === totalWords ? 0.92 : 0.82;
+
+      // Skip whitelisted terms
+      if (this.isWhitelisted(candidate, text)) continue;
+      if (this.isWhitelisted(normalized1, text)) continue;
+      if (this.isWhitelisted(normalized2, text)) continue;
+
+      const span = new Span({
+        text: candidate,
+        originalValue: candidate,
+        characterStart: start,
+        characterEnd: end,
+        filterType: FilterType.NAME,
+        confidence: confidence,
+        priority: this.getPriority(),
+        context: this.getContext(text, start, candidate.length),
+        window: [],
+        replacement: null,
+        salt: null,
+        pattern: "OCR-corrupted name",
+        applied: false,
+        ignored: false,
+        ambiguousWith: [],
+        disambiguationScore: null,
+      });
+      spans.push(span);
+    }
   }
 }

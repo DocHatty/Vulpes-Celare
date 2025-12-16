@@ -141,8 +141,18 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
     /**
      * Comprehensive OCR character normalization for name detection
      * Based on research: common OCR confusions from scanning medical documents
+     *
+     * NOTE: Some digits map to multiple possible letters. We use the most common:
+     * - 4 → a (but could also be e in some fonts)
+     * - 1 → l (but could also be i)
      */
     private normalizeOcrChars;
+    /**
+     * Alternative OCR normalization treating 4 as 'e' instead of 'a'
+     * Some OCR engines confuse 4 with e (especially in fonts where e has a horizontal bar)
+     * Examples: "Charl4s" → "Charles", "H4nry" → "Henry"
+     */
+    private normalizeOcrCharsAlt;
     /**
      * Quick heuristic to check if a string is likely a person name
      */
@@ -252,5 +262,23 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
      * Check if a span overlaps with existing spans
      */
     private overlapsExisting;
+    /**
+     * Pattern 17: OCR-Corrupted Names with Digits/Symbols in Middle
+     *
+     * Catches names where OCR has substituted digits or symbols for letters:
+     * - "Charl4s" → "Charles" (4 for e)
+     * - "Muel1er" → "Mueller" (1 for l)
+     * - "M@ria" → "Maria" (@ for a)
+     * - "Jennif3r" → "Jennifer" (3 for e)
+     * - "Hernandcz" → "Hernandez" (c for e - letter confusion)
+     * - "Y0ussef" → "Youssef" (0 for o)
+     *
+     * Strategy:
+     * 1. Find words that look like names but have OCR corruption (digit/symbol inside)
+     * 2. Normalize using both OCR mappings (4→a and 4→e variants)
+     * 3. Check if normalized version matches a known name
+     * 4. If match, capture the original corrupted version
+     */
+    private detectOcrCorruptedNames;
 }
 //# sourceMappingURL=SmartNameFilterSpan.d.ts.map

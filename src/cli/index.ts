@@ -395,6 +395,53 @@ program
   });
 
 // ============================================================================
+// DEEP-ANALYZE COMMAND - Deep Analysis with Self-Correction (500+ docs)
+// ============================================================================
+program
+  .command("deep-analyze")
+  .alias("da")
+  .description(
+    "Deep analysis with Opus 4.5/Codex 5.2 High Max after 500+ documents tested",
+  )
+  .option("--threshold <n>", "Minimum documents for analysis", "500")
+  .option("--force", "Force analysis even below threshold")
+  .option("--deep", "Enable extended thinking analysis")
+  .option("--enhanced", "Enhanced confidence mode (1000+ docs)")
+  .option("--production", "Production-grade analysis (2000+ docs)")
+  .option("--self-correct", "Enable automatic self-correction", true)
+  .option("--no-self-correct", "Disable automatic self-correction")
+  .option("--checkpoints", "Enable checkpoint system", true)
+  .option("--no-checkpoints", "Disable checkpoints")
+  .option("--report", "Generate detailed report only")
+  .option("--json", "Output as JSON")
+  .option("-v, --verbose", "Verbose output")
+  .action(async (options) => {
+    await CLI.deepAnalyze(options);
+  });
+
+// ============================================================================
+// TEST COMMAND - Run test suite with self-correction
+// ============================================================================
+program
+  .command("test")
+  .description("Run PHI detection test suite with optional self-correction")
+  .option("--count <n>", "Number of documents to test", "200")
+  .option(
+    "--profile <profile>",
+    "Grading profile: HIPAA_STRICT, DEVELOPMENT",
+    "HIPAA_STRICT",
+  )
+  .option("--self-correct", "Enable automatic self-correction on errors")
+  .option("--checkpoints", "Enable progress checkpoints")
+  .option("--quick", "Quick test (50 documents)")
+  .option("--thorough", "Thorough test (500 documents)")
+  .option("--log-file", "Write detailed log to file")
+  .option("-v, --verbose", "Verbose output")
+  .action(async (options) => {
+    await CLI.runTests(options);
+  });
+
+// ============================================================================
 // DEFAULT BEHAVIOR - Show help or run interactive
 // ============================================================================
 program.action(async () => {

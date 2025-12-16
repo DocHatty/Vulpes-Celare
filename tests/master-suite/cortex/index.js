@@ -712,6 +712,21 @@ if (require.main === module) {
 }
 
 // ============================================================================
+// ANALYSIS MODULES (Deep Analysis, Self-Correction, Checkpoints)
+// ============================================================================
+
+let DeepAnalysisEngine, CheckpointSystem, SelfCorrectionOrchestrator;
+try {
+  const analysis = require("./analysis");
+  DeepAnalysisEngine = analysis.DeepAnalysisEngine;
+  CheckpointSystem = analysis.CheckpointSystem;
+  SelfCorrectionOrchestrator = analysis.SelfCorrectionOrchestrator;
+} catch (e) {
+  // Analysis modules not yet built - that's okay
+  console.warn("[Vulpes Cortex] Analysis modules not available:", e.message);
+}
+
+// ============================================================================
 // EXPORTS
 // ============================================================================
 
@@ -738,3 +753,9 @@ module.exports.DecisionEngine = DecisionEngine;
 module.exports.HistoryConsultant = HistoryConsultant;
 module.exports.RecommendationBuilder = RecommendationBuilder;
 module.exports.CodebaseStateTracker = CodebaseStateTracker;
+
+// Export analysis modules (Deep Analysis, Self-Correction, Checkpoints)
+if (DeepAnalysisEngine) module.exports.DeepAnalysisEngine = DeepAnalysisEngine;
+if (CheckpointSystem) module.exports.CheckpointSystem = CheckpointSystem;
+if (SelfCorrectionOrchestrator)
+  module.exports.SelfCorrectionOrchestrator = SelfCorrectionOrchestrator;

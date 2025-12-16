@@ -69,6 +69,18 @@ export class SSNFilterSpan extends SpanBasedFilter {
     /\b[0-9BOSZIlGgqQ|o]{8,9}\b/g,
     // SSN format with OCR in last segment: "232-292-339" (extra digit from OCR)
     /\b\d{3}-\d{3}-\d{3}\b/g,
+
+    // ===== ADDITIONAL MASKED SSN PATTERNS =====
+    // "****-*-9139" - 4 asterisks, 1 asterisk, then 4 digits
+    /[\*Xx]{4}-[\*Xx]-\d{4}\b/g,
+    // "XX-XX X-3317" - space in middle of mask group
+    /[\*Xx]{2}-[\*Xx]{2}\s*[\*Xx]-\d{4}\b/g,
+    // Mixed case masks with OCR: "xXX-sx-4S25" - lowercase x and s
+    /[xX\*]{3}-[sxSX\*]{2}-[0-9SsOo]{4}\b/gi,
+    // Space-separated 8-9 digits: "35 84 5066"
+    /\b\d{2}\s+\d{2}\s+\d{4}\b/g,
+    // More permissive masked patterns with any combination
+    /[\*xX]{2,5}[-\s]*[\*xX]{1,3}[-\s]*\d{4}\b/gi,
   ]);
 
   getType(): string {

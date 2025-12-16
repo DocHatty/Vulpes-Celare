@@ -825,11 +825,71 @@
       "timestamp": "2025-12-16T10:47:07.777Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899299396",
+      "timestamp": "2025-12-16T15:34:59.396Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899481088",
+      "timestamp": "2025-12-16T15:38:01.088Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899535798",
+      "timestamp": "2025-12-16T15:38:55.798Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899588125",
+      "timestamp": "2025-12-16T15:39:48.125Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899642352",
+      "timestamp": "2025-12-16T15:40:42.352Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899712664",
+      "timestamp": "2025-12-16T15:41:52.664Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899767217",
+      "timestamp": "2025-12-16T15:42:47.217Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765901372470",
+      "timestamp": "2025-12-16T16:09:32.470Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765902402893",
+      "timestamp": "2025-12-16T16:26:42.893Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765902516342",
+      "timestamp": "2025-12-16T16:28:36.342Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 138,
+    "total": 148,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 137
+    "noHistoryFound": 147
   }
 }

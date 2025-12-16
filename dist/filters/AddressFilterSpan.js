@@ -48,6 +48,39 @@ class AddressFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         "path",
         "alley",
         "plaza",
+        // Additional US suffixes
+        "pass",
+        "crossing",
+        "xing",
+        "heights",
+        "hts",
+        "commons",
+        "meadows",
+        "point",
+        "pt",
+        "pointe",
+        "loop",
+        "run",
+        "ridge",
+        "bend",
+        "cove",
+        "landing",
+        "village",
+        "vlg",
+        "hill",
+        "hills",
+        "hollow",
+        "estates",
+        "est",
+        "springs",
+        "fork",
+        "forks",
+        "creek",
+        "view",
+        "views",
+        "park",
+        "center",
+        "centre",
         // UK additions
         "close",
         "crescent",
@@ -345,7 +378,90 @@ class AddressFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         this.detectContextualCities(text, spans);
         // Detect city names after facility names (e.g., "Sunrise Senior Living, Arvada")
         this.detectFacilityCities(text, spans);
+        // Detect case-insensitive/OCR-corrupted addresses
+        this.detectCaseInsensitiveAddresses(text, spans);
         return spans;
+    }
+    /**
+     * Detect addresses with lowercase, mixed case, or OCR corruption
+     * Examples: "8007 marketneadows", "1493 front crossing, bldg 372", "7416 ceNTER OpiNT"
+     */
+    detectCaseInsensitiveAddresses(text, spans) {
+        const suffixPattern = AddressFilterSpan.STREET_SUFFIXES.join("|");
+        // Case-insensitive street address pattern
+        // Matches: "8007 market meadows", "1493 front crossing", "760 poplar pass"
+        const pattern = new RegExp(`\\b(\\d+[A-Za-z]?)\\s+([A-Za-z][A-Za-z']+(?:\\s+[A-Za-z][A-Za-z']+)*)\\s+(${suffixPattern})(?:\\s*,?\\s*(?:apt|suite|unit|#|ste|bldg|building|floor|fl)?\\s*[A-Za-z0-9]+)?\\b`, "gi");
+        let match;
+        while ((match = pattern.exec(text)) !== null) {
+            const fullMatch = match[0];
+            const streetNumber = match[1];
+            const streetName = match[2];
+            const suffix = match[3];
+            // Skip if already detected (check for overlap)
+            const start = match.index;
+            const end = start + fullMatch.length;
+            const alreadyDetected = spans.some((s) => (start >= s.characterStart && start < s.characterEnd) ||
+                (end > s.characterStart && end <= s.characterEnd));
+            if (alreadyDetected)
+                continue;
+            // Validate: street number should be numeric (with optional letter suffix)
+            if (!/^\d+[A-Za-z]?$/.test(streetNumber))
+                continue;
+            // Skip very short street names (likely false positives)
+            if (streetName.length < 3)
+                continue;
+            const span = new Span_1.Span({
+                text: fullMatch,
+                originalValue: fullMatch,
+                characterStart: start,
+                characterEnd: end,
+                filterType: Span_1.FilterType.ADDRESS,
+                confidence: 0.8, // Slightly lower confidence for case-insensitive matches
+                priority: this.getPriority(),
+                context: this.extractContext(text, start, end),
+                window: [],
+                replacement: null,
+                salt: null,
+                pattern: "Case-insensitive address",
+                applied: false,
+                ignored: false,
+                ambiguousWith: [],
+                disambiguationScore: null,
+            });
+            spans.push(span);
+        }
+        // OCR-corrupted addresses (letters for digits): "l9S4 First Street"
+        // Pattern: OCR-like number + street name + suffix
+        const ocrPattern = new RegExp(`\\b([lIO0-9][lIO0-9SsBb]{2,4})\\s+([A-Za-z][A-Za-z']+(?:\\s+[A-Za-z][A-Za-z']+)*)\\s+(${suffixPattern})\\b`, "gi");
+        while ((match = ocrPattern.exec(text)) !== null) {
+            const fullMatch = match[0];
+            const start = match.index;
+            const end = start + fullMatch.length;
+            // Skip if already detected
+            const alreadyDetected = spans.some((s) => (start >= s.characterStart && start < s.characterEnd) ||
+                (end > s.characterStart && end <= s.characterEnd));
+            if (alreadyDetected)
+                continue;
+            const span = new Span_1.Span({
+                text: fullMatch,
+                originalValue: fullMatch,
+                characterStart: start,
+                characterEnd: end,
+                filterType: Span_1.FilterType.ADDRESS,
+                confidence: 0.75,
+                priority: this.getPriority(),
+                context: this.extractContext(text, start, end),
+                window: [],
+                replacement: null,
+                salt: null,
+                pattern: "OCR-corrupted address",
+                applied: false,
+                ignored: false,
+                ambiguousWith: [],
+                disambiguationScore: null,
+            });
+            spans.push(span);
+        }
     }
     /**
      * Detect highway and road references

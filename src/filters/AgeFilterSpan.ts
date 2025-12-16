@@ -44,6 +44,9 @@ export class AgeFilterSpan extends SpanBasedFilter {
     // Pattern 5: Contextual age mentions (e.g., "the 93-year-old patient")
     this.detectContextualAges(text, spans);
 
+    // Pattern 6: Standalone 90+ numbers with nearby age context
+    this.detectStandaloneAgesWithContext(text, spans);
+
     return spans;
   }
 
@@ -420,5 +423,93 @@ export class AgeFilterSpan extends SpanBasedFilter {
     ];
 
     return ageContextTerms.some((term) => surroundingText.includes(term));
+  }
+
+  /**
+   * Pattern 6: Standalone 90+ numbers with age context nearby
+   * Catches standalone ages like "90", "91", "97" when they appear
+   * in medical documents with age-related context (Age:, years, patient, etc.)
+   */
+  private detectStandaloneAgesWithContext(text: string, spans: Span[]): void {
+    // Pattern for standalone 2-3 digit numbers that could be ages 90+
+    const pattern = /\b(9\d|1[0-2]\d)\b/g;
+
+    pattern.lastIndex = 0;
+    let match;
+
+    // Track already detected positions to avoid duplicates
+    const detectedPositions = new Set(
+      spans.map((s) => `${s.characterStart}-${s.characterEnd}`),
+    );
+
+    while ((match = pattern.exec(text)) !== null) {
+      const ageStr = match[1];
+      const age = parseInt(ageStr, 10);
+
+      // Must be 90 or above, but cap at reasonable human age (125)
+      if (age < 90 || age > 125) continue;
+
+      const posKey = `${match.index}-${match.index + ageStr.length}`;
+      if (detectedPositions.has(posKey)) continue;
+
+      // Check for strong age context nearby
+      if (this.hasStrongAgeContext(text, match.index, ageStr.length)) {
+        const span = new Span({
+          text: ageStr,
+          originalValue: ageStr,
+          characterStart: match.index,
+          characterEnd: match.index + ageStr.length,
+          filterType: FilterType.AGE,
+          confidence: 0.85, // Slightly lower confidence for standalone numbers
+          priority: this.getPriority(),
+          context: this.extractContext(
+            text,
+            match.index,
+            match.index + ageStr.length,
+          ),
+          window: [],
+          replacement: "90+",
+          salt: null,
+          pattern: "Standalone age 90+ with context",
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+        spans.push(span);
+        detectedPositions.add(posKey);
+      }
+    }
+  }
+
+  /**
+   * Check for strong age-related context that makes a standalone number likely an age
+   */
+  private hasStrongAgeContext(
+    text: string,
+    matchIndex: number,
+    matchLength: number,
+  ): boolean {
+    const contextWindow = 30;
+    const start = Math.max(0, matchIndex - contextWindow);
+    const end = Math.min(text.length, matchIndex + matchLength + contextWindow);
+    const surroundingText = text.substring(start, end).toLowerCase();
+
+    // Strong context indicators that this number is an age
+    const strongContextPatterns = [
+      /\bage\s*[:=-]?\s*$/i, // "Age: " before
+      /\baged?\s*$/i, // "aged " or "age " before
+      /\byears?\s+old/i, // "years old" after
+      /\by\.?o\.?\b/i, // "y/o" or "yo" nearby
+      /\bpatient.*\bage\b/i, // "patient" and "age" nearby
+      /\b(male|female|man|woman)\s*,?\s*$/i, // gender before age
+      /^\s*(male|female|man|woman)\b/i, // gender after age
+      /\belderly\b/i, // elderly context
+      /\bgeriatric\b/i, // geriatric context
+    ];
+
+    return strongContextPatterns.some((pattern) =>
+      pattern.test(surroundingText),
+    );
   }
 }

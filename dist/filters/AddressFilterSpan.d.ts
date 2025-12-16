@@ -49,6 +49,11 @@ export declare class AddressFilterSpan extends SpanBasedFilter {
     getPriority(): number;
     detect(text: string, config: any, context: RedactionContext): Span[];
     /**
+     * Detect addresses with lowercase, mixed case, or OCR corruption
+     * Examples: "8007 marketneadows", "1493 front crossing, bldg 372", "7416 ceNTER OpiNT"
+     */
+    private detectCaseInsensitiveAddresses;
+    /**
      * Detect highway and road references
      */
     private detectHighways;

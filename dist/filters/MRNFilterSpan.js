@@ -91,6 +91,37 @@ class MRNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             regex: /\b((?:MRN|MED|REC|PAT|PT|ID|ACC)[:]{1,2}\s*\d{5,14})\b/gi,
             description: "Double colon MRN",
         },
+        {
+            // Pattern 14: OCR-corrupted prefixes (JED→MED, MDE→MED, MEO→MED, M0E→MED)
+            // Matches: "JED: 6164296", "MDE 7825498", "meo: 241767q", "M0E: 736B399"
+            regex: /\b((?:JED|MDE|MEO|M0E|MFD|NED|MEP|MRE|MR0|MKN)[:\s]+[A-Z0-9]{5,14})\b/gi,
+            description: "OCR-corrupted MRN prefix",
+        },
+        {
+            // Pattern 15: Numbers with spaces or pipes (OCR artifacts)
+            // Matches: "id:2 656000", "464 3791", "834|971"
+            // Context: must be near MRN-like labels
+            regex: /\b((?:MRN|MED|REC|PAT|PT|ID|ACC)[:\s]*\d{1,3}[\s|]+\d{3,10})\b/gi,
+            description: "MRN with space/pipe in digits",
+        },
+        {
+            // Pattern 16: Standalone number with pipe (OCR for digit)
+            // Matches: "834|971" when preceded by MRN context
+            regex: /(?:MRN|MED|Record|Patient|ID|#)[:\s#]*(\d{2,6}[|]\d{2,6})\b/gi,
+            description: "MRN with pipe character",
+        },
+        {
+            // Pattern 17: RFC prefix (Reference/Record File Code)
+            // Matches: "RFC 3083333"
+            regex: /\b(RFC[:\s]+\d{5,14})\b/gi,
+            description: "RFC record number",
+        },
+        {
+            // Pattern 18: PT: prefix with colon (ensure capture)
+            // Matches: "PT: 5538852"
+            regex: /\b(PT[:\s]+\d{5,14})\b/gi,
+            description: "PT prefix MRN",
+        },
     ];
     /**
      * PERFORMANCE OPTIMIZATION: Pre-compiled patterns (compiled once at class load)

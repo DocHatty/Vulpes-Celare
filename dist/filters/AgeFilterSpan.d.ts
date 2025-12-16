@@ -51,5 +51,15 @@ export declare class AgeFilterSpan extends SpanBasedFilter {
      * Check if there's age-related context nearby
      */
     private hasAgeContext;
+    /**
+     * Pattern 6: Standalone 90+ numbers with age context nearby
+     * Catches standalone ages like "90", "91", "97" when they appear
+     * in medical documents with age-related context (Age:, years, patient, etc.)
+     */
+    private detectStandaloneAgesWithContext;
+    /**
+     * Check for strong age-related context that makes a standalone number likely an age
+     */
+    private hasStrongAgeContext;
 }
 //# sourceMappingURL=AgeFilterSpan.d.ts.map

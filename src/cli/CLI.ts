@@ -1372,4 +1372,249 @@ export class CLI {
       middle: "│",
     };
   }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // DEEP ANALYSIS COMMAND
+  // ══════════════════════════════════════════════════════════════════════════
+
+  static async deepAnalyze(options: {
+    threshold?: string;
+    force?: boolean;
+    deep?: boolean;
+    enhanced?: boolean;
+    production?: boolean;
+    selfCorrect?: boolean;
+    checkpoints?: boolean;
+    report?: boolean;
+    json?: boolean;
+    verbose?: boolean;
+  }): Promise<void> {
+    if (!options.json) {
+      this.printBanner();
+      console.log(theme.bold("\n  DEEP ANALYSIS ENGINE\n"));
+      console.log(
+        theme.muted("  Opus 4.5 Extended Thinking + Codex 5.2 High Max\n"),
+      );
+    }
+
+    try {
+      // Dynamic require of the deep analysis engine (JS module)
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
+      const { DeepAnalysisEngine } =
+        require("../../tests/master-suite/cortex/analysis/deep-analysis-engine.js") as {
+          DeepAnalysisEngine: any;
+        };
+
+      const engine = new DeepAnalysisEngine({
+        selfCorrection: { enabled: options.selfCorrect !== false },
+        checkpoints: { enabled: options.checkpoints !== false },
+      });
+
+      // Check threshold first
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const threshold: any = await engine.checkThreshold();
+
+      if (!options.json) {
+        console.log(
+          theme.info(`  Documents analyzed: ${threshold.documentCount}`),
+        );
+        console.log(
+          theme.info(
+            `  Confidence level: ${threshold.confidenceLevel?.confidence}`,
+          ),
+        );
+        console.log(
+          theme.info(`  CI width: ${threshold.confidenceLevel?.ciWidth}\n`),
+        );
+      }
+
+      if (!threshold.meetsMinimum && !options.force) {
+        if (options.json) {
+          console.log(
+            JSON.stringify(
+              {
+                success: false,
+                error: "THRESHOLD_NOT_MET",
+                ...threshold,
+              },
+              null,
+              2,
+            ),
+          );
+        } else {
+          this.warn(threshold.recommendedAction?.message);
+          console.log(
+            theme.muted(`\n  Run: ${threshold.recommendedAction?.command}\n`),
+          );
+          console.log(theme.muted("  Or use --force to run analysis anyway\n"));
+        }
+        return;
+      }
+
+      // Run deep analysis
+      this.startSpinner("Running deep analysis...");
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const analysis: any = await engine.runDeepAnalysis({
+        force: options.force,
+        enhanced: options.enhanced,
+        production: options.production,
+      });
+
+      this.succeedSpinner("Deep analysis complete");
+
+      if (options.json) {
+        console.log(JSON.stringify(analysis, null, 2));
+      } else {
+        // Print report
+        console.log(engine.generateReport(analysis));
+
+        // Show top recommendations
+        const recs = analysis.phases?.deepResearch?.recommendations || [];
+        if (recs.length > 0) {
+          console.log(theme.bold("\n  TOP RECOMMENDATIONS:\n"));
+          for (let i = 0; i < Math.min(3, recs.length); i++) {
+            const rec = recs[i];
+            console.log(
+              theme.warning(`  ${i + 1}. [${rec.priority}] ${rec.action}`),
+            );
+            console.log(
+              theme.muted(`     Files: ${(rec.files || []).join(", ")}`),
+            );
+            console.log(
+              theme.muted(
+                `     Expected: ${rec.expectedImprovement || "Unknown"}\n`,
+              ),
+            );
+          }
+        }
+
+        // Show next steps
+        console.log(theme.bold("\n  NEXT STEPS:\n"));
+        console.log(theme.muted("  1. Review the recommendations above"));
+        console.log(theme.muted("  2. Apply fixes one at a time"));
+        console.log(theme.muted("  3. Run: npm test -- --log-file"));
+        console.log(theme.muted("  4. Compare metrics before/after\n"));
+      }
+    } catch (error) {
+      this.failSpinner("Deep analysis failed");
+      if (options.json) {
+        console.log(
+          JSON.stringify(
+            {
+              success: false,
+              error: (error as Error).message,
+            },
+            null,
+            2,
+          ),
+        );
+      } else {
+        this.error((error as Error).message);
+      }
+      process.exit(1);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // TEST COMMAND WITH SELF-CORRECTION
+  // ══════════════════════════════════════════════════════════════════════════
+
+  static async runTests(options: {
+    count?: string;
+    profile?: string;
+    selfCorrect?: boolean;
+    checkpoints?: boolean;
+    quick?: boolean;
+    thorough?: boolean;
+    logFile?: boolean;
+    verbose?: boolean;
+  }): Promise<void> {
+    this.printBanner();
+    console.log(theme.bold("\n  PHI DETECTION TEST SUITE\n"));
+
+    // Determine document count
+    let count = parseInt(options.count || "200");
+    if (options.quick) count = 50;
+    if (options.thorough) count = 500;
+
+    const profile = options.profile || "HIPAA_STRICT";
+
+    console.log(theme.info(`  Documents: ${count}`));
+    console.log(theme.info(`  Profile: ${profile}`));
+    console.log(
+      theme.info(
+        `  Self-correction: ${options.selfCorrect ? "enabled" : "disabled"}`,
+      ),
+    );
+    console.log(
+      theme.info(
+        `  Checkpoints: ${options.checkpoints ? "enabled" : "disabled"}\n`,
+      ),
+    );
+
+    try {
+      if (options.selfCorrect) {
+        // Use self-correction orchestrator
+        // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
+        const { SelfCorrectionOrchestrator } =
+          require("../../tests/master-suite/cortex/analysis/self-correction-orchestrator.js") as {
+            SelfCorrectionOrchestrator: any;
+          };
+
+        const orchestrator = new SelfCorrectionOrchestrator();
+
+        this.startSpinner("Running tests with self-correction...");
+
+        const result = await orchestrator.runWithSelfCorrection(async () => {
+          // Run the actual test suite
+          const { execSync } = await import("child_process");
+          const args = [
+            `--count=${count}`,
+            `--profile=${profile}`,
+            options.logFile ? "--log-file" : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          execSync(`node tests/master-suite/run.js ${args}`, {
+            cwd: process.cwd(),
+            stdio: "inherit",
+          });
+
+          return { success: true };
+        });
+
+        this.stopSpinner();
+
+        console.log(orchestrator.generateReport());
+
+        if (!result.success) {
+          console.log(
+            theme.error(`\n  Tests failed after ${result.attempts} attempts\n`),
+          );
+          process.exit(1);
+        }
+      } else {
+        // Run tests directly
+        const { execSync } = await import("child_process");
+        const args = [
+          `--count=${count}`,
+          `--profile=${profile}`,
+          options.logFile ? "--log-file" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        execSync(`node tests/master-suite/run.js ${args}`, {
+          cwd: process.cwd(),
+          stdio: "inherit",
+        });
+      }
+    } catch (error) {
+      this.stopSpinner();
+      this.error((error as Error).message);
+      process.exit(1);
+    }
+  }
 }

@@ -70,6 +70,8 @@ export declare class DateFilterSpan extends SpanBasedFilter {
      * - Misplaced spaces: "9//2 2/54" → "9/22/54", "2023- 0-08" → "2023-10-08"
      * - Leading/trailing spaces around separators: "05/14 //2024" → "05/14/2024"
      * - Space-corrupted digit sequences: "05/1 7/73" → "05/17/73"
+     * - Pipe characters: "12-|7-2024" → "12-17-2024"
+     * - Mixed OCR errors: "05/S B/22" → "05/58/22"
      */
     private normalizeOCRStructure;
 }

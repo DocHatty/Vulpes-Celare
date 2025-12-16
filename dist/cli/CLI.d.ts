@@ -49,5 +49,27 @@ export declare class CLI {
     private static highlightRedactions;
     private static getPhiColor;
     private static getTableChars;
+    static deepAnalyze(options: {
+        threshold?: string;
+        force?: boolean;
+        deep?: boolean;
+        enhanced?: boolean;
+        production?: boolean;
+        selfCorrect?: boolean;
+        checkpoints?: boolean;
+        report?: boolean;
+        json?: boolean;
+        verbose?: boolean;
+    }): Promise<void>;
+    static runTests(options: {
+        count?: string;
+        profile?: string;
+        selfCorrect?: boolean;
+        checkpoints?: boolean;
+        quick?: boolean;
+        thorough?: boolean;
+        logFile?: boolean;
+        verbose?: boolean;
+    }): Promise<void>;
 }
 //# sourceMappingURL=CLI.d.ts.map

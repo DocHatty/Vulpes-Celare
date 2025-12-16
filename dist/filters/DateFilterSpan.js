@@ -155,10 +155,14 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // Born in 1985, admitted 2024, etc. - captured by context
         /\b(?:born|admitted|discharged|diagnosed|since|in|year)\s+(19|20)\d{2}\b/gi,
         // ===== EXTREME OCR ERROR PATTERNS =====
-        // Missing first digit: "/93/2021", "/15/1985"
-        /\/\d{1,2}\/(?:19|20)\d{2}\b/g,
-        // Missing first digit with short year: "/12/24"
+        // Missing first digit: "/93/2021", "/15/1985", "/1/50"
+        /\/\d{1,2}\/(?:19|20)?\d{2}\b/g,
+        // Missing first digit with short year: "/12/24", "/1/50"
         /\/\d{1,2}\/\d{2}\b/g,
+        // Short date with double slash: "4//23"
+        /\b\d{1,2}\/\/\d{2}\b/g,
+        // Month merged with year: "03/0224" should be "03/02/24"
+        /\b\d{1,2}[-/]\d{4}\b/g,
         // Missing middle component with double separators: "2//1970", "24//99"
         /\b\d{1,2}[-/]{2}\d{2,4}\b/g,
         // Space inside a date component from OCR: "01/2 2/24", "05/0 7/0"
@@ -342,14 +346,20 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * - Misplaced spaces: "9//2 2/54" → "9/22/54", "2023- 0-08" → "2023-10-08"
      * - Leading/trailing spaces around separators: "05/14 //2024" → "05/14/2024"
      * - Space-corrupted digit sequences: "05/1 7/73" → "05/17/73"
+     * - Pipe characters: "12-|7-2024" → "12-17-2024"
+     * - Mixed OCR errors: "05/S B/22" → "05/58/22"
      */
     normalizeOCRStructure(text) {
         let result = text;
+        // Step 0: Handle pipe character → 1 (common OCR error)
+        result = result.replace(/\|/g, "1");
         // Step 1: Character substitutions (OCR letter→digit)
         result = ValidationUtils_1.ValidationUtils.normalizeOCR(result);
-        // Step 2: Fix double separators: // → /, -- → -
+        // Step 2: Fix double separators: // → /, -- → -, - - → -
         result = result.replace(/[-]{2,}/g, "-");
         result = result.replace(/[/]{2,}/g, "/");
+        result = result.replace(/-\s+-/g, "-");
+        result = result.replace(/\/\s+\//g, "/");
         // Step 3: Remove spaces around date separators
         // "05/14 //2024" → "05/14/2024", "2023- 0-08" → "2023-0-08"
         result = result.replace(/\s*([/-])\s*/g, "$1");
@@ -362,11 +372,16 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         result = result.replace(/(\d{1,2}[-/]\d{1,2}[-/])(\d)\s+(\d{1,3})\b/g, "$1$2$3");
         // Step 6: Handle space in month portion: "0 5/17/73" → "05/17/73"
         result = result.replace(/\b(\d)\s+(\d)([-/]\d{1,2}[-/]\d{2,4})/g, "$1$2$3");
-        // Step 7: Handle ISO dates with spaces: "2023- 10-22" → "2023-10-22"
+        // Step 7: Handle ISO dates with spaces: "2023- 10-22" → "2023-10-22", "1985- 03-09" → "1985-03-09"
         // Already covered by step 3, but also handle "2023 -10-22"
         result = result.replace(/(\d{4})\s+([-/])(\d)/g, "$1$2$3");
         // Step 8: Handle multiple consecutive spaces that might remain
         result = result.replace(/\s{2,}/g, " ");
+        // Step 9: Handle day/month space corruption: "21/2 1/24" → "21/21/24"
+        result = result.replace(/(\d)([-/])(\d)\s+(\d)([-/])/g, "$1$2$3$4$5");
+        // Step 10: Handle corrupted short dates: "2/1342" might be "2/13/42"
+        // Insert separator if we see pattern like digit/4digits
+        result = result.replace(/(\d{1,2}[-/])(\d{2})(\d{2})\b/g, "$1$2/$3");
         return result;
     }
 }
