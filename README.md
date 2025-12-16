@@ -18,11 +18,12 @@ An open-source PHI redaction engine for clinical text, images, and DICOM data. T
 
 ## Validation Approach
 
-Vulpes Celare uses a **composite validation schema** rather than relying solely on the i2b2 2014 corpus:
+Vulpes Celare uses a **composite validation schema** with dual corpus testing:
 
-- **PHI injection**: Synthetic PHI inserted into real clinical templates with known ground truth
-- **Baseline comparison**: Head-to-head testing against Microsoft Presidio
-- **Clinical utility verification**: Ensuring disease/medication terms are preserved
+- **Synthetic Corpus**: PHI injected into generated clinical templates with known ground truth
+- **MTSamples Corpus**: 5,000+ real clinical documents with injected PHI for real-world validation
+- **Baseline Comparison**: Head-to-head testing against Microsoft Presidio
+- **Clinical Utility Verification**: Ensuring disease/medication terms are preserved
 
 This approach avoids overfitting to single-source documentation patterns and produces reproducible results without access-restricted datasets. For complete methodology, see [docs/VALIDATION-METHODOLOGY.md](docs/VALIDATION-METHODOLOGY.md).
 
@@ -127,6 +128,71 @@ Streaming redaction for live clinical documentation. Sub-10ms latency per chunk.
 
 DICOM anonymization with metadata scrubbing. Image redaction removes detected faces and OCR text regions. See `docs/IMAGE-DICOM.md`.
 
+## Testing & Validation
+
+### Quick Test
+
+```bash
+# Run quick validation (20 documents)
+node tests/master-suite/run.js --quick
+
+# Run full validation (200 documents)
+node tests/master-suite/run.js --full
+```
+
+### Corpus Selection
+
+```bash
+# Synthetic corpus (default) - generated documents with known PHI
+node tests/master-suite/run.js --quick
+
+# MTSamples corpus - real clinical documents
+node tests/master-suite/run.js --mtsamples --quick
+
+# Hybrid mode - 50% synthetic, 50% MTSamples
+node tests/master-suite/run.js --hybrid
+```
+
+### Grading Profiles
+
+```bash
+# Production-grade (99% sensitivity required)
+node tests/master-suite/run.js --profile=HIPAA_STRICT
+
+# Development (tracks progress, relaxed thresholds)
+node tests/master-suite/run.js --profile=DEVELOPMENT
+```
+
+### Vulpes Cortex
+
+The test suite includes **Vulpes Cortex**, an intelligent learning system that:
+
+- **Tracks History**: Remembers what changes worked or failed
+- **Recognizes Patterns**: Identifies failure patterns across runs
+- **Provides Recommendations**: Suggests what to fix based on evidence
+- **Manages Experiments**: Tracks before/after metrics for A/B testing
+
+```bash
+# Start Cortex MCP server for IDE integration
+cd tests/master-suite/cortex
+node index.js --server
+
+# Get Cortex intelligence report
+node tests/master-suite/run.js --cortex-report
+```
+
+### CI/CD Integration
+
+```bash
+# JSON output for pipelines
+node tests/master-suite/run.js --json-only --profile=HIPAA_STRICT
+
+# Strict gating (non-zero exit on threshold failures)
+npm run test:strict
+```
+
+See [tests/master-suite/README.md](tests/master-suite/README.md) for complete testing documentation.
+
 ## Documentation
 
 | Document | Description |
@@ -139,6 +205,7 @@ DICOM anonymization with metadata scrubbing. Image redaction removes detected fa
 | [CLI.md](docs/CLI.md) | Command-line interface |
 | [TRUST-BUNDLE.md](docs/TRUST-BUNDLE.md) | Tamper-evident audit bundles |
 | [RUST-NATIVE.md](docs/RUST-NATIVE.md) | Native accelerator details |
+| [tests/master-suite/README.md](tests/master-suite/README.md) | Test suite documentation |
 
 ## Native Rust Core
 

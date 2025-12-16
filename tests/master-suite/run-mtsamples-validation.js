@@ -21,6 +21,22 @@ const fs = require("fs");
 // Import corpus generator
 const { generateCorpus, quickGenerate, fullGenerate, loadCorpus } = require("./corpus/mtsamples-corpus-generator");
 
+// Try to load Vulpes Cortex for intelligence integration
+let VulpesCortex = null;
+try {
+  VulpesCortex = require("./cortex");
+} catch (e) {
+  // Cortex not available - will run without learning
+}
+
+// Try to load console formatter
+let fmt = null;
+try {
+  fmt = require("./cortex/core/console-formatter");
+} catch (e) {
+  // Formatter not available - will use plain output
+}
+
 // Import the Vulpes Celare engine
 let VulpesCelare, detectPHI, redactPHI;
 try {
@@ -387,6 +403,74 @@ async function runValidation(config = {}) {
   // Print summary
   printResultsSummary(results);
   
+  // =========================================================================
+  // CORTEX INTEGRATION - Feed results to learning system
+  // =========================================================================
+  let cortexAnalysis = null;
+  if (VulpesCortex && config.useCortex !== false) {
+    try {
+      console.log("[Cortex] Initializing intelligence system...");
+      await VulpesCortex.initialize();
+      
+      // Prepare false negatives/positives for analysis
+      const falseNegatives = metrics.detailedResults
+        .flatMap(d => d.fn > 0 ? [{ docId: d.docId, count: d.fn }] : []);
+      const falsePositives = metrics.detailedResults
+        .flatMap(d => d.fp > 0 ? [{ docId: d.docId, count: d.fp }] : []);
+      
+      // Analyze with Cortex
+      cortexAnalysis = await VulpesCortex.analyzeResults({
+        metrics: {
+          sensitivity: results.aggregate.recall * 100,
+          specificity: 100 - (results.aggregate.falsePositives / (results.aggregate.truePositives + results.aggregate.falsePositives) * 100),
+          precision: results.aggregate.precision * 100,
+          f1Score: results.aggregate.f1 * 100,
+          f2Score: results.aggregate.f2 * 100,
+          confusionMatrix: {
+            truePositives: results.aggregate.truePositives,
+            falsePositives: results.aggregate.falsePositives,
+            falseNegatives: results.aggregate.falseNegatives,
+            trueNegatives: 0, // Not tracked in this runner
+          }
+        },
+        falseNegatives,
+        falsePositives,
+        corpus: "mtsamples",
+      }, {
+        analyzePatterns: true,
+        generateInsights: true,
+        profile: config.profile || "HIPAA_STRICT",
+      });
+      
+      console.log("[Cortex] ✓ Analysis complete");
+      
+      // Get recommendation
+      const recommendation = await VulpesCortex.getRecommendation("WHAT_TO_IMPROVE", {
+        corpus: "mtsamples",
+        currentMetrics: results.aggregate,
+      });
+      
+      // Print Cortex summary
+      console.log();
+      console.log("CORTEX INTELLIGENCE SUMMARY");
+      console.log("─────────────────────────────────────────────────────────────────────────");
+      console.log(`  Grade: ${cortexAnalysis.grade?.grade || "N/A"}`);
+      if (recommendation?.recommendation?.summary) {
+        console.log(`  Recommendation: ${recommendation.recommendation.summary}`);
+      }
+      if (cortexAnalysis.patterns?.failurePatterns?.length > 0) {
+        console.log("  Top Patterns:");
+        for (const p of cortexAnalysis.patterns.failurePatterns.slice(0, 3)) {
+          console.log(`    • ${p.category}: ${p.remediation || "Review"}`);
+        }
+      }
+      console.log();
+      
+    } catch (e) {
+      console.warn(`[Cortex] Warning: ${e.message}`);
+    }
+  }
+  
   // Save detailed results if output directory specified
   if (outputDir) {
     saveResults(results, metrics.detailedResults, outputDir, corpus.meta);
@@ -396,6 +480,7 @@ async function runValidation(config = {}) {
     metrics: results,
     detailed: metrics.detailedResults,
     corpus: corpus.meta,
+    cortex: cortexAnalysis, // Include Cortex analysis if available
   };
 }
 
@@ -620,23 +705,31 @@ if (require.main === module) {
   
   if (args.includes("--help") || args.includes("-h")) {
     console.log(`
-Vulpes Celare Validation Runner
+Vulpes Celare Validation Runner (MTSamples)
 
 Usage:
   node run-mtsamples-validation.js [options]
 
 Options:
-  --quick          Run quick validation (50 documents)
-  --full           Run full validation (500 documents)
-  --corpus PATH    Use existing corpus JSON file
-  --output DIR     Save results to directory
-  --verbose        Show per-document progress
-  --help, -h       Show this help
+  --quick             Run quick validation (50 documents)
+  --full              Run full validation (500 documents)
+  --corpus PATH       Use existing corpus JSON file
+  --output DIR        Save results to directory
+  --verbose           Show per-document progress
+  --profile=NAME      Grading profile: HIPAA_STRICT, DEVELOPMENT, RESEARCH
+  --no-cortex         Disable Cortex intelligence integration
+  --help, -h          Show this help
+
+Cortex Integration:
+  By default, results are fed to Vulpes Cortex for pattern analysis,
+  history tracking, and intelligent recommendations. Use --no-cortex
+  to run in standalone mode.
 
 Examples:
   node run-mtsamples-validation.js --quick
   node run-mtsamples-validation.js --full --output ./results
   node run-mtsamples-validation.js --corpus ./my-corpus.json
+  node run-mtsamples-validation.js --quick --profile=HIPAA_STRICT
 `);
     process.exit(0);
   }
@@ -644,12 +737,19 @@ Examples:
   const config = {
     mode: "default",
     verbose: args.includes("--verbose") || args.includes("-v"),
+    useCortex: !args.includes("--no-cortex"), // Enable by default
   };
   
   if (args.includes("--quick")) {
     config.mode = "quick";
   } else if (args.includes("--full")) {
     config.mode = "full";
+  }
+  
+  // Profile selection
+  const profileArg = args.find(a => a.startsWith("--profile="));
+  if (profileArg) {
+    config.profile = profileArg.split("=")[1].toUpperCase();
   }
   
   const corpusIdx = args.indexOf("--corpus");

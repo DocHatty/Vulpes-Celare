@@ -77,6 +77,23 @@ const {
 } = require("./evolution/smart-grading");
 
 // ============================================================================
+// MTSAMPLES CORPUS (Real Clinical Documents)
+// ============================================================================
+let mtsamples = null;
+try {
+  mtsamples = {
+    loadMTSamples: require("./corpus/mtsamples-loader").loadMTSamples,
+    generateCorpus: require("./corpus/mtsamples-corpus-generator").generateCorpus,
+    quickGenerate: require("./corpus/mtsamples-corpus-generator").quickGenerate,
+    fullGenerate: require("./corpus/mtsamples-corpus-generator").fullGenerate,
+    injectPHI: require("./corpus/mtsamples-injector").injectPHI,
+    runValidation: require("./run-mtsamples-validation").runValidation,
+  };
+} catch (e) {
+  // MTSamples not available
+}
+
+// ============================================================================
 // EXPORTS
 // ============================================================================
 module.exports = {
@@ -120,6 +137,9 @@ module.exports = {
     seedGlobal,
     resetGlobal,
   },
+
+  // MTSamples Corpus (real clinical documents)
+  mtsamples,
 
   // Convenience re-exports from phi generators
   ...phi,

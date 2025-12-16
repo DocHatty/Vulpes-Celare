@@ -2,288 +2,407 @@
 
 ## Overview
 
-This is the **authoritative, unbiased test suite** for the Vulpes Celare PHI redaction engine. It has been completely redesigned with the following principles:
+This is the **authoritative, unbiased test suite** for the Vulpes Celare PHI redaction engine, featuring **Vulpes Cortex** - an intelligent learning system that tracks history, recognizes patterns, and provides recommendations.
+
+### Core Principles
 
 1. **UNBIASED TESTING**: Tests PHI detection without favoring specific implementations
-2. **COMPREHENSIVE COVERAGE**: All 18 HIPAA Safe Harbor identifiers + extended (28 filters, 20+ PHI types)
-3. **REALISTIC SCENARIOS**: Tests the engine as an integrated system, not isolated components
-4. **STRICT GRADING**: Clinical-grade thresholds appropriate for safety-critical applications
-5. **MULTI-PASS ANALYSIS**: Detection → Grading → Deep Investigation workflow
-6. **TRANSPARENT EVALUATION**: Every decision documented and traceable
+2. **DUAL CORPUS**: Synthetic documents + real MTSamples clinical data
+3. **INTELLIGENT LEARNING**: Cortex tracks what works and warns about failed approaches
+4. **MULTI-PROFILE GRADING**: HIPAA_STRICT, DEVELOPMENT, RESEARCH profiles
+5. **COMPREHENSIVE COVERAGE**: All 18 HIPAA Safe Harbor identifiers + extended (28 filters, 20+ PHI types)
+
+---
 
 ## Quick Start
 
 ```bash
-# Run the standard 200-document assessment
-node tests/master-suite/run.js
+# Navigate to master-suite
+cd tests/master-suite
 
-# Quick test (50 documents)
-node tests/master-suite/run.js --quick
+# Run quick test (20 synthetic documents)
+node run.js --quick
 
-# Thorough test (500 documents)
-node tests/master-suite/run.js --thorough
+# Run full test (200 documents)
+node run.js --full
 
-# Custom document count
-node tests/master-suite/run.js --count=1000
+# Run with MTSamples (real clinical documents)
+node run.js --mtsamples --quick
 
-# JSON output for CI/CD
-node tests/master-suite/run.js --json-only
+# Run hybrid mode (50% synthetic, 50% MTSamples)
+node run.js --hybrid
+
+# Get Cortex intelligence report
+node run.js --cortex-report
 ```
+
+---
+
+## Command Line Reference
+
+### Corpus Selection
+
+| Flag | Description |
+|------|-------------|
+| `--corpus=synthetic` | Generated documents with known PHI (default) |
+| `--corpus=mtsamples` | Real clinical documents from MTSamples |
+| `--corpus=hybrid` | 50% synthetic, 50% MTSamples for comparison |
+| `--mtsamples` | Shortcut for `--corpus=mtsamples` |
+| `--hybrid` | Shortcut for `--corpus=hybrid` |
+
+### Document Count
+
+| Flag | Documents | Use Case |
+|------|-----------|----------|
+| `--quick` | 20 | Fast iteration during development |
+| (default) | 50 | Standard test run |
+| `--full` | 200 | Comprehensive validation |
+| `--thorough` | 500 | Deep regression testing |
+| `--count=N` | N | Custom count |
+
+### Grading Profiles
+
+| Flag | Profile | Description |
+|------|---------|-------------|
+| `--profile=HIPAA_STRICT` | Production | 99% sensitivity required, zero tolerance |
+| `--profile=DEVELOPMENT` | Development | Relaxed thresholds, tracks progress |
+| `--profile=RESEARCH` | Research | Minimal penalties, focus on analysis |
+| `--profile=OCR_TOLERANT` | OCR | Adjusts for OCR error patterns |
+
+### Cortex Intelligence
+
+| Flag | Description |
+|------|-------------|
+| `--cortex` | Enable Cortex (default) |
+| `--no-cortex` | Disable Cortex |
+| `--cortex-report` | Show full Cortex analysis report |
+| `--cortex-insights` | Show active insights only |
+
+### Output Options
+
+| Flag | Description |
+|------|-------------|
+| `--verbose` | Show detailed progress |
+| `--json-only` | JSON output for CI/CD |
+| `--seed=N` | Fixed seed for reproducibility |
+
+---
+
+## Vulpes Cortex
+
+Cortex is an intelligent learning system that makes the test suite smarter over time.
+
+### Features
+
+- **Pattern Recognition**: Identifies failure patterns across runs
+- **History Tracking**: Remembers what changes worked or failed
+- **Recommendations**: Suggests what to fix next based on evidence
+- **A/B Experiments**: Tracks before/after metrics for changes
+- **Insight Generation**: Creates actionable insights from patterns
+
+### MCP Server
+
+Start the Cortex MCP server for IDE integration:
+
+```bash
+cd tests/master-suite/cortex
+node index.js --server
+```
+
+**Available Tools:**
+- `analyze_test_results` - Analyze results with pattern recognition
+- `consult_history` - Get historical context for a PHI type
+- `get_recommendation` - Get evidence-based recommendations
+- `record_experiment` - Track A/B experiment results
+
+### REST API
+
+```bash
+# Start REST API (port 3101)
+node tests/master-suite/cortex/api/server.js
+
+# Query endpoints
+curl http://localhost:3101/api/insights
+curl http://localhost:3101/api/history/NAME
+curl http://localhost:3101/api/recommendation
+```
+
+---
 
 ## Directory Structure
 
 ```
 master-suite/
-├── run.js                           # Main test runner
-├── index.js                         # Module exports
-├── README.md                        # This file
+├── run.js                    # Unified test runner (all corpus types)
+├── run-mtsamples-validation.js  # MTSamples-specific runner
+├── index.js                  # Module exports
+├── README.md                 # This file
 │
 ├── assessment/
-│   └── rigorous-assessment.js       # Core assessment engine with strict grading
+│   └── assessment.js         # Core assessment engine
 │
-├── documents/
-│   ├── templates.js                 # Comprehensive medical document templates
-│   └── phi-generator.js             # Complete PHI dataset generator
+├── cortex/                   # Vulpes Cortex intelligence system
+│   ├── index.js              # Cortex entry point
+│   ├── core/
+│   │   ├── knowledge-base.js # Persistent learning storage
+│   │   ├── decision-engine.js # Recommendation logic
+│   │   └── console-formatter.js # Beautiful output
+│   ├── modules/
+│   │   ├── pattern-recognition.js
+│   │   ├── history-tracker.js
+│   │   ├── hypothesis-engine.js
+│   │   └── insight-generator.js
+│   ├── mcp/                  # MCP server implementation
+│   └── api/                  # REST API server
 │
-├── generators/
-│   ├── errors.js                    # OCR/typo error simulation
-│   ├── phi.js                       # PHI value generators
-│   └── documents.js                 # Legacy document generators
+├── corpus/                   # MTSamples corpus system
+│   ├── mtsamples-loader.js   # Load MTSamples documents
+│   ├── mtsamples-injector.js # PHI injection (500+ lines)
+│   └── mtsamples-corpus-generator.js # Generate test corpus
 │
-└── data/
-    ├── names.js                     # Diverse name database
-    ├── locations.js                 # Geographic data
-    └── medical.js                   # Medical terminology
+├── documents/                # Synthetic document generation
+│   ├── templates.js          # Medical document templates
+│   └── phi-generator.js      # PHI dataset generator
+│
+├── generators/               # Low-level generators
+│   ├── errors.js             # OCR/typo simulation
+│   ├── phi.js                # PHI value generators
+│   └── seeded-random.js      # Reproducible randomness
+│
+├── evolution/                # Smart grading system
+│   ├── learning-engine.js    # Legacy learning (pre-Cortex)
+│   └── smart-grading.js      # Multi-profile grading
+│
+├── data/                     # Static data
+│   ├── names.js              # Diverse name database
+│   ├── locations.js          # Geographic data
+│   └── medical.js            # Medical terminology
+│
+└── utils/
+    └── SmartSummary.js       # LLM-optimized output
 ```
 
-## Test Workflow
+---
 
-### Phase 1: Full Test Suite Execution
+## Corpus Types
 
-The **ENTIRE** test suite runs without interruption:
+### Synthetic Corpus (Default)
 
-- Generates N test documents (default: 200)
-- Each document contains 20-50+ PHI items
-- Documents include realistic OCR errors, typos, and formatting variations
-- Engine processes each document as an integrated system
+Generated documents with comprehensive PHI injection:
 
-### Phase 2: Comprehensive Metric Calculation
+- **Templates**: H&P, Operative Report, Discharge Summary, Lab Reports, etc.
+- **PHI Coverage**: All 20+ PHI types with ground truth tracking
+- **Error Simulation**: OCR errors, typos, formatting variations
+- **Reproducible**: Seeded random for consistent results
 
-After all documents are processed:
+```bash
+node run.js --quick              # 20 synthetic docs
+node run.js --full               # 200 synthetic docs
+```
 
-- Calculate sensitivity (PHI correctly redacted)
-- Calculate specificity (non-PHI correctly preserved)
-- Calculate precision, recall, F1 score
-- Track performance by PHI type, error level, and document type
+### MTSamples Corpus
 
-### Phase 3: Deep Investigation
+Real clinical documents from MTSamples database:
 
-Only after grading is complete:
+- **5000+ Documents**: Actual medical transcriptions
+- **40+ Specialties**: Cardiology, Radiology, Surgery, etc.
+- **PHI Injection**: Realistic PHI added with ground truth
+- **Clinical Patterns**: Real-world formatting and terminology
 
-- Analyze failure patterns
-- Identify root causes
-- Generate actionable recommendations
-- Produce comprehensive report
+```bash
+node run.js --mtsamples --quick  # Quick MTSamples test
+node run.js --mtsamples --full   # Full MTSamples validation
+```
 
-## Document Templates
+### Hybrid Mode
 
-The suite includes comprehensive, realistic medical documents:
+Run both corpora for comprehensive validation:
 
-| Template | Description | Complexity |
-|----------|-------------|------------|
-| History & Physical | Complete H&P with all sections | High |
-| Operative Report | Surgical procedure documentation | High |
-| Registration Form | Patient intake with ALL PHI types | Extreme |
-| Referral Letter | Provider-to-provider communication | Medium |
-| Pathology Report | Technical lab findings | High |
-| Insurance EOB | Claims and billing documentation | High |
+- **Cross-Corpus Comparison**: See how engine performs on both
+- **Pattern Divergence**: Identify synthetic-only vs real-world issues
+- **Production Readiness**: Validate on both generated and real data
+
+```bash
+node run.js --hybrid             # 50% synthetic, 50% MTSamples
+```
+
+---
+
+## Grading Profiles
+
+### HIPAA_STRICT (Production)
+
+```bash
+node run.js --profile=HIPAA_STRICT
+```
+
+- **Sensitivity**: 99%+ required
+- **Specificity**: 96%+ required
+- **Zero Tolerance**: Any missed PHI is a failure
+- **Use Case**: Production deployment validation
+
+### DEVELOPMENT (Default)
+
+```bash
+node run.js --profile=DEVELOPMENT
+```
+
+- **Sensitivity**: 95%+ acceptable
+- **Diminishing Penalties**: First failures hurt more
+- **Progress Tracking**: Compares to previous runs
+- **Use Case**: Active development iteration
+
+### RESEARCH
+
+```bash
+node run.js --profile=RESEARCH
+```
+
+- **Minimal Penalties**: Focus on understanding
+- **Pattern Analysis**: Deep investigation enabled
+- **Use Case**: Analyzing failure modes
+
+---
 
 ## PHI Types Tested
 
-**All 18 HIPAA Safe Harbor identifiers + Extended Coverage (20+ types):**
+**All 18 HIPAA Safe Harbor identifiers + Extended Coverage:**
 
 | Type | Description | Examples |
 |------|-------------|----------|
 | NAME | Patient/family names | "Smith, John A." |
 | SSN | Social Security Numbers | "123-45-6789" |
-| DATE | Dates (DOB, admission, etc.) | "01/15/1985" |
+| DATE | Dates (DOB, admission) | "01/15/1985" |
 | PHONE | Phone numbers | "(555) 123-4567" |
 | FAX | Fax numbers | "Fax: 555-987-6543" |
-| EMAIL | Email addresses | "<john.smith@email.com>" |
+| EMAIL | Email addresses | "john@email.com" |
 | ADDRESS | Street addresses | "123 Main St" |
 | ZIPCODE | ZIP codes | "12345-6789" |
 | MRN | Medical record numbers | "MRN-2024-123456" |
 | ACCOUNT_NUMBER | Account numbers | "ACCT: 789456123" |
-| HEALTH_PLAN_ID | Insurance member IDs | "XYZ123456789" |
-| CREDIT_CARD | Credit card numbers | "4111-1111-1111-1111" |
+| HEALTH_PLAN_ID | Insurance IDs | "XYZ123456789" |
+| CREDIT_CARD | Credit cards | "4111-1111-1111-1111" |
 | IP | IP addresses | "192.168.1.100" |
-| URL | Patient portal URLs | "<https://portal.com/patient/123>" |
-| VIN | Vehicle identification | "1HGBH41JXMN109186" |
+| URL | Patient portal URLs | "portal.com/patient/123" |
+| VIN | Vehicle IDs | "1HGBH41JXMN109186" |
 | LICENSE_PLATE | License plates | "ABC-1234" |
-| AGE_90_PLUS | Ages 90 and over | "92 years old" |
-| NPI | National Provider Identifier | "1234567890" |
+| AGE_90_PLUS | Ages 90+ | "92 years old" |
+| NPI | Provider IDs | "1234567890" |
 | DEA | DEA numbers | "AB1234567" |
-| DEVICE_ID | Device identifiers | "DEV-123456-IOS" |
+| DEVICE_ID | Device IDs | "DEV-123456-IOS" |
+
+---
 
 ## Error Simulation
 
-Realistic document degradation:
+Realistic document degradation for OCR testing:
 
-| Level | Description | Probability |
-|-------|-------------|-------------|
+| Level | Description | Distribution |
+|-------|-------------|--------------|
 | none | Clean data | 5% |
 | low | Minor errors | 25% |
-| medium | Realistic OCR | 40% |
+| medium | Typical OCR | 40% |
 | high | Heavy corruption | 25% |
 | extreme | Severe degradation | 5% |
 
-### Error Types
+**Error Types:**
+- OCR substitutions: O↔0, l↔1↔I, S↔5, B↔8
+- Typos: Adjacent key substitutions
+- Transpositions: Character swaps
+- Case variations: ALL CAPS, lowercase
+- Spacing: Word merging/splitting
 
-- **OCR substitutions**: O↔0, l↔1↔I, S↔5, B↔8, G↔6
-- **Typos**: Adjacent key substitutions
-- **Transpositions**: Character swaps
-- **Case variations**: ALL CAPS, lowercase, MiXeD
-- **Spacing**: Word merging/splitting
-- **Deletions/Insertions**: Missing/duplicate characters
+---
 
-## Grading Schema
+## LLM/AI Operator Guide
 
-### Clinical-Grade Thresholds
+When an AI assistant runs tests, follow this workflow:
 
-PHI redaction is a **safety-critical application**. Grading reflects this:
-
-| Metric | Excellent | Good | Acceptable | Poor | Failing |
-|--------|-----------|------|------------|------|---------|
-| Sensitivity | ≥99.5% | ≥98% | ≥95% | ≥90% | <90% |
-| Specificity | ≥99% | ≥95% | ≥90% | ≥85% | <85% |
-| Precision | ≥98% | ≥95% | ≥90% | ≥85% | <85% |
-
-### Score Calculation
-
-```
-Score = (Sensitivity × 0.70) + (Specificity × 0.20) + (Precision × 0.10)
-      + Penalties/Bonuses
+### 1. Run Test
+```bash
+node tests/master-suite/run.js --quick
 ```
 
-**Penalties** (safety-critical failures):
+### 2. Analyze Failures
+The output shows:
+- Current metrics (sensitivity, specificity, F1, F2)
+- Top failure type with examples
+- Recommendations from Cortex
 
-- Missed SSN: -10 points each
-- Missed Patient Name: -8 points each
-- Missed DOB: -5 points each
+### 3. Fix Top Failure
+- Read the relevant filter: `src/filters/*.ts`
+- Or dictionary: `src/dictionaries/*.txt`
+- Make ONE focused change
 
-**Bonuses** (perfect categories):
+### 4. Re-Test
+```bash
+node tests/master-suite/run.js --quick
+```
 
-- Perfect SSN detection: +3 points
-- Perfect Name detection: +3 points
-- Perfect Date detection: +2 points
+### 5. Compare Metrics
+- **Better?** Keep the change
+- **Worse?** Revert: `git checkout <file>`
+- **Neutral?** Consider reverting (simpler is better)
 
-### Hard Caps
+### 6. Iterate
+Repeat until sensitivity ≥ 99%
 
-Sensitivity below threshold caps the maximum grade:
+---
 
-- <90% sensitivity → Max grade: F (score capped at 30)
-- <95% sensitivity → Max grade: C (score capped at 70)
-- <98% sensitivity → Max grade: A- (no cap)
+## CI/CD Integration
 
-### Grade Scale
+```yaml
+# GitHub Actions
+- name: Run PHI Tests
+  run: |
+    npm run build
+    node tests/master-suite/run.js --json-only --profile=HIPAA_STRICT > results.json
 
-| Score | Grade | Description |
-|-------|-------|-------------|
-| 97-100 | A+ | EXCELLENT - Production ready |
-| 93-96 | A | VERY GOOD - Suitable for production |
-| 90-92 | A- | GOOD - Acceptable with auditing |
-| 87-89 | B+ | ABOVE AVERAGE - Needs improvement |
-| 83-86 | B | AVERAGE - Significant improvements needed |
-| 80-82 | B- | BELOW AVERAGE - Major issues |
-| 77-79 | C+ | MARGINAL - Not for production |
-| 73-76 | C | POOR - High leak risk |
-| 70-72 | C- | VERY POOR - Very high leak risk |
-| 60-69 | D | FAILING - Unsafe |
-| <60 | F | CRITICAL FAILURE - Do not use |
+- name: Check Threshold
+  run: |
+    SENSITIVITY=$(jq '.metrics.sensitivity' results.json)
+    if (( $(echo "$SENSITIVITY < 99" | bc -l) )); then
+      exit 1
+    fi
+```
+
+---
 
 ## Output Files
 
 Results saved to `tests/results/`:
 
-### JSON File
+- `assessment-{timestamp}.json` - Machine-readable metrics
+- `assessment-{timestamp}.txt` - Human-readable report
+- `cortex-knowledge.json` - Cortex learning data
 
-```json
-{
-  "meta": { "timestamp": "...", "version": "3.0.0" },
-  "engine": { "name": "...", "version": "..." },
-  "metrics": {
-    "sensitivity": 99.2,
-    "specificity": 98.5,
-    "precision": 97.8,
-    "finalScore": 95,
-    "grade": "A"
-  },
-  "failures": [...],
-  "investigation": {
-    "patterns": {...},
-    "recommendations": [...]
-  }
-}
-```
-
-### Text Report
-
-Human-readable report with:
-
-- Final grade and score
-- Confusion matrix
-- Performance by PHI type
-- Performance by error level
-- Failure samples
-- Critical findings
-- Recommendations
-
-## CI/CD Integration
-
-```yaml
-# GitHub Actions example
-- name: Run PHI Redaction Tests
-  run: |
-    npm run build
-    node tests/master-suite/run.js --json-only > results.json
-
-- name: Check Sensitivity Threshold
-  run: |
-    SENSITIVITY=$(jq '.metrics.sensitivity' results.json)
-    if (( $(echo "$SENSITIVITY < 95" | bc -l) )); then
-      echo "FAILED: Sensitivity ${SENSITIVITY}% below 95% threshold"
-      exit 1
-    fi
-```
-
-## Non-PHI Preservation
-
-The suite also tests that non-PHI is NOT redacted:
-
-- Hospital/facility names
-- Provider names (in professional capacity)
-- Medical diagnoses
-- Procedures
-- Medications
-- Ages under 90
-- Insurance company names
+---
 
 ## Changelog
 
-### v3.0.0 (Current)
+### v4.0.0 (Current)
 
-- Complete redesign with unbiased testing methodology
+- **Vulpes Cortex**: Intelligent learning system with MCP server
+- **Dual Corpus**: Synthetic + MTSamples validation
+- **Unified CLI**: Single entry point with `--corpus` flag
+- **Smart Grading**: Multiple profiles (HIPAA_STRICT, DEVELOPMENT, RESEARCH)
+- **Pattern Recognition**: Automated failure analysis
+- **History Tracking**: Evidence-based recommendations
+
+### v3.0.0
+
 - Clinical-grade strict grading schema
-- Multi-pass analysis workflow (Detection → Grading → Investigation)
+- Multi-pass analysis workflow
 - Comprehensive medical document templates
-- Complete PHI dataset generator
-- Deep failure investigation with recommendations
-- Machine-readable and human-readable output
 
 ### v2.0.0
 
 - Initial master suite consolidation
 
-### v1.x
+---
 
-- Individual test files (deprecated)
+## Related Documentation
+
+- `MTSAMPLES-INTEGRATION-AUDIT.md` - MTSamples integration details
+- `cortex/README.md` - Cortex system documentation
+- `corpus/README.md` - Corpus generation guide

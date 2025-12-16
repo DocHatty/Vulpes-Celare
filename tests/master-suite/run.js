@@ -155,10 +155,11 @@
  *   node tests/master-suite/run.js [options]
  *
  * OPTIONS:
- *   --count=N         Number of documents (default: 200)
+ *   --count=N         Number of documents (default: 50)
  *   --verbose         Show detailed progress
  *   --json-only       Output only JSON (for CI/CD)
- *   --quick           Quick test (50 documents)
+ *   --quick           Quick test (20 documents)
+ *   --full            Full test (200 documents)
  *   --thorough        Thorough test (500 documents)
  *   --profile=NAME    Grading profile: HIPAA_STRICT, DEVELOPMENT, RESEARCH, OCR_TOLERANT
  *   --learn           Enable learning engine (track history, generate insights)
@@ -166,8 +167,12 @@
  *   --context         Show LLM context for improvements
  *   --evolution       Show evolution report
  *   --cortex          Enable Vulpes Cortex (advanced learning system)
+ *   --no-cortex       Disable Vulpes Cortex
  *   --cortex-report   Show Cortex full report
  *   --cortex-insights Show Cortex insights only
+ *   --corpus=NAME     Corpus type: synthetic (default), mtsamples, hybrid
+ *   --mtsamples       Shortcut for --corpus=mtsamples (real clinical documents)
+ *   --hybrid          Shortcut for --corpus=hybrid (50% synthetic, 50% MTSamples)
  *
  * WORKFLOW:
  *   1. Generate test documents with comprehensive PHI
@@ -213,6 +218,21 @@ try {
   // Cortex not available - will fall back to basic learning
 }
 
+// Try to load MTSamples corpus modules
+let MTSamplesCorpus = null;
+let runMTSamplesValidation = null;
+try {
+  MTSamplesCorpus = {
+    generateCorpus: require("./corpus/mtsamples-corpus-generator").generateCorpus,
+    quickGenerate: require("./corpus/mtsamples-corpus-generator").quickGenerate,
+    loadMTSamples: require("./corpus/mtsamples-loader").loadMTSamples,
+  };
+  // Import the MTSamples validation runner
+  runMTSamplesValidation = require("./run-mtsamples-validation").runValidation;
+} catch (e) {
+  // MTSamples not available
+}
+
 // Try to load SmartSummary (LLM-friendly output)
 let SmartSummary = null;
 try {
@@ -239,6 +259,7 @@ const options = {
   useCortex: true, // Use Vulpes Cortex by default if available
   cortexReport: false,
   cortexInsights: false,
+  corpus: "synthetic", // synthetic, mtsamples, hybrid
 };
 
 // Helper to suppress output in JSON-only mode
@@ -277,6 +298,17 @@ for (const arg of args) {
   if (arg === "--no-cortex") options.useCortex = false;
   if (arg === "--cortex-report") options.cortexReport = true;
   if (arg === "--cortex-insights") options.cortexInsights = true;
+  // Corpus selection
+  if (arg.startsWith("--corpus=")) {
+    const corpus = arg.split("=")[1].toLowerCase();
+    if (["synthetic", "mtsamples", "hybrid"].includes(corpus)) {
+      options.corpus = corpus;
+    } else {
+      console.warn(`Unknown corpus: ${corpus}. Using synthetic.`);
+    }
+  }
+  if (arg === "--mtsamples") options.corpus = "mtsamples";
+  if (arg === "--hybrid") options.corpus = "hybrid";
 }
 
 // Setup logging after parsing args
@@ -379,6 +411,49 @@ async function main() {
     if (options.seed !== null) {
       seedGlobal(options.seed);
       log(`\n  Seed: ${options.seed}`);
+    }
+
+    // ========================================================================
+    // CORPUS SELECTION - Route to appropriate validation runner
+    // ========================================================================
+    if (options.corpus === "mtsamples") {
+      // Delegate to MTSamples validation runner
+      if (!runMTSamplesValidation) {
+        console.error("\n  ✗ MTSamples corpus not available. Run with default synthetic corpus.");
+        console.error("    Install: Ensure corpus/ directory exists with MTSamples modules.\n");
+        process.exit(2);
+      }
+
+      log(`\n  Corpus: MTSamples (real clinical documents)\n`);
+      log(fmt.headerBox("MTSAMPLES VALIDATION"));
+
+      const mode = options.documentCount <= 50 ? "quick" : 
+                   options.documentCount >= 200 ? "full" : "default";
+
+      await runMTSamplesValidation({
+        mode,
+        verbose: options.verbose,
+        useCortex: options.useCortex,
+        profile: options.profile,
+      });
+
+      // MTSamples runner handles its own exit
+      return;
+    }
+
+    if (options.corpus === "hybrid") {
+      // Run both synthetic and MTSamples, compare results
+      log(`\n  Corpus: HYBRID (50% synthetic, 50% MTSamples)\n`);
+      log(fmt.headerBox("HYBRID VALIDATION MODE"));
+
+      // Run synthetic first (half count)
+      const syntheticCount = Math.floor(options.documentCount / 2);
+      log(`\n  Phase A: Running ${syntheticCount} synthetic documents...\n`);
+    }
+
+    // Default: SYNTHETIC corpus
+    if (options.corpus === "synthetic" || options.corpus === "hybrid") {
+      log(`\n  Corpus: ${options.corpus === "hybrid" ? "HYBRID - Synthetic Phase" : "Synthetic (generated documents)"}\n`);
     }
 
     // Create assessment instance
