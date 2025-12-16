@@ -4,7 +4,7 @@
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
 
-**Open-source, production-ready HIPAA PHI redaction engine** for clinical text, images, and DICOM. Rust-accelerated for blazing-fast performance, fully inspectable for compliance audits, runs completely air-gapped. Deploy confidently in trauma centers, research facilities, and healthcare AI systems.
+An open-source PHI redaction engine for clinical text, images, and DICOM data. The project combines TypeScript orchestration with Rust-accelerated compute paths to provide a fully inspectable, auditable de-identification pipeline suitable for healthcare research and air-gapped deployments.
 
 | Metric | Score | Notes |
 |:------:|:-----:|:------|
@@ -13,9 +13,9 @@
 | Speed | <10ms | Typical clinical notes, Rust-accelerated |
 | Coverage | 18/18+ | HIPAA Safe Harbor + extended (28 filters, 20+ PHI types) |
 
-**Status**: Engine is production-ready with comprehensive test coverage (99%+ sensitivity on synthetic data). i2b2 2014 clinical validation pending. **Recommended deployment**: Pilot testing in controlled environments, research workflows, and de-identification pipelines. Critical care deployments should complete institution-specific validation.
+**Current Status**: The engine has comprehensive test coverage against synthetic data (99%+ sensitivity). Clinical validation against the i2b2 2014 corpus is pending. We recommend pilot testing in controlled environments and research workflows before critical care deployment. Institution-specific validation should be completed for production clinical use.
 
-## How It Works
+## Architecture Overview
 
 ```mermaid
 flowchart TB
@@ -61,25 +61,27 @@ flowchart TB
     style Result fill:#c8e6c9,stroke:#2e7d32
 ```
 
-PHI never crosses the network boundary. The LLM only sees tokenized placeholders. Your data stays local.
+PHI never crosses the network boundary. The LLM receives only tokenized placeholders while the mapping remains local.
 
-## Why Vulpes Celare?
+## Design Goals
 
-**🏥 Built for Healthcare** - Designed specifically for clinical AI systems, trauma centers, research facilities, and healthcare infrastructure. Exceeds HIPAA Safe Harbor with 28 specialized filters covering 20+ PHI types (all 18 HIPAA identifiers plus NPI, DEA, VIN, and more).
+**Healthcare-Specific Detection** — The filter set targets clinical documentation patterns rather than general-purpose NER. Coverage includes all 18 HIPAA Safe Harbor identifiers plus extended types (NPI, DEA, VIN, etc.) across 28 specialized filters.
 
-**⚡ High Performance** - Rust-accelerated architecture delivers significant performance improvements on compute-intensive operations (see `docs/BENCHMARKS.md` for methodology). Process typical clinical notes in <10ms. Real-time streaming for dictation workflows.
+**Performance** — Rust acceleration handles compute-intensive operations. Typical clinical notes process in under 10ms. Streaming support enables real-time dictation workflows. See `docs/BENCHMARKS.md` for methodology and measurements.
 
-**🔒 Security First** - Air-gapped by default, zero cloud dependencies. Deploy confidently in DoD facilities, VA medical centers, and high-security environments. Full offline operation.
+**Air-Gapped Operation** — No cloud dependencies. All processing runs locally, suitable for high-security and offline environments.
 
-**🔍 Fully Inspectable** - Open source TypeScript + Rust. No black-box ML models. Every decision is auditable for HIPAA compliance officers. TypeScript fallbacks for all accelerators ensure cross-platform compatibility.
+**Auditability** — No black-box ML for PHI detection decisions. The codebase is fully inspectable TypeScript + Rust with deterministic rule-based detection. Trust bundles provide tamper-evident provenance for compliance requirements.
 
-**🚀 Production Ready** - Trust bundles for tamper-evident provenance. Comprehensive test suite. Battle-tested on thousands of synthetic medical documents with 99%+ sensitivity.
+**Graceful Degradation** — All Rust accelerators have TypeScript fallbacks. The engine runs correctly (with reduced performance) if native bindings fail to load.
 
-## Quick Start
+## Installation
 
 ```bash
 npm install vulpes-celare
 ```
+
+## Basic Usage
 
 ```ts
 import { VulpesCelare, anonymizeDicomBuffer } from "vulpes-celare";
@@ -94,59 +96,54 @@ const redactedImage = await VulpesCelare.redactImage(imageBuffer);
 const cleanDicom = await anonymizeDicomBuffer(dicomData);
 ```
 
-## Use Cases
+## Applications
 
-### 🤖 Clinical AI & LLM Integration
+### LLM Integration
 
-Safely integrate GPT-4, Claude, or Gemini into clinical workflows. Redact PHI before sending to LLMs, restore it after response. See `examples/integrations/LLM-INTEGRATIONS.md` for production examples with OpenAI, Anthropic, AWS Bedrock, and more.
+The primary use case is enabling LLM integration in clinical workflows without exposing PHI. Redact before sending to external models, restore identifiers in the response. See `examples/integrations/LLM-INTEGRATIONS.md` for integration examples with OpenAI, Anthropic, and AWS Bedrock APIs.
 
-### 🏥 Trauma Centers & Emergency Medicine
+### Research De-identification
 
-Air-gapped deployment for maximum security. No network calls, all processing local. Suitable for DoD facilities, VA medical centers, and high-security environments. **Note**: Institution-specific validation recommended for critical care deployments. See `docs/deployment/AIR-GAPPED-DEPLOYMENT.md`.
+De-identify datasets while preserving temporal relationships and clinical context. The Policy DSL allows customization of redaction rules to meet IRB requirements. See `examples/policy-dsl/POLICY-DSL.md`.
 
-### 🔬 Medical Research
+### Real-Time Dictation
 
-De-identify datasets for research while preserving temporal and clinical context. IRB-approved limited dataset policies available. Policy DSL makes it easy to customize redaction rules. See `examples/policy-dsl/POLICY-DSL.md`.
+Streaming redaction for live clinical documentation. Rust streaming kernels handle incremental detection with sub-10ms latency per chunk. See `examples/streaming/STREAMING-API.md`.
 
-### 📱 Real-Time Dictation
+### Medical Imaging
 
-Streaming redaction for live clinical documentation. Process dictation in real-time with <10ms latency per chunk. Rust streaming kernels handle incremental detection. See `examples/streaming/STREAMING-API.md`.
-
-### 🏗️ PACS & Medical Imaging
-
-DICOM anonymization with safe re-encoding. Image redaction removes faces and OCR text. Trust bundles provide tamper-evident audit trails. See `docs/IMAGE-DICOM.md`.
+DICOM anonymization with metadata scrubbing and safe re-encoding. Image redaction removes detected faces and OCR text regions. See `docs/IMAGE-DICOM.md`.
 
 ## Documentation
 
-- Start here: `docs/README.md`
+- Overview: `docs/README.md`
 - Architecture: `docs/ARCHITECTURE.md`
 - Images + DICOM: `docs/IMAGE-DICOM.md`
-- CLI: `docs/CLI.md`
-- Trust bundles: `docs/TRUST-BUNDLE.md` and `verification-portal/README.md`
-- Streaming: `examples/streaming/STREAMING-API.md`
+- CLI Reference: `docs/CLI.md`
+- Trust Bundles: `docs/TRUST-BUNDLE.md`
+- Streaming API: `examples/streaming/STREAMING-API.md`
 - Policy DSL: `examples/policy-dsl/POLICY-DSL.md`
-- LLM integrations: `examples/integrations/LLM-INTEGRATIONS.md`
+- LLM Integrations: `examples/integrations/LLM-INTEGRATIONS.md`
 
-## Native Rust Core (Vision)
+## Native Rust Core
 
-Vulpes Celare ships a Rust native addon (`src/rust/`) for compute-heavy vision tasks:
+The Rust addon (`src/rust/`) handles compute-intensive tasks:
 
 - PaddleOCR ONNX inference (text detection + recognition)
 - UltraFace ONNX inference (face detection)
+- Crypto/provenance helpers (SHA-256, HMAC-SHA256, Merkle root) for trust bundles and DICOM hashing
 
-TypeScript orchestrates policies and workflows; Rust owns ONNX inference and vision post-processing.
+TypeScript orchestrates policies and workflows while Rust owns ONNX inference and vision post-processing.
 
-The same native addon also provides **crypto/provenance helpers** (SHA-256, HMAC-SHA256, Merkle root) used by trust bundles and DICOM hashing.
+### Text Accelerators
 
-### Rust Text Accelerators (Production-Ready)
-
-**All Rust accelerators are enabled by default** for maximum performance. The system includes 11+ production-ready accelerators handling text hotspots: phonetic matching, tokenization, span overlap/application, name scanning, post-filter pruning, fuzzy matching, OCR chaos detection, multi-identifier scanning, and streaming kernels. All accelerators maintain TypeScript fallbacks for HIPAA safety and cross-platform compatibility. Set `VULPES_*_ACCEL=0` to disable specific accelerators if needed. See `docs/RUST-NATIVE.md` for details.
+Eleven production-ready Rust accelerators handle text processing hotspots: phonetic matching, tokenization, span overlap/application, name scanning, post-filter pruning, fuzzy matching, OCR chaos detection, multi-identifier scanning, and streaming kernels. All accelerators have TypeScript fallbacks for cross-platform compatibility. Set `VULPES_*_ACCEL=0` environment variables to disable specific accelerators. See `docs/RUST-NATIVE.md` for details.
 
 ### ONNX Runtime (Windows)
 
-Windows builds ship with a bundled ONNX Runtime CPU DLL at `native/onnxruntime.dll` pinned to the version required by the Rust `ort` crate (1.22.x).
+Windows builds include a bundled ONNX Runtime CPU DLL at `native/onnxruntime.dll`, pinned to the version required by the Rust `ort` crate (1.22.x).
 
-To override the runtime (e.g., CUDA/DirectML), set one of these before importing `vulpes-celare`:
+To use a different runtime (CUDA, DirectML, etc.), set before importing:
 
 ```bat
 set VULPES_ORT_PATH=C:\path\to\onnxruntime.dll
@@ -156,14 +153,12 @@ set ORT_DYLIB_PATH=C:\path\to\onnxruntime.dll
 
 ### ONNX Runtime (macOS/Linux)
 
-macOS/Linux native packaging is currently Windows-first. The engine still runs in JS-only mode on other platforms, but the native addon + pinned ORT bundle may require a source build until prebuilds are published.
-
-If you build the native core on macOS/Linux, it expects a pinned ORT shared library at:
+Native packaging is currently Windows-first. The engine runs in JS-only mode on other platforms. Building the native core on macOS/Linux requires a pinned ORT shared library at:
 
 - macOS: `native/libonnxruntime.dylib`
 - Linux: `native/libonnxruntime.so`
 
-If it’s missing, you can fetch the pinned CPU build with `npm run native:ort:download`, or override with `VULPES_ORT_PATH`/`ORT_DYLIB_PATH`.
+Fetch the pinned CPU build with `npm run native:ort:download`, or override with `VULPES_ORT_PATH`/`ORT_DYLIB_PATH`.
 
 ## CLI
 
@@ -175,7 +170,7 @@ vulpes chat         # LLM chat with auto-redaction
 vulpes --help       # All options
 ```
 
-## Build & Test (Repo)
+## Building from Source
 
 ```bash
 npm run native:install
@@ -184,13 +179,13 @@ npm run build
 npm test
 ```
 
-Strict gating (exits non-zero if thresholds/misses fail):
+Run strict gating (non-zero exit on threshold failures):
 
 ```bash
 npm run test:strict
 ```
 
-Native sanity check (loads the `.node` addon): `node scripts/test_simple.js`
+Verify native addon loads correctly: `node scripts/test_simple.js`
 
 ## License
 
@@ -198,4 +193,4 @@ Interim license (pending Apache 2.0). Research and non-commercial use permitted.
 
 ## Contributing
 
-Contributions are welcome! Validation contributions are especially valuable: i2b2 testing, pilot feedback, and security audits.
+Contributions welcome. Particularly valuable: i2b2 validation testing, pilot deployment feedback, and security audits.
