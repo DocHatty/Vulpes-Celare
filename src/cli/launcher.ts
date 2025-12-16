@@ -70,9 +70,7 @@ function printBanner(
   clearScreen: boolean = true,
 ): void {
   if (clearScreen) {
-    // Use ANSI escape codes for more reliable clearing on Windows
-    // \x1b[2J clears entire screen, \x1b[0f moves cursor to top-left
-    process.stdout.write("\x1b[2J\x1b[0f");
+    console.clear();
   }
   const width = getTerminalWidth();
   const boxWidth = Math.min(width - 4, 60);
@@ -82,7 +80,7 @@ function printBanner(
   const logo =
     width >= 70
       ? `
- ██╗   ██╗ ██╗   ██╗ ██╗     ██████╗  ███████╗ ███████╗
+ ██╗   ██╗ ██╗   ██╗ ██╗     ███████╗ ███████╗ ███████╗
  ██║   ██║ ██║   ██║ ██║     ██╔══██╗ ██╔════╝ ██╔════╝
  ██║   ██║ ██║   ██║ ██║     ██████╔╝ █████╗   ███████╗
  ╚██╗ ██╔╝ ██║   ██║ ██║     ██╔═══╝  ██╔══╝   ╚════██║
@@ -312,7 +310,7 @@ async function showAgentSubmenu(): Promise<void> {
 async function silentVulpesify(): Promise<void> {
   try {
     const originalLog = console.log;
-    console.log = () => {};
+    console.log = () => { };
     await handleVulpesify({ mode: "dev", silent: true });
     console.log = originalLog;
   } catch {

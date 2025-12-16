@@ -44,6 +44,7 @@ import {
   SYSTEM_PROMPT_COMPACT,
   SYSTEM_PROMPT_DEV,
 } from "./SystemPrompts";
+import { execSync } from "child_process";
 import {
   VulpesIntegration,
   CLAUDE_MD_CONTENT,
@@ -233,6 +234,18 @@ export class VulpesAgent {
       await this.ensureVulpesified();
     }
 
+    // MANAGED UPDATE CHECK
+    // Update checking inside the child process causes crashes on Windows.
+    // We check here, update if needed (in a detached way), then launch.
+    if (this.config.backend === "codex") {
+      await this.managePackageUpdate("@openai/codex");
+    } else if (this.config.backend === "claude") {
+      await this.managePackageUpdate("@anthropic-ai/claude-code");
+    } else if (this.config.backend === "copilot") {
+      // Copilot CLI is often updated via gh extension, less standard npm
+      // skipping for now or handle specifically if needed
+    }
+
     logger.info(`Starting backend: ${this.config.backend}`);
 
     switch (this.config.backend) {
@@ -345,6 +358,9 @@ export class VulpesAgent {
       CLAUDE_CODE_GIT_BASH_PATH:
         process.env.CLAUDE_CODE_GIT_BASH_PATH ||
         "C:\\Program Files\\Git\\bin\\bash.exe",
+      // Suppress internal update notifiers to prevent crash
+      NO_UPDATE_NOTIFIER: "1",
+      CI: "true",
     };
 
     logger.debug("Claude Code environment", {
@@ -394,6 +410,9 @@ export class VulpesAgent {
       VULPES_AGENT_MODE: this.config.mode,
       VULPES_WORKING_DIR: this.config.workingDir,
       VULPES_VERSION: VERSION,
+      // Suppress internal update notifiers to prevent crash
+      NO_UPDATE_NOTIFIER: "1",
+      CI: "true",
     };
 
     console.log(theme.info(`\n  Starting Codex with Vulpes integration...\n`));
@@ -470,6 +489,9 @@ export class VulpesAgent {
       VULPES_AGENT_MODE: this.config.mode,
       VULPES_WORKING_DIR: this.config.workingDir,
       VULPES_VERSION: VERSION,
+      // Suppress internal update notifiers to prevent crash
+      NO_UPDATE_NOTIFIER: "1",
+      CI: "true",
     };
 
     console.log(
@@ -718,6 +740,80 @@ export class VulpesAgent {
         return "  " + line;
       })
       .join("\n");
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // SAFE UPDATE MANAGEMENT
+  // ══════════════════════════════════════════════════════════════════════════
+
+  private async managePackageUpdate(packageName: string): Promise<void> {
+    try {
+      const currentVersion = this.getInstalledVersion(packageName);
+      if (!currentVersion) return; // Not installed, let normal flow handle or error
+
+      const latestVersion = this.getLatestVersion(packageName);
+      if (!latestVersion) return;
+
+      if (currentVersion !== latestVersion) {
+        console.log(
+          theme.info(
+            `\n  Update available for ${packageName}: ${theme.muted(currentVersion)} → ${theme.success(latestVersion)}`,
+          ),
+        );
+
+        // In interactive mode, we could ask. For now, we auto-update if strictly needed or just notify 
+        // effectively without crashing. The user complaint was "shuts system down".
+        // Providing a safe way to update:
+
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        });
+
+        const answer = await new Promise<string>(resolve => {
+          rl.question(theme.accent(`  Do you want to update now? (y/N) `), resolve);
+        });
+        rl.close();
+
+        if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
+          console.log(theme.muted(`  Updating ${packageName}...`));
+          try {
+            // Use synchronous exec to ensure it finishes before we move on
+            execSync(`npm install -g ${packageName}`, { stdio: 'inherit' });
+            console.log(theme.success(`  Update complete! Starting agent...\n`));
+          } catch (e: any) {
+            console.log(theme.error(`  Update failed: ${e.message}`));
+            console.log(theme.muted(`  Continuing with current version...\n`));
+          }
+        } else {
+          console.log(theme.muted(`  Skipping update. Starting agent...\n`));
+        }
+      }
+    } catch (e) {
+      // Ignore update check errors, just proceed
+      logger.warn(`Update check failed for ${packageName}`, { error: e });
+    }
+  }
+
+  private getInstalledVersion(packageName: string): string | null {
+    try {
+      // npm list -g --depth=0 --json usually works but can be slow. 
+      // Faster check might be specific package info
+      const output = execSync(`npm list -g ${packageName} --depth=0 --json`, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] });
+      const json = JSON.parse(output);
+      return json.dependencies?.[packageName]?.version || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private getLatestVersion(packageName: string): string | null {
+    try {
+      const output = execSync(`npm view ${packageName} version`, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] });
+      return output.trim();
+    } catch {
+      return null;
+    }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -972,17 +1068,17 @@ ${theme.muted("  Or just paste text to redact it!")}
     console.log(
       boxen(
         `${theme.primary.bold("VULPES AGENT")}\n` +
-          `${theme.muted(ENGINE_NAME + " v" + VERSION)}\n\n` +
-          `${theme.muted("Mode:")} ${this.getModeDisplay()}\n` +
-          `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}\n\n` +
-          (this.config.mode === "dev"
-            ? `${theme.warning(figures.warning)} ${theme.warning("Full codebase access enabled")}\n` +
-              `${theme.warning(figures.warning)} ${theme.warning("Only use with synthetic/test data")}`
-            : this.config.mode === "qa"
-              ? `${theme.info(figures.info)} Can compare original vs redacted\n` +
-                `${theme.info(figures.info)} Read-only codebase access`
-              : `${theme.success(figures.tick)} Production mode - original text hidden\n` +
-                `${theme.success(figures.tick)} Safe for real patient data`),
+        `${theme.muted(ENGINE_NAME + " v" + VERSION)}\n\n` +
+        `${theme.muted("Mode:")} ${this.getModeDisplay()}\n` +
+        `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}\n\n` +
+        (this.config.mode === "dev"
+          ? `${theme.warning(figures.warning)} ${theme.warning("Full codebase access enabled")}\n` +
+          `${theme.warning(figures.warning)} ${theme.warning("Only use with synthetic/test data")}`
+          : this.config.mode === "qa"
+            ? `${theme.info(figures.info)} Can compare original vs redacted\n` +
+            `${theme.info(figures.info)} Read-only codebase access`
+            : `${theme.success(figures.tick)} Production mode - original text hidden\n` +
+            `${theme.success(figures.tick)} Safe for real patient data`),
         {
           padding: 1,
           margin: { top: 1, bottom: 0 },

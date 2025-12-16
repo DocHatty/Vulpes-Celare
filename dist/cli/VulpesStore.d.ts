@@ -136,10 +136,27 @@ export interface HipaaKnowledgeRow {
     cfr_refs: string | null;
     embedding_hash: string | null;
 }
-/**
- * Type-safe configuration store using Conf
- */
-export declare const config: any;
+export declare const config: Conf<{
+    apiKeys: {
+        ANTHROPIC_API_KEY?: string | undefined;
+        OPENAI_API_KEY?: string | undefined;
+        OPENROUTER_API_KEY?: string | undefined;
+        GOOGLE_API_KEY?: string | undefined;
+    };
+    preferences: {
+        defaultProvider: "anthropic" | "openai" | "openrouter" | "ollama" | "custom" | "google";
+        theme: "default" | "minimal" | "colorful";
+        verboseMode: boolean;
+        subagentsEnabled: boolean;
+        maxParallelSubagents: number;
+        defaultModel?: string | undefined;
+    };
+    lastUsed: {
+        provider?: string | undefined;
+        model?: string | undefined;
+        timestamp?: string | undefined;
+    };
+}>;
 /**
  * Get an API key (checks env first, then stored config)
  */

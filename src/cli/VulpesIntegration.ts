@@ -205,6 +205,7 @@ npm test
    - Logging or debugging output
    - Sharing with team members
 3. Use \`/vulpes-redact\` slash command for quick inline redaction
+4. **WINDOWS USERS**: Use PowerShell syntax. 'sed', 'grep', 'awk' are NOT available.
 
 ## Available Tools
 
@@ -333,6 +334,7 @@ You are working in a codebase that includes **Vulpes Celare**, a HIPAA-compliant
 1. **PHI Sensitivity First**: Never miss Protected Health Information. Missing PHI = HIPAA violation.
 2. **Test After Changes**: Always run \`npm run build && npm test\` after code modifications.
 3. **One Change at a Time**: Make incremental changes and validate each one.
+4. **Operating System**: You are on Windows (PowerShell). Do NOT use 'sed', 'awk', or 'grep'. Use Node.js scripts or PowerShell native commands.
 
 ## Available Capabilities
 
@@ -826,12 +828,12 @@ tool_timeout_sec = 60
       theme.primary.bold(`
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
-║   ██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗██╗███████╗██╗   ██╗  ║
-║   ██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝██║██╔════╝╚██╗ ██╔╝  ║
-║   ██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗██║█████╗   ╚████╔╝   ║
-║   ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║██║██╔══╝    ╚██╔╝    ║
-║    ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║██║██║        ██║     ║
-║     ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝╚═╝╚═╝        ╚═╝     ║
+║   ██╗   ██╗██╗   ██╗██╗     ███████╗ ███████╗ ███████╗██╗███████╗██╗   ██╗  ║
+║   ██║   ██║██║   ██║██║     ██╔══██╗ ██╔════╝ ██╔════╝██║██╔════╝╚██╗ ██╔╝  ║
+║   ██║   ██║██║   ██║██║     ██████╔╝ █████╗   ███████╗██║█████╗   ╚████╔╝   ║
+║   ╚██╗ ██╔╝██║   ██║██║     ██╔═══╝  ██╔══╝   ╚════██║██║██╔══╝    ╚██╔╝    ║
+║    ╚████╔╝ ╚██████╔╝███████╗██║      ███████╗ ███████║██║██║        ██║     ║
+║     ╚═══╝   ╚═════╝ ╚══════╝╚═╝      ╚══════╝ ╚══════╝╚═╝╚═╝        ╚═╝     ║
 ║                                                                           ║
 ║                    Deep CLI Integration System                            ║
 ║                                                                           ║

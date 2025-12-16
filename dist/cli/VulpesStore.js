@@ -134,7 +134,11 @@ if (!fs.existsSync(VULPES_DIR)) {
 /**
  * Type-safe configuration store using Conf
  */
-exports.config = new conf_1.default({
+/**
+ * Type-safe configuration store using Conf
+ */
+let configInstance;
+const confOptions = {
     projectName: "vulpes-celare",
     cwd: VULPES_DIR,
     configName: "config",
@@ -158,7 +162,29 @@ exports.config = new conf_1.default({
             default: {},
         },
     },
-});
+};
+try {
+    configInstance = new conf_1.default(confOptions);
+    // Verify access
+    configInstance.get("preferences");
+}
+catch (error) {
+    // Handle corruption or encryption errors
+    const configPath = path.join(VULPES_DIR, "config.json");
+    const backupPath = path.join(VULPES_DIR, `config.json.corrupt.${Date.now()}.bak`);
+    if (fs.existsSync(configPath)) {
+        try {
+            fs.renameSync(configPath, backupPath);
+            console.error(`\n[Vulpes Warning] Config file was corrupt. Backed up to: ${backupPath}`);
+        }
+        catch {
+            // Ignore
+        }
+    }
+    // Initialize fresh
+    configInstance = new conf_1.default(confOptions);
+}
+exports.config = configInstance;
 // ============================================================================
 // CONFIG HELPER FUNCTIONS
 // ============================================================================

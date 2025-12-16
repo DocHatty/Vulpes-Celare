@@ -373,13 +373,13 @@ const WORKFLOW_TEMPLATES: Record<
         scoutTasks.length > 0
           ? scoutTasks
           : [
-              {
-                id: "scout-1",
-                role: "scout",
-                prompt: ctx.input || "Scan for PHI",
-                phase: 0,
-              },
-            ],
+            {
+              id: "scout-1",
+              role: "scout",
+              prompt: ctx.input || "Scan for PHI",
+              phase: 0,
+            },
+          ],
       ],
     };
   },
@@ -577,6 +577,11 @@ Be FAST. Be PRECISE. Structured output only.`,
 
 PURPOSE: Deep investigation of PHI detection issues and root cause analysis.
 
+OPERATING ENVIRONMENT:
+- OS: Windows (PowerShell)
+- Forbidden: 'sed', 'awk', 'grep'
+- Use: Node.js scripts, PowerShell commands
+
 CAPABILITIES:
 - Analyze why PHI was missed or incorrectly flagged
 - Investigate filter behavior and regex patterns
@@ -614,6 +619,11 @@ Be THOROUGH. Find the root cause, not just symptoms.`,
   engineer: `You are ENGINEER - Vulpes Celare's code modification specialist.
 
 PURPOSE: Write precise, minimal code fixes for PHI detection issues.
+
+OPERATING ENVIRONMENT:
+- OS: Windows (PowerShell)
+- Forbidden: 'sed', 'awk', 'grep'
+- Use: Node.js scripts, PowerShell commands
 
 CAPABILITIES:
 - Modify filter regex patterns
@@ -1086,7 +1096,7 @@ class Subagent {
       if (jsonMatch) {
         try {
           findings = JSON.parse(jsonMatch[1]);
-        } catch {}
+        } catch { }
       }
 
       return {

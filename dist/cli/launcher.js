@@ -95,9 +95,7 @@ function centerText(text, width) {
 }
 function printBanner(showStats = true, clearScreen = true) {
     if (clearScreen) {
-        // Use ANSI escape codes for more reliable clearing on Windows
-        // \x1b[2J clears entire screen, \x1b[0f moves cursor to top-left
-        process.stdout.write("\x1b[2J\x1b[0f");
+        console.clear();
     }
     const width = getTerminalWidth();
     const boxWidth = Math.min(width - 4, 60);
@@ -105,7 +103,7 @@ function printBanner(showStats = true, clearScreen = true) {
     // ASCII art scales based on terminal width
     const logo = width >= 70
         ? `
- ██╗   ██╗ ██╗   ██╗ ██╗     ██████╗  ███████╗ ███████╗
+ ██╗   ██╗ ██╗   ██╗ ██╗     ███████╗ ███████╗ ███████╗
  ██║   ██║ ██║   ██║ ██║     ██╔══██╗ ██╔════╝ ██╔════╝
  ██║   ██║ ██║   ██║ ██║     ██████╔╝ █████╗   ███████╗
  ╚██╗ ██╔╝ ██║   ██║ ██║     ██╔═══╝  ██╔══╝   ╚════██║

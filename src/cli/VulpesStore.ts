@@ -171,7 +171,12 @@ if (!fs.existsSync(VULPES_DIR)) {
 /**
  * Type-safe configuration store using Conf
  */
-export const config = new Conf<VulpesConfig>({
+/**
+ * Type-safe configuration store using Conf
+ */
+let configInstance: Conf<VulpesConfig>;
+
+const confOptions = {
   projectName: "vulpes-celare",
   cwd: VULPES_DIR,
   configName: "config",
@@ -195,7 +200,30 @@ export const config = new Conf<VulpesConfig>({
       default: {},
     },
   },
-});
+} as const;
+
+try {
+  configInstance = new Conf<VulpesConfig>(confOptions);
+  // Verify access
+  configInstance.get("preferences");
+} catch (error: any) {
+  // Handle corruption or encryption errors
+  const configPath = path.join(VULPES_DIR, "config.json");
+  const backupPath = path.join(VULPES_DIR, `config.json.corrupt.${Date.now()}.bak`);
+
+  if (fs.existsSync(configPath)) {
+    try {
+      fs.renameSync(configPath, backupPath);
+      console.error(`\n[Vulpes Warning] Config file was corrupt. Backed up to: ${backupPath}`);
+    } catch {
+      // Ignore
+    }
+  }
+  // Initialize fresh
+  configInstance = new Conf<VulpesConfig>(confOptions);
+}
+
+export const config = configInstance;
 
 // ============================================================================
 // CONFIG HELPER FUNCTIONS
@@ -477,9 +505,9 @@ export function getRecentSessions(limit: number = 10): Array<{
   `,
     )
     .all(limit) as Pick<
-    SessionRow,
-    "id" | "provider" | "model" | "started_at" | "message_count"
-  >[];
+      SessionRow,
+      "id" | "provider" | "model" | "started_at" | "message_count"
+    >[];
 }
 
 // ============================================================================
@@ -602,9 +630,9 @@ export function getAgentMemory(
   `,
     )
     .all(taskType, limit) as Pick<
-    AgentMemoryRow,
-    "task_summary" | "outcome" | "notes" | "timestamp"
-  >[];
+      AgentMemoryRow,
+      "task_summary" | "outcome" | "notes" | "timestamp"
+    >[];
 }
 
 /**

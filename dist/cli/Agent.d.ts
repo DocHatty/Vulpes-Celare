@@ -79,6 +79,9 @@ export declare class VulpesAgent {
     testDocument(text: string): Promise<RedactionComparison>;
     private printComparison;
     private formatDocument;
+    private managePackageUpdate;
+    private getInstalledVersion;
+    private getLatestVersion;
     private handleCommand;
     private interactiveRedaction;
     private printSystemInfo;

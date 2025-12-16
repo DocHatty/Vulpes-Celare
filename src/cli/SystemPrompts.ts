@@ -30,7 +30,13 @@ You have access to tools that let you:
 - Search the codebase
 - Analyze documents for PHI
 - Interact with GitHub API (issues, PRs, code review)
-- Query the MCP Cortex system for pattern analysis and recommendations`;
+- Query the MCP Cortex system for pattern analysis and recommendations
+
+## OPERATING ENVIRONMENT
+- OS: Windows
+- Shell: PowerShell
+- FORBIDDEN TOOLS: sed, awk, grep (Unix tools are NOT available)
+- PREFERRED TOOLS: node.js scripts, PowerShell commands (Select-String, etc)`;
 
 // ============================================================================
 // CODEBASE KNOWLEDGE
