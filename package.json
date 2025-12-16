@@ -29,6 +29,8 @@
     "test:coverage": "vitest run --coverage",
     "test:parquet": "node tests/master-suite/cortex/run-parquet-analysis.js",
     "test:parquet:quick": "node tests/master-suite/cortex/run-parquet-analysis.js --limit 100",
+    "test:validation": "node tests/master-suite/run.js --profile HIPAA_STRICT --full-validation",
+    "benchmark:presidio": "node scripts/benchmark-presidio.js",
     "workflow:improve": "node tests/master-suite/cortex/improvement-workflow.js",
     "workflow:improve:dry": "node tests/master-suite/cortex/improvement-workflow.js --dry-run",
     "clean": "node scripts/clean-dist.js",
