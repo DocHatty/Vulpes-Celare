@@ -11,6 +11,7 @@
     "vulpes-mcp": "./dist/mcp/server.js"
   },
   "scripts": {
+    "build:dictionaries": "node scripts/build-dictionaries.js",
     "build": "npm run clean && tsc && node scripts/copy-assets.js",
     "build:watch": "tsc --watch",
     "native:build": "node scripts/build-native.js",

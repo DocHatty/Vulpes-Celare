@@ -23,7 +23,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.crossTypeReasoner = exports.CrossTypeReasoner = exports.mlWeightOptimizer = exports.MLWeightOptimizer = exports.ProvenanceService = exports.ReplacementContextService = exports.ConfidenceModifierService = exports.WindowService = exports.FilterRegistry = exports.UniqueIdentifierFilterSpan = exports.BiometricContextFilterSpan = exports.VehicleIdentifierFilterSpan = exports.DeviceIdentifierFilterSpan = exports.URLFilterSpan = exports.IPAddressFilterSpan = exports.AccountNumberFilterSpan = exports.CreditCardFilterSpan = exports.DateFilterSpan = exports.AgeFilterSpan = exports.HealthPlanNumberFilterSpan = exports.NPIFilterSpan = exports.MRNFilterSpan = exports.ZipCodeFilterSpan = exports.AddressFilterSpan = exports.EmailFilterSpan = exports.FaxNumberFilterSpan = exports.PhoneFilterSpan = exports.DEAFilterSpan = exports.LicenseNumberFilterSpan = exports.PassportNumberFilterSpan = exports.SSNFilterSpan = exports.FamilyNameFilterSpan = exports.TitledNameFilterSpan = exports.FormattedNameFilterSpan = exports.SmartNameFilterSpan = exports.DocumentVocabulary = exports.RedactionContext = exports.FilterType = exports.SpanUtils = exports.Span = exports.PostFilterService = exports.FieldLabelWhitelist = exports.FieldContextDetector = exports.FilterAdapter = exports.SpanFactory = exports.FilterPriority = exports.SpanBasedFilter = exports.ParallelRedactionEngine = exports.default = exports.VulpesCelare = void 0;
-exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.TRUST_BUNDLE_EXTENSION = exports.TRUST_BUNDLE_VERSION = exports.TrustBundleExporter = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.PolicyLoader = exports.TokenManager = exports.StatisticsTracker = exports.FilterHealthCheck = exports.FAMILY_RELATIONSHIP_KEYWORDS = exports.NON_PERSON_STRUCTURE_TERMS = exports.PROVIDER_CREDENTIALS = exports.PROVIDER_TITLE_PREFIXES = exports.NameDetectionUtils = exports.ValidationUtils = exports.InterPHIDisambiguator = exports.EnsembleVoter = exports.spanEnhancer = exports.SpanEnhancer = exports.weightedScorer = exports.WeightedPHIScorer = exports.confidenceCalibrator = exports.ConfidenceCalibrator = void 0;
+exports.NPI_PATTERNS = exports.ZIPCODE_PATTERNS = exports.IP_PATTERNS = exports.CREDIT_CARD_PATTERNS = exports.MRN_PATTERNS = exports.DATE_PATTERNS = exports.EMAIL_PATTERNS = exports.PHONE_PATTERNS = exports.SSN_PATTERNS = exports.ALL_PATTERNS = exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.TRUST_BUNDLE_EXTENSION = exports.TRUST_BUNDLE_VERSION = exports.TrustBundleExporter = exports.PolicyTemplates = exports.PolicyCompiler = exports.createSupervisedStreamingRedactor = exports.SupervisedStreamingRedactor = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.PolicyLoader = exports.TokenManager = exports.StatisticsTracker = exports.FilterHealthCheck = exports.FAMILY_RELATIONSHIP_KEYWORDS = exports.NON_PERSON_STRUCTURE_TERMS = exports.PROVIDER_CREDENTIALS = exports.PROVIDER_TITLE_PREFIXES = exports.NameDetectionUtils = exports.ValidationUtils = exports.InterPHIDisambiguator = exports.EnsembleVoter = exports.spanEnhancer = exports.SpanEnhancer = exports.weightedScorer = exports.WeightedPHIScorer = exports.confidenceCalibrator = exports.ConfidenceCalibrator = void 0;
+exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.logConfiguration = exports.getConfigurationSummary = exports.isStreamDetectionsEnabled = exports.isStreamKernelEnabled = exports.getPhoneticThreshold = exports.isPhoneticEnabled = exports.isFuzzyAccelEnabled = exports.isCircuitBreakerEnabled = exports.isSupervisionEnabled = exports.getGPUFallbackThreshold = exports.isGPUBatchEnabled = exports.getZigDFAMode = exports.isZigDFAAccelEnabled = exports.isDFAScanEnabled = exports.isDatalogReasonerEnabled = exports.isSQLiteDictionaryEnabled = exports.isBloomFilterEnabled = exports.isSQLiteDictionaryAvailable = exports.getSQLiteDictionaryMatcher = exports.SQLiteDictionaryMatcher = exports.BloomFilterStore = exports.FastFuzzyMatcher = exports.datalogReasoner = exports.DatalogReasoner = exports.BackpressureQueue = exports.CircuitOpenError = exports.CircuitBreaker = exports.Supervisor = exports.shouldUseBatchProcessing = exports.processBatch = exports.getBatchProcessor = exports.WebGPUBatchProcessor = exports.scanWithDFA = exports.isDFAScanningEnabled = exports.getMultiPatternScanner = exports.ZigDFAScanner = exports.MultiPatternScanner = exports.getPatternStats = exports.DEA_PATTERNS = void 0;
 // ============================================================================
 // MAIN ORCHESTRATOR - Start Here!
 // ============================================================================
@@ -194,6 +195,9 @@ Object.defineProperty(exports, "PolicyLoader", { enumerable: true, get: function
 var StreamingRedactor_1 = require("./StreamingRedactor");
 Object.defineProperty(exports, "StreamingRedactor", { enumerable: true, get: function () { return StreamingRedactor_1.StreamingRedactor; } });
 Object.defineProperty(exports, "WebSocketRedactionHandler", { enumerable: true, get: function () { return StreamingRedactor_1.WebSocketRedactionHandler; } });
+var SupervisedStreamingRedactor_1 = require("./SupervisedStreamingRedactor");
+Object.defineProperty(exports, "SupervisedStreamingRedactor", { enumerable: true, get: function () { return SupervisedStreamingRedactor_1.SupervisedStreamingRedactor; } });
+Object.defineProperty(exports, "createSupervisedStreamingRedactor", { enumerable: true, get: function () { return SupervisedStreamingRedactor_1.createSupervisedStreamingRedactor; } });
 // ============================================================================
 // POLICY DSL
 // ============================================================================
@@ -236,6 +240,84 @@ Object.defineProperty(exports, "anonymizeDicomBuffer", { enumerable: true, get: 
 // ============================================================================
 var CortexPythonBridge_1 = require("./core/cortex/python/CortexPythonBridge");
 Object.defineProperty(exports, "CortexPythonBridge", { enumerable: true, get: function () { return CortexPythonBridge_1.CortexPythonBridge; } });
+// ============================================================================
+// DFA MULTI-PATTERN SCANNING (Phase 4: High-Performance Pattern Matching)
+// ============================================================================
+var patterns_1 = require("./dfa/patterns");
+Object.defineProperty(exports, "ALL_PATTERNS", { enumerable: true, get: function () { return patterns_1.ALL_PATTERNS; } });
+Object.defineProperty(exports, "SSN_PATTERNS", { enumerable: true, get: function () { return patterns_1.SSN_PATTERNS; } });
+Object.defineProperty(exports, "PHONE_PATTERNS", { enumerable: true, get: function () { return patterns_1.PHONE_PATTERNS; } });
+Object.defineProperty(exports, "EMAIL_PATTERNS", { enumerable: true, get: function () { return patterns_1.EMAIL_PATTERNS; } });
+Object.defineProperty(exports, "DATE_PATTERNS", { enumerable: true, get: function () { return patterns_1.DATE_PATTERNS; } });
+Object.defineProperty(exports, "MRN_PATTERNS", { enumerable: true, get: function () { return patterns_1.MRN_PATTERNS; } });
+Object.defineProperty(exports, "CREDIT_CARD_PATTERNS", { enumerable: true, get: function () { return patterns_1.CREDIT_CARD_PATTERNS; } });
+Object.defineProperty(exports, "IP_PATTERNS", { enumerable: true, get: function () { return patterns_1.IP_PATTERNS; } });
+Object.defineProperty(exports, "ZIPCODE_PATTERNS", { enumerable: true, get: function () { return patterns_1.ZIPCODE_PATTERNS; } });
+Object.defineProperty(exports, "NPI_PATTERNS", { enumerable: true, get: function () { return patterns_1.NPI_PATTERNS; } });
+Object.defineProperty(exports, "DEA_PATTERNS", { enumerable: true, get: function () { return patterns_1.DEA_PATTERNS; } });
+Object.defineProperty(exports, "getPatternStats", { enumerable: true, get: function () { return patterns_1.getPatternStats; } });
+var MultiPatternScanner_1 = require("./dfa/MultiPatternScanner");
+Object.defineProperty(exports, "MultiPatternScanner", { enumerable: true, get: function () { return MultiPatternScanner_1.MultiPatternScanner; } });
+Object.defineProperty(exports, "ZigDFAScanner", { enumerable: true, get: function () { return MultiPatternScanner_1.ZigDFAScanner; } });
+Object.defineProperty(exports, "getMultiPatternScanner", { enumerable: true, get: function () { return MultiPatternScanner_1.getMultiPatternScanner; } });
+Object.defineProperty(exports, "isDFAScanningEnabled", { enumerable: true, get: function () { return MultiPatternScanner_1.isDFAScanningEnabled; } });
+Object.defineProperty(exports, "scanWithDFA", { enumerable: true, get: function () { return MultiPatternScanner_1.scanWithDFA; } });
+// ============================================================================
+// GPU BATCH PROCESSING (Phase 5: WebGPU Acceleration)
+// ============================================================================
+var gpu_1 = require("./gpu");
+Object.defineProperty(exports, "WebGPUBatchProcessor", { enumerable: true, get: function () { return gpu_1.WebGPUBatchProcessor; } });
+Object.defineProperty(exports, "getBatchProcessor", { enumerable: true, get: function () { return gpu_1.getBatchProcessor; } });
+Object.defineProperty(exports, "processBatch", { enumerable: true, get: function () { return gpu_1.processBatch; } });
+Object.defineProperty(exports, "shouldUseBatchProcessing", { enumerable: true, get: function () { return gpu_1.shouldUseBatchProcessing; } });
+// ============================================================================
+// SUPERVISION & FAULT TOLERANCE (Phase 6: Elixir-Style Supervision)
+// ============================================================================
+var Supervisor_1 = require("./supervision/Supervisor");
+Object.defineProperty(exports, "Supervisor", { enumerable: true, get: function () { return Supervisor_1.Supervisor; } });
+var CircuitBreaker_1 = require("./supervision/CircuitBreaker");
+Object.defineProperty(exports, "CircuitBreaker", { enumerable: true, get: function () { return CircuitBreaker_1.CircuitBreaker; } });
+Object.defineProperty(exports, "CircuitOpenError", { enumerable: true, get: function () { return CircuitBreaker_1.CircuitOpenError; } });
+var BackpressureQueue_1 = require("./supervision/BackpressureQueue");
+Object.defineProperty(exports, "BackpressureQueue", { enumerable: true, get: function () { return BackpressureQueue_1.BackpressureQueue; } });
+// ============================================================================
+// DATALOG REASONING (Phase 3: Declarative Constraint Solving)
+// ============================================================================
+var DatalogReasoner_1 = require("./core/DatalogReasoner");
+Object.defineProperty(exports, "DatalogReasoner", { enumerable: true, get: function () { return DatalogReasoner_1.DatalogReasoner; } });
+Object.defineProperty(exports, "datalogReasoner", { enumerable: true, get: function () { return DatalogReasoner_1.datalogReasoner; } });
+// ============================================================================
+// ADVANCED DICTIONARIES (Phase 1 & 2: Bloom Filter + SQLite)
+// ============================================================================
+var FastFuzzyMatcher_1 = require("./dictionaries/FastFuzzyMatcher");
+Object.defineProperty(exports, "FastFuzzyMatcher", { enumerable: true, get: function () { return FastFuzzyMatcher_1.FastFuzzyMatcher; } });
+var BloomFilterStore_1 = require("./dictionaries/BloomFilterStore");
+Object.defineProperty(exports, "BloomFilterStore", { enumerable: true, get: function () { return BloomFilterStore_1.BloomFilterStore; } });
+var SQLiteDictionaryMatcher_1 = require("./dictionaries/SQLiteDictionaryMatcher");
+Object.defineProperty(exports, "SQLiteDictionaryMatcher", { enumerable: true, get: function () { return SQLiteDictionaryMatcher_1.SQLiteDictionaryMatcher; } });
+Object.defineProperty(exports, "getSQLiteDictionaryMatcher", { enumerable: true, get: function () { return SQLiteDictionaryMatcher_1.getSQLiteDictionaryMatcher; } });
+Object.defineProperty(exports, "isSQLiteDictionaryAvailable", { enumerable: true, get: function () { return SQLiteDictionaryMatcher_1.isSQLiteDictionaryAvailable; } });
+// ============================================================================
+// ENVIRONMENT CONFIGURATION
+// ============================================================================
+var EnvironmentConfig_1 = require("./config/EnvironmentConfig");
+Object.defineProperty(exports, "isBloomFilterEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isBloomFilterEnabled; } });
+Object.defineProperty(exports, "isSQLiteDictionaryEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isSQLiteDictionaryEnabled; } });
+Object.defineProperty(exports, "isDatalogReasonerEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isDatalogReasonerEnabled; } });
+Object.defineProperty(exports, "isDFAScanEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isDFAScanEnabled; } });
+Object.defineProperty(exports, "isZigDFAAccelEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isZigDFAAccelEnabled; } });
+Object.defineProperty(exports, "getZigDFAMode", { enumerable: true, get: function () { return EnvironmentConfig_1.getZigDFAMode; } });
+Object.defineProperty(exports, "isGPUBatchEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isGPUBatchEnabled; } });
+Object.defineProperty(exports, "getGPUFallbackThreshold", { enumerable: true, get: function () { return EnvironmentConfig_1.getGPUFallbackThreshold; } });
+Object.defineProperty(exports, "isSupervisionEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isSupervisionEnabled; } });
+Object.defineProperty(exports, "isCircuitBreakerEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isCircuitBreakerEnabled; } });
+Object.defineProperty(exports, "isFuzzyAccelEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isFuzzyAccelEnabled; } });
+Object.defineProperty(exports, "isPhoneticEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isPhoneticEnabled; } });
+Object.defineProperty(exports, "getPhoneticThreshold", { enumerable: true, get: function () { return EnvironmentConfig_1.getPhoneticThreshold; } });
+Object.defineProperty(exports, "isStreamKernelEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isStreamKernelEnabled; } });
+Object.defineProperty(exports, "isStreamDetectionsEnabled", { enumerable: true, get: function () { return EnvironmentConfig_1.isStreamDetectionsEnabled; } });
+Object.defineProperty(exports, "getConfigurationSummary", { enumerable: true, get: function () { return EnvironmentConfig_1.getConfigurationSummary; } });
+Object.defineProperty(exports, "logConfiguration", { enumerable: true, get: function () { return EnvironmentConfig_1.logConfiguration; } });
 // ============================================================================
 // VERSION INFO
 // ============================================================================

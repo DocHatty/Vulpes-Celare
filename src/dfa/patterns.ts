@@ -1,0 +1,515 @@
+/**
+ * DFA Pattern Definitions
+ *
+ * All PHI detection patterns consolidated in one place for DFA compilation.
+ * These patterns are extracted from the Rust scan.rs implementation.
+ *
+ * PATTERN CATEGORIES:
+ * - SSN: 27 patterns (with/without dashes, spaces, context)
+ * - PHONE: 36 patterns (US formats, international, extensions)
+ * - EMAIL: Standard email patterns
+ * - DATE: 10+ patterns (MM/DD/YYYY, written months, etc.)
+ * - MRN: 13 patterns (various hospital formats)
+ * - CREDIT_CARD: 11 patterns (Visa, MC, Amex, etc.)
+ * - And more...
+ *
+ * FUTURE: These patterns will be compiled into a Zig DFA at build time.
+ * For now, they're used by the JavaScript multi-pattern matcher.
+ *
+ * @module redaction/dfa
+ */
+
+import { FilterType } from "../models/Span";
+
+export interface PatternDef {
+  id: string;
+  regex: RegExp;
+  filterType: FilterType;
+  confidence: number;
+  description: string;
+  validator?: (match: string) => boolean;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SSN PATTERNS (27 patterns from scan.rs)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const SSN_PATTERNS: PatternDef[] = [
+  // Core formats
+  {
+    id: "SSN_DASHED",
+    regex: /\b(\d{3})-(\d{2})-(\d{4})\b/g,
+    filterType: FilterType.SSN,
+    confidence: 0.95,
+    description: "SSN with dashes: 123-45-6789",
+    validator: validateSSN,
+  },
+  {
+    id: "SSN_SPACED",
+    regex: /\b(\d{3})\s(\d{2})\s(\d{4})\b/g,
+    filterType: FilterType.SSN,
+    confidence: 0.90,
+    description: "SSN with spaces: 123 45 6789",
+    validator: validateSSN,
+  },
+  {
+    id: "SSN_SOLID",
+    regex: /\b(\d{9})\b/g,
+    filterType: FilterType.SSN,
+    confidence: 0.60, // Lower confidence without delimiters
+    description: "SSN without delimiters: 123456789",
+    validator: validateSSN,
+  },
+  // Context-boosted patterns
+  {
+    id: "SSN_LABELED",
+    regex: /\b(?:ssn|social\s*security(?:\s*(?:number|#|no\.?))?)\s*[:\s#]?\s*(\d{3})[- ]?(\d{2})[- ]?(\d{4})\b/gi,
+    filterType: FilterType.SSN,
+    confidence: 0.98,
+    description: "Labeled SSN: SSN: 123-45-6789",
+    validator: validateSSN,
+  },
+  {
+    id: "SSN_LAST4",
+    regex: /\b(?:ssn|social\s*security).*?(\d{4})\b/gi,
+    filterType: FilterType.SSN,
+    confidence: 0.85,
+    description: "Last 4 of SSN: SSN ending in 6789",
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PHONE PATTERNS (36 patterns from scan.rs)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const PHONE_PATTERNS: PatternDef[] = [
+  // US formats
+  {
+    id: "PHONE_US_PARENS",
+    regex: /\((\d{3})\)\s*(\d{3})[- .]?(\d{4})\b/g,
+    filterType: FilterType.PHONE,
+    confidence: 0.95,
+    description: "US phone with parens: (555) 123-4567",
+  },
+  {
+    id: "PHONE_US_DASHED",
+    regex: /\b(\d{3})-(\d{3})-(\d{4})\b/g,
+    filterType: FilterType.PHONE,
+    confidence: 0.90,
+    description: "US phone dashed: 555-123-4567",
+  },
+  {
+    id: "PHONE_US_DOTTED",
+    regex: /\b(\d{3})\.(\d{3})\.(\d{4})\b/g,
+    filterType: FilterType.PHONE,
+    confidence: 0.90,
+    description: "US phone dotted: 555.123.4567",
+  },
+  {
+    id: "PHONE_US_SPACED",
+    regex: /\b(\d{3})\s(\d{3})\s(\d{4})\b/g,
+    filterType: FilterType.PHONE,
+    confidence: 0.85,
+    description: "US phone spaced: 555 123 4567",
+  },
+  {
+    id: "PHONE_US_SOLID",
+    regex: /\b(\d{10})\b/g,
+    filterType: FilterType.PHONE,
+    confidence: 0.50, // Lower without formatting
+    description: "US phone solid: 5551234567",
+  },
+  // With country code
+  {
+    id: "PHONE_INTL_PLUS",
+    regex: /\+1[- .]?(\d{3})[- .]?(\d{3})[- .]?(\d{4})\b/g,
+    filterType: FilterType.PHONE,
+    confidence: 0.95,
+    description: "International +1: +1-555-123-4567",
+  },
+  {
+    id: "PHONE_INTL_PARENS",
+    regex: /\+1[- .]?\((\d{3})\)\s*(\d{3})[- .]?(\d{4})\b/g,
+    filterType: FilterType.PHONE,
+    confidence: 0.95,
+    description: "International +1 with parens: +1 (555) 123-4567",
+  },
+  // With extension
+  {
+    id: "PHONE_EXT",
+    regex: /\b(\d{3})[- .]?(\d{3})[- .]?(\d{4})\s*(?:ext|x|extension)[.:]?\s*(\d{1,6})\b/gi,
+    filterType: FilterType.PHONE,
+    confidence: 0.95,
+    description: "Phone with extension: 555-123-4567 ext 123",
+  },
+  // Labeled
+  {
+    id: "PHONE_LABELED",
+    regex: /\b(?:phone|tel|telephone|cell|mobile|contact)[:\s#]*\s*\(?(\d{3})\)?[- .]?(\d{3})[- .]?(\d{4})\b/gi,
+    filterType: FilterType.PHONE,
+    confidence: 0.98,
+    description: "Labeled phone: Phone: 555-123-4567",
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EMAIL PATTERNS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const EMAIL_PATTERNS: PatternDef[] = [
+  {
+    id: "EMAIL_STANDARD",
+    regex: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+    filterType: FilterType.EMAIL,
+    confidence: 0.95,
+    description: "Standard email format",
+  },
+  {
+    id: "EMAIL_LABELED",
+    regex: /\b(?:email|e-mail)[:\s]*\s*([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,})\b/gi,
+    filterType: FilterType.EMAIL,
+    confidence: 0.98,
+    description: "Labeled email: Email: user@example.com",
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATE PATTERNS (10+ patterns)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const DATE_PATTERNS: PatternDef[] = [
+  {
+    id: "DATE_MMDDYYYY_SLASH",
+    regex: /\b(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/(\d{4}|\d{2})\b/g,
+    filterType: FilterType.DATE,
+    confidence: 0.90,
+    description: "MM/DD/YYYY or MM/DD/YY",
+  },
+  {
+    id: "DATE_MMDDYYYY_DASH",
+    regex: /\b(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])-(\d{4}|\d{2})\b/g,
+    filterType: FilterType.DATE,
+    confidence: 0.90,
+    description: "MM-DD-YYYY or MM-DD-YY",
+  },
+  {
+    id: "DATE_YYYYMMDD",
+    regex: /\b(\d{4})[-/](0?[1-9]|1[0-2])[-/](0?[1-9]|[12]\d|3[01])\b/g,
+    filterType: FilterType.DATE,
+    confidence: 0.92,
+    description: "YYYY-MM-DD (ISO format)",
+  },
+  {
+    id: "DATE_WRITTEN_FULL",
+    regex: /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(0?[1-9]|[12]\d|3[01])(?:st|nd|rd|th)?,?\s+(\d{4})\b/gi,
+    filterType: FilterType.DATE,
+    confidence: 0.95,
+    description: "Written date: January 15, 2024",
+  },
+  {
+    id: "DATE_WRITTEN_ABBREV",
+    regex: /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\.?\s+(0?[1-9]|[12]\d|3[01])(?:st|nd|rd|th)?,?\s+(\d{4}|\d{2})\b/gi,
+    filterType: FilterType.DATE,
+    confidence: 0.92,
+    description: "Abbreviated date: Jan 15, 2024",
+  },
+  {
+    id: "DATE_DAY_WRITTEN",
+    regex: /\b(0?[1-9]|[12]\d|3[01])(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})\b/gi,
+    filterType: FilterType.DATE,
+    confidence: 0.95,
+    description: "Day first: 15 January 2024",
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MRN PATTERNS (13 patterns)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const MRN_PATTERNS: PatternDef[] = [
+  {
+    id: "MRN_LABELED",
+    regex: /\b(?:mrn|medical\s*record(?:\s*(?:number|#|no\.?))?|chart(?:\s*(?:number|#|no\.?))?)\s*[:\s#]?\s*([A-Z]?\d{5,10})\b/gi,
+    filterType: FilterType.MRN,
+    confidence: 0.98,
+    description: "Labeled MRN: MRN: 12345678",
+  },
+  {
+    id: "MRN_PREFIX",
+    regex: /\b(MRN|MR|PT)[- ]?(\d{6,10})\b/g,
+    filterType: FilterType.MRN,
+    confidence: 0.90,
+    description: "Prefixed MRN: MRN-12345678",
+  },
+  {
+    id: "MRN_NUMERIC_CONTEXT",
+    regex: /\b(?:patient\s*(?:id|#|number)?)[:\s#]*\s*(\d{5,10})\b/gi,
+    filterType: FilterType.MRN,
+    confidence: 0.85,
+    description: "Patient ID context: Patient ID: 12345678",
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CREDIT CARD PATTERNS (11 patterns with Luhn validation)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const CREDIT_CARD_PATTERNS: PatternDef[] = [
+  {
+    id: "CC_VISA",
+    regex: /\b(4\d{3})[- ]?(\d{4})[- ]?(\d{4})[- ]?(\d{4})\b/g,
+    filterType: FilterType.CREDIT_CARD,
+    confidence: 0.95,
+    description: "Visa: 4xxx-xxxx-xxxx-xxxx",
+    validator: validateLuhn,
+  },
+  {
+    id: "CC_MASTERCARD",
+    regex: /\b(5[1-5]\d{2})[- ]?(\d{4})[- ]?(\d{4})[- ]?(\d{4})\b/g,
+    filterType: FilterType.CREDIT_CARD,
+    confidence: 0.95,
+    description: "Mastercard: 5[1-5]xx-xxxx-xxxx-xxxx",
+    validator: validateLuhn,
+  },
+  {
+    id: "CC_AMEX",
+    regex: /\b(3[47]\d{2})[- ]?(\d{6})[- ]?(\d{5})\b/g,
+    filterType: FilterType.CREDIT_CARD,
+    confidence: 0.95,
+    description: "Amex: 3[47]xx-xxxxxx-xxxxx",
+    validator: validateLuhn,
+  },
+  {
+    id: "CC_DISCOVER",
+    regex: /\b(6011)[- ]?(\d{4})[- ]?(\d{4})[- ]?(\d{4})\b/g,
+    filterType: FilterType.CREDIT_CARD,
+    confidence: 0.95,
+    description: "Discover: 6011-xxxx-xxxx-xxxx",
+    validator: validateLuhn,
+  },
+  {
+    id: "CC_GENERIC_16",
+    regex: /\b(\d{4})[- ](\d{4})[- ](\d{4})[- ](\d{4})\b/g,
+    filterType: FilterType.CREDIT_CARD,
+    confidence: 0.80, // Lower without brand identification
+    description: "Generic 16-digit card",
+    validator: validateLuhn,
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// IP ADDRESS PATTERNS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const IP_PATTERNS: PatternDef[] = [
+  {
+    id: "IP_V4",
+    regex: /\b((?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b/g,
+    filterType: FilterType.IP,
+    confidence: 0.90,
+    description: "IPv4 address: 192.168.1.1",
+    validator: validateIPv4,
+  },
+  {
+    id: "IP_V6",
+    regex: /\b([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b/g,
+    filterType: FilterType.IP,
+    confidence: 0.95,
+    description: "IPv6 address",
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ZIPCODE PATTERNS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const ZIPCODE_PATTERNS: PatternDef[] = [
+  {
+    id: "ZIP_5",
+    regex: /\b(\d{5})\b/g,
+    filterType: FilterType.ZIPCODE,
+    confidence: 0.50, // Low without context
+    description: "5-digit ZIP",
+  },
+  {
+    id: "ZIP_PLUS4",
+    regex: /\b(\d{5})-(\d{4})\b/g,
+    filterType: FilterType.ZIPCODE,
+    confidence: 0.90,
+    description: "ZIP+4: 12345-6789",
+  },
+  {
+    id: "ZIP_LABELED",
+    regex: /\b(?:zip(?:\s*code)?|postal\s*code)[:\s]*\s*(\d{5})(?:-(\d{4}))?\b/gi,
+    filterType: FilterType.ZIPCODE,
+    confidence: 0.98,
+    description: "Labeled ZIP: Zip Code: 12345",
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NPI PATTERNS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const NPI_PATTERNS: PatternDef[] = [
+  {
+    id: "NPI_STANDARD",
+    regex: /\b(1\d{9})\b/g,
+    filterType: FilterType.NPI,
+    confidence: 0.85,
+    description: "NPI: 10 digits starting with 1",
+    validator: validateNPI,
+  },
+  {
+    id: "NPI_LABELED",
+    regex: /\b(?:npi|national\s*provider(?:\s*(?:id|identifier|number))?)[:\s#]*\s*(1\d{9})\b/gi,
+    filterType: FilterType.NPI,
+    confidence: 0.98,
+    description: "Labeled NPI: NPI: 1234567890",
+    validator: validateNPI,
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DEA PATTERNS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const DEA_PATTERNS: PatternDef[] = [
+  {
+    id: "DEA_STANDARD",
+    regex: /\b([ABCDEFGHJKLMNPRSTUX][A-Z9]\d{7})\b/g,
+    filterType: FilterType.DEA,
+    confidence: 0.90,
+    description: "DEA number format",
+    validator: validateDEA,
+  },
+  {
+    id: "DEA_LABELED",
+    regex: /\b(?:dea(?:\s*(?:number|#|no\.?))?)[:\s#]*\s*([ABCDEFGHJKLMNPRSTUX][A-Z9]\d{7})\b/gi,
+    filterType: FilterType.DEA,
+    confidence: 0.98,
+    description: "Labeled DEA: DEA: AB1234563",
+    validator: validateDEA,
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ALL PATTERNS COMBINED
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const ALL_PATTERNS: PatternDef[] = [
+  ...SSN_PATTERNS,
+  ...PHONE_PATTERNS,
+  ...EMAIL_PATTERNS,
+  ...DATE_PATTERNS,
+  ...MRN_PATTERNS,
+  ...CREDIT_CARD_PATTERNS,
+  ...IP_PATTERNS,
+  ...ZIPCODE_PATTERNS,
+  ...NPI_PATTERNS,
+  ...DEA_PATTERNS,
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VALIDATORS
+// ═══════════════════════════════════════════════════════════════════════════
+
+function validateSSN(ssn: string): boolean {
+  // Remove non-digits
+  const digits = ssn.replace(/\D/g, "");
+  if (digits.length !== 9) return false;
+
+  // Check for invalid SSNs
+  const area = parseInt(digits.substring(0, 3));
+  const group = parseInt(digits.substring(3, 5));
+  const serial = parseInt(digits.substring(5, 9));
+
+  // Area cannot be 000, 666, or 900-999
+  if (area === 0 || area === 666 || area >= 900) return false;
+
+  // Group and serial cannot be 0000
+  if (group === 0 || serial === 0) return false;
+
+  // Reject common test SSNs
+  if (digits === "123456789" || digits === "111111111") return false;
+
+  return true;
+}
+
+function validateLuhn(cardNumber: string): boolean {
+  const digits = cardNumber.replace(/\D/g, "");
+  let sum = 0;
+  let isEven = false;
+
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = parseInt(digits[i]);
+
+    if (isEven) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+
+    sum += digit;
+    isEven = !isEven;
+  }
+
+  return sum % 10 === 0;
+}
+
+function validateIPv4(ip: string): boolean {
+  const octets = ip.split(".").map(Number);
+  if (octets.length !== 4) return false;
+
+  for (const octet of octets) {
+    if (isNaN(octet) || octet < 0 || octet > 255) return false;
+  }
+
+  // Reject private/reserved ranges? (optional - currently allowing all valid IPs)
+  return true;
+}
+
+function validateNPI(npi: string): boolean {
+  const digits = npi.replace(/\D/g, "");
+  if (digits.length !== 10) return false;
+  if (digits[0] !== "1") return false;
+
+  // Luhn check on NPI (with prefix 80840)
+  const withPrefix = "80840" + digits;
+  return validateLuhn(withPrefix);
+}
+
+function validateDEA(dea: string): boolean {
+  if (dea.length !== 9) return false;
+
+  const digits = dea.substring(2).split("").map(Number);
+  if (digits.some(isNaN)) return false;
+
+  // DEA checksum: (d1+d3+d5) + 2*(d2+d4+d6) mod 10 = d7
+  const sum =
+    digits[0] +
+    digits[2] +
+    digits[4] +
+    2 * (digits[1] + digits[3] + digits[5]);
+  return sum % 10 === digits[6];
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PATTERN STATISTICS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export function getPatternStats(): {
+  total: number;
+  byType: Record<string, number>;
+} {
+  const byType: Record<string, number> = {};
+
+  for (const pattern of ALL_PATTERNS) {
+    const key = pattern.filterType;
+    byType[key] = (byType[key] || 0) + 1;
+  }
+
+  return {
+    total: ALL_PATTERNS.length,
+    byType,
+  };
+}

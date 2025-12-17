@@ -213,6 +213,13 @@ export {
   StreamingChunk,
 } from "./StreamingRedactor";
 
+export {
+  SupervisedStreamingRedactor,
+  SupervisedStreamingConfig,
+  SupervisedStreamingStats,
+  createSupervisedStreamingRedactor,
+} from "./SupervisedStreamingRedactor";
+
 // ============================================================================
 // POLICY DSL
 // ============================================================================
@@ -302,6 +309,130 @@ export type {
   CortexTaskResponse,
   CortexBridgeConfig,
 } from "./core/cortex/python/CortexPythonBridge";
+
+// ============================================================================
+// DFA MULTI-PATTERN SCANNING (Phase 4: High-Performance Pattern Matching)
+// ============================================================================
+
+export {
+  PatternDef,
+  ALL_PATTERNS,
+  SSN_PATTERNS,
+  PHONE_PATTERNS,
+  EMAIL_PATTERNS,
+  DATE_PATTERNS,
+  MRN_PATTERNS,
+  CREDIT_CARD_PATTERNS,
+  IP_PATTERNS,
+  ZIPCODE_PATTERNS,
+  NPI_PATTERNS,
+  DEA_PATTERNS,
+  getPatternStats,
+} from "./dfa/patterns";
+
+export {
+  ScanMatch,
+  ScanResult,
+  MultiPatternScanner,
+  ZigDFAScanner,
+  ZigDFAScannerInterface,
+  getMultiPatternScanner,
+  isDFAScanningEnabled,
+  scanWithDFA,
+} from "./dfa/MultiPatternScanner";
+
+// ============================================================================
+// GPU BATCH PROCESSING (Phase 5: WebGPU Acceleration)
+// ============================================================================
+
+export {
+  WebGPUBatchProcessor,
+  BatchProcessingConfig,
+  BatchResult,
+  BatchStats,
+  getBatchProcessor,
+  processBatch,
+  shouldUseBatchProcessing,
+} from "./gpu";
+
+// ============================================================================
+// SUPERVISION & FAULT TOLERANCE (Phase 6: Elixir-Style Supervision)
+// ============================================================================
+
+export {
+  Supervisor,
+  SupervisorConfig,
+  ChildSpec,
+  ChildProcess,
+  RestartStrategy,
+  RestartType,
+} from "./supervision/Supervisor";
+
+export {
+  CircuitBreaker,
+  CircuitBreakerConfig,
+  CircuitOpenError,
+  CircuitState,
+} from "./supervision/CircuitBreaker";
+
+export {
+  BackpressureQueue,
+  BackpressureQueueConfig,
+  QueueStats,
+} from "./supervision/BackpressureQueue";
+
+// ============================================================================
+// DATALOG REASONING (Phase 3: Declarative Constraint Solving)
+// ============================================================================
+
+export {
+  DatalogReasoner,
+  DatalogReasoningResult,
+  datalogReasoner,
+} from "./core/DatalogReasoner";
+
+// ============================================================================
+// ADVANCED DICTIONARIES (Phase 1 & 2: Bloom Filter + SQLite)
+// ============================================================================
+
+export {
+  FastFuzzyMatcher,
+  FastMatchResult,
+  FastMatcherConfig,
+} from "./dictionaries/FastFuzzyMatcher";
+export { BloomFilterStore } from "./dictionaries/BloomFilterStore";
+export {
+  SQLiteDictionaryMatcher,
+  FuzzyMatchResult,
+  SQLiteDictionaryConfig,
+  getSQLiteDictionaryMatcher,
+  isSQLiteDictionaryAvailable,
+} from "./dictionaries/SQLiteDictionaryMatcher";
+
+// ============================================================================
+// ENVIRONMENT CONFIGURATION
+// ============================================================================
+
+export {
+  isBloomFilterEnabled,
+  isSQLiteDictionaryEnabled,
+  isDatalogReasonerEnabled,
+  isDFAScanEnabled,
+  isZigDFAAccelEnabled,
+  getZigDFAMode,
+  isGPUBatchEnabled,
+  getGPUFallbackThreshold,
+  isSupervisionEnabled,
+  isCircuitBreakerEnabled,
+  isFuzzyAccelEnabled,
+  isPhoneticEnabled,
+  getPhoneticThreshold,
+  isStreamKernelEnabled,
+  isStreamDetectionsEnabled,
+  getConfigurationSummary,
+  logConfiguration,
+  ConfigurationSummary,
+} from "./config/EnvironmentConfig";
 
 // ============================================================================
 // VERSION INFO

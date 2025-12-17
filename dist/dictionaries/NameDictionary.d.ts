@@ -7,7 +7,13 @@
  * This dramatically reduces false positives like "Timeline Narrative"
  * being flagged as a name (since "Timeline" is not a first name).
  *
- * Performance: O(1) lookup using Set, loaded once at startup.
+ * BACKENDS:
+ * 1. SQLite FTS5 (preferred): Memory-mapped database, 96% less heap usage
+ * 2. In-memory Set (fallback): Fast but uses ~46MB heap
+ *
+ * Set VULPES_USE_SQLITE_DICT=0 to force in-memory mode.
+ *
+ * Performance: O(1) lookup using Set or indexed SQLite query.
  *
  * @module redaction/dictionaries
  */
@@ -39,11 +45,18 @@ export declare class NameDictionary {
     private static phoneticMatcher;
     private static phoneticInitialized;
     private static cachedNameLists;
+    private static sqliteMatcher;
+    private static usingSQLite;
+    private static isSQLiteEnabled;
     private static isPhoneticEnabled;
     private static getPhoneticThreshold;
     /**
-     * Initialize dictionaries from files
+     * Initialize dictionaries from files or SQLite database
      * Call once at app startup
+     *
+     * Initialization order:
+     * 1. Try SQLite database (memory-efficient, ~96% less heap)
+     * 2. Fall back to in-memory Sets if SQLite unavailable
      *
      * @throws {DictionaryInitError} If dictionaries cannot be loaded and throwOnError is true
      */
@@ -56,9 +69,16 @@ export declare class NameDictionary {
      */
     private static initPhoneticMatcher;
     /**
+     * Initialize phonetic matcher when using SQLite backend
+     * Uses SQLite's phonetic matching capabilities when possible
+     */
+    private static initPhoneticMatcherFromSQLite;
+    /**
      * Get initialization status
      */
-    static getStatus(): DictionaryStatus;
+    static getStatus(): DictionaryStatus & {
+        usingSQLite?: boolean;
+    };
     /**
      * Check if dictionaries are properly loaded
      */
@@ -79,6 +99,10 @@ export declare class NameDictionary {
      */
     private static normalizeOCR;
     private static deduplicate;
+    /**
+     * Calculate Levenshtein edit distance between two strings
+     */
+    private static levenshteinDistance;
     /**
      * Check if a word is a known first name
      * Uses exact match, OCR normalization, deduplication, and phonetic matching

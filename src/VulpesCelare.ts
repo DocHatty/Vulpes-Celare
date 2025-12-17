@@ -169,11 +169,11 @@ export class VulpesCelare {
   static readonly VARIANT = "Hatkoff Redaction Engine";
 
   constructor(
-     config: VulpesCelareConfig = {},
-     dependencies?: {
-       filterProvider?: FilterProvider;
-       policyProvider?: PolicyProvider;
-     }
+    config: VulpesCelareConfig = {},
+    dependencies?: {
+      filterProvider?: FilterProvider;
+      policyProvider?: PolicyProvider;
+    },
   ) {
     this.config = config;
 
@@ -200,6 +200,51 @@ export class VulpesCelare {
     config?: VulpesCelareConfig,
   ): Promise<RedactionResult> {
     return new VulpesCelare(config).process(text);
+  }
+
+  /**
+   * Process multiple documents in parallel using WebGPU batch processing.
+   * Falls back to CPU parallel processing if WebGPU is unavailable.
+   *
+   * Optimal for processing 10+ documents simultaneously.
+   *
+   * @param documents - Array of text documents to redact
+   * @param config - Optional redaction configuration
+   * @returns Array of redaction results with batch statistics
+   */
+  static async processBatchGPU(
+    documents: string[],
+    config?: VulpesCelareConfig,
+  ): Promise<{
+    results: RedactionResult[];
+    stats: {
+      totalDocuments: number;
+      totalTimeMs: number;
+      throughputDocsPerSec: number;
+      method: "webgpu" | "cpu-parallel" | "cpu-sequential";
+    };
+  }> {
+    // Dynamic import to avoid loading GPU module when not needed
+    const { processBatch } = await import("./gpu");
+
+    const batchResult = await processBatch(documents, {
+      redactionConfig: config,
+    });
+
+    return {
+      results: batchResult.results.map((r) => ({
+        text: r.redactedText,
+        redactionCount: r.statistics.totalRedactions,
+        breakdown: {},
+        executionTimeMs: r.statistics.processingTimeMs,
+      })),
+      stats: {
+        totalDocuments: batchResult.stats.totalDocuments,
+        totalTimeMs: batchResult.stats.totalTimeMs,
+        throughputDocsPerSec: batchResult.stats.throughputDocsPerSec,
+        method: batchResult.stats.method,
+      },
+    };
   }
 
   /**

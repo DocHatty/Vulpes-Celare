@@ -20,6 +20,39 @@
  * @version 1.0.0
  * @author Hatkoff
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.VulpesCelare = void 0;
 const ParallelRedactionEngine_1 = require("./core/ParallelRedactionEngine");
@@ -114,6 +147,37 @@ class VulpesCelare {
     }
     static async redactWithDetails(text, config) {
         return new VulpesCelare(config).process(text);
+    }
+    /**
+     * Process multiple documents in parallel using WebGPU batch processing.
+     * Falls back to CPU parallel processing if WebGPU is unavailable.
+     *
+     * Optimal for processing 10+ documents simultaneously.
+     *
+     * @param documents - Array of text documents to redact
+     * @param config - Optional redaction configuration
+     * @returns Array of redaction results with batch statistics
+     */
+    static async processBatchGPU(documents, config) {
+        // Dynamic import to avoid loading GPU module when not needed
+        const { processBatch } = await Promise.resolve().then(() => __importStar(require("./gpu")));
+        const batchResult = await processBatch(documents, {
+            redactionConfig: config,
+        });
+        return {
+            results: batchResult.results.map((r) => ({
+                text: r.redactedText,
+                redactionCount: r.statistics.totalRedactions,
+                breakdown: {},
+                executionTimeMs: r.statistics.processingTimeMs,
+            })),
+            stats: {
+                totalDocuments: batchResult.stats.totalDocuments,
+                totalTimeMs: batchResult.stats.totalTimeMs,
+                throughputDocsPerSec: batchResult.stats.throughputDocsPerSec,
+                method: batchResult.stats.method,
+            },
+        };
     }
     /**
      * Low-level orchestrator entrypoint used by legacy `RedactionEngine`.

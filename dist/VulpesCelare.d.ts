@@ -60,6 +60,25 @@ export declare class VulpesCelare {
     static redact(text: string): Promise<string>;
     static redactWithDetails(text: string, config?: VulpesCelareConfig): Promise<RedactionResult>;
     /**
+     * Process multiple documents in parallel using WebGPU batch processing.
+     * Falls back to CPU parallel processing if WebGPU is unavailable.
+     *
+     * Optimal for processing 10+ documents simultaneously.
+     *
+     * @param documents - Array of text documents to redact
+     * @param config - Optional redaction configuration
+     * @returns Array of redaction results with batch statistics
+     */
+    static processBatchGPU(documents: string[], config?: VulpesCelareConfig): Promise<{
+        results: RedactionResult[];
+        stats: {
+            totalDocuments: number;
+            totalTimeMs: number;
+            throughputDocsPerSec: number;
+            method: "webgpu" | "cpu-parallel" | "cpu-sequential";
+        };
+    }>;
+    /**
      * Low-level orchestrator entrypoint used by legacy `RedactionEngine`.
      *
      * @internal

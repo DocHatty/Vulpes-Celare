@@ -1185,6 +1185,104 @@
         "t_valid_from": "2025-12-16T22:48:02.065Z",
         "t_valid_until": null
       }
+    ],
+    "2025-12-17": [
+      {
+        "type": "TestRun",
+        "id": "run_1765935070523_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:31:10.523Z",
+        "t_occurred": "2025-12-17T01:31:10.523Z",
+        "t_valid_from": "2025-12-17T01:31:10.523Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935145790_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:32:25.790Z",
+        "t_occurred": "2025-12-17T01:32:25.790Z",
+        "t_valid_from": "2025-12-17T01:32:25.790Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935517883_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:38:37.883Z",
+        "t_occurred": "2025-12-17T01:38:37.883Z",
+        "t_valid_from": "2025-12-17T01:38:37.883Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935621622_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:40:21.622Z",
+        "t_occurred": "2025-12-17T01:40:21.622Z",
+        "t_valid_from": "2025-12-17T01:40:21.622Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935682875_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:41:22.875Z",
+        "t_occurred": "2025-12-17T01:41:22.875Z",
+        "t_valid_from": "2025-12-17T01:41:22.875Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935880814_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:44:40.814Z",
+        "t_occurred": "2025-12-17T01:44:40.814Z",
+        "t_valid_from": "2025-12-17T01:44:40.814Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936113227_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:48:33.227Z",
+        "t_occurred": "2025-12-17T01:48:33.227Z",
+        "t_valid_from": "2025-12-17T01:48:33.227Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936432550_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:53:52.550Z",
+        "t_occurred": "2025-12-17T01:53:52.550Z",
+        "t_valid_from": "2025-12-17T01:53:52.550Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936690944_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:58:10.944Z",
+        "t_occurred": "2025-12-17T01:58:10.944Z",
+        "t_valid_from": "2025-12-17T01:58:10.944Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936750340_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:59:10.340Z",
+        "t_occurred": "2025-12-17T01:59:10.340Z",
+        "t_valid_from": "2025-12-17T01:59:10.340Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765937138393_gxi75ku0d",
+        "t_recorded": "2025-12-17T02:05:38.393Z",
+        "t_occurred": "2025-12-17T02:05:38.393Z",
+        "t_valid_from": "2025-12-17T02:05:38.393Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765937290085_gxi75ku0d",
+        "t_recorded": "2025-12-17T02:08:10.085Z",
+        "t_occurred": "2025-12-17T02:08:10.085Z",
+        "t_valid_from": "2025-12-17T02:08:10.085Z",
+        "t_valid_until": null
+      }
     ]
   },
   "byOccurredTime": {
@@ -2373,10 +2471,216 @@
         "t_valid_from": "2025-12-16T22:48:02.065Z",
         "t_valid_until": null
       }
+    ],
+    "2025-12-17": [
+      {
+        "type": "TestRun",
+        "id": "run_1765935070523_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:31:10.523Z",
+        "t_occurred": "2025-12-17T01:31:10.523Z",
+        "t_valid_from": "2025-12-17T01:31:10.523Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935145790_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:32:25.790Z",
+        "t_occurred": "2025-12-17T01:32:25.790Z",
+        "t_valid_from": "2025-12-17T01:32:25.790Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935517883_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:38:37.883Z",
+        "t_occurred": "2025-12-17T01:38:37.883Z",
+        "t_valid_from": "2025-12-17T01:38:37.883Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935621622_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:40:21.622Z",
+        "t_occurred": "2025-12-17T01:40:21.622Z",
+        "t_valid_from": "2025-12-17T01:40:21.622Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935682875_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:41:22.875Z",
+        "t_occurred": "2025-12-17T01:41:22.875Z",
+        "t_valid_from": "2025-12-17T01:41:22.875Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765935880814_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:44:40.814Z",
+        "t_occurred": "2025-12-17T01:44:40.814Z",
+        "t_valid_from": "2025-12-17T01:44:40.814Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936113227_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:48:33.227Z",
+        "t_occurred": "2025-12-17T01:48:33.227Z",
+        "t_valid_from": "2025-12-17T01:48:33.227Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936432550_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:53:52.550Z",
+        "t_occurred": "2025-12-17T01:53:52.550Z",
+        "t_valid_from": "2025-12-17T01:53:52.550Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936690944_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:58:10.944Z",
+        "t_occurred": "2025-12-17T01:58:10.944Z",
+        "t_valid_from": "2025-12-17T01:58:10.944Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765936750340_gxi75ku0d",
+        "t_recorded": "2025-12-17T01:59:10.340Z",
+        "t_occurred": "2025-12-17T01:59:10.340Z",
+        "t_valid_from": "2025-12-17T01:59:10.340Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765937138393_gxi75ku0d",
+        "t_recorded": "2025-12-17T02:05:38.393Z",
+        "t_occurred": "2025-12-17T02:05:38.393Z",
+        "t_valid_from": "2025-12-17T02:05:38.393Z",
+        "t_valid_until": null
+      },
+      {
+        "type": "TestRun",
+        "id": "run_1765937290085_gxi75ku0d",
+        "t_recorded": "2025-12-17T02:08:10.085Z",
+        "t_occurred": "2025-12-17T02:08:10.085Z",
+        "t_valid_from": "2025-12-17T02:08:10.085Z",
+        "t_valid_until": null
+      }
     ]
   },
   "byValidityPeriod": {},
   "timeline": [
+    {
+      "type": "TestRun",
+      "id": "run_1765937290085_gxi75ku0d",
+      "t_recorded": "2025-12-17T02:08:10.085Z",
+      "t_occurred": "2025-12-17T02:08:10.085Z",
+      "t_valid_from": "2025-12-17T02:08:10.085Z",
+      "t_valid_until": null,
+      "timestamp": 1765937290085
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765937138393_gxi75ku0d",
+      "t_recorded": "2025-12-17T02:05:38.393Z",
+      "t_occurred": "2025-12-17T02:05:38.393Z",
+      "t_valid_from": "2025-12-17T02:05:38.393Z",
+      "t_valid_until": null,
+      "timestamp": 1765937138393
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765936750340_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:59:10.340Z",
+      "t_occurred": "2025-12-17T01:59:10.340Z",
+      "t_valid_from": "2025-12-17T01:59:10.340Z",
+      "t_valid_until": null,
+      "timestamp": 1765936750340
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765936690944_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:58:10.944Z",
+      "t_occurred": "2025-12-17T01:58:10.944Z",
+      "t_valid_from": "2025-12-17T01:58:10.944Z",
+      "t_valid_until": null,
+      "timestamp": 1765936690944
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765936432550_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:53:52.550Z",
+      "t_occurred": "2025-12-17T01:53:52.550Z",
+      "t_valid_from": "2025-12-17T01:53:52.550Z",
+      "t_valid_until": null,
+      "timestamp": 1765936432550
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765936113227_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:48:33.227Z",
+      "t_occurred": "2025-12-17T01:48:33.227Z",
+      "t_valid_from": "2025-12-17T01:48:33.227Z",
+      "t_valid_until": null,
+      "timestamp": 1765936113227
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765935880814_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:44:40.814Z",
+      "t_occurred": "2025-12-17T01:44:40.814Z",
+      "t_valid_from": "2025-12-17T01:44:40.814Z",
+      "t_valid_until": null,
+      "timestamp": 1765935880814
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765935682875_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:41:22.875Z",
+      "t_occurred": "2025-12-17T01:41:22.875Z",
+      "t_valid_from": "2025-12-17T01:41:22.875Z",
+      "t_valid_until": null,
+      "timestamp": 1765935682875
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765935621622_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:40:21.622Z",
+      "t_occurred": "2025-12-17T01:40:21.622Z",
+      "t_valid_from": "2025-12-17T01:40:21.622Z",
+      "t_valid_until": null,
+      "timestamp": 1765935621622
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765935517883_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:38:37.883Z",
+      "t_occurred": "2025-12-17T01:38:37.883Z",
+      "t_valid_from": "2025-12-17T01:38:37.883Z",
+      "t_valid_until": null,
+      "timestamp": 1765935517883
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765935145790_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:32:25.790Z",
+      "t_occurred": "2025-12-17T01:32:25.790Z",
+      "t_valid_from": "2025-12-17T01:32:25.790Z",
+      "t_valid_until": null,
+      "timestamp": 1765935145790
+    },
+    {
+      "type": "TestRun",
+      "id": "run_1765935070523_gxi75ku0d",
+      "t_recorded": "2025-12-17T01:31:10.523Z",
+      "t_occurred": "2025-12-17T01:31:10.523Z",
+      "t_valid_from": "2025-12-17T01:31:10.523Z",
+      "t_valid_until": null,
+      "timestamp": 1765935070523
+    },
     {
       "type": "TestRun",
       "id": "run_1765925282065_gxi75ku0d",

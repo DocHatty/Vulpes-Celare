@@ -927,11 +927,83 @@
       "timestamp": "2025-12-16T22:48:02.077Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935070534",
+      "timestamp": "2025-12-17T01:31:10.534Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935145807",
+      "timestamp": "2025-12-17T01:32:25.807Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935517898",
+      "timestamp": "2025-12-17T01:38:37.898Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935621638",
+      "timestamp": "2025-12-17T01:40:21.638Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935682892",
+      "timestamp": "2025-12-17T01:41:22.892Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935880829",
+      "timestamp": "2025-12-17T01:44:40.829Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936113245",
+      "timestamp": "2025-12-17T01:48:33.245Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936432560",
+      "timestamp": "2025-12-17T01:53:52.560Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936690954",
+      "timestamp": "2025-12-17T01:58:10.954Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936750351",
+      "timestamp": "2025-12-17T01:59:10.351Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765937138408",
+      "timestamp": "2025-12-17T02:05:38.408Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765937290101",
+      "timestamp": "2025-12-17T02:08:10.101Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 155,
+    "total": 167,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 154
+    "noHistoryFound": 166
   }
 }
