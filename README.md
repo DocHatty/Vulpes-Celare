@@ -314,11 +314,11 @@ Vulpes Celare is **source-available** under an [Evaluation License](LICENSE-EVAL
 
 ### Commercial & Strategic Partnerships
 
-Commercial licensing, enterprise deployment, acquisition, and strategic partnerships are welcomed. Commercial terms are subject to confirmation of rights and any applicable institutional IP processes.
+Commercial licensing, enterprise deployment, acquisition, and strategic partnerships are welcomed.
 
 Licensing structures may include standalone commercial licenses, dual-license models, OEM/embedded agreements, or strategic IP arrangements. Initial discussions are lightweight and exploratory.
 
-Commercial arrangements are subject to confirmation of IP rights and any applicable institutional review; this is handled collaboratively during discussions.
+Commercial arrangements are subject to confirmation of IP rights and confirmation of applicable institutional review; this can be handled collaboratively during discussions, if and when required.
 
 If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) (public or private) or email [andrew@vulpescelare.com](mailto:andrew@vulpescelare.com) to discuss evaluation, pilots, or potential commercial terms (subject to rights clearance).
 
