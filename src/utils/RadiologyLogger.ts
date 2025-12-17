@@ -8,7 +8,12 @@
  * - Error tracking and diagnostics
  *
  * Logging is ENABLED by default for transparency and debugging.
+ *
+ * NOTE: This is a specialized domain logger for radiology workflows.
+ * For general logging, use VulpesLogger from './VulpesLogger'.
  */
+
+import { vulpesLogger as vlog } from "./VulpesLogger";
 
 export enum LogLevel {
   DEBUG = 0,
@@ -159,29 +164,21 @@ export class RadiologyLogger {
   ) {
     const timestamp = new Date().toISOString();
 
-    if (this.logFormat === LogFormat.JSON) {
-      // Structured JSON output for production/log aggregation
-      const logEntry = {
-        timestamp,
-        level,
-        category,
-        message,
-        ...(data && { data }),
-      };
-      // Use stderr to keep stdout clean for actual output
-      console.error(JSON.stringify(logEntry));
-    } else {
-      // Pretty format for development
-      const timeStr = timestamp.substring(11, 23);
-      const levelUpper = level.toUpperCase();
-      if (data !== undefined) {
-        console[level](
-          `[${timeStr}] [${levelUpper}] [${category}] ${message}`,
-          data,
-        );
-      } else {
-        console[level](`[${timeStr}] [${levelUpper}] [${category}] ${message}`);
-      }
+    // Route through VulpesLogger for consistent output
+    const context = { component: category, ...data };
+    switch (level) {
+      case "debug":
+        vlog.debug(message, context);
+        break;
+      case "info":
+        vlog.info(message, context);
+        break;
+      case "warn":
+        vlog.warn(message, context);
+        break;
+      case "error":
+        vlog.error(message, context);
+        break;
     }
   }
 
@@ -238,15 +235,15 @@ export class RadiologyLogger {
           Object.keys(errorData).length > 0 ? errorData : undefined,
         );
       } else {
-        const timestamp = this.getTimestamp();
-        console.error(`[${timestamp}] [ERROR] [${category}] ${message}`);
-        if (error) {
-          if (error instanceof Error) {
-            console.error(`  Stack: ${error.stack}`);
-          } else {
-            console.error(`  Details:`, error);
-          }
+        // Route through VulpesLogger
+        const errorData: Record<string, unknown> = { component: category };
+        if (error instanceof Error) {
+          errorData.error = error.message;
+          errorData.stack = error.stack?.split("\n").slice(0, 5);
+        } else if (error !== undefined) {
+          errorData.details = error;
         }
+        vlog.error(message, errorData);
       }
     }
   }
@@ -290,7 +287,7 @@ export class RadiologyLogger {
       const confidenceStr = (options.confidence * 100).toFixed(1);
 
       // Compact, important log line - what IS being redacted
-      console.error(
+      vlog.info(
         `[REDACTED] [${options.filterType}] "${this.truncateText(options.text, 50)}" -> ${options.token} (conf: ${confidenceStr}%)`,
       );
     }
@@ -327,16 +324,16 @@ export class RadiologyLogger {
           ? ` (pos: ${options.start}-${options.end})`
           : "";
 
-      console.error(
+      vlog.info(
         `[${timestamp}] [PHI-FILTERED] [${options.filterType}] ` +
           `"${this.truncateText(options.text, 50)}"${posStr}`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [PHI-FILTERED]   -> Reason: ${options.reason}`,
       );
 
       if (options.details) {
-        console.error(
+        vlog.info(
           `[${timestamp}] [PHI-FILTERED]   -> Details: ${options.details}`,
         );
       }
@@ -353,7 +350,7 @@ export class RadiologyLogger {
   static filterStart(filterName: string, filterType: string) {
     if (this.enabled && this.logLevel <= LogLevel.DEBUG) {
       const timestamp = this.getTimestamp();
-      console.error(
+      vlog.info(
         `[${timestamp}] [FILTER-START] [${filterType}] ${filterName} executing...`,
       );
     }
@@ -375,13 +372,13 @@ export class RadiologyLogger {
       const icon = options.success ? "✓" : "✗";
       const status = options.success ? "OK" : "FAILED";
 
-      console.error(
+      vlog.info(
         `[${timestamp}] [FILTER-DONE] [${icon}] [${options.filterType}] ` +
           `${options.filterName}: ${options.spansDetected} spans in ${options.executionTimeMs}ms [${status}]`,
       );
 
       if (options.error) {
-        console.error(
+        vlog.info(
           `[${timestamp}] [FILTER-ERROR] [${options.filterType}] ${options.filterName}: ${options.error.message}`,
         );
       }
@@ -399,7 +396,7 @@ export class RadiologyLogger {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
       const timestamp = this.getTimestamp();
       const spanStr = spanCount !== undefined ? ` (${spanCount} spans)` : "";
-      console.error(
+      vlog.info(
         `[${timestamp}] [PIPELINE] [${stage}] ${details}${spanStr}`,
       );
     }
@@ -420,32 +417,32 @@ export class RadiologyLogger {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
       const timestamp = this.getTimestamp();
 
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY] ============================================================`,
       );
-      console.error(`[${timestamp}] [SUMMARY] Redaction Complete`);
-      console.error(
+      vlog.info(`[${timestamp}] [SUMMARY] Redaction Complete`);
+      vlog.info(
         `[${timestamp}] [SUMMARY]   Input:  ${options.inputLength} characters`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY]   Output: ${options.outputLength} characters`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY]   Filters executed: ${options.filterCount}`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY]   Spans detected:   ${options.totalSpansDetected}`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY]   After filtering:  ${options.spansAfterFiltering}`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY]   Tokens applied:   ${options.spansApplied}`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY]   Time: ${options.executionTimeMs}ms`,
       );
-      console.error(
+      vlog.info(
         `[${timestamp}] [SUMMARY] ============================================================`,
       );
     }
@@ -459,7 +456,7 @@ export class RadiologyLogger {
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
       const timestamp = this.getTimestamp();
       const timeStr = timeMs !== undefined ? ` in ${timeMs}ms` : "";
-      console.error(
+      vlog.info(
         `[${timestamp}] [DICTIONARY] Loaded ${name}: ${count.toLocaleString()} entries${timeStr}`,
       );
     }
@@ -468,7 +465,7 @@ export class RadiologyLogger {
   static dictionaryError(name: string, error: string) {
     if (!this.suppressErrors) {
       const timestamp = this.getTimestamp();
-      console.error(`[${timestamp}] [DICTIONARY] [ERROR] ${name}: ${error}`);
+      vlog.info(`[${timestamp}] [DICTIONARY] [ERROR] ${name}: ${error}`);
     }
   }
 
@@ -509,23 +506,23 @@ export class RadiologyLogger {
     const stats = this.getStats();
     const timestamp = this.getTimestamp();
 
-    console.error(
+    vlog.info(
       `\n[${timestamp}] [SESSION-SUMMARY] ============================================================`,
     );
-    console.error(
+    vlog.info(
       `[${timestamp}] [SESSION-SUMMARY] Session Duration: ${(stats.sessionDurationMs / 1000).toFixed(2)}s`,
     );
-    console.error(
+    vlog.info(
       `[${timestamp}] [SESSION-SUMMARY] PHI Detected: ${stats.phiDetected}`,
     );
-    console.error(
+    vlog.info(
       `[${timestamp}] [SESSION-SUMMARY] False Positives Filtered: ${stats.phiFiltered}`,
     );
-    console.error(`[${timestamp}] [SESSION-SUMMARY] Errors: ${stats.errors}`);
-    console.error(
+    vlog.info(`[${timestamp}] [SESSION-SUMMARY] Errors: ${stats.errors}`);
+    vlog.info(
       `[${timestamp}] [SESSION-SUMMARY] Warnings: ${stats.warnings}`,
     );
-    console.error(
+    vlog.info(
       `[${timestamp}] [SESSION-SUMMARY] ============================================================\n`,
     );
 
@@ -536,11 +533,11 @@ export class RadiologyLogger {
         byType[log.filterType] = (byType[log.filterType] || 0) + 1;
       }
 
-      console.error(`[${timestamp}] [SESSION-SUMMARY] PHI by Type:`);
+      vlog.info(`[${timestamp}] [SESSION-SUMMARY] PHI by Type:`);
       for (const [type, count] of Object.entries(byType).sort(
         (a, b) => b[1] - a[1],
       )) {
-        console.error(`[${timestamp}] [SESSION-SUMMARY]   ${type}: ${count}`);
+        vlog.info(`[${timestamp}] [SESSION-SUMMARY]   ${type}: ${count}`);
       }
     }
   }
@@ -551,21 +548,17 @@ export class RadiologyLogger {
 
   static loading(message: string, ...args: any[]) {
     if (this.enabled)
-      console.error(`[${this.getTimestamp()}] [LOADING]`, message, ...args);
+      vlog.info(`[LOADING] ${message} ${args.join(" ")}`, { component: "RadiologyLogger" });
   }
 
   static success(message: string, ...args: any[]) {
     if (this.enabled)
-      console.error(`[${this.getTimestamp()}] [SUCCESS]`, message, ...args);
+      vlog.success(`${message} ${args.join(" ")}`, { component: "RadiologyLogger" });
   }
 
   static redactionDebug(message: string, data?: any) {
     if (this.enabled && this.logLevel <= LogLevel.DEBUG) {
-      console.debug(
-        `[${this.getTimestamp()}] [REDACTION-DEBUG]`,
-        message,
-        data || "",
-      );
+      vlog.debug(`[REDACTION-DEBUG] ${message}`, { component: "RadiologyLogger", data });
     }
   }
 

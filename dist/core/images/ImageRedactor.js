@@ -58,6 +58,7 @@ const path = __importStar(require("path"));
 const OCRService_1 = require("./OCRService");
 const VulpesNative_1 = require("../../VulpesNative");
 const logger_1 = require("./logger");
+const VulpesLogger_1 = require("../../utils/VulpesLogger");
 const DEFAULT_FACE_MODEL_PATH = path.join(__dirname, "../../../models/vision/ultraface.onnx");
 const DEFAULT_POLICY = {
     redactFaces: true,
@@ -246,7 +247,7 @@ class ImageRedactor {
                 }
             }
             catch (error) {
-                console.warn("[ImageRedactor] Text redactor error:", error);
+                VulpesLogger_1.vulpesLogger.warn("Text redactor error", { component: "ImageRedactor", error: String(error) });
             }
         }
         // Basic heuristics for common PHI patterns

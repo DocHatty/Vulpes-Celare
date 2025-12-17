@@ -49,6 +49,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.calibrationPersistence = exports.CalibrationPersistence = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 /**
  * Default calibration storage location
  */
@@ -115,7 +116,11 @@ class CalibrationPersistence {
         };
         const filePath = this.getCalibrationPath();
         fs.writeFileSync(filePath, JSON.stringify(persisted, null, 2), "utf-8");
-        console.log(`[CalibrationPersistence] Saved calibration to ${filePath} (${dataPointCount} data points)`);
+        VulpesLogger_1.vulpesLogger.info("Saved calibration", {
+            component: "CalibrationPersistence",
+            path: filePath,
+            dataPoints: dataPointCount,
+        });
     }
     /**
      * Load calibrator state from disk
@@ -126,7 +131,7 @@ class CalibrationPersistence {
     load(calibrator) {
         const filePath = this.getCalibrationPath();
         if (!fs.existsSync(filePath)) {
-            console.log(`[CalibrationPersistence] No calibration file found at ${filePath}`);
+            VulpesLogger_1.vulpesLogger.debug(`No calibration file found at ${filePath}`, { component: "CalibrationPersistence" });
             return false;
         }
         try {
@@ -134,17 +139,20 @@ class CalibrationPersistence {
             const persisted = JSON.parse(content);
             // Check version compatibility
             if (!this.isVersionCompatible(persisted.metadata.version)) {
-                console.warn(`[CalibrationPersistence] Incompatible calibration version: ${persisted.metadata.version} (expected ${CALIBRATION_VERSION})`);
+                VulpesLogger_1.vulpesLogger.warn(`Incompatible calibration version: ${persisted.metadata.version} (expected ${CALIBRATION_VERSION})`, { component: "CalibrationPersistence" });
                 return false;
             }
             // Import parameters into calibrator
             calibrator.importParameters(persisted.parameters);
-            console.log(`[CalibrationPersistence] Loaded calibration from ${filePath} ` +
-                `(fitted ${persisted.metadata.fittedAt}, ${persisted.metadata.dataPointCount} points)`);
+            VulpesLogger_1.vulpesLogger.info(`Loaded calibration from ${filePath}`, {
+                component: "CalibrationPersistence",
+                fittedAt: persisted.metadata.fittedAt,
+                dataPoints: persisted.metadata.dataPointCount,
+            });
             return true;
         }
         catch (error) {
-            console.error(`[CalibrationPersistence] Error loading calibration: ${error}`);
+            VulpesLogger_1.vulpesLogger.error(`Error loading calibration: ${error}`, { component: "CalibrationPersistence" });
             return false;
         }
     }
@@ -191,7 +199,7 @@ class CalibrationPersistence {
         const filePath = this.getCalibrationPath();
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
-            console.log(`[CalibrationPersistence] Deleted calibration file: ${filePath}`);
+            VulpesLogger_1.vulpesLogger.info(`Deleted calibration file: ${filePath}`, { component: "CalibrationPersistence" });
         }
     }
     /**
@@ -205,7 +213,7 @@ class CalibrationPersistence {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const backupPath = path.join(this.calibrationDir, `calibration-backup-${timestamp}.json`);
         fs.copyFileSync(filePath, backupPath);
-        console.log(`[CalibrationPersistence] Created backup: ${backupPath}`);
+        VulpesLogger_1.vulpesLogger.info(`Created backup: ${backupPath}`, { component: "CalibrationPersistence" });
         return backupPath;
     }
     /**
@@ -230,18 +238,18 @@ class CalibrationPersistence {
      */
     restoreFromBackup(backupPath, calibrator) {
         if (!fs.existsSync(backupPath)) {
-            console.error(`[CalibrationPersistence] Backup file not found: ${backupPath}`);
+            VulpesLogger_1.vulpesLogger.error(`Backup file not found: ${backupPath}`, { component: "CalibrationPersistence" });
             return false;
         }
         try {
             const content = fs.readFileSync(backupPath, "utf-8");
             const persisted = JSON.parse(content);
             calibrator.importParameters(persisted.parameters);
-            console.log(`[CalibrationPersistence] Restored calibration from backup: ${backupPath}`);
+            VulpesLogger_1.vulpesLogger.info(`Restored calibration from backup: ${backupPath}`, { component: "CalibrationPersistence" });
             return true;
         }
         catch (error) {
-            console.error(`[CalibrationPersistence] Error restoring backup: ${error}`);
+            VulpesLogger_1.vulpesLogger.error(`Error restoring backup: ${error}`, { component: "CalibrationPersistence" });
             return false;
         }
     }

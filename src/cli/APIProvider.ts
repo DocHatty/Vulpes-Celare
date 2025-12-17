@@ -22,6 +22,10 @@ import figures from "figures";
 
 import { getSystemPrompt } from "./SystemPrompts";
 
+// Import unified theme system
+import { theme } from "../theme";
+import { out } from "../utils/VulpesOutput";
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -109,20 +113,7 @@ export interface StreamEvent {
   error?: string;
 }
 
-// ============================================================================
-// THEME
-// ============================================================================
-
-const theme = {
-  primary: chalk.hex("#FF6B35"),
-  secondary: chalk.hex("#4ECDC4"),
-  accent: chalk.hex("#FFE66D"),
-  success: chalk.hex("#2ECC71"),
-  warning: chalk.hex("#F39C12"),
-  error: chalk.hex("#E74C3C"),
-  info: chalk.hex("#3498DB"),
-  muted: chalk.hex("#95A5A6"),
-};
+// Theme imported from unified theme system (../theme)
 
 // ============================================================================
 // LOCAL API KEY STORAGE
@@ -744,7 +735,7 @@ export async function interactiveProviderSetup(): Promise<{
     });
   };
 
-  console.log(theme.info.bold("\n  SELECT API PROVIDER:\n"));
+  out.print(theme.info.bold("\n  SELECT API PROVIDER:\n"));
 
   const providerList = Object.values(PROVIDERS);
   const savedKeys = loadSavedKeys();
@@ -763,12 +754,12 @@ export async function interactiveProviderSetup(): Promise<{
       envStatus = theme.muted(" [no key]");
     }
 
-    console.log(
+    out.print(
       `  ${theme.accent.bold(`[${i + 1}]`)} ${theme.primary(p.name)}${envStatus}`,
     );
   }
 
-  console.log(theme.muted("\n  [b] Back\n"));
+  out.print(theme.muted("\n  [b] Back\n"));
 
   const providerChoice = await question(theme.secondary("  Your choice: "));
 
@@ -783,7 +774,7 @@ export async function interactiveProviderSetup(): Promise<{
     providerIndex < 0 ||
     providerIndex >= providerList.length
   ) {
-    console.log(theme.error("  Invalid choice"));
+    out.print(theme.error("  Invalid choice"));
     rl.close();
     return null;
   }
@@ -794,7 +785,7 @@ export async function interactiveProviderSetup(): Promise<{
 
   // Ask for API key if not in env or saved locally
   if (selectedProviderConfig.envKey && !apiKey) {
-    console.log(
+    out.print(
       theme.warning(`\n  ${selectedProviderConfig.envKey} not found.`),
     );
     apiKey = await question(
@@ -802,14 +793,14 @@ export async function interactiveProviderSetup(): Promise<{
     );
 
     if (!apiKey) {
-      console.log(theme.error("  API key required for this provider."));
+      out.print(theme.error("  API key required for this provider."));
       rl.close();
       return null;
     }
 
     // Save the key for future sessions
     saveApiKey(selectedProviderConfig.envKey, apiKey);
-    console.log(
+    out.print(
       theme.success(
         `  ${figures.tick} API key saved to ~/.vulpes/api-keys.json`,
       ),
@@ -822,7 +813,7 @@ export async function interactiveProviderSetup(): Promise<{
       theme.secondary("  Enter base URL (e.g., https://my-api.com): "),
     );
     if (!customUrl) {
-      console.log(theme.error("  Base URL required for custom provider."));
+      out.print(theme.error("  Base URL required for custom provider."));
       rl.close();
       return null;
     }
@@ -846,13 +837,13 @@ export async function interactiveProviderSetup(): Promise<{
     spinner.succeed(`Found ${models.length} models`);
 
     if (models.length === 0) {
-      console.log(theme.error("  No models available."));
+      out.print(theme.error("  No models available."));
       rl.close();
       return null;
     }
 
     // Show model selection
-    console.log(theme.info.bold("\n  SELECT MODEL:\n"));
+    out.print(theme.info.bold("\n  SELECT MODEL:\n"));
 
     // Show first 20 models in a clean format (just ID + context)
     const displayLimit = 20;
@@ -864,20 +855,20 @@ export async function interactiveProviderSetup(): Promise<{
         ? theme.muted(` [${(m.contextLength / 1000).toFixed(0)}K]`)
         : "";
       // Just show model ID, no verbose descriptions
-      console.log(
+      out.print(
         `  ${theme.accent.bold(`[${i + 1}]`)} ${theme.primary(m.id)}${ctx}`,
       );
     }
 
     if (models.length > displayLimit) {
-      console.log(
+      out.print(
         theme.muted(
           `\n  ... and ${models.length - displayLimit} more. Enter model ID directly to use others.`,
         ),
       );
     }
 
-    console.log();
+    out.blank();
     const modelChoice = await question(
       theme.secondary("  Your choice (number or model ID): "),
     );
@@ -903,13 +894,13 @@ export async function interactiveProviderSetup(): Promise<{
         selectedModel = modelChoice;
       }
     } else {
-      console.log(theme.error("  No model selected."));
+      out.print(theme.error("  No model selected."));
       rl.close();
       return null;
     }
 
     provider.setModel(selectedModel);
-    console.log(
+    out.print(
       theme.success(`\n  ${figures.tick} Selected: ${selectedModel}`),
     );
 
@@ -917,7 +908,7 @@ export async function interactiveProviderSetup(): Promise<{
     return { provider, model: selectedModel };
   } catch (error: any) {
     spinner.fail("Failed to fetch models");
-    console.log(theme.error(`  Error: ${error.message}`));
+    out.print(theme.error(`  Error: ${error.message}`));
     rl.close();
     return null;
   }

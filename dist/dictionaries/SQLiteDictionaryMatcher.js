@@ -63,6 +63,7 @@ exports.SQLiteDictionaryMatcher = void 0;
 exports.getSQLiteDictionaryMatcher = getSQLiteDictionaryMatcher;
 exports.isSQLiteDictionaryAvailable = isSQLiteDictionaryAvailable;
 const better_sqlite3_1 = __importDefault(require("better-sqlite3"));
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 const bloom_filters_1 = require("bloom-filters");
@@ -96,7 +97,7 @@ class SQLiteDictionaryMatcher {
     constructor(config = {}) {
         const dbPath = this.resolveDatabasePath(config.dbPath);
         if (!dbPath) {
-            console.warn("[SQLiteDictionaryMatcher] Database not found, operating in fallback mode");
+            VulpesLogger_1.vulpesLogger.warn("Database not found, operating in fallback mode", { component: "SQLiteDictionaryMatcher" });
             return;
         }
         try {
@@ -116,7 +117,10 @@ class SQLiteDictionaryMatcher {
             this.isAvailable = true;
         }
         catch (error) {
-            console.warn("[SQLiteDictionaryMatcher] Failed to open database:", error.message);
+            VulpesLogger_1.vulpesLogger.warn("Failed to open database", {
+                component: "SQLiteDictionaryMatcher",
+                error: error.message,
+            });
             this.db = null;
         }
     }

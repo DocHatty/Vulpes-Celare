@@ -3,6 +3,7 @@ import { parentPort, workerData, isMainThread } from "worker_threads";
 import { FilterRegistry } from "../filters/FilterRegistry";
 import { Span } from "../models/Span";
 import { RedactionContext } from "../context/RedactionContext";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 
 // Simple RedactionContext mock for workers
 // We can't pass the full context object as it contains methods/state that isn't serializable
@@ -18,7 +19,7 @@ if (!isMainThread && parentPort) {
     // Initialize registry on worker startup
     // This loads all filter classes
     FilterRegistry.initialize().catch(err => {
-        console.error("Worker initialization failed:", err);
+        log.error("Worker initialization failed", { error: String(err) });
         process.exit(1);
     });
 

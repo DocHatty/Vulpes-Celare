@@ -214,7 +214,8 @@ try {
   if (fs.existsSync(configPath)) {
     try {
       fs.renameSync(configPath, backupPath);
-      console.error(`\n[Vulpes Warning] Config file was corrupt. Backed up to: ${backupPath}`);
+      // Use process.stderr directly for pre-init warnings
+      process.stderr.write(`\n[Vulpes Warning] Config file was corrupt. Backed up to: ${backupPath}\n`);
     } catch {
       // Ignore
     }

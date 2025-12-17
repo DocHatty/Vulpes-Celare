@@ -46,7 +46,8 @@ const index_js_1 = require("@modelcontextprotocol/sdk/server/index.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
 const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
 // CRITICAL: Import VERSION directly, don't import VulpesCelare yet
-const VERSION = "1.0.0";
+const meta_1 = require("../meta");
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 // ============================================================================
 // ULTRA-LAZY INITIALIZATION
 // ============================================================================
@@ -65,7 +66,7 @@ async function getVulpes() {
 // ============================================================================
 const server = new index_js_1.Server({
     name: "vulpes-celare",
-    version: VERSION,
+    version: meta_1.VERSION,
 }, {
     capabilities: {
         tools: {},
@@ -163,7 +164,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
                             type: "text",
                             text: JSON.stringify({
                                 engine: "Vulpes Celare",
-                                version: VERSION,
+                                version: meta_1.VERSION,
                                 activeFilters: v.getActiveFilters().length,
                                 filterNames: v.getActiveFilters(),
                                 targetMetrics: {
@@ -209,7 +210,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
 // ============================================================================
 const transport = new stdio_js_1.StdioServerTransport();
 server.connect(transport).catch((error) => {
-    console.error("[Vulpes MCP] Fatal:", error.message);
+    VulpesLogger_1.vulpesLogger.fatal("MCP server connection failed", { component: "Vulpes MCP", error: error.message });
     process.exit(1);
 });
 //# sourceMappingURL=server.js.map

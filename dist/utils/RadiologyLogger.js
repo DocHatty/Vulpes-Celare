@@ -9,9 +9,13 @@
  * - Error tracking and diagnostics
  *
  * Logging is ENABLED by default for transparency and debugging.
+ *
+ * NOTE: This is a specialized domain logger for radiology workflows.
+ * For general logging, use VulpesLogger from './VulpesLogger'.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RadiologyLogger = exports.LogFormat = exports.LogLevel = void 0;
+const VulpesLogger_1 = require("./VulpesLogger");
 var LogLevel;
 (function (LogLevel) {
     LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
@@ -119,28 +123,21 @@ class RadiologyLogger {
     // ============================================================================
     static outputLog(level, category, message, data) {
         const timestamp = new Date().toISOString();
-        if (this.logFormat === LogFormat.JSON) {
-            // Structured JSON output for production/log aggregation
-            const logEntry = {
-                timestamp,
-                level,
-                category,
-                message,
-                ...(data && { data }),
-            };
-            // Use stderr to keep stdout clean for actual output
-            console.error(JSON.stringify(logEntry));
-        }
-        else {
-            // Pretty format for development
-            const timeStr = timestamp.substring(11, 23);
-            const levelUpper = level.toUpperCase();
-            if (data !== undefined) {
-                console[level](`[${timeStr}] [${levelUpper}] [${category}] ${message}`, data);
-            }
-            else {
-                console[level](`[${timeStr}] [${levelUpper}] [${category}] ${message}`);
-            }
+        // Route through VulpesLogger for consistent output
+        const context = { component: category, ...data };
+        switch (level) {
+            case "debug":
+                VulpesLogger_1.vulpesLogger.debug(message, context);
+                break;
+            case "info":
+                VulpesLogger_1.vulpesLogger.info(message, context);
+                break;
+            case "warn":
+                VulpesLogger_1.vulpesLogger.warn(message, context);
+                break;
+            case "error":
+                VulpesLogger_1.vulpesLogger.error(message, context);
+                break;
         }
     }
     // ============================================================================
@@ -177,16 +174,16 @@ class RadiologyLogger {
                 this.outputLog("error", category, message, Object.keys(errorData).length > 0 ? errorData : undefined);
             }
             else {
-                const timestamp = this.getTimestamp();
-                console.error(`[${timestamp}] [ERROR] [${category}] ${message}`);
-                if (error) {
-                    if (error instanceof Error) {
-                        console.error(`  Stack: ${error.stack}`);
-                    }
-                    else {
-                        console.error(`  Details:`, error);
-                    }
+                // Route through VulpesLogger
+                const errorData = { component: category };
+                if (error instanceof Error) {
+                    errorData.error = error.message;
+                    errorData.stack = error.stack?.split("\n").slice(0, 5);
                 }
+                else if (error !== undefined) {
+                    errorData.details = error;
+                }
+                VulpesLogger_1.vulpesLogger.error(message, errorData);
             }
         }
     }
@@ -215,7 +212,7 @@ class RadiologyLogger {
         if (this.enabled && this.logLevel <= LogLevel.ERROR) {
             const confidenceStr = (options.confidence * 100).toFixed(1);
             // Compact, important log line - what IS being redacted
-            console.error(`[REDACTED] [${options.filterType}] "${this.truncateText(options.text, 50)}" -> ${options.token} (conf: ${confidenceStr}%)`);
+            VulpesLogger_1.vulpesLogger.info(`[REDACTED] [${options.filterType}] "${this.truncateText(options.text, 50)}" -> ${options.token} (conf: ${confidenceStr}%)`);
         }
     }
     /**
@@ -237,11 +234,11 @@ class RadiologyLogger {
             const posStr = options.start !== undefined
                 ? ` (pos: ${options.start}-${options.end})`
                 : "";
-            console.error(`[${timestamp}] [PHI-FILTERED] [${options.filterType}] ` +
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [PHI-FILTERED] [${options.filterType}] ` +
                 `"${this.truncateText(options.text, 50)}"${posStr}`);
-            console.error(`[${timestamp}] [PHI-FILTERED]   -> Reason: ${options.reason}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [PHI-FILTERED]   -> Reason: ${options.reason}`);
             if (options.details) {
-                console.error(`[${timestamp}] [PHI-FILTERED]   -> Details: ${options.details}`);
+                VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [PHI-FILTERED]   -> Details: ${options.details}`);
             }
         }
     }
@@ -254,7 +251,7 @@ class RadiologyLogger {
     static filterStart(filterName, filterType) {
         if (this.enabled && this.logLevel <= LogLevel.DEBUG) {
             const timestamp = this.getTimestamp();
-            console.error(`[${timestamp}] [FILTER-START] [${filterType}] ${filterName} executing...`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [FILTER-START] [${filterType}] ${filterName} executing...`);
         }
     }
     /**
@@ -265,10 +262,10 @@ class RadiologyLogger {
             const timestamp = this.getTimestamp();
             const icon = options.success ? "✓" : "✗";
             const status = options.success ? "OK" : "FAILED";
-            console.error(`[${timestamp}] [FILTER-DONE] [${icon}] [${options.filterType}] ` +
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [FILTER-DONE] [${icon}] [${options.filterType}] ` +
                 `${options.filterName}: ${options.spansDetected} spans in ${options.executionTimeMs}ms [${status}]`);
             if (options.error) {
-                console.error(`[${timestamp}] [FILTER-ERROR] [${options.filterType}] ${options.filterName}: ${options.error.message}`);
+                VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [FILTER-ERROR] [${options.filterType}] ${options.filterName}: ${options.error.message}`);
             }
         }
     }
@@ -282,7 +279,7 @@ class RadiologyLogger {
         if (this.enabled && this.logLevel <= LogLevel.INFO) {
             const timestamp = this.getTimestamp();
             const spanStr = spanCount !== undefined ? ` (${spanCount} spans)` : "";
-            console.error(`[${timestamp}] [PIPELINE] [${stage}] ${details}${spanStr}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [PIPELINE] [${stage}] ${details}${spanStr}`);
         }
     }
     /**
@@ -291,16 +288,16 @@ class RadiologyLogger {
     static redactionSummary(options) {
         if (this.enabled && this.logLevel <= LogLevel.INFO) {
             const timestamp = this.getTimestamp();
-            console.error(`[${timestamp}] [SUMMARY] ============================================================`);
-            console.error(`[${timestamp}] [SUMMARY] Redaction Complete`);
-            console.error(`[${timestamp}] [SUMMARY]   Input:  ${options.inputLength} characters`);
-            console.error(`[${timestamp}] [SUMMARY]   Output: ${options.outputLength} characters`);
-            console.error(`[${timestamp}] [SUMMARY]   Filters executed: ${options.filterCount}`);
-            console.error(`[${timestamp}] [SUMMARY]   Spans detected:   ${options.totalSpansDetected}`);
-            console.error(`[${timestamp}] [SUMMARY]   After filtering:  ${options.spansAfterFiltering}`);
-            console.error(`[${timestamp}] [SUMMARY]   Tokens applied:   ${options.spansApplied}`);
-            console.error(`[${timestamp}] [SUMMARY]   Time: ${options.executionTimeMs}ms`);
-            console.error(`[${timestamp}] [SUMMARY] ============================================================`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY] ============================================================`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY] Redaction Complete`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY]   Input:  ${options.inputLength} characters`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY]   Output: ${options.outputLength} characters`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY]   Filters executed: ${options.filterCount}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY]   Spans detected:   ${options.totalSpansDetected}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY]   After filtering:  ${options.spansAfterFiltering}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY]   Tokens applied:   ${options.spansApplied}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY]   Time: ${options.executionTimeMs}ms`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SUMMARY] ============================================================`);
         }
     }
     // ============================================================================
@@ -310,13 +307,13 @@ class RadiologyLogger {
         if (this.enabled && this.logLevel <= LogLevel.INFO) {
             const timestamp = this.getTimestamp();
             const timeStr = timeMs !== undefined ? ` in ${timeMs}ms` : "";
-            console.error(`[${timestamp}] [DICTIONARY] Loaded ${name}: ${count.toLocaleString()} entries${timeStr}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [DICTIONARY] Loaded ${name}: ${count.toLocaleString()} entries${timeStr}`);
         }
     }
     static dictionaryError(name, error) {
         if (!this.suppressErrors) {
             const timestamp = this.getTimestamp();
-            console.error(`[${timestamp}] [DICTIONARY] [ERROR] ${name}: ${error}`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [DICTIONARY] [ERROR] ${name}: ${error}`);
         }
     }
     // ============================================================================
@@ -351,22 +348,22 @@ class RadiologyLogger {
     static printSessionSummary() {
         const stats = this.getStats();
         const timestamp = this.getTimestamp();
-        console.error(`\n[${timestamp}] [SESSION-SUMMARY] ============================================================`);
-        console.error(`[${timestamp}] [SESSION-SUMMARY] Session Duration: ${(stats.sessionDurationMs / 1000).toFixed(2)}s`);
-        console.error(`[${timestamp}] [SESSION-SUMMARY] PHI Detected: ${stats.phiDetected}`);
-        console.error(`[${timestamp}] [SESSION-SUMMARY] False Positives Filtered: ${stats.phiFiltered}`);
-        console.error(`[${timestamp}] [SESSION-SUMMARY] Errors: ${stats.errors}`);
-        console.error(`[${timestamp}] [SESSION-SUMMARY] Warnings: ${stats.warnings}`);
-        console.error(`[${timestamp}] [SESSION-SUMMARY] ============================================================\n`);
+        VulpesLogger_1.vulpesLogger.info(`\n[${timestamp}] [SESSION-SUMMARY] ============================================================`);
+        VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY] Session Duration: ${(stats.sessionDurationMs / 1000).toFixed(2)}s`);
+        VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY] PHI Detected: ${stats.phiDetected}`);
+        VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY] False Positives Filtered: ${stats.phiFiltered}`);
+        VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY] Errors: ${stats.errors}`);
+        VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY] Warnings: ${stats.warnings}`);
+        VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY] ============================================================\n`);
         // Print PHI type breakdown
         if (this.detectionHistory.length > 0) {
             const byType = {};
             for (const log of this.detectionHistory) {
                 byType[log.filterType] = (byType[log.filterType] || 0) + 1;
             }
-            console.error(`[${timestamp}] [SESSION-SUMMARY] PHI by Type:`);
+            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY] PHI by Type:`);
             for (const [type, count] of Object.entries(byType).sort((a, b) => b[1] - a[1])) {
-                console.error(`[${timestamp}] [SESSION-SUMMARY]   ${type}: ${count}`);
+                VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [SESSION-SUMMARY]   ${type}: ${count}`);
             }
         }
     }
@@ -375,15 +372,15 @@ class RadiologyLogger {
     // ============================================================================
     static loading(message, ...args) {
         if (this.enabled)
-            console.error(`[${this.getTimestamp()}] [LOADING]`, message, ...args);
+            VulpesLogger_1.vulpesLogger.info(`[LOADING] ${message} ${args.join(" ")}`, { component: "RadiologyLogger" });
     }
     static success(message, ...args) {
         if (this.enabled)
-            console.error(`[${this.getTimestamp()}] [SUCCESS]`, message, ...args);
+            VulpesLogger_1.vulpesLogger.success(`${message} ${args.join(" ")}`, { component: "RadiologyLogger" });
     }
     static redactionDebug(message, data) {
         if (this.enabled && this.logLevel <= LogLevel.DEBUG) {
-            console.debug(`[${this.getTimestamp()}] [REDACTION-DEBUG]`, message, data || "");
+            VulpesLogger_1.vulpesLogger.debug(`[REDACTION-DEBUG] ${message}`, { component: "RadiologyLogger", data });
         }
     }
     // ============================================================================

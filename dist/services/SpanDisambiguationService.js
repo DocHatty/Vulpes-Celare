@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpanDisambiguationService = void 0;
 const Span_1 = require("../models/Span");
 const string_similarity_1 = require("../utils/stubs/string-similarity");
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 /**
  * Context keyword vectors for each filter type
  * These are learned patterns of words that commonly appear near each entity type
@@ -120,14 +121,16 @@ class SpanDisambiguationService {
         // All spans should be at same position
         const position = spans[0].characterStart;
         const text = spans[0].text;
-        console.error(`[Disambiguation] Disambiguating "${text}" at position ${position}`);
-        console.error(`[Disambiguation] Candidates: ${spans.map(s => s.filterType).join(", ")}`);
+        VulpesLogger_1.vulpesLogger.debug(`Disambiguating "${text}" at position ${position}`, {
+            component: "Disambiguation",
+            candidates: spans.map(s => s.filterType).join(", "),
+        });
         // Calculate context similarity for each candidate
         const scores = new Map();
         for (const span of spans) {
             const score = this.calculateContextScore(span);
             scores.set(span.filterType, score);
-            console.error(`[Disambiguation] ${span.filterType}: ${score.toFixed(3)}`);
+            VulpesLogger_1.vulpesLogger.trace(`${span.filterType}: ${score.toFixed(3)}`, { component: "Disambiguation" });
         }
         // Find best match
         let bestSpan = null;
@@ -141,7 +144,7 @@ class SpanDisambiguationService {
         }
         // Check if best score meets threshold
         if (bestSpan && bestScore >= this.confidenceThreshold) {
-            console.error(`[Disambiguation] Selected: ${bestSpan.filterType} (score: ${bestScore.toFixed(3)})`);
+            VulpesLogger_1.vulpesLogger.debug(`Selected: ${bestSpan.filterType} (score: ${bestScore.toFixed(3)})`, { component: "Disambiguation" });
             bestSpan.disambiguationScore = bestScore;
             bestSpan.ambiguousWith = spans
                 .filter(s => s.filterType !== bestSpan.filterType)
@@ -149,7 +152,7 @@ class SpanDisambiguationService {
             return bestSpan;
         }
         // If no clear winner, fall back to highest confidence or priority
-        console.error(`[Disambiguation] No clear winner, using fallback`);
+        VulpesLogger_1.vulpesLogger.debug("No clear winner, using fallback", { component: "Disambiguation" });
         return this.fallbackDisambiguation(spans);
     }
     /**

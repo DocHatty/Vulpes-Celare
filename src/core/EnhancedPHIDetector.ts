@@ -25,6 +25,7 @@ import { NameDictionary } from "../dictionaries/NameDictionary";
 import { LRUCache } from "lru-cache";
 import * as fs from "fs";
 import * as path from "path";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 
 export interface DetectionCandidate {
   text: string;
@@ -120,7 +121,7 @@ export class EnhancedPHIDetector {
 
       this.initialized = true;
     } catch (error) {
-      console.error("EnhancedPHIDetector init error:", error);
+      log.error("EnhancedPHIDetector init error", { component: "EnhancedPHIDetector", error: String(error) });
       this.initialized = true; // Mark as initialized to avoid retry loops
     }
   }

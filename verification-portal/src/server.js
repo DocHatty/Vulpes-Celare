@@ -3,6 +3,8 @@
  * 
  * Simple Express.js server providing verification API for Trust Bundles (RED files)
  * Non-technical auditors can upload a Trust Bundle and get instant verification results
+ * 
+ * @module verification-portal
  */
 
 const express = require('express');
@@ -16,7 +18,7 @@ const app = express();
 const upload = multer({ dest: 'uploads/' });
 
 // Serve static files from public directory
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.json());
 
 /**
@@ -182,7 +184,8 @@ app.post('/api/verify', upload.single('bundle'), async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    console.error('Verification error:', error);
+    // Log to stderr for server errors
+    process.stderr.write(`[Verification Error] ${error.message}\n`);
     res.status(500).json({ error: 'Verification failed', message: error.message });
   }
 });
@@ -200,14 +203,20 @@ app.get('/api/health', (req, res) => {
  * Serve the verification portal UI
  */
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`🦊 Vulpes Celare Verification Portal running on http://localhost:${PORT}`);
-  console.log(`📋 API available at http://localhost:${PORT}/api`);
+// Start server
+const server = app.listen(PORT, () => {
+  const address = server.address();
+  const host = address.address === '::' ? 'localhost' : address.address;
+  // Using process.stdout for startup messages (not diagnostic logging)
+  process.stdout.write(`\n🦊 Vulpes Celare Verification Portal\n`);
+  process.stdout.write(`   → Local:  http://${host}:${address.port}\n`);
+  process.stdout.write(`   → API:    http://${host}:${address.port}/api/verify\n`);
+  process.stdout.write(`   → Health: http://${host}:${address.port}/api/health\n\n`);
 });
 
 module.exports = app;

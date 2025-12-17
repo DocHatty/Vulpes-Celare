@@ -27,7 +27,6 @@ import { spawn } from "child_process";
 import chalk from "chalk";
 import { validatePath, safeGrep } from "../utils/SecurityUtils";
 import ora, { Ora } from "ora";
-import boxen from "boxen";
 import figures from "figures";
 import { Marked } from "marked";
 import { markedTerminal } from "marked-terminal";
@@ -51,20 +50,25 @@ import {
   SubagentResult,
 } from "./SubagentOrchestrator";
 
-// Initialize marked with terminal renderer
+// Import unified theme system
+import { theme, brand, terminal } from "../theme";
+import { Status, Divider, Box, Progress } from "../theme/output";
+import { out } from "../utils/VulpesOutput";
+
+// Initialize marked with terminal renderer using theme colors
 const marked = new Marked(
   markedTerminal({
-    code: chalk.hex("#60A5FA"),
+    code: chalk.hex(terminal.codeBg).inverse,
     blockquote: chalk.hex("#95A5A6").italic,
-    heading: chalk.hex("#FF6B35").bold,
-    firstHeading: chalk.hex("#FF6B35").bold,
-    hr: chalk.hex("#4ECDC4"),
+    heading: chalk.hex(brand.primary).bold,
+    firstHeading: chalk.hex(brand.primary).bold,
+    hr: chalk.hex(brand.secondary),
     listitem: chalk.hex("#FFFFFF"),
     paragraph: chalk.hex("#FFFFFF"),
-    strong: chalk.hex("#FFE66D").bold,
+    strong: chalk.hex(brand.accent).bold,
     em: chalk.italic,
-    codespan: chalk.hex("#60A5FA").bgHex("#1a1a2e"),
-    link: chalk.hex("#4ECDC4").underline,
+    codespan: chalk.hex("#60A5FA").bgHex(terminal.codeBg),
+    link: chalk.hex(brand.secondary).underline,
     reflowText: true,
     width: 100,
     tab: 2,
@@ -94,24 +98,7 @@ interface ChatConfig {
   skipBanner?: boolean; // Skip banner when launched from unified launcher
 }
 
-// ============================================================================
-// THEME
-// ============================================================================
-
-const theme = {
-  primary: chalk.hex("#FF6B35"),
-  secondary: chalk.hex("#4ECDC4"),
-  accent: chalk.hex("#FFE66D"),
-  success: chalk.hex("#2ECC71"),
-  warning: chalk.hex("#F39C12"),
-  error: chalk.hex("#E74C3C"),
-  info: chalk.hex("#3498DB"),
-  muted: chalk.hex("#95A5A6"),
-  agent: chalk.hex("#8B5CF6"),
-  tool: chalk.hex("#EC4899"),
-  code: chalk.hex("#60A5FA"),
-  user: chalk.hex("#10B981"),
-};
+// Theme imported from unified theme system (../theme)
 
 // ============================================================================
 // TOOLS DEFINITION
@@ -274,7 +261,7 @@ export class NativeChat {
 
     // If no provider (missing API key), do interactive setup
     if (!this.provider) {
-      console.log(
+      out.print(
         theme.info.bold(
           "\n  No API key configured. Let's set up a provider.\n",
         ),
@@ -282,7 +269,7 @@ export class NativeChat {
 
       const result = await interactiveProviderSetup();
       if (!result) {
-        console.log(theme.error("\n  Setup cancelled.\n"));
+        out.print(theme.error("\n  Setup cancelled.\n"));
         process.exit(1);
       }
 
@@ -298,7 +285,7 @@ export class NativeChat {
           // Default to first model or a sensible default
           const defaultModel = models[0].id;
           this.provider.setModel(defaultModel);
-          console.log(theme.success(`  Using model: ${defaultModel}`));
+          out.print(theme.success(`  Using model: ${defaultModel}`));
         }
       } catch (e: any) {
         spinner.fail(`Failed to fetch models: ${e.message}`);
@@ -345,33 +332,26 @@ export class NativeChat {
     const providerName = this.provider?.getProviderName() || "Unknown";
     const modelName = this.provider?.getModel() || "Unknown";
     const subagentStatus = this.subagentsEnabled
-      ? `${theme.success(figures.tick)} Subagents: ${this.config.subagentModel || "haiku"} (${this.config.maxParallelSubagents}x parallel)`
-      : `${theme.muted(figures.circle)} Subagents: OFF (/subagents to enable)`;
+      ? Status.success(`Subagents: ${this.config.subagentModel || "haiku"} (${this.config.maxParallelSubagents}x parallel)`)
+      : Status.pending("Subagents: OFF (/subagents to enable)");
 
-    console.log(
-      boxen(
-        `${theme.primary.bold("VULPES NATIVE CHAT")}\n` +
-          `${theme.muted(ENGINE_NAME + " v" + VERSION)}\n\n` +
-          `${theme.muted("Provider:")} ${theme.secondary(providerName)}\n` +
-          `${theme.muted("Model:")} ${theme.secondary(modelName)}\n` +
-          `${theme.muted("Mode:")} ${theme.warning(this.config.mode.toUpperCase())}\n\n` +
-          `${theme.success(figures.tick)} Streaming responses\n` +
-          `${theme.success(figures.tick)} Tool calling (redaction, files, tests)\n` +
-          `${subagentStatus}\n` +
-          `${theme.success(figures.tick)} Quick redact: /redact <text>`,
-        {
-          padding: 1,
-          margin: { top: 1, bottom: 0 },
-          borderStyle: "round",
-          borderColor: "#FF6B35",
-          title: this.subagentsEnabled
-            ? "VULPESIFIED ORCHESTRATOR"
-            : "VULPESIFIED CHAT",
-          titleAlignment: "center",
-        },
-      ),
-    );
-    console.log();
+    const content = [
+      theme.primary.bold("VULPES NATIVE CHAT"),
+      theme.muted(ENGINE_NAME + " v" + VERSION),
+      "",
+      `${theme.muted("Provider:")} ${theme.secondary(providerName)}`,
+      `${theme.muted("Model:")} ${theme.secondary(modelName)}`,
+      `${theme.muted("Mode:")} ${theme.warning(this.config.mode.toUpperCase())}`,
+      "",
+      Status.success("Streaming responses"),
+      Status.success("Tool calling (redaction, files, tests)"),
+      subagentStatus,
+      Status.success("Quick redact: /redact <text>"),
+    ];
+
+    const title = this.subagentsEnabled ? "VULPESIFIED ORCHESTRATOR" : "VULPESIFIED CHAT";
+    out.print("\n" + Box.vulpes(content, { title }));
+    out.blank();
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -384,7 +364,7 @@ export class NativeChat {
       output: process.stdout,
     });
 
-    console.log(
+    out.print(
       theme.muted(
         "  Commands: /help, /redact, /interactive, /info, /provider, /subagents, /orchestrate, /exit\n",
       ),
@@ -423,11 +403,11 @@ export class NativeChat {
 
   private async streamResponse(): Promise<void> {
     if (!this.provider) {
-      console.log(theme.error("  No provider configured."));
+      out.print(theme.error("  No provider configured."));
       return;
     }
 
-    console.log();
+    out.blank();
     process.stdout.write(theme.agent("assistant") + theme.muted(" > "));
 
     let fullResponse = "";
@@ -457,8 +437,8 @@ export class NativeChat {
                 name: event.toolUse.name,
                 input: "",
               };
-              console.log();
-              console.log(
+              out.blank();
+              out.print(
                 theme.tool(
                   `  ${figures.pointer} Using tool: ${event.toolUse.name}`,
                 ),
@@ -490,12 +470,12 @@ export class NativeChat {
             break;
 
           case "error":
-            console.log(theme.error(`\n  Error: ${event.error}`));
+            out.print(theme.error(`\n  Error: ${event.error}`));
             break;
         }
       }
 
-      console.log();
+      out.blank();
 
       // Re-render with markdown if enabled
       if (
@@ -504,7 +484,7 @@ export class NativeChat {
         this.hasMarkdown(fullResponse)
       ) {
         // Clear and re-render
-        console.log(this.renderMarkdown(fullResponse));
+        out.print(this.renderMarkdown(fullResponse));
       }
 
       // Execute tools if any
@@ -541,8 +521,8 @@ export class NativeChat {
         this.messages.push({ role: "assistant", content: fullResponse });
       }
     } catch (error: any) {
-      console.log();
-      console.log(theme.error(`\n  ${figures.cross} Error: ${error.message}`));
+      out.blank();
+      out.print(theme.error(`\n  ${figures.cross} Error: ${error.message}`));
     }
   }
 
@@ -551,7 +531,7 @@ export class NativeChat {
   // ══════════════════════════════════════════════════════════════════════════
 
   private async executeTool(name: string, input: any): Promise<string> {
-    console.log(theme.muted(`    Executing ${name}...`));
+    out.print(theme.muted(`    Executing ${name}...`));
 
     try {
       switch (name) {
@@ -591,7 +571,7 @@ export class NativeChat {
         output += `- ${type}: ${count}\n`;
       }
     }
-    console.log(
+    out.print(
       theme.success(
         `    ${figures.tick} Redacted ${result.redactionCount} PHI`,
       ),
@@ -617,7 +597,7 @@ export class NativeChat {
       const fullPath = validatePath(this.config.workingDir, filePath);
       if (!fs.existsSync(fullPath)) return `File not found: ${filePath}`;
       const content = fs.readFileSync(fullPath, "utf-8");
-      console.log(
+      out.print(
         theme.success(`    ${figures.tick} Read ${content.length} bytes`),
       );
       return content;
@@ -636,7 +616,7 @@ export class NativeChat {
       const fullPath = validatePath(this.config.workingDir, filePath);
       fs.mkdirSync(path.dirname(fullPath), { recursive: true });
       fs.writeFileSync(fullPath, content);
-      console.log(
+      out.print(
         theme.success(`    ${figures.tick} Wrote ${content.length} bytes`),
       );
       return `Wrote ${content.length} bytes to ${filePath}`;
@@ -661,7 +641,7 @@ export class NativeChat {
         output += d.toString();
       });
       proc.on("close", (code) => {
-        console.log(
+        out.print(
           `    ${code === 0 ? theme.success(figures.tick) : theme.error(figures.cross)} Exit code ${code}`,
         );
         resolve(output || `Exit code ${code}`);
@@ -741,7 +721,7 @@ export class NativeChat {
       case "exit":
       case "quit":
       case "q":
-        console.log(theme.info("\n  Goodbye!\n"));
+        out.print("\n  " + Status.info("Goodbye!") + "\n");
         rl.close();
         process.exit(0);
         return false;
@@ -756,7 +736,7 @@ export class NativeChat {
         if (args.length > 0) {
           await this.quickRedact(args.join(" "));
         } else {
-          console.log(theme.warning("  Usage: /redact <text>"));
+          out.print("  " + Status.warning("Usage: /redact <text>"));
         }
         break;
 
@@ -777,16 +757,16 @@ export class NativeChat {
 
       case "clear":
         this.initializeConversation();
-        console.log(theme.success("  Conversation cleared."));
+        out.print(theme.success("  Conversation cleared."));
         break;
 
       case "model":
       case "m":
         if (args.length > 0) {
           this.provider?.setModel(args[0]);
-          console.log(theme.success(`  Model changed to: ${args[0]}`));
+          out.print(theme.success(`  Model changed to: ${args[0]}`));
         } else {
-          console.log(
+          out.print(
             theme.info(`  Current model: ${this.provider?.getModel()}`),
           );
         }
@@ -795,7 +775,7 @@ export class NativeChat {
       case "markdown":
       case "md":
         this.renderMarkdownEnabled = !this.renderMarkdownEnabled;
-        console.log(
+        out.print(
           theme.success(
             `  Markdown rendering: ${this.renderMarkdownEnabled ? "ON" : "OFF"}`,
           ),
@@ -813,15 +793,15 @@ export class NativeChat {
         if (args.length > 0) {
           await this.orchestrateTask(args.join(" "));
         } else {
-          console.log(
-            theme.warning("  Usage: /orchestrate <task description>"),
+          out.print(
+            "  " + Status.warning("Usage: /orchestrate <task description>"),
           );
         }
         break;
 
       default:
-        console.log(theme.warning(`  Unknown command: /${cmd}`));
-        console.log(theme.muted("  Type /help for commands"));
+        out.print("  " + Status.warning(`Unknown command: /${cmd}`));
+        out.print(theme.muted("  Type /help for commands"));
     }
 
     return true;
@@ -834,16 +814,16 @@ export class NativeChat {
   private async quickRedact(text: string): Promise<void> {
     const result = await this.vulpes.process(text);
 
-    console.log();
-    console.log(theme.muted("  " + "─".repeat(60)));
-    console.log(theme.warning.bold("  ORIGINAL: ") + text);
-    console.log(theme.success.bold("  REDACTED: ") + result.text);
-    console.log(
+    out.blank();
+    out.print(Divider.line({ width: 60 }));
+    out.print(theme.warning.bold("  ORIGINAL: ") + text);
+    out.print(theme.success.bold("  REDACTED: ") + result.text);
+    out.print(
       theme.muted(
         `  (${result.redactionCount} PHI, ${result.executionTimeMs}ms)`,
       ),
     );
-    console.log(theme.muted("  " + "─".repeat(60)));
+    out.print(Divider.line({ width: 60 }));
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -851,8 +831,8 @@ export class NativeChat {
   // ══════════════════════════════════════════════════════════════════════════
 
   private async interactiveRedaction(rl: readline.Interface): Promise<void> {
-    console.log(theme.info.bold("\n  INTERACTIVE REDACTION MODE"));
-    console.log(theme.muted("  Paste text to redact. Empty line to exit.\n"));
+    out.print(theme.info.bold("\n  INTERACTIVE REDACTION MODE"));
+    out.print(theme.muted("  Paste text to redact. Empty line to exit.\n"));
 
     let stats = { docs: 0, phi: 0, time: 0 };
 
@@ -860,7 +840,7 @@ export class NativeChat {
       return new Promise((resolve) => {
         rl.question(theme.accent("  redact > "), async (line) => {
           if (!line.trim()) {
-            console.log(
+            out.print(
               theme.info(
                 `\n  Session: ${stats.docs} docs, ${stats.phi} PHI, ${stats.time}ms\n`,
               ),
@@ -870,8 +850,8 @@ export class NativeChat {
           }
 
           const result = await this.vulpes.process(line);
-          console.log(theme.success("  → ") + result.text);
-          console.log(
+          out.print(theme.success("  → ") + result.text);
+          out.print(
             theme.muted(
               `    (${result.redactionCount} PHI, ${result.executionTimeMs}ms)\n`,
             ),
@@ -898,22 +878,22 @@ export class NativeChat {
       // Disable subagents
       this.subagentsEnabled = false;
       this.orchestrator = null;
-      console.log(theme.warning(`\n  ${figures.cross} Subagents DISABLED\n`));
+      out.print(theme.warning(`\n  ${figures.cross} Subagents DISABLED\n`));
       return;
     }
 
     // Enable subagents - configure
-    console.log(theme.info.bold("\n  SUBAGENT CONFIGURATION"));
-    console.log(theme.muted("  " + "─".repeat(50)));
+    out.print(theme.info.bold("\n  SUBAGENT CONFIGURATION"));
+    out.print(theme.muted("  " + "─".repeat(50)));
 
     // Ask for subagent model
     const modelQuestion = (): Promise<string> => {
       return new Promise((resolve) => {
-        console.log(theme.muted("\n  Subagent model options:"));
-        console.log("    1. claude-3-5-haiku-20241022 (fast, cheap)");
-        console.log("    2. gpt-4o-mini (fast, cheap)");
-        console.log("    3. Same as main model");
-        console.log("    4. Custom model ID");
+        out.print(theme.muted("\n  Subagent model options:"));
+        out.print("    1. claude-3-5-haiku-20241022 (fast, cheap)");
+        out.print("    2. gpt-4o-mini (fast, cheap)");
+        out.print("    3. Same as main model");
+        out.print("    4. Custom model ID");
 
         rl.question(theme.accent("  Select [1-4]: "), async (choice) => {
           switch (choice.trim()) {
@@ -970,34 +950,34 @@ export class NativeChat {
     this.initializeOrchestrator();
     this.subagentsEnabled = true;
 
-    console.log();
-    console.log(theme.success(`  ${figures.tick} Subagents ENABLED`));
-    console.log(theme.muted(`    Model: ${subagentModel}`));
-    console.log(theme.muted(`    Provider: ${subagentProvider}`));
-    console.log(theme.muted(`    Parallel: ${maxParallel}x`));
-    console.log();
-    console.log(theme.info("  Available subagent roles:"));
-    console.log(
+    out.blank();
+    out.print(theme.success(`  ${figures.tick} Subagents ENABLED`));
+    out.print(theme.muted(`    Model: ${subagentModel}`));
+    out.print(theme.muted(`    Provider: ${subagentProvider}`));
+    out.print(theme.muted(`    Parallel: ${maxParallel}x`));
+    out.blank();
+    out.print(theme.info("  Available subagent roles:"));
+    out.print(
       theme.muted("    • redaction_analyst  - PHI detection & analysis"),
     );
-    console.log(
+    out.print(
       theme.muted("    • code_analyst       - Code review & debugging"),
     );
-    console.log(
+    out.print(
       theme.muted("    • validation_agent   - Test & verify changes"),
     );
-    console.log(theme.muted("    • dictionary_agent   - Expand dictionaries"));
-    console.log(theme.muted("    • research_agent     - Look up patterns"));
-    console.log();
-    console.log(
+    out.print(theme.muted("    • dictionary_agent   - Expand dictionaries"));
+    out.print(theme.muted("    • research_agent     - Look up patterns"));
+    out.blank();
+    out.print(
       theme.info("  Use /orchestrate <task> to delegate to subagents"),
     );
-    console.log();
+    out.blank();
   }
 
   private async orchestrateTask(task: string): Promise<void> {
     if (!this.subagentsEnabled || !this.orchestrator) {
-      console.log(
+      out.print(
         theme.warning(
           `\n  ${figures.warning} Subagents not enabled. Use /subagents first.\n`,
         ),
@@ -1005,12 +985,12 @@ export class NativeChat {
       return;
     }
 
-    console.log();
-    console.log(
+    out.blank();
+    out.print(
       theme.agent.bold(`  ${figures.pointer} Orchestrating: `) +
         theme.muted(task),
     );
-    console.log(theme.muted("  " + "─".repeat(50)));
+    out.print(theme.muted("  " + "─".repeat(50)));
 
     const spinner = ora({
       text: "Analyzing task and delegating to subagents...",
@@ -1022,12 +1002,12 @@ export class NativeChat {
       const result = await this.orchestrator.orchestrate(task, this.messages);
 
       spinner.succeed("Orchestration complete");
-      console.log();
+      out.blank();
 
       // Display subagent results if any
       if (result.results && result.results.length > 0) {
-        console.log(theme.info.bold("  SUBAGENT RESULTS"));
-        console.log(theme.muted("  " + "─".repeat(50)));
+        out.print(theme.info.bold("  SUBAGENT RESULTS"));
+        out.print(theme.muted("  " + "─".repeat(50)));
 
         let totalTime = 0;
         for (const subResult of result.results) {
@@ -1035,7 +1015,7 @@ export class NativeChat {
             ? theme.success(figures.tick)
             : theme.error(figures.cross);
 
-          console.log(
+          out.print(
             `\n  ${statusIcon} ${theme.secondary(subResult.role)} (${subResult.executionTimeMs}ms)`,
           );
 
@@ -1045,18 +1025,18 @@ export class NativeChat {
               subResult.result.length > 500
                 ? subResult.result.slice(0, 500) + "..."
                 : subResult.result;
-            console.log(theme.muted("    " + output.replace(/\n/g, "\n    ")));
+            out.print(theme.muted("    " + output.replace(/\n/g, "\n    ")));
           }
 
           if (subResult.error) {
-            console.log(theme.error(`    Error: ${subResult.error}`));
+            out.print(theme.error(`    Error: ${subResult.error}`));
           }
 
           totalTime += subResult.executionTimeMs;
         }
 
-        console.log();
-        console.log(
+        out.blank();
+        out.print(
           theme.muted(
             `  Total subagent time: ${totalTime}ms | Tasks: ${result.results.length}`,
           ),
@@ -1064,11 +1044,11 @@ export class NativeChat {
       }
 
       // Display the orchestrator's synthesized response
-      console.log();
-      console.log(theme.info.bold("  ORCHESTRATOR RESPONSE"));
-      console.log(theme.muted("  " + "─".repeat(50)));
-      console.log("  " + result.response.replace(/\n/g, "\n  "));
-      console.log();
+      out.blank();
+      out.print(theme.info.bold("  ORCHESTRATOR RESPONSE"));
+      out.print(theme.muted("  " + "─".repeat(50)));
+      out.print("  " + result.response.replace(/\n/g, "\n  "));
+      out.blank();
 
       // Add the orchestration as part of the conversation
       this.messages.push({ role: "user", content: `[ORCHESTRATE] ${task}` });
@@ -1087,7 +1067,7 @@ export class NativeChat {
     if (result) {
       this.provider = result.provider;
       this.initializeConversation();
-      console.log(
+      out.print(
         theme.success(
           `\n  ${figures.tick} Switched to ${result.provider.getProviderName()} / ${result.model}\n`,
         ),
@@ -1102,30 +1082,30 @@ export class NativeChat {
   private async printSystemInfo(): Promise<void> {
     const filters = this.vulpes.getActiveFilters();
 
-    console.log();
-    console.log(theme.info.bold("  VULPES CELARE SYSTEM INFO"));
-    console.log(theme.muted("  " + "─".repeat(50)));
-    console.log(`  ${theme.muted("Engine:")}     ${ENGINE_NAME}`);
-    console.log(`  ${theme.muted("Version:")}    ${VERSION}`);
-    console.log(
+    out.blank();
+    out.print(theme.info.bold("  VULPES CELARE SYSTEM INFO"));
+    out.print(theme.muted("  " + "─".repeat(50)));
+    out.print(`  ${theme.muted("Engine:")}     ${ENGINE_NAME}`);
+    out.print(`  ${theme.muted("Version:")}    ${VERSION}`);
+    out.print(
       `  ${theme.muted("Provider:")}   ${this.provider?.getProviderName() || "None"}`,
     );
-    console.log(
+    out.print(
       `  ${theme.muted("Model:")}      ${this.provider?.getModel() || "None"}`,
     );
-    console.log(
+    out.print(
       `  ${theme.muted("Mode:")}       ${this.config.mode.toUpperCase()}`,
     );
-    console.log(`  ${theme.muted("Filters:")}    ${filters.length} active`);
-    console.log(
+    out.print(`  ${theme.muted("Filters:")}    ${filters.length} active`);
+    out.print(
       `  ${theme.muted("HIPAA:")}      17/18 Safe Harbor identifiers`,
     );
-    console.log();
-    console.log(theme.muted("  Target Metrics:"));
-    console.log(`    ${theme.success("Sensitivity:")} ≥99%`);
-    console.log(`    ${theme.info("Specificity:")} ≥96%`);
-    console.log(`    ${theme.secondary("Speed:")}       2-3ms/doc`);
-    console.log();
+    out.blank();
+    out.print(theme.muted("  Target Metrics:"));
+    out.print(`    ${theme.success("Sensitivity:")} ≥99%`);
+    out.print(`    ${theme.info("Specificity:")} ≥96%`);
+    out.print(`    ${theme.secondary("Speed:")}       2-3ms/doc`);
+    out.blank();
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -1133,7 +1113,7 @@ export class NativeChat {
   // ══════════════════════════════════════════════════════════════════════════
 
   private printHelp(): void {
-    console.log(`
+    out.print(`
 ${theme.info.bold("  COMMANDS")}
 ${theme.muted("  " + "─".repeat(50))}
   ${theme.secondary("/redact <text>")}       Quick redact text

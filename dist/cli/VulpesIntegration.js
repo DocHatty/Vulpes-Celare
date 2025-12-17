@@ -73,20 +73,12 @@ exports.handleIntegrationStatus = handleIntegrationStatus;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const os = __importStar(require("os"));
-const chalk_1 = __importDefault(require("chalk"));
 const figures_1 = __importDefault(require("figures"));
-const index_1 = require("../index");
-// --- Theme ---
-const theme = {
-    primary: chalk_1.default.hex("#FF6B35"),
-    secondary: chalk_1.default.hex("#4ECDC4"),
-    accent: chalk_1.default.hex("#FFE66D"),
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-};
+const meta_1 = require("../meta");
+// Import unified theme system
+const theme_1 = require("../theme");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
+// Theme imported from unified theme system (../theme)
 // --- Claude Code Hook Definitions ---
 /**
  * Claude Code hooks configuration for Vulpes integration
@@ -100,7 +92,7 @@ exports.CLAUDE_CODE_HOOKS = {
             hooks: [
                 {
                     type: "command",
-                    command: "node -e \"const v=require('vulpes-celare');process.stdin.on('data',async d=>{const j=JSON.parse(d);if(/patient|ssn|mrn|dob|phi/i.test(j.prompt)){console.log(JSON.stringify({systemMessage:'[Vulpes] PHI patterns detected. Use /vulpes-redact to sanitize.'}))}})\"",
+                    command: "node -e \"const v=require('vulpes-celare');process.stdin.on('data',async d=>{const j=JSON.parse(d);if(/patient|ssn|mrn|dob|phi/i.test(j.prompt)){out.print(JSON.stringify({systemMessage:'[Vulpes] PHI patterns detected. Use /vulpes-redact to sanitize.'}))}})\"",
                     timeout: 5,
                 },
             ],
@@ -113,7 +105,7 @@ exports.CLAUDE_CODE_HOOKS = {
             hooks: [
                 {
                     type: "command",
-                    command: "node -e \"const v=require('vulpes-celare');process.stdin.on('data',async d=>{const j=JSON.parse(d);const r=j.tool_result||'';if(/\\\\b\\\\d{3}-\\\\d{2}-\\\\d{4}\\\\b|\\\\bMRN\\\\b|patient.*name/i.test(r)){console.log(JSON.stringify({additionalContext:'[Vulpes Warning] This file may contain PHI. Consider redacting before sharing.'}))}})\"",
+                    command: "node -e \"const v=require('vulpes-celare');process.stdin.on('data',async d=>{const j=JSON.parse(d);const r=j.tool_result||'';if(/\\\\b\\\\d{3}-\\\\d{2}-\\\\d{4}\\\\b|\\\\bMRN\\\\b|patient.*name/i.test(r)){out.print(JSON.stringify({additionalContext:'[Vulpes Warning] This file may contain PHI. Consider redacting before sharing.'}))}})\"",
                     timeout: 5,
                 },
             ],
@@ -395,7 +387,7 @@ class VulpesIntegration {
     }
     log(message) {
         if (!this.config.silent) {
-            console.log(message);
+            VulpesOutput_1.out.print(message);
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -519,12 +511,12 @@ class VulpesIntegration {
     // CLAUDE CODE INTEGRATION
     // ══════════════════════════════════════════════════════════════════════════
     async installClaudeCodeIntegration() {
-        console.log(theme.info.bold("\n  Installing Claude Code Integration...\n"));
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  Installing Claude Code Integration...\n"));
         // 1. Create .claude directory
         const claudeDir = path.join(this.config.projectDir, ".claude");
         if (!fs.existsSync(claudeDir)) {
             fs.mkdirSync(claudeDir, { recursive: true });
-            console.log(theme.success(`  ${figures_1.default.tick} Created .claude/ directory`));
+            VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Created .claude/ directory`));
         }
         // 2. Install hooks in settings.json
         await this.installClaudeHooks();
@@ -534,7 +526,7 @@ class VulpesIntegration {
         await this.installSlashCommands();
         // 5. Register MCP server
         await this.registerClaudeMcp();
-        console.log(theme.success.bold("\n  Claude Code integration complete!\n"));
+        VulpesOutput_1.out.print(theme_1.theme.success.bold("\n  Claude Code integration complete!\n"));
     }
     async installClaudeHooks() {
         const settingsPath = path.join(this.config.projectDir, ".claude", "settings.json");
@@ -555,7 +547,7 @@ class VulpesIntegration {
             hooks: [
                 {
                     type: "command",
-                    command: `node -e "console.log(JSON.stringify({additionalContext:'[Vulpes Celare v${index_1.VERSION}] PHI redaction ready. Commands: /vulpes-redact, /vulpes-analyze, /vulpes-info'}))"`,
+                    command: `node -e "out.print(JSON.stringify({additionalContext:'[Vulpes Celare v${meta_1.VERSION}] PHI redaction ready. Commands: /vulpes-redact, /vulpes-analyze, /vulpes-info'}))"`,
                     timeout: 2,
                 },
             ],
@@ -579,7 +571,7 @@ class VulpesIntegration {
             }
         }
         fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-        console.log(theme.success(`  ${figures_1.default.tick} Installed Claude Code hooks`));
+        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Installed Claude Code hooks`));
     }
     async createClaudeMd() {
         const claudeMdPath = path.join(this.config.projectDir, "CLAUDE.md");
@@ -588,15 +580,15 @@ class VulpesIntegration {
             const existing = fs.readFileSync(claudeMdPath, "utf-8");
             if (!existing.includes("Vulpes Celare")) {
                 fs.appendFileSync(claudeMdPath, "\n\n" + exports.CLAUDE_MD_CONTENT);
-                console.log(theme.success(`  ${figures_1.default.tick} Appended Vulpes section to CLAUDE.md`));
+                VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Appended Vulpes section to CLAUDE.md`));
             }
             else {
-                console.log(theme.muted(`  ${figures_1.default.info} CLAUDE.md already has Vulpes section`));
+                VulpesOutput_1.out.print(theme_1.theme.muted(`  ${figures_1.default.info} CLAUDE.md already has Vulpes section`));
             }
         }
         else {
             fs.writeFileSync(claudeMdPath, exports.CLAUDE_MD_CONTENT);
-            console.log(theme.success(`  ${figures_1.default.tick} Created CLAUDE.md`));
+            VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Created CLAUDE.md`));
         }
     }
     async installSlashCommands() {
@@ -608,7 +600,7 @@ class VulpesIntegration {
             const cmdPath = path.join(commandsDir, `${name}.md`);
             fs.writeFileSync(cmdPath, content);
         }
-        console.log(theme.success(`  ${figures_1.default.tick} Installed ${Object.keys(exports.CLAUDE_SLASH_COMMANDS).length} slash commands`));
+        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Installed ${Object.keys(exports.CLAUDE_SLASH_COMMANDS).length} slash commands`));
     }
     async registerClaudeMcp() {
         // Register in PROJECT-LEVEL .claude/settings.json (this is where Claude Code reads MCP config)
@@ -630,18 +622,18 @@ class VulpesIntegration {
             cwd: ".",
         };
         fs.writeFileSync(projectSettingsPath, JSON.stringify(settings, null, 2));
-        console.log(theme.success(`  ${figures_1.default.tick} Registered Vulpes MCP server in .claude/settings.json`));
+        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Registered Vulpes MCP server in .claude/settings.json`));
     }
     // ══════════════════════════════════════════════════════════════════════════
     // CODEX INTEGRATION
     // ══════════════════════════════════════════════════════════════════════════
     async installCodexIntegration() {
-        console.log(theme.info.bold("\n  Installing Codex Integration...\n"));
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  Installing Codex Integration...\n"));
         // 1. Create AGENTS.md
         await this.createAgentsMd();
         // 2. Update config.toml with MCP server
         await this.updateCodexConfig();
-        console.log(theme.success.bold("\n  Codex integration complete!\n"));
+        VulpesOutput_1.out.print(theme_1.theme.success.bold("\n  Codex integration complete!\n"));
     }
     async createAgentsMd() {
         const agentsMdPath = path.join(this.config.projectDir, "AGENTS.md");
@@ -649,15 +641,15 @@ class VulpesIntegration {
             const existing = fs.readFileSync(agentsMdPath, "utf-8");
             if (!existing.includes("Vulpes Celare")) {
                 fs.appendFileSync(agentsMdPath, "\n\n" + exports.CODEX_AGENTS_MD);
-                console.log(theme.success(`  ${figures_1.default.tick} Appended Vulpes section to AGENTS.md`));
+                VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Appended Vulpes section to AGENTS.md`));
             }
             else {
-                console.log(theme.muted(`  ${figures_1.default.info} AGENTS.md already has Vulpes section`));
+                VulpesOutput_1.out.print(theme_1.theme.muted(`  ${figures_1.default.info} AGENTS.md already has Vulpes section`));
             }
         }
         else {
             fs.writeFileSync(agentsMdPath, exports.CODEX_AGENTS_MD);
-            console.log(theme.success(`  ${figures_1.default.tick} Created AGENTS.md`));
+            VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Created AGENTS.md`));
         }
     }
     async updateCodexConfig() {
@@ -687,10 +679,10 @@ tool_timeout_sec = 60
 `;
             config += vulpesConfig;
             fs.writeFileSync(configPath, config);
-            console.log(theme.success(`  ${figures_1.default.tick} Added Vulpes MCP to config.toml`));
+            VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Added Vulpes MCP to config.toml`));
         }
         else {
-            console.log(theme.muted(`  ${figures_1.default.info} config.toml already has Vulpes MCP`));
+            VulpesOutput_1.out.print(theme_1.theme.muted(`  ${figures_1.default.info} config.toml already has Vulpes MCP`));
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -702,7 +694,7 @@ tool_timeout_sec = 60
             await this.silentVulpesify();
             return;
         }
-        console.log(theme.primary.bold(`
+        VulpesOutput_1.out.print(theme_1.theme.primary.bold(`
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
 ║   ██╗   ██╗██╗   ██╗██╗     ███████╗ ███████╗ ███████╗██╗███████╗██╗   ██╗  ║
@@ -717,58 +709,58 @@ tool_timeout_sec = 60
 ╚═══════════════════════════════════════════════════════════════════════════╝
 `));
         const status = await this.checkStatus();
-        console.log(theme.info.bold("  Current Integration Status:\n"));
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("  Current Integration Status:\n"));
         // Claude Code Status
-        console.log(theme.secondary("  Claude Code:"));
-        console.log(`    ${status.claudeCode.installed ? theme.success(figures_1.default.tick) : theme.error(figures_1.default.cross)} CLI Installed`);
-        console.log(`    ${status.claudeCode.hooksConfigured ? theme.success(figures_1.default.tick) : theme.warning(figures_1.default.circle)} Hooks Configured`);
-        console.log(`    ${status.claudeCode.mcpRegistered ? theme.success(figures_1.default.tick) : theme.warning(figures_1.default.circle)} MCP Registered`);
-        console.log(`    ${status.claudeCode.claudeMdExists ? theme.success(figures_1.default.tick) : theme.warning(figures_1.default.circle)} CLAUDE.md Exists`);
-        console.log(`    ${status.claudeCode.slashCommandsInstalled ? theme.success(figures_1.default.tick) : theme.warning(figures_1.default.circle)} Slash Commands`);
-        console.log();
+        VulpesOutput_1.out.print(theme_1.theme.secondary("  Claude Code:"));
+        VulpesOutput_1.out.print(`    ${status.claudeCode.installed ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.error(figures_1.default.cross)} CLI Installed`);
+        VulpesOutput_1.out.print(`    ${status.claudeCode.hooksConfigured ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.warning(figures_1.default.circle)} Hooks Configured`);
+        VulpesOutput_1.out.print(`    ${status.claudeCode.mcpRegistered ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.warning(figures_1.default.circle)} MCP Registered`);
+        VulpesOutput_1.out.print(`    ${status.claudeCode.claudeMdExists ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.warning(figures_1.default.circle)} CLAUDE.md Exists`);
+        VulpesOutput_1.out.print(`    ${status.claudeCode.slashCommandsInstalled ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.warning(figures_1.default.circle)} Slash Commands`);
+        VulpesOutput_1.out.blank();
         // Codex Status
-        console.log(theme.secondary("  Codex:"));
-        console.log(`    ${status.codex.installed ? theme.success(figures_1.default.tick) : theme.error(figures_1.default.cross)} CLI Installed`);
-        console.log(`    ${status.codex.agentsMdExists ? theme.success(figures_1.default.tick) : theme.warning(figures_1.default.circle)} AGENTS.md Exists`);
-        console.log(`    ${status.codex.configTomlUpdated ? theme.success(figures_1.default.tick) : theme.warning(figures_1.default.circle)} config.toml Updated`);
-        console.log(`    ${status.codex.mcpRegistered ? theme.success(figures_1.default.tick) : theme.warning(figures_1.default.circle)} MCP Registered`);
-        console.log(theme.muted("\n  " + "─".repeat(60) + "\n"));
+        VulpesOutput_1.out.print(theme_1.theme.secondary("  Codex:"));
+        VulpesOutput_1.out.print(`    ${status.codex.installed ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.error(figures_1.default.cross)} CLI Installed`);
+        VulpesOutput_1.out.print(`    ${status.codex.agentsMdExists ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.warning(figures_1.default.circle)} AGENTS.md Exists`);
+        VulpesOutput_1.out.print(`    ${status.codex.configTomlUpdated ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.warning(figures_1.default.circle)} config.toml Updated`);
+        VulpesOutput_1.out.print(`    ${status.codex.mcpRegistered ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.warning(figures_1.default.circle)} MCP Registered`);
+        VulpesOutput_1.out.print(theme_1.theme.muted("\n  " + "─".repeat(60) + "\n"));
         // Install integrations
         if (status.claudeCode.installed) {
             await this.installClaudeCodeIntegration();
         }
         else {
-            console.log(theme.warning("  Claude Code not found. Skipping Claude integration."));
-            console.log(theme.muted("  Install with: npm install -g @anthropic-ai/claude-code\n"));
+            VulpesOutput_1.out.print(theme_1.theme.warning("  Claude Code not found. Skipping Claude integration."));
+            VulpesOutput_1.out.print(theme_1.theme.muted("  Install with: npm install -g @anthropic-ai/claude-code\n"));
         }
         if (status.codex.installed) {
             await this.installCodexIntegration();
         }
         else {
-            console.log(theme.warning("  Codex not found. Skipping Codex integration."));
-            console.log(theme.muted("  Install with: npm install -g @openai/codex\n"));
+            VulpesOutput_1.out.print(theme_1.theme.warning("  Codex not found. Skipping Codex integration."));
+            VulpesOutput_1.out.print(theme_1.theme.muted("  Install with: npm install -g @openai/codex\n"));
         }
         // Create MCP server
         await this.createMcpServer();
-        console.log(theme.success.bold(`
+        VulpesOutput_1.out.print(theme_1.theme.success.bold(`
   ═══════════════════════════════════════════════════════════════════════════
 
     ${figures_1.default.tick} VULPESIFICATION COMPLETE!
 
     Your CLI agents now have access to:
 
-    ${theme.secondary("Claude Code:")}
+    ${theme_1.theme.secondary("Claude Code:")}
       • /vulpes-redact   - Redact PHI from text
       • /vulpes-analyze  - Analyze text for PHI
       • /vulpes-info     - Show system info
       • /vulpes-test     - Run test suite
       • Session hooks    - Auto-inject Vulpes context
 
-    ${theme.secondary("Codex:")}
+    ${theme_1.theme.secondary("Codex:")}
       • AGENTS.md        - Vulpes instructions loaded
       • MCP Tools        - redact_text, analyze_redaction, etc.
 
-    ${theme.secondary("Both:")}
+    ${theme_1.theme.secondary("Both:")}
       • MCP Server       - Vulpes tools available as MCP provider
       • System prompts   - Full Vulpes knowledge injected
 
@@ -976,7 +968,7 @@ async function handleRequest(request) {
         id,
         result: {
           protocolVersion: "2024-11-05",
-          serverInfo: { name: "vulpes-celare", version: "${index_1.VERSION}" },
+          serverInfo: { name: "vulpes-celare", version: "${meta_1.VERSION}" },
           capabilities: { tools: {} }
         }
       };
@@ -1024,7 +1016,7 @@ async function handleRequest(request) {
         case "get_system_info":
           result = {
             engine: "Vulpes Celare",
-            version: "${index_1.VERSION}",
+            version: "${meta_1.VERSION}",
             activeFilters: vulpes.getActiveFilters().length,
             targetMetrics: {
               sensitivity: "≥99%",
@@ -1121,7 +1113,7 @@ process.on("SIGINT", () => process.exit(0));
 process.on("SIGTERM", () => process.exit(0));
 `;
         fs.writeFileSync(path.join(mcpDir, "server.js"), serverCode);
-        console.log(theme.success(`  ${figures_1.default.tick} Created MCP server at dist/mcp/server.js`));
+        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Created MCP server at dist/mcp/server.js`));
     }
 }
 exports.VulpesIntegration = VulpesIntegration;
@@ -1142,6 +1134,6 @@ async function handleIntegrationStatus(options) {
         projectDir: process.cwd(),
     });
     const status = await integration.checkStatus();
-    console.log(JSON.stringify(status, null, 2));
+    VulpesOutput_1.out.print(JSON.stringify(status, null, 2));
 }
 //# sourceMappingURL=VulpesIntegration.js.map

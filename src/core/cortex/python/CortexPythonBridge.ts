@@ -20,6 +20,7 @@ import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import { EventEmitter } from 'events';
+import { vulpesLogger as log } from '../../../utils/VulpesLogger';
 
 /**
  * Python task types
@@ -132,7 +133,7 @@ export class CortexPythonBridge extends EventEmitter {
             const version = versionResult.trim();
 
             if (!version.startsWith('Python 3')) {
-                console.warn('[CortexBridge] Python 3.x required, found:', version);
+                log.warn('Python 3.x required', { component: 'CortexBridge', found: version });
                 this.pythonAvailable = false;
                 return false;
             }
@@ -144,15 +145,14 @@ export class CortexPythonBridge extends EventEmitter {
             ]).catch(() => null);
 
             if (checkPackages?.trim() !== 'OK') {
-                console.warn('[CortexBridge] Required Python packages not installed.');
-                console.warn('[CortexBridge] Install: pip install pandas numpy torch');
+                log.warn('Required Python packages not installed. Install: pip install pandas numpy torch', { component: 'CortexBridge' });
                 // We still mark as available - some tasks may work
             }
 
             this.pythonAvailable = true;
             return true;
         } catch (error) {
-            console.warn('[CortexBridge] Python not available:', error);
+            log.warn('Python not available', { component: 'CortexBridge', error: String(error) });
             this.pythonAvailable = false;
             return false;
         }

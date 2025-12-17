@@ -52,45 +52,18 @@ exports.CLI = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const readline = __importStar(require("readline"));
-const chalk_1 = __importDefault(require("chalk"));
 const ora_1 = __importDefault(require("ora"));
 const cli_table3_1 = __importDefault(require("cli-table3"));
 const figures_1 = __importDefault(require("figures"));
-const boxen_1 = __importDefault(require("boxen"));
 const VulpesCelare_1 = require("../VulpesCelare");
 const PolicyDSL_1 = require("../PolicyDSL");
-const index_1 = require("../index");
+const meta_1 = require("../meta");
 // ============================================================================
-// THEME & STYLING
+// UNIFIED THEME SYSTEM
 // ============================================================================
-const theme = {
-    // Brand colors
-    primary: chalk_1.default.hex("#FF6B35"), // Fox orange
-    secondary: chalk_1.default.hex("#4ECDC4"), // Teal accent
-    accent: chalk_1.default.hex("#FFE66D"), // Gold highlight
-    // Semantic colors
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-    // Text styles
-    bold: chalk_1.default.bold,
-    dim: chalk_1.default.dim,
-    italic: chalk_1.default.italic,
-    underline: chalk_1.default.underline,
-    // PHI type colors
-    phi: {
-        name: chalk_1.default.hex("#E74C3C"),
-        ssn: chalk_1.default.hex("#9B59B6"),
-        phone: chalk_1.default.hex("#3498DB"),
-        email: chalk_1.default.hex("#1ABC9C"),
-        address: chalk_1.default.hex("#E67E22"),
-        date: chalk_1.default.hex("#F1C40F"),
-        mrn: chalk_1.default.hex("#E91E63"),
-        default: chalk_1.default.hex("#95A5A6"),
-    },
-};
+const theme_1 = require("../theme");
+const output_1 = require("../theme/output");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
 // ============================================================================
 // CLI CLASS
 // ============================================================================
@@ -100,43 +73,35 @@ class CLI {
     // BANNER & BRANDING
     // ══════════════════════════════════════════════════════════════════════════
     static getBanner() {
-        const fox = `
-    ${theme.primary("    /\\___/\\")}
-    ${theme.primary("   (  o o  )")}  ${theme.bold.white(index_1.ENGINE_NAME)}
-    ${theme.primary("   (  =^=  )")}  ${theme.muted(index_1.VARIANT)}
-    ${theme.primary("    )     (")}   ${theme.secondary(`v${index_1.VERSION}`)}
-    ${theme.primary("   (       )")}
-    ${theme.primary("  ( |     | )")}  ${theme.dim("HIPAA PHI Redaction Engine")}
-    ${theme.primary(" (__|     |__)")} ${theme.dim("99.6% Sensitivity | 2-3ms Processing")}
-`;
-        return fox;
+        // Use themed banner with fox art
+        return output_1.Banner.standard({ version: meta_1.VERSION, showArt: true, artSize: "compact" });
     }
     static printBanner() {
-        console.log(this.getBanner());
+        VulpesOutput_1.out.print(this.getBanner());
     }
     // ══════════════════════════════════════════════════════════════════════════
-    // OUTPUT HELPERS
+    // OUTPUT HELPERS (using unified output components)
     // ══════════════════════════════════════════════════════════════════════════
     static log(message) {
-        console.log(message);
+        VulpesOutput_1.out.print(message);
     }
     static success(message) {
-        console.log(`${theme.success(figures_1.default.tick)} ${message}`);
+        VulpesOutput_1.out.print(output_1.Status.success(message));
     }
     static error(message) {
-        console.error(`${theme.error(figures_1.default.cross)} ${theme.error(message)}`);
+        VulpesOutput_1.out.print(output_1.Status.error(message));
     }
     static warn(message) {
-        console.log(`${theme.warning(figures_1.default.warning)} ${theme.warning(message)}`);
+        VulpesOutput_1.out.print(output_1.Status.warning(message));
     }
     static infoMsg(message) {
-        console.log(`${theme.info(figures_1.default.info)} ${message}`);
+        VulpesOutput_1.out.print(output_1.Status.info(message));
     }
     static divider() {
-        console.log(theme.muted("─".repeat(60)));
+        VulpesOutput_1.out.print(output_1.Divider.line({ width: 60 }));
     }
     static newline() {
-        console.log();
+        VulpesOutput_1.out.blank();
     }
     // ══════════════════════════════════════════════════════════════════════════
     // SPINNER / PROGRESS
@@ -172,16 +137,15 @@ class CLI {
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
-    // PROGRESS BAR
+    // PROGRESS BAR (using unified output components)
     // ══════════════════════════════════════════════════════════════════════════
     static progressBar(current, total, width = 40) {
-        const percent = Math.min(100, Math.floor((current / total) * 100));
-        const filled = Math.floor((current / total) * width);
-        const empty = width - filled;
-        const bar = theme.primary("█".repeat(filled)) + theme.muted("░".repeat(empty));
-        const percentStr = `${percent}%`.padStart(4);
-        const countStr = theme.muted(`(${current}/${total})`);
-        return `${bar} ${theme.bold(percentStr)} ${countStr}`;
+        return output_1.Progress.bar(current / total, {
+            width,
+            showPercent: true,
+            showValue: true,
+            total,
+        });
     }
     // ══════════════════════════════════════════════════════════════════════════
     // CONFIG PARSING
@@ -237,7 +201,7 @@ class CLI {
         const vulpes = new VulpesCelare_1.VulpesCelare(config);
         const result = await vulpes.process(input);
         if (!quiet) {
-            this.succeedSpinner(`Redacted ${theme.bold(result.redactionCount.toString())} PHI instances in ${theme.secondary(result.executionTimeMs + "ms")}`);
+            this.succeedSpinner(`Redacted ${theme_1.theme.bold(result.redactionCount.toString())} PHI instances in ${theme_1.theme.secondary(result.executionTimeMs + "ms")}`);
         }
         // Output based on format
         const output = this.formatOutput(result, input, options.format, options.showSpans);
@@ -250,10 +214,10 @@ class CLI {
             if (!quiet) {
                 this.newline();
                 this.divider();
-                this.log(theme.bold("REDACTED OUTPUT:"));
+                this.log(theme_1.theme.bold("REDACTED OUTPUT:"));
                 this.divider();
             }
-            console.log(output);
+            VulpesOutput_1.out.print(output);
         }
         // Show breakdown if not quiet
         if (!quiet && result.redactionCount > 0) {
@@ -289,19 +253,19 @@ class CLI {
             return;
         }
         if (!quiet) {
-            this.infoMsg(`Found ${theme.bold(files.length.toString())} files to process`);
+            this.infoMsg(`Found ${theme_1.theme.bold(files.length.toString())} files to process`);
             this.newline();
         }
         // Setup output directory
         const outputDir = options.output || `${directory}_redacted`;
         if (options.dryRun) {
-            this.infoMsg(theme.warning("DRY RUN - No files will be modified"));
+            this.infoMsg(theme_1.theme.warning("DRY RUN - No files will be modified"));
             this.newline();
             for (const file of files) {
                 const relativePath = path.relative(directory, file);
                 const outputPath = path.join(outputDir, relativePath);
-                this.log(`  ${theme.muted(figures_1.default.arrowRight)} ${relativePath}`);
-                this.log(`    ${theme.muted("→")} ${outputPath}`);
+                this.log(`  ${theme_1.theme.muted(figures_1.default.arrowRight)} ${relativePath}`);
+                this.log(`    ${theme_1.theme.muted("→")} ${outputPath}`);
             }
             return;
         }
@@ -346,10 +310,10 @@ class CLI {
                     process.stdout.cursorTo(0);
                     process.stdout.write(`  ${this.progressBar(processed, files.length)} `);
                     const status = r.error
-                        ? theme.error(figures_1.default.cross)
-                        : theme.success(figures_1.default.tick);
+                        ? theme_1.theme.error(figures_1.default.cross)
+                        : theme_1.theme.success(figures_1.default.tick);
                     const relativePath = path.relative(directory, r.file);
-                    process.stdout.write(`${status} ${theme.muted(relativePath)}`);
+                    process.stdout.write(`${status} ${theme_1.theme.muted(relativePath)}`);
                 }
             }
         }
@@ -362,7 +326,7 @@ class CLI {
         const successful = results.filter((r) => !r.error);
         if (!quiet || options.summary) {
             this.divider();
-            this.log(theme.bold("BATCH PROCESSING COMPLETE"));
+            this.log(theme_1.theme.bold("BATCH PROCESSING COMPLETE"));
             this.divider();
             this.newline();
             const summaryTable = new cli_table3_1.default({
@@ -370,34 +334,34 @@ class CLI {
                 style: { head: [], border: [] },
             });
             summaryTable.push([
-                theme.muted("Files Processed"),
-                theme.bold(successful.length.toString()),
+                theme_1.theme.muted("Files Processed"),
+                theme_1.theme.bold(successful.length.toString()),
             ], [
-                theme.muted("Files Failed"),
+                theme_1.theme.muted("Files Failed"),
                 errors.length > 0
-                    ? theme.error(errors.length.toString())
-                    : theme.success("0"),
+                    ? theme_1.theme.error(errors.length.toString())
+                    : theme_1.theme.success("0"),
             ], [
-                theme.muted("Total PHI Redacted"),
-                theme.primary(totalRedactions.toLocaleString()),
+                theme_1.theme.muted("Total PHI Redacted"),
+                theme_1.theme.primary(totalRedactions.toLocaleString()),
             ], [
-                theme.muted("Total Time"),
-                theme.secondary(`${totalTime.toLocaleString()}ms`),
+                theme_1.theme.muted("Total Time"),
+                theme_1.theme.secondary(`${totalTime.toLocaleString()}ms`),
             ], [
-                theme.muted("Avg Time/File"),
-                theme.secondary(`${(totalTime / successful.length).toFixed(2)}ms`),
-            ], [theme.muted("Output Directory"), outputDir]);
-            console.log(summaryTable.toString());
+                theme_1.theme.muted("Avg Time/File"),
+                theme_1.theme.secondary(`${(totalTime / successful.length).toFixed(2)}ms`),
+            ], [theme_1.theme.muted("Output Directory"), outputDir]);
+            VulpesOutput_1.out.print(summaryTable.toString());
             if (errors.length > 0) {
                 this.newline();
                 this.warn("Errors encountered:");
                 for (const e of errors) {
-                    this.log(`  ${theme.error(figures_1.default.cross)} ${e.file}: ${e.error}`);
+                    this.log(`  ${theme_1.theme.error(figures_1.default.cross)} ${e.file}: ${e.error}`);
                 }
             }
         }
         this.newline();
-        this.success(`Batch processing complete! Output saved to ${theme.underline(outputDir)}`);
+        this.success(`Batch processing complete! Output saved to ${theme_1.theme.underline(outputDir)}`);
     }
     // ══════════════════════════════════════════════════════════════════════════
     // INTERACTIVE COMMAND
@@ -406,17 +370,16 @@ class CLI {
         this.printBanner();
         const config = this.parseConfig(options);
         const vulpes = new VulpesCelare_1.VulpesCelare(config);
-        console.log((0, boxen_1.default)(`${theme.bold("Interactive Mode")}\n\n` +
-            `${theme.muted("Enter text to redact. Commands:")}\n` +
-            `  ${theme.secondary(".help")}    ${theme.muted("Show help")}\n` +
-            `  ${theme.secondary(".stats")}   ${theme.muted("Show session statistics")}\n` +
-            `  ${theme.secondary(".clear")}   ${theme.muted("Clear screen")}\n` +
-            `  ${theme.secondary(".exit")}    ${theme.muted("Exit interactive mode")}\n` +
-            `  ${theme.secondary(".file")}    ${theme.muted("Load and redact a file")}`, {
-            padding: 1,
-            borderStyle: "round",
-            borderColor: "cyan",
-        }));
+        VulpesOutput_1.out.print(output_1.Box.info([
+            theme_1.theme.bold("Interactive Mode"),
+            "",
+            theme_1.theme.muted("Enter text to redact. Commands:"),
+            `  ${theme_1.theme.secondary(".help")}    ${theme_1.theme.muted("Show help")}`,
+            `  ${theme_1.theme.secondary(".stats")}   ${theme_1.theme.muted("Show session statistics")}`,
+            `  ${theme_1.theme.secondary(".clear")}   ${theme_1.theme.muted("Clear screen")}`,
+            `  ${theme_1.theme.secondary(".exit")}    ${theme_1.theme.muted("Exit interactive mode")}`,
+            `  ${theme_1.theme.secondary(".file")}    ${theme_1.theme.muted("Load and redact a file")}`,
+        ], { title: "Interactive Mode" }));
         this.newline();
         const rl = readline.createInterface({
             input: process.stdin,
@@ -429,7 +392,7 @@ class CLI {
             totalChars: 0,
         };
         const prompt = () => {
-            rl.question(theme.primary("vulpes") + theme.muted(" > "), async (input) => {
+            rl.question(theme_1.theme.primary("vulpes") + theme_1.theme.muted(" > "), async (input) => {
                 input = input.trim();
                 if (!input) {
                     prompt();
@@ -475,7 +438,7 @@ class CLI {
                                     sessionStats.totalChars += content.length;
                                     this.newline();
                                     this.divider();
-                                    console.log(result.text);
+                                    VulpesOutput_1.out.print(result.text);
                                     this.divider();
                                     this.printBreakdown(result);
                                 }
@@ -499,12 +462,12 @@ class CLI {
                 this.newline();
                 if (result.redactionCount > 0) {
                     // Highlight redactions in output
-                    console.log(this.highlightRedactions(result.text));
+                    VulpesOutput_1.out.print(this.highlightRedactions(result.text));
                     this.newline();
                     this.success(`${result.redactionCount} PHI redacted in ${result.executionTimeMs}ms`);
                 }
                 else {
-                    console.log(theme.success(result.text));
+                    VulpesOutput_1.out.print(theme_1.theme.success(result.text));
                     this.newline();
                     this.infoMsg(`No PHI detected (${result.executionTimeMs}ms)`);
                 }
@@ -540,56 +503,50 @@ class CLI {
                 executionTimeMs: result.executionTimeMs,
                 breakdown: result.breakdown,
             };
-            console.log(JSON.stringify(analysis, null, 2));
+            VulpesOutput_1.out.print(JSON.stringify(analysis, null, 2));
             return;
         }
         if (options.format === "csv") {
-            console.log("type,count");
+            VulpesOutput_1.out.print("type,count");
             for (const [type, count] of Object.entries(result.breakdown)) {
-                console.log(`${type},${count}`);
+                VulpesOutput_1.out.print(`${type},${count}`);
             }
             return;
         }
         // Table format (default)
         this.divider();
-        this.log(theme.bold(`ANALYSIS: ${path.basename(file)}`));
+        this.log(theme_1.theme.bold(`ANALYSIS: ${path.basename(file)}`));
         this.divider();
         this.newline();
         const summaryTable = new cli_table3_1.default({
             chars: this.getTableChars(),
             style: { head: [], border: [] },
         });
-        summaryTable.push([theme.muted("File"), path.basename(file)], [theme.muted("Size"), `${input.length.toLocaleString()} characters`], [
-            theme.muted("PHI Instances"),
+        summaryTable.push([theme_1.theme.muted("File"), path.basename(file)], [theme_1.theme.muted("Size"), `${input.length.toLocaleString()} characters`], [
+            theme_1.theme.muted("PHI Instances"),
             result.redactionCount > 0
-                ? theme.warning(result.redactionCount.toString())
-                : theme.success("0"),
-        ], [theme.muted("Analysis Time"), `${result.executionTimeMs}ms`]);
-        console.log(summaryTable.toString());
+                ? theme_1.theme.warning(result.redactionCount.toString())
+                : theme_1.theme.success("0"),
+        ], [theme_1.theme.muted("Analysis Time"), `${result.executionTimeMs}ms`]);
+        VulpesOutput_1.out.print(summaryTable.toString());
         this.newline();
         if (result.redactionCount > 0) {
-            this.log(theme.bold("PHI BREAKDOWN BY TYPE:"));
+            this.log(theme_1.theme.bold("PHI BREAKDOWN BY TYPE:"));
             this.newline();
             const phiTable = new cli_table3_1.default({
-                head: [theme.bold("Type"), theme.bold("Count")],
+                head: [theme_1.theme.bold("Type"), theme_1.theme.bold("Count")],
                 chars: this.getTableChars(),
                 style: { head: [], border: [] },
             });
             const sortedBreakdown = Object.entries(result.breakdown).sort(([, a], [, b]) => b - a);
             for (const [type, count] of sortedBreakdown) {
                 const typeColor = this.getPhiColor(type);
-                phiTable.push([typeColor(type), theme.bold(count.toString())]);
+                phiTable.push([typeColor(type), theme_1.theme.bold(count.toString())]);
             }
-            console.log(phiTable.toString());
+            VulpesOutput_1.out.print(phiTable.toString());
         }
         else {
-            console.log((0, boxen_1.default)(theme.success(`${figures_1.default.tick} No PHI detected in this document`), {
-                padding: 1,
-                borderStyle: "round",
-                borderColor: "green",
-                title: "CLEAN",
-                titleAlignment: "center",
-            }));
+            VulpesOutput_1.out.print(output_1.Box.success("No PHI detected in this document", { title: "CLEAN" }));
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -597,11 +554,11 @@ class CLI {
     // ══════════════════════════════════════════════════════════════════════════
     static async policyList() {
         this.printBanner();
-        this.log(theme.bold("AVAILABLE POLICY TEMPLATES:"));
+        this.log(theme_1.theme.bold("AVAILABLE POLICY TEMPLATES:"));
         this.newline();
         const templates = Object.entries(PolicyDSL_1.PolicyTemplates);
         const table = new cli_table3_1.default({
-            head: [theme.bold("Template"), theme.bold("Description")],
+            head: [theme_1.theme.bold("Template"), theme_1.theme.bold("Description")],
             chars: this.getTableChars(),
             style: { head: [], border: [] },
             colWidths: [20, 55],
@@ -616,13 +573,13 @@ class CLI {
         };
         for (const [name] of templates) {
             table.push([
-                theme.primary(name),
-                theme.muted(descriptions[name] || "Custom policy template"),
+                theme_1.theme.primary(name),
+                theme_1.theme.muted(descriptions[name] || "Custom policy template"),
             ]);
         }
-        console.log(table.toString());
+        VulpesOutput_1.out.print(table.toString());
         this.newline();
-        this.infoMsg(`Use ${theme.secondary("vulpes policy show <name>")} for details`);
+        this.infoMsg(`Use ${theme_1.theme.secondary("vulpes policy show <name>")} for details`);
     }
     static async policyShow(name) {
         this.printBanner();
@@ -632,10 +589,10 @@ class CLI {
             this.infoMsg(`Available: ${Object.keys(PolicyDSL_1.PolicyTemplates).join(", ")}`);
             process.exit(1);
         }
-        this.log(theme.bold(`POLICY: ${name.toUpperCase()}`));
+        this.log(theme_1.theme.bold(`POLICY: ${name.toUpperCase()}`));
         this.divider();
         this.newline();
-        console.log(JSON.stringify(template, null, 2));
+        VulpesOutput_1.out.print(JSON.stringify(template, null, 2));
     }
     static async policyCompile(file, options) {
         this.printBanner();
@@ -687,9 +644,9 @@ class CLI {
     // ══════════════════════════════════════════════════════════════════════════
     static async info(options) {
         const infoData = {
-            engine: index_1.ENGINE_NAME,
-            variant: index_1.VARIANT,
-            version: index_1.VERSION,
+            engine: meta_1.ENGINE_NAME,
+            variant: meta_1.VARIANT,
+            version: meta_1.VERSION,
             nodeVersion: process.version,
             platform: process.platform,
             arch: process.arch,
@@ -697,7 +654,7 @@ class CLI {
             phiTypes: VulpesCelare_1.VulpesCelare.ALL_PHI_TYPES.length,
         };
         if (options.json) {
-            console.log(JSON.stringify(infoData, null, 2));
+            VulpesOutput_1.out.print(JSON.stringify(infoData, null, 2));
             return;
         }
         this.printBanner();
@@ -705,11 +662,13 @@ class CLI {
             chars: this.getTableChars(),
             style: { head: [], border: [] },
         });
-        table.push([theme.muted("Engine"), theme.bold(infoData.engine)], [theme.muted("Variant"), infoData.variant], [theme.muted("Version"), theme.secondary(infoData.version)], [theme.muted("Node.js"), infoData.nodeVersion], [theme.muted("Platform"), `${infoData.platform} (${infoData.arch})`], [theme.muted("Active Filters"), infoData.filters.toString()], [theme.muted("PHI Types"), infoData.phiTypes.toString()]);
-        console.log(table.toString());
+        table.push([theme_1.theme.muted("Engine"), theme_1.theme.bold(infoData.engine)], [theme_1.theme.muted("Variant"), infoData.variant], [theme_1.theme.muted("Version"), theme_1.theme.secondary(infoData.version)], [theme_1.theme.muted("Node.js"), infoData.nodeVersion], [theme_1.theme.muted("Platform"), `${infoData.platform} (${infoData.arch})`], [theme_1.theme.muted("Active Filters"), infoData.filters.toString()], [theme_1.theme.muted("PHI Types"), infoData.phiTypes.toString()]);
+        VulpesOutput_1.out.print(table.toString());
         this.newline();
-        console.log((0, boxen_1.default)(`${theme.muted("Documentation:")} ${theme.underline("https://github.com/DocHatty/Vulpes-Celare")}\n` +
-            `${theme.muted("License:")} AGPL-3.0-only`, { padding: 1, borderStyle: "round", borderColor: "gray" }));
+        VulpesOutput_1.out.print(output_1.Box.create([
+            `${theme_1.theme.muted("Documentation:")} ${theme_1.theme.underline("https://github.com/DocHatty/Vulpes-Celare")}`,
+            `${theme_1.theme.muted("License:")} Evaluation Only`,
+        ], { style: "rounded" }));
     }
     // ══════════════════════════════════════════════════════════════════════════
     // FILTERS COMMAND
@@ -718,7 +677,7 @@ class CLI {
         const vulpes = new VulpesCelare_1.VulpesCelare();
         const activeFilters = vulpes.getActiveFilters();
         if (options.format === "json") {
-            console.log(JSON.stringify({
+            VulpesOutput_1.out.print(JSON.stringify({
                 count: activeFilters.length,
                 filters: activeFilters,
                 phiTypes: VulpesCelare_1.VulpesCelare.ALL_PHI_TYPES,
@@ -726,7 +685,7 @@ class CLI {
             return;
         }
         this.printBanner();
-        this.log(theme.bold("AVAILABLE PHI FILTERS:"));
+        this.log(theme_1.theme.bold("AVAILABLE PHI FILTERS:"));
         this.newline();
         // Group filters by category
         const categories = {
@@ -767,21 +726,21 @@ class CLI {
             ],
         };
         for (const [category, filters] of Object.entries(categories)) {
-            this.log(theme.primary(`  ${category}`));
+            this.log(theme_1.theme.primary(`  ${category}`));
             for (const filter of filters) {
                 const isActive = activeFilters.includes(filter);
                 const icon = isActive
-                    ? theme.success(figures_1.default.tick)
-                    : theme.muted(figures_1.default.cross);
+                    ? theme_1.theme.success(figures_1.default.tick)
+                    : theme_1.theme.muted(figures_1.default.cross);
                 const name = filter
                     .replace("FilterSpan", "")
                     .replace(/([A-Z])/g, " $1")
                     .trim();
-                this.log(`    ${icon} ${isActive ? name : theme.muted(name)}`);
+                this.log(`    ${icon} ${isActive ? name : theme_1.theme.muted(name)}`);
             }
             this.newline();
         }
-        this.infoMsg(`${theme.bold(activeFilters.length.toString())} filters active`);
+        this.infoMsg(`${theme_1.theme.bold(activeFilters.length.toString())} filters active`);
     }
     // ══════════════════════════════════════════════════════════════════════════
     // BENCHMARK COMMAND
@@ -790,7 +749,7 @@ class CLI {
         const quiet = options.quiet;
         if (!quiet) {
             this.printBanner();
-            this.log(theme.bold("PERFORMANCE BENCHMARK"));
+            this.log(theme_1.theme.bold("PERFORMANCE BENCHMARK"));
             this.divider();
             this.newline();
         }
@@ -838,8 +797,8 @@ class CLI {
         const testDoc = samples[options.size] || samples.medium;
         const vulpes = new VulpesCelare_1.VulpesCelare();
         if (!quiet) {
-            this.infoMsg(`Document size: ${theme.bold(testDoc.length.toLocaleString())} characters`);
-            this.infoMsg(`Iterations: ${theme.bold(iterations.toString())}`);
+            this.infoMsg(`Document size: ${theme_1.theme.bold(testDoc.length.toLocaleString())} characters`);
+            this.infoMsg(`Iterations: ${theme_1.theme.bold(iterations.toString())}`);
             this.newline();
             this.startSpinner(`Running ${iterations} iterations...`);
         }
@@ -872,16 +831,16 @@ class CLI {
             style: { head: [], border: [] },
         });
         resultsTable.push([
-            theme.muted("Document Size"),
+            theme_1.theme.muted("Document Size"),
             `${testDoc.length.toLocaleString()} chars`,
-        ], [theme.muted("PHI Redacted"), totalRedactions.toString()], [theme.muted("Iterations"), iterations.toString()], [theme.muted(""), ""], [theme.bold("Min"), theme.success(`${min.toFixed(2)}ms`)], [theme.bold("Max"), theme.warning(`${max.toFixed(2)}ms`)], [theme.bold("Average"), theme.primary(`${avg.toFixed(2)}ms`)], [theme.bold("P50 (Median)"), `${p50.toFixed(2)}ms`], [theme.bold("P95"), `${p95.toFixed(2)}ms`], [theme.bold("P99"), `${p99.toFixed(2)}ms`], [theme.muted(""), ""], [
-            theme.bold("Throughput"),
-            theme.secondary(`${(1000 / avg).toFixed(0)} docs/sec`),
+        ], [theme_1.theme.muted("PHI Redacted"), totalRedactions.toString()], [theme_1.theme.muted("Iterations"), iterations.toString()], [theme_1.theme.muted(""), ""], [theme_1.theme.bold("Min"), theme_1.theme.success(`${min.toFixed(2)}ms`)], [theme_1.theme.bold("Max"), theme_1.theme.warning(`${max.toFixed(2)}ms`)], [theme_1.theme.bold("Average"), theme_1.theme.primary(`${avg.toFixed(2)}ms`)], [theme_1.theme.bold("P50 (Median)"), `${p50.toFixed(2)}ms`], [theme_1.theme.bold("P95"), `${p95.toFixed(2)}ms`], [theme_1.theme.bold("P99"), `${p99.toFixed(2)}ms`], [theme_1.theme.muted(""), ""], [
+            theme_1.theme.bold("Throughput"),
+            theme_1.theme.secondary(`${(1000 / avg).toFixed(0)} docs/sec`),
         ], [
-            theme.bold("Chars/sec"),
-            theme.secondary(`${((testDoc.length * 1000) / avg).toLocaleString()}`),
+            theme_1.theme.bold("Chars/sec"),
+            theme_1.theme.secondary(`${((testDoc.length * 1000) / avg).toLocaleString()}`),
         ]);
-        console.log(resultsTable.toString());
+        VulpesOutput_1.out.print(resultsTable.toString());
         if (!quiet) {
             this.newline();
             // Visual performance indicator
@@ -893,8 +852,14 @@ class CLI {
                         ? "ACCEPTABLE"
                         : "SLOW";
             const perfColor = avg < 3 ? "green" : avg < 10 ? "cyan" : avg < 50 ? "yellow" : "red";
-            console.log((0, boxen_1.default)(`Performance Rating: ${perfRating}\n` +
-                `${theme.muted("Target: < 3ms per document")}`, { padding: 1, borderStyle: "round", borderColor: perfColor }));
+            const perfBox = avg < 3
+                ? output_1.Box.success([`Performance Rating: ${perfRating}`, theme_1.theme.muted("Target: < 3ms per document")])
+                : avg < 10
+                    ? output_1.Box.info([`Performance Rating: ${perfRating}`, theme_1.theme.muted("Target: < 3ms per document")])
+                    : avg < 50
+                        ? output_1.Box.warning([`Performance Rating: ${perfRating}`, theme_1.theme.muted("Target: < 3ms per document")])
+                        : output_1.Box.error([`Performance Rating: ${perfRating}`, theme_1.theme.muted("Target: < 3ms per document")]);
+            VulpesOutput_1.out.print(perfBox);
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -903,7 +868,7 @@ class CLI {
     static async stream(options) {
         this.printBanner();
         this.infoMsg("Streaming mode active. Type text and press Enter.");
-        this.infoMsg(`Mode: ${theme.secondary(options.mode)}`);
+        this.infoMsg(`Mode: ${theme_1.theme.secondary(options.mode)}`);
         this.infoMsg("Press Ctrl+C to exit.");
         this.newline();
         const config = this.parseConfig(options);
@@ -914,7 +879,7 @@ class CLI {
         });
         rl.on("line", async (line) => {
             const result = await vulpes.process(line);
-            console.log(theme.primary("→ ") + result.text);
+            VulpesOutput_1.out.print(theme_1.theme.primary("→ ") + result.text);
         });
         rl.on("close", () => {
             this.newline();
@@ -990,10 +955,10 @@ class CLI {
     static printBreakdown(result) {
         if (Object.keys(result.breakdown).length === 0)
             return;
-        this.log(theme.bold("PHI BREAKDOWN:"));
+        this.log(theme_1.theme.bold("PHI BREAKDOWN:"));
         this.newline();
         const table = new cli_table3_1.default({
-            head: [theme.bold("Type"), theme.bold("Count")],
+            head: [theme_1.theme.bold("Type"), theme_1.theme.bold("Count")],
             chars: this.getTableChars(),
             style: { head: [], border: [] },
         });
@@ -1002,17 +967,21 @@ class CLI {
             const typeColor = this.getPhiColor(type);
             table.push([typeColor(type), count.toString()]);
         }
-        console.log(table.toString());
+        VulpesOutput_1.out.print(table.toString());
     }
     static printInteractiveHelp() {
         this.newline();
-        console.log((0, boxen_1.default)(`${theme.bold("Interactive Commands")}\n\n` +
-            `${theme.secondary(".help, .h, .?")}   Show this help\n` +
-            `${theme.secondary(".stats")}         Show session statistics\n` +
-            `${theme.secondary(".clear, .cls")}   Clear the screen\n` +
-            `${theme.secondary(".file <path>")}   Load and redact a file\n` +
-            `${theme.secondary(".exit, .quit")}   Exit interactive mode\n\n` +
-            `${theme.muted("Or just type text to redact it immediately.")}`, { padding: 1, borderStyle: "round", borderColor: "cyan" }));
+        VulpesOutput_1.out.print(output_1.Box.info([
+            theme_1.theme.bold("Interactive Commands"),
+            "",
+            `${theme_1.theme.secondary(".help, .h, .?")}   Show this help`,
+            `${theme_1.theme.secondary(".stats")}         Show session statistics`,
+            `${theme_1.theme.secondary(".clear, .cls")}   Clear the screen`,
+            `${theme_1.theme.secondary(".file <path>")}   Load and redact a file`,
+            `${theme_1.theme.secondary(".exit, .quit")}   Exit interactive mode`,
+            "",
+            theme_1.theme.muted("Or just type text to redact it immediately."),
+        ]));
         this.newline();
     }
     static printSessionStats(stats) {
@@ -1021,59 +990,44 @@ class CLI {
             chars: this.getTableChars(),
             style: { head: [], border: [] },
         });
-        table.push([theme.muted("Documents Processed"), stats.documents.toString()], [
-            theme.muted("Total PHI Redacted"),
-            theme.primary(stats.totalRedactions.toString()),
-        ], [theme.muted("Total Characters"), stats.totalChars.toLocaleString()], [theme.muted("Total Time"), `${stats.totalTime}ms`], [
-            theme.muted("Avg Time/Doc"),
+        table.push([theme_1.theme.muted("Documents Processed"), stats.documents.toString()], [
+            theme_1.theme.muted("Total PHI Redacted"),
+            theme_1.theme.primary(stats.totalRedactions.toString()),
+        ], [theme_1.theme.muted("Total Characters"), stats.totalChars.toLocaleString()], [theme_1.theme.muted("Total Time"), `${stats.totalTime}ms`], [
+            theme_1.theme.muted("Avg Time/Doc"),
             stats.documents > 0
                 ? `${(stats.totalTime / stats.documents).toFixed(2)}ms`
                 : "N/A",
         ]);
-        console.log(table.toString());
+        VulpesOutput_1.out.print(table.toString());
         this.newline();
     }
     static highlightRedactions(text) {
         // Highlight bracketed redactions
-        return text.replace(/\[([A-Z-]+)\]/g, (match) => theme.warning(match));
+        return text.replace(/\[([A-Z-]+)\]/g, (match) => theme_1.theme.warning(match));
     }
     static getPhiColor(type) {
         const colorMap = {
-            SmartNameFilter: theme.phi.name,
-            FormattedNameFilter: theme.phi.name,
-            TitledNameFilter: theme.phi.name,
-            FamilyNameFilter: theme.phi.name,
-            SSNFilter: theme.phi.ssn,
-            PhoneFilter: theme.phi.phone,
-            EmailFilter: theme.phi.email,
-            AddressFilter: theme.phi.address,
-            DateFilter: theme.phi.date,
-            MRNFilter: theme.phi.mrn,
+            SmartNameFilter: theme_1.theme.phi.name,
+            FormattedNameFilter: theme_1.theme.phi.name,
+            TitledNameFilter: theme_1.theme.phi.name,
+            FamilyNameFilter: theme_1.theme.phi.name,
+            SSNFilter: theme_1.theme.phi.ssn,
+            PhoneFilter: theme_1.theme.phi.phone,
+            EmailFilter: theme_1.theme.phi.email,
+            AddressFilter: theme_1.theme.phi.address,
+            DateFilter: theme_1.theme.phi.date,
+            MRNFilter: theme_1.theme.phi.mrn,
         };
         for (const [key, color] of Object.entries(colorMap)) {
             if (type.includes(key.replace("Filter", "")))
                 return color;
         }
-        return theme.phi.default;
+        return theme_1.theme.phi.default;
     }
     static getTableChars() {
-        return {
-            top: "─",
-            "top-mid": "┬",
-            "top-left": "┌",
-            "top-right": "┐",
-            bottom: "─",
-            "bottom-mid": "┴",
-            "bottom-left": "└",
-            "bottom-right": "┘",
-            left: "│",
-            "left-mid": "├",
-            mid: "─",
-            "mid-mid": "┼",
-            right: "│",
-            "right-mid": "┤",
-            middle: "│",
-        };
+        // Use unified theme table characters
+        return (0, theme_1.getTableChars)("sharp");
     }
     // ══════════════════════════════════════════════════════════════════════════
     // DEEP ANALYSIS COMMAND
@@ -1081,8 +1035,8 @@ class CLI {
     static async deepAnalyze(options) {
         if (!options.json) {
             this.printBanner();
-            console.log(theme.bold("\n  DEEP ANALYSIS ENGINE\n"));
-            console.log(theme.muted("  Opus 4.5 Extended Thinking + Codex 5.2 High Max\n"));
+            VulpesOutput_1.out.print(theme_1.theme.bold("\n  DEEP ANALYSIS ENGINE\n"));
+            VulpesOutput_1.out.print(theme_1.theme.muted("  Opus 4.5 Extended Thinking + Codex 5.2 High Max\n"));
         }
         try {
             // Dynamic require of the deep analysis engine (JS module)
@@ -1096,13 +1050,13 @@ class CLI {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const threshold = await engine.checkThreshold();
             if (!options.json) {
-                console.log(theme.info(`  Documents analyzed: ${threshold.documentCount}`));
-                console.log(theme.info(`  Confidence level: ${threshold.confidenceLevel?.confidence}`));
-                console.log(theme.info(`  CI width: ${threshold.confidenceLevel?.ciWidth}\n`));
+                VulpesOutput_1.out.print(theme_1.theme.info(`  Documents analyzed: ${threshold.documentCount}`));
+                VulpesOutput_1.out.print(theme_1.theme.info(`  Confidence level: ${threshold.confidenceLevel?.confidence}`));
+                VulpesOutput_1.out.print(theme_1.theme.info(`  CI width: ${threshold.confidenceLevel?.ciWidth}\n`));
             }
             if (!threshold.meetsMinimum && !options.force) {
                 if (options.json) {
-                    console.log(JSON.stringify({
+                    VulpesOutput_1.out.print(JSON.stringify({
                         success: false,
                         error: "THRESHOLD_NOT_MET",
                         ...threshold,
@@ -1110,8 +1064,8 @@ class CLI {
                 }
                 else {
                     this.warn(threshold.recommendedAction?.message);
-                    console.log(theme.muted(`\n  Run: ${threshold.recommendedAction?.command}\n`));
-                    console.log(theme.muted("  Or use --force to run analysis anyway\n"));
+                    VulpesOutput_1.out.print(theme_1.theme.muted(`\n  Run: ${threshold.recommendedAction?.command}\n`));
+                    VulpesOutput_1.out.print(theme_1.theme.muted("  Or use --force to run analysis anyway\n"));
                 }
                 return;
             }
@@ -1125,34 +1079,34 @@ class CLI {
             });
             this.succeedSpinner("Deep analysis complete");
             if (options.json) {
-                console.log(JSON.stringify(analysis, null, 2));
+                VulpesOutput_1.out.print(JSON.stringify(analysis, null, 2));
             }
             else {
                 // Print report
-                console.log(engine.generateReport(analysis));
+                VulpesOutput_1.out.print(engine.generateReport(analysis));
                 // Show top recommendations
                 const recs = analysis.phases?.deepResearch?.recommendations || [];
                 if (recs.length > 0) {
-                    console.log(theme.bold("\n  TOP RECOMMENDATIONS:\n"));
+                    VulpesOutput_1.out.print(theme_1.theme.bold("\n  TOP RECOMMENDATIONS:\n"));
                     for (let i = 0; i < Math.min(3, recs.length); i++) {
                         const rec = recs[i];
-                        console.log(theme.warning(`  ${i + 1}. [${rec.priority}] ${rec.action}`));
-                        console.log(theme.muted(`     Files: ${(rec.files || []).join(", ")}`));
-                        console.log(theme.muted(`     Expected: ${rec.expectedImprovement || "Unknown"}\n`));
+                        VulpesOutput_1.out.print(theme_1.theme.warning(`  ${i + 1}. [${rec.priority}] ${rec.action}`));
+                        VulpesOutput_1.out.print(theme_1.theme.muted(`     Files: ${(rec.files || []).join(", ")}`));
+                        VulpesOutput_1.out.print(theme_1.theme.muted(`     Expected: ${rec.expectedImprovement || "Unknown"}\n`));
                     }
                 }
                 // Show next steps
-                console.log(theme.bold("\n  NEXT STEPS:\n"));
-                console.log(theme.muted("  1. Review the recommendations above"));
-                console.log(theme.muted("  2. Apply fixes one at a time"));
-                console.log(theme.muted("  3. Run: npm test -- --log-file"));
-                console.log(theme.muted("  4. Compare metrics before/after\n"));
+                VulpesOutput_1.out.print(theme_1.theme.bold("\n  NEXT STEPS:\n"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  1. Review the recommendations above"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  2. Apply fixes one at a time"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  3. Run: npm test -- --log-file"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  4. Compare metrics before/after\n"));
             }
         }
         catch (error) {
             this.failSpinner("Deep analysis failed");
             if (options.json) {
-                console.log(JSON.stringify({
+                VulpesOutput_1.out.print(JSON.stringify({
                     success: false,
                     error: error.message,
                 }, null, 2));
@@ -1168,7 +1122,7 @@ class CLI {
     // ══════════════════════════════════════════════════════════════════════════
     static async runTests(options) {
         this.printBanner();
-        console.log(theme.bold("\n  PHI DETECTION TEST SUITE\n"));
+        VulpesOutput_1.out.print(theme_1.theme.bold("\n  PHI DETECTION TEST SUITE\n"));
         // Determine document count
         let count = parseInt(options.count || "200");
         if (options.quick)
@@ -1176,10 +1130,10 @@ class CLI {
         if (options.thorough)
             count = 500;
         const profile = options.profile || "HIPAA_STRICT";
-        console.log(theme.info(`  Documents: ${count}`));
-        console.log(theme.info(`  Profile: ${profile}`));
-        console.log(theme.info(`  Self-correction: ${options.selfCorrect ? "enabled" : "disabled"}`));
-        console.log(theme.info(`  Checkpoints: ${options.checkpoints ? "enabled" : "disabled"}\n`));
+        VulpesOutput_1.out.print(theme_1.theme.info(`  Documents: ${count}`));
+        VulpesOutput_1.out.print(theme_1.theme.info(`  Profile: ${profile}`));
+        VulpesOutput_1.out.print(theme_1.theme.info(`  Self-correction: ${options.selfCorrect ? "enabled" : "disabled"}`));
+        VulpesOutput_1.out.print(theme_1.theme.info(`  Checkpoints: ${options.checkpoints ? "enabled" : "disabled"}\n`));
         try {
             if (options.selfCorrect) {
                 // Use self-correction orchestrator
@@ -1204,9 +1158,9 @@ class CLI {
                     return { success: true };
                 });
                 this.stopSpinner();
-                console.log(orchestrator.generateReport());
+                VulpesOutput_1.out.print(orchestrator.generateReport());
                 if (!result.success) {
-                    console.log(theme.error(`\n  Tests failed after ${result.attempts} attempts\n`));
+                    VulpesOutput_1.out.print(theme_1.theme.error(`\n  Tests failed after ${result.attempts} attempts\n`));
                     process.exit(1);
                 }
             }

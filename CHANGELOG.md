@@ -9,10 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **VulpesLogger**: World-class diagnostic logging system with dual-mode output (human TUI / machine JSON)
+- **VulpesOutput**: Dedicated user-facing CLI output system with semantic methods
+- **Verification Portal Redesign**: Complete UI overhaul with modern design system
+  - CSS custom properties (50+ design tokens)
+  - Dark mode with system preference detection
+  - Full WCAG 2.1 AA accessibility compliance
+  - Micro-animations and polish
+  - Inter + JetBrains Mono typography
+
 ### Changed
 - All Rust accelerators now enabled by default (production-ready status)
+- Migrated diagnostic logging from console.* to VulpesLogger across all core modules
+- Migrated CLI output from console.* to VulpesOutput across all CLI modules
 - Improved documentation with clearer architecture descriptions and marketability statements
 - Enhanced cross-references between documentation files
+- Verification portal server now uses process.stdout/stderr instead of console.*
 
 ---
 

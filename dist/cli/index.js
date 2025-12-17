@@ -53,18 +53,21 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.program = void 0;
 const commander_1 = require("commander");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
 const CLI_1 = require("./CLI");
 const LLMIntegration_1 = require("./LLMIntegration");
 const Agent_1 = require("./Agent");
 const NativeChat_1 = require("./NativeChat");
 const VulpesIntegration_1 = require("./VulpesIntegration");
-const index_1 = require("../index");
+const completions_1 = require("./completions");
+const help_1 = require("./help");
+const meta_1 = require("../meta");
 const program = new commander_1.Command();
 exports.program = program;
 program
     .name("vulpes")
-    .description(`${index_1.ENGINE_NAME} - ${index_1.VARIANT}\nHIPAA PHI Redaction Engine`)
-    .version(index_1.VERSION, "-v, --version", "Display version number")
+    .description(`${meta_1.ENGINE_NAME} - ${meta_1.VARIANT}\nHIPAA PHI Redaction Engine`)
+    .version(meta_1.VERSION, "-v, --version", "Display version number")
     .addHelpText("beforeAll", CLI_1.CLI.getBanner())
     .configureHelp({
     sortSubcommands: true,
@@ -366,11 +369,54 @@ program
     await CLI_1.CLI.runTests(options);
 });
 // ============================================================================
+// COMPLETIONS COMMAND - Shell completion scripts
+// ============================================================================
+program
+    .command("completions")
+    .description("Generate shell completion scripts")
+    .argument("[shell]", "Shell type: bash, zsh, fish, powershell")
+    .action((shell) => {
+    if (!shell) {
+        (0, completions_1.showCompletionHelp)();
+    }
+    else {
+        (0, completions_1.generateCompletions)(shell);
+    }
+});
+// ============================================================================
+// EXAMPLES COMMAND - Show usage examples
+// ============================================================================
+program
+    .command("examples")
+    .description("Show usage examples for common tasks")
+    .action(() => {
+    (0, help_1.showExamples)();
+});
+// ============================================================================
+// TIPS COMMAND - Show tips and tricks
+// ============================================================================
+program
+    .command("tips")
+    .description("Show tips and tricks for power users")
+    .action(() => {
+    (0, help_1.showTips)();
+});
+// ============================================================================
+// QUICKSTART COMMAND - Getting started guide
+// ============================================================================
+program
+    .command("quickstart")
+    .alias("qs")
+    .description("Show quick start guide for new users")
+    .action(() => {
+    (0, help_1.showQuickStart)();
+});
+// ============================================================================
 // DEFAULT BEHAVIOR - Show help or run interactive
 // ============================================================================
 program.action(async () => {
     // If no command specified, show help with the beautiful banner
-    console.log(CLI_1.CLI.getBanner());
+    VulpesOutput_1.out.print(CLI_1.CLI.getBanner());
     program.help();
 });
 // Parse and execute

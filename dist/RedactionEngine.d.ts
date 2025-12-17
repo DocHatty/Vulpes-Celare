@@ -15,13 +15,7 @@
  */
 import { RedactionContext } from "./context/RedactionContext";
 export { RedactionContext } from "./context/RedactionContext";
-/**
- * Base Filter - abstract class for all filters
- */
-export declare abstract class BaseFilter {
-    abstract apply(text: string, config: any, context: RedactionContext): string | Promise<string>;
-    abstract getType(): string;
-}
+export { BaseFilter } from "./core/BaseFilter";
 /**
  * RedactionEngine - Thin Orchestrator
  * Delegates to specialized services for each concern

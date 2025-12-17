@@ -21,6 +21,8 @@
  * @module config/FeatureToggles
  */
 
+import { out } from "../utils/VulpesOutput";
+
 /**
  * Feature toggle definition
  */
@@ -172,13 +174,13 @@ function getAllStatuses(): Record<
 }
 
 /**
- * Print feature status to console
+ * Print feature status (user-facing output)
  */
 function printStatus(): void {
-  console.log("╔════════════════════════════════════════════════════════════════╗");
-  console.log("║           VULPES CELARE - Feature Status                       ║");
-  console.log("╚════════════════════════════════════════════════════════════════╝");
-  console.log("");
+  out.print("╔════════════════════════════════════════════════════════════════╗");
+  out.print("║           VULPES CELARE - Feature Status                       ║");
+  out.print("╚════════════════════════════════════════════════════════════════╝");
+  out.blank();
 
   const statuses = getAllStatuses();
   const categories = ["core", "acceleration", "experimental", "debug"];
@@ -190,23 +192,23 @@ function printStatus(): void {
 
     if (categoryFeatures.length === 0) continue;
 
-    console.log(`${category.toUpperCase()} FEATURES:`);
-    console.log("─".repeat(60));
+    out.print(`${category.toUpperCase()} FEATURES:`);
+    out.print("─".repeat(60));
 
     for (const [name, status] of categoryFeatures) {
       const indicator = status.enabled ? "[ON] " : "[OFF]";
       const envStatus = process.env[status.envVar] !== undefined ? "*" : " ";
-      console.log(
+      out.print(
         `  ${indicator} ${name.padEnd(20)} ${envStatus} ${status.description}`
       );
     }
-    console.log("");
+    out.blank();
   }
 
-  console.log("GPU Provider:", getGPUProvider());
-  console.log("");
-  console.log("* = explicitly set via environment variable");
-  console.log("");
+  out.print(`GPU Provider: ${getGPUProvider()}`);
+  out.blank();
+  out.print("* = explicitly set via environment variable");
+  out.blank();
 }
 
 /**

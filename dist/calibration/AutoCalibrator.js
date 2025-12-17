@@ -18,6 +18,7 @@ const ConfidenceCalibrator_1 = require("../core/ConfidenceCalibrator");
 const CalibrationDataExtractor_1 = require("./CalibrationDataExtractor");
 const CalibrationPersistence_1 = require("./CalibrationPersistence");
 const Span_1 = require("../models/Span");
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 /**
  * Default auto-calibration options
  */
@@ -277,7 +278,7 @@ class AutoCalibrator {
      */
     log(message) {
         if (this.options.verbose) {
-            console.log(`[AutoCalibrator] ${message}`);
+            VulpesLogger_1.vulpesLogger.debug(message, { component: "AutoCalibrator" });
         }
     }
 }

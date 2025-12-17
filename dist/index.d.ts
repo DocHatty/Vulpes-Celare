@@ -107,7 +107,5 @@ export { SQLiteDictionaryMatcher, FuzzyMatchResult, SQLiteDictionaryConfig, getS
 export { isBloomFilterEnabled, isSQLiteDictionaryEnabled, isDatalogReasonerEnabled, isDFAScanEnabled, isZigDFAAccelEnabled, getZigDFAMode, isGPUBatchEnabled, getGPUFallbackThreshold, isSupervisionEnabled, isCircuitBreakerEnabled, isFuzzyAccelEnabled, isPhoneticEnabled, getPhoneticThreshold, isStreamKernelEnabled, isStreamDetectionsEnabled, getConfigurationSummary, logConfiguration, ConfigurationSummary, } from "./config/EnvironmentConfig";
 export { FeatureToggles } from "./config/FeatureToggles";
 export { VulpesFilterEngine, UnifiedDetection, UnifiedScanResult, isUnifiedScannerAvailable, isUnifiedScannerEnabled, scanAllWithRust, detectionsToSpans, getRustSupportedTypes, getTypeScriptOnlyTypes, } from "./utils/VulpesFilterEngine";
-export declare const VERSION = "1.0.0";
-export declare const ENGINE_NAME = "Vulpes Celare";
-export declare const VARIANT = "Hatkoff Redaction Engine";
+export { VERSION, ENGINE_NAME, VARIANT } from "./meta";
 //# sourceMappingURL=index.d.ts.map

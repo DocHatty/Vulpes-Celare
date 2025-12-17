@@ -18,11 +18,14 @@
  */
 
 import { Command } from "commander";
+import { out } from "../utils/VulpesOutput";
 import { CLI } from "./CLI";
 import { handleSafeChat, handleQuery } from "./LLMIntegration";
 import { handleAgent } from "./Agent";
 import { handleNativeChat } from "./NativeChat";
 import { handleVulpesify } from "./VulpesIntegration";
+import { generateCompletions, showCompletionHelp } from "./completions";
+import { showExamples, showTips, showQuickStart } from "./help";
 import { VERSION, ENGINE_NAME, VARIANT } from "../meta";
 
 const program = new Command();
@@ -442,11 +445,57 @@ program
   });
 
 // ============================================================================
+// COMPLETIONS COMMAND - Shell completion scripts
+// ============================================================================
+program
+  .command("completions")
+  .description("Generate shell completion scripts")
+  .argument("[shell]", "Shell type: bash, zsh, fish, powershell")
+  .action((shell) => {
+    if (!shell) {
+      showCompletionHelp();
+    } else {
+      generateCompletions(shell);
+    }
+  });
+
+// ============================================================================
+// EXAMPLES COMMAND - Show usage examples
+// ============================================================================
+program
+  .command("examples")
+  .description("Show usage examples for common tasks")
+  .action(() => {
+    showExamples();
+  });
+
+// ============================================================================
+// TIPS COMMAND - Show tips and tricks
+// ============================================================================
+program
+  .command("tips")
+  .description("Show tips and tricks for power users")
+  .action(() => {
+    showTips();
+  });
+
+// ============================================================================
+// QUICKSTART COMMAND - Getting started guide
+// ============================================================================
+program
+  .command("quickstart")
+  .alias("qs")
+  .description("Show quick start guide for new users")
+  .action(() => {
+    showQuickStart();
+  });
+
+// ============================================================================
 // DEFAULT BEHAVIOR - Show help or run interactive
 // ============================================================================
 program.action(async () => {
   // If no command specified, show help with the beautiful banner
-  console.log(CLI.getBanner());
+  out.print(CLI.getBanner());
   program.help();
 });
 

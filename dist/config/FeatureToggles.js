@@ -23,6 +23,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FeatureToggles = void 0;
+const VulpesOutput_1 = require("../utils/VulpesOutput");
 /**
  * All feature toggles in the system
  */
@@ -152,32 +153,32 @@ function getAllStatuses() {
     return statuses;
 }
 /**
- * Print feature status to console
+ * Print feature status (user-facing output)
  */
 function printStatus() {
-    console.log("╔════════════════════════════════════════════════════════════════╗");
-    console.log("║           VULPES CELARE - Feature Status                       ║");
-    console.log("╚════════════════════════════════════════════════════════════════╝");
-    console.log("");
+    VulpesOutput_1.out.print("╔════════════════════════════════════════════════════════════════╗");
+    VulpesOutput_1.out.print("║           VULPES CELARE - Feature Status                       ║");
+    VulpesOutput_1.out.print("╚════════════════════════════════════════════════════════════════╝");
+    VulpesOutput_1.out.blank();
     const statuses = getAllStatuses();
     const categories = ["core", "acceleration", "experimental", "debug"];
     for (const category of categories) {
         const categoryFeatures = Object.entries(statuses).filter(([, s]) => s.category === category);
         if (categoryFeatures.length === 0)
             continue;
-        console.log(`${category.toUpperCase()} FEATURES:`);
-        console.log("─".repeat(60));
+        VulpesOutput_1.out.print(`${category.toUpperCase()} FEATURES:`);
+        VulpesOutput_1.out.print("─".repeat(60));
         for (const [name, status] of categoryFeatures) {
             const indicator = status.enabled ? "[ON] " : "[OFF]";
             const envStatus = process.env[status.envVar] !== undefined ? "*" : " ";
-            console.log(`  ${indicator} ${name.padEnd(20)} ${envStatus} ${status.description}`);
+            VulpesOutput_1.out.print(`  ${indicator} ${name.padEnd(20)} ${envStatus} ${status.description}`);
         }
-        console.log("");
+        VulpesOutput_1.out.blank();
     }
-    console.log("GPU Provider:", getGPUProvider());
-    console.log("");
-    console.log("* = explicitly set via environment variable");
-    console.log("");
+    VulpesOutput_1.out.print(`GPU Provider: ${getGPUProvider()}`);
+    VulpesOutput_1.out.blank();
+    VulpesOutput_1.out.print("* = explicitly set via environment variable");
+    VulpesOutput_1.out.blank();
 }
 /**
  * Exported FeatureToggles API

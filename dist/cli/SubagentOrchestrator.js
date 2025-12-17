@@ -118,7 +118,6 @@ exports.detectWorkflow = detectWorkflow;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const child_process_1 = require("child_process");
-const chalk_1 = __importDefault(require("chalk"));
 const SecurityUtils_1 = require("../utils/SecurityUtils");
 const figures_1 = __importDefault(require("figures"));
 const p_queue_1 = __importDefault(require("p-queue"));
@@ -126,23 +125,10 @@ const VulpesCelare_1 = require("../VulpesCelare");
 const APIProvider_1 = require("./APIProvider");
 const SystemPrompts_1 = require("./SystemPrompts");
 const VulpesStore_1 = require("./VulpesStore");
-// ============================================================================
-// THEME
-// ============================================================================
-const theme = {
-    primary: chalk_1.default.hex("#FF6B35"),
-    secondary: chalk_1.default.hex("#4ECDC4"),
-    accent: chalk_1.default.hex("#FFE66D"),
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-    orchestrator: chalk_1.default.hex("#9B59B6"),
-    subagent: chalk_1.default.hex("#3498DB"),
-    phase: chalk_1.default.hex("#E91E63"),
-    workflow: chalk_1.default.hex("#00BCD4"),
-};
+// Import unified theme system
+const theme_1 = require("../theme");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
+// Theme imported from unified theme system (../theme)
 // ============================================================================
 // WORKFLOW DETECTION - The "Brain" that chooses execution strategy
 // ============================================================================
@@ -1335,9 +1321,9 @@ class SubagentOrchestrator {
         const template = WORKFLOW_TEMPLATES[workflowType];
         const plan = template({ input: userMessage, ...context });
         if (this.config.verbose) {
-            console.log(theme.workflow(`\n  ${figures_1.default.pointer} Detected workflow: ${workflowType}`));
-            console.log(theme.workflow(`  ${figures_1.default.pointer} Execution mode: ${plan.mode}`));
-            console.log(theme.workflow(`  ${figures_1.default.pointer} Phases: ${plan.phases.length}`));
+            VulpesOutput_1.out.print(theme_1.theme.workflow(`\n  ${figures_1.default.pointer} Detected workflow: ${workflowType}`));
+            VulpesOutput_1.out.print(theme_1.theme.workflow(`  ${figures_1.default.pointer} Execution mode: ${plan.mode}`));
+            VulpesOutput_1.out.print(theme_1.theme.workflow(`  ${figures_1.default.pointer} Phases: ${plan.phases.length}`));
         }
         return plan;
     }
@@ -1351,13 +1337,13 @@ class SubagentOrchestrator {
         const resultsMap = new Map();
         const workflowStart = Date.now();
         if (this.config.verbose) {
-            console.log(theme.orchestrator(`\n  ${figures_1.default.arrowRight} Executing: ${plan.description}\n`));
+            VulpesOutput_1.out.print(theme_1.theme.orchestrator(`\n  ${figures_1.default.arrowRight} Executing: ${plan.description}\n`));
         }
         // Execute phases in order
         for (let phaseIdx = 0; phaseIdx < plan.phases.length; phaseIdx++) {
             const phase = plan.phases[phaseIdx];
             if (this.config.verbose) {
-                console.log(theme.phase(`  Phase ${phaseIdx + 1}/${plan.phases.length}: ${phase.length} task(s)`));
+                VulpesOutput_1.out.print(theme_1.theme.phase(`  Phase ${phaseIdx + 1}/${plan.phases.length}: ${phase.length} task(s)`));
             }
             // Execute tasks within phase using p-queue for controlled concurrency
             if (plan.mode === "parallel" ||
@@ -1411,8 +1397,8 @@ class SubagentOrchestrator {
         if (!this.config.verbose)
             return;
         const icon = result.success ? figures_1.default.tick : figures_1.default.cross;
-        const color = result.success ? theme.success : theme.error;
-        console.log(color(`    ${icon} ${result.role.toUpperCase()} (${result.executionTimeMs}ms)`));
+        const color = result.success ? theme_1.theme.success : theme_1.theme.error;
+        VulpesOutput_1.out.print(color(`    ${icon} ${result.role.toUpperCase()} (${result.executionTimeMs}ms)`));
     }
     /**
      * Main orchestration entry point - auto-routes to optimal workflow

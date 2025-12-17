@@ -20,6 +20,7 @@ exports.findNameMatch = findNameMatch;
 const double_metaphone_1 = require("double-metaphone");
 const fastest_levenshtein_1 = require("fastest-levenshtein");
 const binding_1 = require("../native/binding");
+const VulpesLogger_1 = require("./VulpesLogger");
 /**
  * OCR character substitution map for pre-normalization
  */
@@ -88,7 +89,7 @@ class PhoneticMatcher {
                 !process.argv.includes("--quiet") &&
                 !process.argv.includes("-q")) {
                 const stats = this.nativeInstance.getStats?.();
-                console.log(`[PhoneticMatcher] (native) Indexed ${stats?.firstNames ?? firstNames.length} first names and ${stats?.surnames ?? surnames.length} surnames in ${elapsed}ms`);
+                VulpesLogger_1.vulpesLogger.info(`(native) Indexed ${stats?.firstNames ?? firstNames.length} first names and ${stats?.surnames ?? surnames.length} surnames`, { component: "PhoneticMatcher", durationMs: elapsed });
             }
             return;
         }
@@ -100,10 +101,12 @@ class PhoneticMatcher {
         if (!process.env.VULPES_QUIET &&
             !process.argv.includes("--quiet") &&
             !process.argv.includes("-q")) {
-            console.log(`[PhoneticMatcher] Indexing ${firstNames.length} first names and ${surnames.length} surnames...`);
-            console.log(`[PhoneticMatcher] Indexing complete in ${elapsed}ms`);
-            console.log(`[PhoneticMatcher] First names: ${this.firstNameIndex.primary.size} primary codes, ${this.firstNameIndex.secondary.size} secondary codes`);
-            console.log(`[PhoneticMatcher] Surnames: ${this.surnameIndex.primary.size} primary codes, ${this.surnameIndex.secondary.size} secondary codes`);
+            VulpesLogger_1.vulpesLogger.info(`Indexed ${firstNames.length} first names and ${surnames.length} surnames`, {
+                component: "PhoneticMatcher",
+                durationMs: elapsed,
+                firstNameCodes: this.firstNameIndex.primary.size,
+                surnameCodes: this.surnameIndex.primary.size,
+            });
         }
     }
     /**
@@ -155,7 +158,7 @@ class PhoneticMatcher {
      */
     matchFirstName(input) {
         if (!this.initialized) {
-            console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
+            VulpesLogger_1.vulpesLogger.warn("Not initialized - call initialize() first", { component: "PhoneticMatcher" });
             return null;
         }
         if (this.nativeInstance) {
@@ -169,7 +172,7 @@ class PhoneticMatcher {
      */
     matchSurname(input) {
         if (!this.initialized) {
-            console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
+            VulpesLogger_1.vulpesLogger.warn("Not initialized - call initialize() first", { component: "PhoneticMatcher" });
             return null;
         }
         if (this.nativeInstance) {
@@ -184,7 +187,7 @@ class PhoneticMatcher {
     matchAnyName(input) {
         if (this.nativeInstance) {
             if (!this.initialized) {
-                console.warn("[PhoneticMatcher] Not initialized - call initialize() first");
+                VulpesLogger_1.vulpesLogger.warn("Not initialized - call initialize() first", { component: "PhoneticMatcher" });
                 return null;
             }
             return this.nativeInstance.matchAnyName(input);

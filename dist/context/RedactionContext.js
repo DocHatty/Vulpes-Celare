@@ -16,6 +16,7 @@ const DateShiftingEngine_1 = require("../utils/DateShiftingEngine");
 const TokenManager_1 = require("../tokens/TokenManager");
 const StatisticsTracker_1 = require("../stats/StatisticsTracker");
 const ReplacementContextService_1 = require("../services/ReplacementContextService");
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 /**
  * Redaction Context - manages token mappings for a request
  */
@@ -64,7 +65,7 @@ class RedactionContext {
     createDateToken(originalValue) {
         const eventNumber = this.dateShiftingEngine.addDate(originalValue);
         if (eventNumber === null) {
-            console.warn(`[RedactionContext] Failed to parse date: ${originalValue}, using generic redaction`);
+            VulpesLogger_1.vulpesLogger.warn(`Failed to parse date: ${originalValue}, using generic redaction`, { component: "RedactionContext" });
             return "[DATE_REDACTED]";
         }
         const token = this.dateShiftingEngine.generateToken(eventNumber);

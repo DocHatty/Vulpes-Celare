@@ -55,7 +55,7 @@ declare function getAllStatuses(): Record<string, {
     category: string;
 }>;
 /**
- * Print feature status to console
+ * Print feature status (user-facing output)
  */
 declare function printStatus(): void;
 /**

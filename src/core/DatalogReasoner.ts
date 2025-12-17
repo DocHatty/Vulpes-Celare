@@ -297,7 +297,10 @@ export class DatalogReasoner {
     try {
       return this.runDatalogEngine(spans, fullText);
     } catch (e) {
-      console.warn("[DatalogReasoner] Falling back to imperative:", e);
+      // Diagnostic logging - fallback is expected behavior
+      if (process.env.VULPES_DEBUG) {
+        process.stderr.write(`[DatalogReasoner] Falling back to imperative: ${e}\n`);
+      }
       return this.fallback.reason(spans, fullText);
     }
   }

@@ -59,6 +59,7 @@ const ParallelRedactionEngine_1 = require("./core/ParallelRedactionEngine");
 const RedactionContext_1 = require("./context/RedactionContext");
 const images_1 = require("./core/images");
 const SupervisedStreamingRedactor_1 = require("./SupervisedStreamingRedactor");
+const meta_1 = require("./meta");
 // ============================================================================
 // FILTER IMPORTS - Organized by Category
 // ============================================================================
@@ -136,9 +137,9 @@ class VulpesCelare {
         "fax",
         "age",
     ];
-    static VERSION = "1.0.0";
-    static NAME = "Vulpes Celare";
-    static VARIANT = "Hatkoff Redaction Engine";
+    static VERSION = meta_1.VERSION;
+    static NAME = meta_1.ENGINE_NAME;
+    static VARIANT = meta_1.VARIANT;
     constructor(config = {}, dependencies) {
         this.config = config;
         // Use injected providers or fall back to internal implementations

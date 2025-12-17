@@ -61,6 +61,9 @@ exports.getGPUInfo = getGPUInfo;
 exports.getBatchProcessor = getBatchProcessor;
 exports.processBatch = processBatch;
 exports.shouldUseBatchProcessing = shouldUseBatchProcessing;
+const VulpesLogger_1 = require("../utils/VulpesLogger");
+// Component identifier for structured logging
+const COMPONENT = "WebGPUBatchProcessor";
 let gpuDevice = null;
 let gpuAvailabilityChecked = false;
 let gpuAvailable = false;
@@ -153,10 +156,12 @@ class WebGPUBatchProcessor {
         if (this.config.useGPU) {
             this.gpuAvailable = await checkWebGPUAvailability();
             if (this.gpuAvailable) {
-                console.log("[WebGPUBatchProcessor] WebGPU initialized successfully");
+                VulpesLogger_1.vulpesLogger.info("WebGPU initialized successfully", { component: COMPONENT });
             }
             else {
-                console.log("[WebGPUBatchProcessor] WebGPU unavailable, using CPU fallback");
+                VulpesLogger_1.vulpesLogger.info("WebGPU unavailable, using CPU fallback", {
+                    component: COMPONENT,
+                });
             }
         }
         this.initialized = true;
@@ -216,7 +221,9 @@ class WebGPUBatchProcessor {
     async processWithGPU(documents) {
         // TODO: Implement actual WebGPU processing
         // For now, fall back to CPU parallel
-        console.log("[WebGPUBatchProcessor] GPU processing not yet implemented, using CPU parallel");
+        VulpesLogger_1.vulpesLogger.info("GPU processing not yet implemented, using CPU parallel", {
+            component: COMPONENT,
+        });
         return this.processWithCPUParallel(documents);
     }
     /**

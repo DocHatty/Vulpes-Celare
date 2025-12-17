@@ -14,6 +14,8 @@
  * @module config
  */
 
+import { out } from "../utils/VulpesOutput";
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PHASE 1: BLOOM FILTER CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
@@ -349,18 +351,18 @@ export function getConfigurationSummary(): ConfigurationSummary {
 }
 
 /**
- * Log current configuration to console
+ * Log current configuration (user-facing output)
  */
 export function logConfiguration(): void {
   const config = getConfigurationSummary();
-  console.log("╔══════════════════════════════════════════════════════════════╗");
-  console.log("║           VULPES CELARE CONFIGURATION SUMMARY                ║");
-  console.log("╠══════════════════════════════════════════════════════════════╣");
-  console.log(`║ Phase 1 - Bloom Filter:        ${config.phase1.bloomFilter ? "ENABLED " : "DISABLED"}                     ║`);
-  console.log(`║ Phase 2 - SQLite Dictionary:   ${config.phase2.sqliteDictionary ? "ENABLED " : "DISABLED"}                     ║`);
-  console.log(`║ Phase 3 - Datalog Reasoner:    ${config.phase3.datalogReasoner ? "ENABLED " : "DISABLED"}                     ║`);
-  console.log(`║ Phase 4 - DFA Scan:            ${config.phase4.dfaScan ? "ENABLED " : "DISABLED"}                     ║`);
-  console.log(`║ Phase 5 - GPU Batch:           ${config.phase5.gpuBatch ? "ENABLED " : "DISABLED"}                     ║`);
-  console.log(`║ Phase 6 - Supervision:         ${config.phase6.supervision ? "ENABLED " : "DISABLED"}                     ║`);
-  console.log("╚══════════════════════════════════════════════════════════════╝");
+  out.print("╔══════════════════════════════════════════════════════════════╗");
+  out.print("║           VULPES CELARE CONFIGURATION SUMMARY                ║");
+  out.print("╠══════════════════════════════════════════════════════════════╣");
+  out.print(`║ Phase 1 - Bloom Filter:        ${config.phase1.bloomFilter ? "ENABLED " : "DISABLED"}                     ║`);
+  out.print(`║ Phase 2 - SQLite Dictionary:   ${config.phase2.sqliteDictionary ? "ENABLED " : "DISABLED"}                     ║`);
+  out.print(`║ Phase 3 - Datalog Reasoner:    ${config.phase3.datalogReasoner ? "ENABLED " : "DISABLED"}                     ║`);
+  out.print(`║ Phase 4 - DFA Scan:            ${config.phase4.dfaScan ? "ENABLED " : "DISABLED"}                     ║`);
+  out.print(`║ Phase 5 - GPU Batch:           ${config.phase5.gpuBatch ? "ENABLED " : "DISABLED"}                     ║`);
+  out.print(`║ Phase 6 - Supervision:         ${config.phase6.supervision ? "ENABLED " : "DISABLED"}                     ║`);
+  out.print("╚══════════════════════════════════════════════════════════════╝");
 }

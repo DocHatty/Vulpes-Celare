@@ -8,6 +8,9 @@
  * - Error tracking and diagnostics
  *
  * Logging is ENABLED by default for transparency and debugging.
+ *
+ * NOTE: This is a specialized domain logger for radiology workflows.
+ * For general logging, use VulpesLogger from './VulpesLogger'.
  */
 export declare enum LogLevel {
     DEBUG = 0,

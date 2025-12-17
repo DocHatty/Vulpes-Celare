@@ -7,6 +7,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProvenanceService = void 0;
+const meta_1 = require("../meta");
 class ProvenanceService {
     static DEFAULT_ENDPOINT = "http://localhost:3106/provenance/record";
     static async recordRedaction(original, redacted, options = {}) {
@@ -15,7 +16,7 @@ class ProvenanceService {
             return;
         const manifest = {
             timestamp: new Date().toISOString(),
-            engine: options.engine ?? "Vulpes-Celare RedactionEngine v1.0",
+            engine: options.engine ?? `${meta_1.ENGINE_NAME} v${meta_1.VERSION}`,
         };
         const payload = {
             docId: options.docId ?? `doc-${Date.now()}`,

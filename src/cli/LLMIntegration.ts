@@ -24,6 +24,10 @@ import figures from "figures";
 
 import { VulpesCelare, VulpesCelareConfig } from "../VulpesCelare";
 
+// Import unified theme system
+import { theme } from "../theme";
+import { out } from "../utils/VulpesOutput";
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -55,24 +59,7 @@ export interface LLMResponse {
   };
 }
 
-// ============================================================================
-// THEME (consistent with CLI.ts)
-// ============================================================================
-
-const theme = {
-  primary: chalk.hex("#FF6B35"),
-  secondary: chalk.hex("#4ECDC4"),
-  accent: chalk.hex("#FFE66D"),
-  success: chalk.hex("#2ECC71"),
-  warning: chalk.hex("#F39C12"),
-  error: chalk.hex("#E74C3C"),
-  info: chalk.hex("#3498DB"),
-  muted: chalk.hex("#95A5A6"),
-  bold: chalk.bold,
-  dim: chalk.dim,
-  ai: chalk.hex("#8B5CF6"), // Purple for AI responses
-  redacted: chalk.hex("#EF4444"), // Red for redacted content
-};
+// Theme imported from unified theme system (../theme)
 
 // ============================================================================
 // SAFETY INSTRUCTIONS
@@ -454,7 +441,7 @@ export class LLMIntegration {
    * Interactive safe chat mode
    */
   async interactiveChat(): Promise<void> {
-    console.log(
+    out.print(
       boxen(
         `${theme.bold("Safe Chat Mode")}\n\n` +
           `${theme.muted("Provider:")} ${theme.secondary(this.provider.getName())}\n` +
@@ -477,7 +464,7 @@ export class LLMIntegration {
       ),
     );
 
-    console.log();
+    out.blank();
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -502,7 +489,7 @@ export class LLMIntegration {
             case "quit":
             case "q":
               this.printStats();
-              console.log(
+              out.print(
                 theme.info(
                   `\n${figures.info} Goodbye! Your conversation was privacy-protected.`,
                 ),
@@ -517,7 +504,7 @@ export class LLMIntegration {
 
             case "clear":
               this.conversationHistory = this.conversationHistory.slice(0, 1); // Keep system prompt
-              console.log(
+              out.print(
                 theme.success(`${figures.tick} Conversation cleared`),
               );
               break;
@@ -529,20 +516,20 @@ export class LLMIntegration {
                   role: "system",
                   content: newPrompt,
                 };
-                console.log(
+                out.print(
                   theme.success(`${figures.tick} System prompt updated`),
                 );
               } else {
-                console.log(theme.muted("Current system prompt:"));
-                console.log(this.conversationHistory[0]?.content || "None");
+                out.print(theme.muted("Current system prompt:"));
+                out.print(this.conversationHistory[0]?.content || "None");
               }
               break;
 
             default:
-              console.log(theme.warning(`Unknown command: .${cmd}`));
+              out.print(theme.warning(`Unknown command: .${cmd}`));
           }
 
-          console.log();
+          out.blank();
           prompt();
           return;
         }
@@ -569,7 +556,7 @@ export class LLMIntegration {
 
           // Show what was sent (if PHI was redacted)
           if (result.phiCount > 0) {
-            console.log(
+            out.print(
               theme.muted("  [Sent: ") +
                 theme.redacted(this.truncate(result.redactedInput, 80)) +
                 theme.muted("]"),
@@ -577,13 +564,13 @@ export class LLMIntegration {
           }
 
           // Show response
-          console.log();
-          console.log(theme.ai("assistant") + theme.muted(" > "));
-          console.log(this.formatResponse(result.response));
+          out.blank();
+          out.print(theme.ai("assistant") + theme.muted(" > "));
+          out.print(this.formatResponse(result.response));
 
           // Show token usage
           if (result.usage) {
-            console.log(
+            out.print(
               theme.dim(
                 `  [${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens]`,
               ),
@@ -593,7 +580,7 @@ export class LLMIntegration {
           spinner.fail(theme.error("Error: " + error.message));
         }
 
-        console.log();
+        out.blank();
         prompt();
       });
     };
@@ -615,18 +602,18 @@ export class LLMIntegration {
   }
 
   private printStats(): void {
-    console.log();
-    console.log(theme.bold("Session Statistics:"));
-    console.log(
+    out.blank();
+    out.print(theme.bold("Session Statistics:"));
+    out.print(
       `  ${theme.muted("Messages processed:")} ${this.stats.messagesProcessed}`,
     );
-    console.log(
+    out.print(
       `  ${theme.muted("PHI instances redacted:")} ${theme.redacted(this.stats.phiRedacted.toString())}`,
     );
-    console.log(
+    out.print(
       `  ${theme.muted("Tokens used:")} ${this.stats.tokensUsed.input} in / ${this.stats.tokensUsed.output} out`,
     );
-    console.log(
+    out.print(
       `  ${theme.muted("Conversation length:")} ${this.conversationHistory.length - 1} messages`,
     );
   }
@@ -699,13 +686,13 @@ export async function handleQuery(text: string, options: any): Promise<void> {
     spinner.succeed(`Redacted ${result.phiCount} PHI instances`);
 
     if (options.showRedacted) {
-      console.log(theme.muted("\nRedacted input:"));
-      console.log(theme.dim(result.redactedInput));
-      console.log();
+      out.print(theme.muted("\nRedacted input:"));
+      out.print(theme.dim(result.redactedInput));
+      out.blank();
     }
 
-    console.log(theme.bold("\nResponse:"));
-    console.log(result.response);
+    out.print(theme.bold("\nResponse:"));
+    out.print(result.response);
   } catch (error: any) {
     spinner.fail(theme.error("Error: " + error.message));
     process.exit(1);

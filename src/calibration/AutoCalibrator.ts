@@ -14,6 +14,7 @@ import { ConfidenceCalibrator, CalibrationDataPoint } from "../core/ConfidenceCa
 import { CalibrationDataExtractor } from "./CalibrationDataExtractor";
 import { CalibrationPersistence, CalibrationMetadata } from "./CalibrationPersistence";
 import { FilterType } from "../models/Span";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 
 /**
  * Auto-calibration options
@@ -366,7 +367,7 @@ export class AutoCalibrator {
    */
   private log(message: string): void {
     if (this.options.verbose) {
-      console.log(`[AutoCalibrator] ${message}`);
+      log.debug(message, { component: "AutoCalibrator" });
     }
   }
 }

@@ -16,6 +16,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { FilterType } from "../models/Span";
 import { CalibrationDataPoint } from "../core/ConfidenceCalibrator";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
+
+// Component identifier for structured logging
+const COMPONENT = "CalibrationDataExtractor";
 
 /**
  * Pattern entry from Cortex patterns.json
@@ -110,9 +114,10 @@ export class CalibrationDataExtractor {
    */
   private extractFromPatterns(): CalibrationDataPoint[] {
     if (!fs.existsSync(this.patternsPath)) {
-      console.warn(
-        `[CalibrationDataExtractor] Patterns file not found: ${this.patternsPath}`
-      );
+      log.warn("Patterns file not found", {
+        component: COMPONENT,
+        path: this.patternsPath,
+      });
       return [];
     }
 
@@ -151,9 +156,10 @@ export class CalibrationDataExtractor {
 
       return dataPoints;
     } catch (error) {
-      console.error(
-        `[CalibrationDataExtractor] Error reading patterns: ${error}`
-      );
+      log.error("Error reading patterns", {
+        component: COMPONENT,
+        error: String(error),
+      });
       return [];
     }
   }

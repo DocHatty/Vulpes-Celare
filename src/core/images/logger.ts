@@ -8,6 +8,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { vulpesLogger as log } from '../../utils/VulpesLogger';
 
 /**
  * Log levels
@@ -161,25 +162,23 @@ export class ImageServiceLogger extends EventEmitter {
         // Emit event for external handlers
         this.emit('log', entry);
 
-        // Console output with formatting
-        const levelName = LogLevel[level];
-        const prefix = `[${entry.timestamp.toISOString()}] [${levelName}] [${service}:${operation}]`;
-
-        const consoleMsg = `${prefix} ${message}`;
-
+        // Route to VulpesLogger for consistent output
+        const context = { component: `${service}:${operation}`, ...metadata };
         switch (level) {
             case LogLevel.DEBUG:
-                console.debug(consoleMsg, metadata || '');
+                log.debug(message, context);
                 break;
             case LogLevel.INFO:
-                console.info(consoleMsg, metadata || '');
+                log.info(message, context);
                 break;
             case LogLevel.WARN:
-                console.warn(consoleMsg, metadata || '');
+                log.warn(message, context);
                 break;
             case LogLevel.ERROR:
+                log.error(message, { ...context, error: error?.message });
+                break;
             case LogLevel.FATAL:
-                console.error(consoleMsg, metadata || '', error || '');
+                log.fatal(message, { ...context, error: error?.message });
                 break;
         }
     }

@@ -66,49 +66,36 @@ const child_process_1 = require("child_process");
 const chalk_1 = __importDefault(require("chalk"));
 const SecurityUtils_1 = require("../utils/SecurityUtils");
 const ora_1 = __importDefault(require("ora"));
-const boxen_1 = __importDefault(require("boxen"));
 const figures_1 = __importDefault(require("figures"));
 const marked_1 = require("marked");
 const marked_terminal_1 = require("marked-terminal");
 const VulpesCelare_1 = require("../VulpesCelare");
-const index_1 = require("../index");
+const meta_1 = require("../meta");
 const SystemPrompts_1 = require("./SystemPrompts");
 const APIProvider_1 = require("./APIProvider");
 const SubagentOrchestrator_1 = require("./SubagentOrchestrator");
-// Initialize marked with terminal renderer
+// Import unified theme system
+const theme_1 = require("../theme");
+const output_1 = require("../theme/output");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
+// Initialize marked with terminal renderer using theme colors
 const marked = new marked_1.Marked((0, marked_terminal_1.markedTerminal)({
-    code: chalk_1.default.hex("#60A5FA"),
+    code: chalk_1.default.hex(theme_1.terminal.codeBg).inverse,
     blockquote: chalk_1.default.hex("#95A5A6").italic,
-    heading: chalk_1.default.hex("#FF6B35").bold,
-    firstHeading: chalk_1.default.hex("#FF6B35").bold,
-    hr: chalk_1.default.hex("#4ECDC4"),
+    heading: chalk_1.default.hex(theme_1.brand.primary).bold,
+    firstHeading: chalk_1.default.hex(theme_1.brand.primary).bold,
+    hr: chalk_1.default.hex(theme_1.brand.secondary),
     listitem: chalk_1.default.hex("#FFFFFF"),
     paragraph: chalk_1.default.hex("#FFFFFF"),
-    strong: chalk_1.default.hex("#FFE66D").bold,
+    strong: chalk_1.default.hex(theme_1.brand.accent).bold,
     em: chalk_1.default.italic,
-    codespan: chalk_1.default.hex("#60A5FA").bgHex("#1a1a2e"),
-    link: chalk_1.default.hex("#4ECDC4").underline,
+    codespan: chalk_1.default.hex("#60A5FA").bgHex(theme_1.terminal.codeBg),
+    link: chalk_1.default.hex(theme_1.brand.secondary).underline,
     reflowText: true,
     width: 100,
     tab: 2,
 }));
-// ============================================================================
-// THEME
-// ============================================================================
-const theme = {
-    primary: chalk_1.default.hex("#FF6B35"),
-    secondary: chalk_1.default.hex("#4ECDC4"),
-    accent: chalk_1.default.hex("#FFE66D"),
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-    agent: chalk_1.default.hex("#8B5CF6"),
-    tool: chalk_1.default.hex("#EC4899"),
-    code: chalk_1.default.hex("#60A5FA"),
-    user: chalk_1.default.hex("#10B981"),
-};
+// Theme imported from unified theme system (../theme)
 // ============================================================================
 // TOOLS DEFINITION
 // ============================================================================
@@ -259,10 +246,10 @@ class NativeChat {
         });
         // If no provider (missing API key), do interactive setup
         if (!this.provider) {
-            console.log(theme.info.bold("\n  No API key configured. Let's set up a provider.\n"));
+            VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  No API key configured. Let's set up a provider.\n"));
             const result = await (0, APIProvider_1.interactiveProviderSetup)();
             if (!result) {
-                console.log(theme.error("\n  Setup cancelled.\n"));
+                VulpesOutput_1.out.print(theme_1.theme.error("\n  Setup cancelled.\n"));
                 process.exit(1);
             }
             this.provider = result.provider;
@@ -277,7 +264,7 @@ class NativeChat {
                     // Default to first model or a sensible default
                     const defaultModel = models[0].id;
                     this.provider.setModel(defaultModel);
-                    console.log(theme.success(`  Using model: ${defaultModel}`));
+                    VulpesOutput_1.out.print(theme_1.theme.success(`  Using model: ${defaultModel}`));
                 }
             }
             catch (e) {
@@ -318,27 +305,24 @@ class NativeChat {
         const providerName = this.provider?.getProviderName() || "Unknown";
         const modelName = this.provider?.getModel() || "Unknown";
         const subagentStatus = this.subagentsEnabled
-            ? `${theme.success(figures_1.default.tick)} Subagents: ${this.config.subagentModel || "haiku"} (${this.config.maxParallelSubagents}x parallel)`
-            : `${theme.muted(figures_1.default.circle)} Subagents: OFF (/subagents to enable)`;
-        console.log((0, boxen_1.default)(`${theme.primary.bold("VULPES NATIVE CHAT")}\n` +
-            `${theme.muted(index_1.ENGINE_NAME + " v" + index_1.VERSION)}\n\n` +
-            `${theme.muted("Provider:")} ${theme.secondary(providerName)}\n` +
-            `${theme.muted("Model:")} ${theme.secondary(modelName)}\n` +
-            `${theme.muted("Mode:")} ${theme.warning(this.config.mode.toUpperCase())}\n\n` +
-            `${theme.success(figures_1.default.tick)} Streaming responses\n` +
-            `${theme.success(figures_1.default.tick)} Tool calling (redaction, files, tests)\n` +
-            `${subagentStatus}\n` +
-            `${theme.success(figures_1.default.tick)} Quick redact: /redact <text>`, {
-            padding: 1,
-            margin: { top: 1, bottom: 0 },
-            borderStyle: "round",
-            borderColor: "#FF6B35",
-            title: this.subagentsEnabled
-                ? "VULPESIFIED ORCHESTRATOR"
-                : "VULPESIFIED CHAT",
-            titleAlignment: "center",
-        }));
-        console.log();
+            ? output_1.Status.success(`Subagents: ${this.config.subagentModel || "haiku"} (${this.config.maxParallelSubagents}x parallel)`)
+            : output_1.Status.pending("Subagents: OFF (/subagents to enable)");
+        const content = [
+            theme_1.theme.primary.bold("VULPES NATIVE CHAT"),
+            theme_1.theme.muted(meta_1.ENGINE_NAME + " v" + meta_1.VERSION),
+            "",
+            `${theme_1.theme.muted("Provider:")} ${theme_1.theme.secondary(providerName)}`,
+            `${theme_1.theme.muted("Model:")} ${theme_1.theme.secondary(modelName)}`,
+            `${theme_1.theme.muted("Mode:")} ${theme_1.theme.warning(this.config.mode.toUpperCase())}`,
+            "",
+            output_1.Status.success("Streaming responses"),
+            output_1.Status.success("Tool calling (redaction, files, tests)"),
+            subagentStatus,
+            output_1.Status.success("Quick redact: /redact <text>"),
+        ];
+        const title = this.subagentsEnabled ? "VULPESIFIED ORCHESTRATOR" : "VULPESIFIED CHAT";
+        VulpesOutput_1.out.print("\n" + output_1.Box.vulpes(content, { title }));
+        VulpesOutput_1.out.blank();
     }
     // ══════════════════════════════════════════════════════════════════════════
     // CHAT LOOP
@@ -348,9 +332,9 @@ class NativeChat {
             input: process.stdin,
             output: process.stdout,
         });
-        console.log(theme.muted("  Commands: /help, /redact, /interactive, /info, /provider, /subagents, /orchestrate, /exit\n"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  Commands: /help, /redact, /interactive, /info, /provider, /subagents, /orchestrate, /exit\n"));
         const prompt = () => {
-            rl.question(theme.user("\nyou") + theme.muted(" > "), async (input) => {
+            rl.question(theme_1.theme.user("\nyou") + theme_1.theme.muted(" > "), async (input) => {
                 input = input.trim();
                 if (!input) {
                     prompt();
@@ -376,11 +360,11 @@ class NativeChat {
     // ══════════════════════════════════════════════════════════════════════════
     async streamResponse() {
         if (!this.provider) {
-            console.log(theme.error("  No provider configured."));
+            VulpesOutput_1.out.print(theme_1.theme.error("  No provider configured."));
             return;
         }
-        console.log();
-        process.stdout.write(theme.agent("assistant") + theme.muted(" > "));
+        VulpesOutput_1.out.blank();
+        process.stdout.write(theme_1.theme.agent("assistant") + theme_1.theme.muted(" > "));
         let fullResponse = "";
         let toolUses = [];
         let currentToolUse = null;
@@ -404,8 +388,8 @@ class NativeChat {
                                 name: event.toolUse.name,
                                 input: "",
                             };
-                            console.log();
-                            console.log(theme.tool(`  ${figures_1.default.pointer} Using tool: ${event.toolUse.name}`));
+                            VulpesOutput_1.out.blank();
+                            VulpesOutput_1.out.print(theme_1.theme.tool(`  ${figures_1.default.pointer} Using tool: ${event.toolUse.name}`));
                         }
                         break;
                     case "tool_use_delta":
@@ -430,17 +414,17 @@ class NativeChat {
                     case "done":
                         break;
                     case "error":
-                        console.log(theme.error(`\n  Error: ${event.error}`));
+                        VulpesOutput_1.out.print(theme_1.theme.error(`\n  Error: ${event.error}`));
                         break;
                 }
             }
-            console.log();
+            VulpesOutput_1.out.blank();
             // Re-render with markdown if enabled
             if (this.renderMarkdownEnabled &&
                 fullResponse &&
                 this.hasMarkdown(fullResponse)) {
                 // Clear and re-render
-                console.log(this.renderMarkdown(fullResponse));
+                VulpesOutput_1.out.print(this.renderMarkdown(fullResponse));
             }
             // Execute tools if any
             if (toolUses.length > 0) {
@@ -476,15 +460,15 @@ class NativeChat {
             }
         }
         catch (error) {
-            console.log();
-            console.log(theme.error(`\n  ${figures_1.default.cross} Error: ${error.message}`));
+            VulpesOutput_1.out.blank();
+            VulpesOutput_1.out.print(theme_1.theme.error(`\n  ${figures_1.default.cross} Error: ${error.message}`));
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
     // TOOL EXECUTION
     // ══════════════════════════════════════════════════════════════════════════
     async executeTool(name, input) {
-        console.log(theme.muted(`    Executing ${name}...`));
+        VulpesOutput_1.out.print(theme_1.theme.muted(`    Executing ${name}...`));
         try {
             switch (name) {
                 case "redact_text":
@@ -523,7 +507,7 @@ class NativeChat {
                 output += `- ${type}: ${count}\n`;
             }
         }
-        console.log(theme.success(`    ${figures_1.default.tick} Redacted ${result.redactionCount} PHI`));
+        VulpesOutput_1.out.print(theme_1.theme.success(`    ${figures_1.default.tick} Redacted ${result.redactionCount} PHI`));
         return output;
     }
     async toolAnalyzeRedaction(text) {
@@ -544,7 +528,7 @@ class NativeChat {
             if (!fs.existsSync(fullPath))
                 return `File not found: ${filePath}`;
             const content = fs.readFileSync(fullPath, "utf-8");
-            console.log(theme.success(`    ${figures_1.default.tick} Read ${content.length} bytes`));
+            VulpesOutput_1.out.print(theme_1.theme.success(`    ${figures_1.default.tick} Read ${content.length} bytes`));
             return content;
         }
         catch (error) {
@@ -558,7 +542,7 @@ class NativeChat {
             const fullPath = (0, SecurityUtils_1.validatePath)(this.config.workingDir, filePath);
             fs.mkdirSync(path.dirname(fullPath), { recursive: true });
             fs.writeFileSync(fullPath, content);
-            console.log(theme.success(`    ${figures_1.default.tick} Wrote ${content.length} bytes`));
+            VulpesOutput_1.out.print(theme_1.theme.success(`    ${figures_1.default.tick} Wrote ${content.length} bytes`));
             return `Wrote ${content.length} bytes to ${filePath}`;
         }
         catch (error) {
@@ -581,7 +565,7 @@ class NativeChat {
                 output += d.toString();
             });
             proc.on("close", (code) => {
-                console.log(`    ${code === 0 ? theme.success(figures_1.default.tick) : theme.error(figures_1.default.cross)} Exit code ${code}`);
+                VulpesOutput_1.out.print(`    ${code === 0 ? theme_1.theme.success(figures_1.default.tick) : theme_1.theme.error(figures_1.default.cross)} Exit code ${code}`);
                 resolve(output || `Exit code ${code}`);
             });
         });
@@ -617,8 +601,8 @@ class NativeChat {
     async toolGetSystemInfo() {
         const filters = this.vulpes.getActiveFilters();
         return JSON.stringify({
-            engine: index_1.ENGINE_NAME,
-            version: index_1.VERSION,
+            engine: meta_1.ENGINE_NAME,
+            version: meta_1.VERSION,
             mode: this.config.mode,
             provider: this.provider?.getProviderName(),
             model: this.provider?.getModel(),
@@ -642,7 +626,7 @@ class NativeChat {
             case "exit":
             case "quit":
             case "q":
-                console.log(theme.info("\n  Goodbye!\n"));
+                VulpesOutput_1.out.print("\n  " + output_1.Status.info("Goodbye!") + "\n");
                 rl.close();
                 process.exit(0);
                 return false;
@@ -656,7 +640,7 @@ class NativeChat {
                     await this.quickRedact(args.join(" "));
                 }
                 else {
-                    console.log(theme.warning("  Usage: /redact <text>"));
+                    VulpesOutput_1.out.print("  " + output_1.Status.warning("Usage: /redact <text>"));
                 }
                 break;
             case "interactive":
@@ -673,22 +657,22 @@ class NativeChat {
                 break;
             case "clear":
                 this.initializeConversation();
-                console.log(theme.success("  Conversation cleared."));
+                VulpesOutput_1.out.print(theme_1.theme.success("  Conversation cleared."));
                 break;
             case "model":
             case "m":
                 if (args.length > 0) {
                     this.provider?.setModel(args[0]);
-                    console.log(theme.success(`  Model changed to: ${args[0]}`));
+                    VulpesOutput_1.out.print(theme_1.theme.success(`  Model changed to: ${args[0]}`));
                 }
                 else {
-                    console.log(theme.info(`  Current model: ${this.provider?.getModel()}`));
+                    VulpesOutput_1.out.print(theme_1.theme.info(`  Current model: ${this.provider?.getModel()}`));
                 }
                 break;
             case "markdown":
             case "md":
                 this.renderMarkdownEnabled = !this.renderMarkdownEnabled;
-                console.log(theme.success(`  Markdown rendering: ${this.renderMarkdownEnabled ? "ON" : "OFF"}`));
+                VulpesOutput_1.out.print(theme_1.theme.success(`  Markdown rendering: ${this.renderMarkdownEnabled ? "ON" : "OFF"}`));
                 break;
             case "subagents":
             case "sub":
@@ -701,12 +685,12 @@ class NativeChat {
                     await this.orchestrateTask(args.join(" "));
                 }
                 else {
-                    console.log(theme.warning("  Usage: /orchestrate <task description>"));
+                    VulpesOutput_1.out.print("  " + output_1.Status.warning("Usage: /orchestrate <task description>"));
                 }
                 break;
             default:
-                console.log(theme.warning(`  Unknown command: /${cmd}`));
-                console.log(theme.muted("  Type /help for commands"));
+                VulpesOutput_1.out.print("  " + output_1.Status.warning(`Unknown command: /${cmd}`));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  Type /help for commands"));
         }
         return true;
     }
@@ -715,31 +699,31 @@ class NativeChat {
     // ══════════════════════════════════════════════════════════════════════════
     async quickRedact(text) {
         const result = await this.vulpes.process(text);
-        console.log();
-        console.log(theme.muted("  " + "─".repeat(60)));
-        console.log(theme.warning.bold("  ORIGINAL: ") + text);
-        console.log(theme.success.bold("  REDACTED: ") + result.text);
-        console.log(theme.muted(`  (${result.redactionCount} PHI, ${result.executionTimeMs}ms)`));
-        console.log(theme.muted("  " + "─".repeat(60)));
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(output_1.Divider.line({ width: 60 }));
+        VulpesOutput_1.out.print(theme_1.theme.warning.bold("  ORIGINAL: ") + text);
+        VulpesOutput_1.out.print(theme_1.theme.success.bold("  REDACTED: ") + result.text);
+        VulpesOutput_1.out.print(theme_1.theme.muted(`  (${result.redactionCount} PHI, ${result.executionTimeMs}ms)`));
+        VulpesOutput_1.out.print(output_1.Divider.line({ width: 60 }));
     }
     // ══════════════════════════════════════════════════════════════════════════
     // INTERACTIVE REDACTION
     // ══════════════════════════════════════════════════════════════════════════
     async interactiveRedaction(rl) {
-        console.log(theme.info.bold("\n  INTERACTIVE REDACTION MODE"));
-        console.log(theme.muted("  Paste text to redact. Empty line to exit.\n"));
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  INTERACTIVE REDACTION MODE"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  Paste text to redact. Empty line to exit.\n"));
         let stats = { docs: 0, phi: 0, time: 0 };
         const interactivePrompt = () => {
             return new Promise((resolve) => {
-                rl.question(theme.accent("  redact > "), async (line) => {
+                rl.question(theme_1.theme.accent("  redact > "), async (line) => {
                     if (!line.trim()) {
-                        console.log(theme.info(`\n  Session: ${stats.docs} docs, ${stats.phi} PHI, ${stats.time}ms\n`));
+                        VulpesOutput_1.out.print(theme_1.theme.info(`\n  Session: ${stats.docs} docs, ${stats.phi} PHI, ${stats.time}ms\n`));
                         resolve();
                         return;
                     }
                     const result = await this.vulpes.process(line);
-                    console.log(theme.success("  → ") + result.text);
-                    console.log(theme.muted(`    (${result.redactionCount} PHI, ${result.executionTimeMs}ms)\n`));
+                    VulpesOutput_1.out.print(theme_1.theme.success("  → ") + result.text);
+                    VulpesOutput_1.out.print(theme_1.theme.muted(`    (${result.redactionCount} PHI, ${result.executionTimeMs}ms)\n`));
                     stats.docs++;
                     stats.phi += result.redactionCount;
                     stats.time += result.executionTimeMs;
@@ -757,21 +741,21 @@ class NativeChat {
             // Disable subagents
             this.subagentsEnabled = false;
             this.orchestrator = null;
-            console.log(theme.warning(`\n  ${figures_1.default.cross} Subagents DISABLED\n`));
+            VulpesOutput_1.out.print(theme_1.theme.warning(`\n  ${figures_1.default.cross} Subagents DISABLED\n`));
             return;
         }
         // Enable subagents - configure
-        console.log(theme.info.bold("\n  SUBAGENT CONFIGURATION"));
-        console.log(theme.muted("  " + "─".repeat(50)));
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  SUBAGENT CONFIGURATION"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  " + "─".repeat(50)));
         // Ask for subagent model
         const modelQuestion = () => {
             return new Promise((resolve) => {
-                console.log(theme.muted("\n  Subagent model options:"));
-                console.log("    1. claude-3-5-haiku-20241022 (fast, cheap)");
-                console.log("    2. gpt-4o-mini (fast, cheap)");
-                console.log("    3. Same as main model");
-                console.log("    4. Custom model ID");
-                rl.question(theme.accent("  Select [1-4]: "), async (choice) => {
+                VulpesOutput_1.out.print(theme_1.theme.muted("\n  Subagent model options:"));
+                VulpesOutput_1.out.print("    1. claude-3-5-haiku-20241022 (fast, cheap)");
+                VulpesOutput_1.out.print("    2. gpt-4o-mini (fast, cheap)");
+                VulpesOutput_1.out.print("    3. Same as main model");
+                VulpesOutput_1.out.print("    4. Custom model ID");
+                rl.question(theme_1.theme.accent("  Select [1-4]: "), async (choice) => {
                     switch (choice.trim()) {
                         case "1":
                             resolve("claude-3-5-haiku-20241022");
@@ -783,7 +767,7 @@ class NativeChat {
                             resolve(this.provider?.getModel() || "claude-3-5-haiku-20241022");
                             break;
                         case "4":
-                            rl.question(theme.accent("  Model ID: "), (id) => {
+                            rl.question(theme_1.theme.accent("  Model ID: "), (id) => {
                                 resolve(id.trim() || "claude-3-5-haiku-20241022");
                             });
                             return;
@@ -795,7 +779,7 @@ class NativeChat {
         };
         const parallelQuestion = () => {
             return new Promise((resolve) => {
-                rl.question(theme.accent("  Max parallel subagents [3]: "), (answer) => {
+                rl.question(theme_1.theme.accent("  Max parallel subagents [3]: "), (answer) => {
                     const num = parseInt(answer.trim()) || 3;
                     resolve(Math.min(Math.max(num, 1), 10));
                 });
@@ -818,31 +802,31 @@ class NativeChat {
         // Initialize orchestrator
         this.initializeOrchestrator();
         this.subagentsEnabled = true;
-        console.log();
-        console.log(theme.success(`  ${figures_1.default.tick} Subagents ENABLED`));
-        console.log(theme.muted(`    Model: ${subagentModel}`));
-        console.log(theme.muted(`    Provider: ${subagentProvider}`));
-        console.log(theme.muted(`    Parallel: ${maxParallel}x`));
-        console.log();
-        console.log(theme.info("  Available subagent roles:"));
-        console.log(theme.muted("    • redaction_analyst  - PHI detection & analysis"));
-        console.log(theme.muted("    • code_analyst       - Code review & debugging"));
-        console.log(theme.muted("    • validation_agent   - Test & verify changes"));
-        console.log(theme.muted("    • dictionary_agent   - Expand dictionaries"));
-        console.log(theme.muted("    • research_agent     - Look up patterns"));
-        console.log();
-        console.log(theme.info("  Use /orchestrate <task> to delegate to subagents"));
-        console.log();
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Subagents ENABLED`));
+        VulpesOutput_1.out.print(theme_1.theme.muted(`    Model: ${subagentModel}`));
+        VulpesOutput_1.out.print(theme_1.theme.muted(`    Provider: ${subagentProvider}`));
+        VulpesOutput_1.out.print(theme_1.theme.muted(`    Parallel: ${maxParallel}x`));
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.info("  Available subagent roles:"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    • redaction_analyst  - PHI detection & analysis"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    • code_analyst       - Code review & debugging"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    • validation_agent   - Test & verify changes"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    • dictionary_agent   - Expand dictionaries"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    • research_agent     - Look up patterns"));
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.info("  Use /orchestrate <task> to delegate to subagents"));
+        VulpesOutput_1.out.blank();
     }
     async orchestrateTask(task) {
         if (!this.subagentsEnabled || !this.orchestrator) {
-            console.log(theme.warning(`\n  ${figures_1.default.warning} Subagents not enabled. Use /subagents first.\n`));
+            VulpesOutput_1.out.print(theme_1.theme.warning(`\n  ${figures_1.default.warning} Subagents not enabled. Use /subagents first.\n`));
             return;
         }
-        console.log();
-        console.log(theme.agent.bold(`  ${figures_1.default.pointer} Orchestrating: `) +
-            theme.muted(task));
-        console.log(theme.muted("  " + "─".repeat(50)));
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.agent.bold(`  ${figures_1.default.pointer} Orchestrating: `) +
+            theme_1.theme.muted(task));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  " + "─".repeat(50)));
         const spinner = (0, ora_1.default)({
             text: "Analyzing task and delegating to subagents...",
             color: "magenta",
@@ -851,38 +835,38 @@ class NativeChat {
             // Pass the current conversation history to orchestrator
             const result = await this.orchestrator.orchestrate(task, this.messages);
             spinner.succeed("Orchestration complete");
-            console.log();
+            VulpesOutput_1.out.blank();
             // Display subagent results if any
             if (result.results && result.results.length > 0) {
-                console.log(theme.info.bold("  SUBAGENT RESULTS"));
-                console.log(theme.muted("  " + "─".repeat(50)));
+                VulpesOutput_1.out.print(theme_1.theme.info.bold("  SUBAGENT RESULTS"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  " + "─".repeat(50)));
                 let totalTime = 0;
                 for (const subResult of result.results) {
                     const statusIcon = subResult.success
-                        ? theme.success(figures_1.default.tick)
-                        : theme.error(figures_1.default.cross);
-                    console.log(`\n  ${statusIcon} ${theme.secondary(subResult.role)} (${subResult.executionTimeMs}ms)`);
+                        ? theme_1.theme.success(figures_1.default.tick)
+                        : theme_1.theme.error(figures_1.default.cross);
+                    VulpesOutput_1.out.print(`\n  ${statusIcon} ${theme_1.theme.secondary(subResult.role)} (${subResult.executionTimeMs}ms)`);
                     if (subResult.result) {
                         // Truncate long results
                         const output = subResult.result.length > 500
                             ? subResult.result.slice(0, 500) + "..."
                             : subResult.result;
-                        console.log(theme.muted("    " + output.replace(/\n/g, "\n    ")));
+                        VulpesOutput_1.out.print(theme_1.theme.muted("    " + output.replace(/\n/g, "\n    ")));
                     }
                     if (subResult.error) {
-                        console.log(theme.error(`    Error: ${subResult.error}`));
+                        VulpesOutput_1.out.print(theme_1.theme.error(`    Error: ${subResult.error}`));
                     }
                     totalTime += subResult.executionTimeMs;
                 }
-                console.log();
-                console.log(theme.muted(`  Total subagent time: ${totalTime}ms | Tasks: ${result.results.length}`));
+                VulpesOutput_1.out.blank();
+                VulpesOutput_1.out.print(theme_1.theme.muted(`  Total subagent time: ${totalTime}ms | Tasks: ${result.results.length}`));
             }
             // Display the orchestrator's synthesized response
-            console.log();
-            console.log(theme.info.bold("  ORCHESTRATOR RESPONSE"));
-            console.log(theme.muted("  " + "─".repeat(50)));
-            console.log("  " + result.response.replace(/\n/g, "\n  "));
-            console.log();
+            VulpesOutput_1.out.blank();
+            VulpesOutput_1.out.print(theme_1.theme.info.bold("  ORCHESTRATOR RESPONSE"));
+            VulpesOutput_1.out.print(theme_1.theme.muted("  " + "─".repeat(50)));
+            VulpesOutput_1.out.print("  " + result.response.replace(/\n/g, "\n  "));
+            VulpesOutput_1.out.blank();
             // Add the orchestration as part of the conversation
             this.messages.push({ role: "user", content: `[ORCHESTRATE] ${task}` });
             this.messages.push({ role: "assistant", content: result.response });
@@ -899,7 +883,7 @@ class NativeChat {
         if (result) {
             this.provider = result.provider;
             this.initializeConversation();
-            console.log(theme.success(`\n  ${figures_1.default.tick} Switched to ${result.provider.getProviderName()} / ${result.model}\n`));
+            VulpesOutput_1.out.print(theme_1.theme.success(`\n  ${figures_1.default.tick} Switched to ${result.provider.getProviderName()} / ${result.model}\n`));
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -907,47 +891,47 @@ class NativeChat {
     // ══════════════════════════════════════════════════════════════════════════
     async printSystemInfo() {
         const filters = this.vulpes.getActiveFilters();
-        console.log();
-        console.log(theme.info.bold("  VULPES CELARE SYSTEM INFO"));
-        console.log(theme.muted("  " + "─".repeat(50)));
-        console.log(`  ${theme.muted("Engine:")}     ${index_1.ENGINE_NAME}`);
-        console.log(`  ${theme.muted("Version:")}    ${index_1.VERSION}`);
-        console.log(`  ${theme.muted("Provider:")}   ${this.provider?.getProviderName() || "None"}`);
-        console.log(`  ${theme.muted("Model:")}      ${this.provider?.getModel() || "None"}`);
-        console.log(`  ${theme.muted("Mode:")}       ${this.config.mode.toUpperCase()}`);
-        console.log(`  ${theme.muted("Filters:")}    ${filters.length} active`);
-        console.log(`  ${theme.muted("HIPAA:")}      17/18 Safe Harbor identifiers`);
-        console.log();
-        console.log(theme.muted("  Target Metrics:"));
-        console.log(`    ${theme.success("Sensitivity:")} ≥99%`);
-        console.log(`    ${theme.info("Specificity:")} ≥96%`);
-        console.log(`    ${theme.secondary("Speed:")}       2-3ms/doc`);
-        console.log();
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("  VULPES CELARE SYSTEM INFO"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  " + "─".repeat(50)));
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Engine:")}     ${meta_1.ENGINE_NAME}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Version:")}    ${meta_1.VERSION}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Provider:")}   ${this.provider?.getProviderName() || "None"}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Model:")}      ${this.provider?.getModel() || "None"}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Mode:")}       ${this.config.mode.toUpperCase()}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Filters:")}    ${filters.length} active`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("HIPAA:")}      17/18 Safe Harbor identifiers`);
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.muted("  Target Metrics:"));
+        VulpesOutput_1.out.print(`    ${theme_1.theme.success("Sensitivity:")} ≥99%`);
+        VulpesOutput_1.out.print(`    ${theme_1.theme.info("Specificity:")} ≥96%`);
+        VulpesOutput_1.out.print(`    ${theme_1.theme.secondary("Speed:")}       2-3ms/doc`);
+        VulpesOutput_1.out.blank();
     }
     // ══════════════════════════════════════════════════════════════════════════
     // HELP
     // ══════════════════════════════════════════════════════════════════════════
     printHelp() {
-        console.log(`
-${theme.info.bold("  COMMANDS")}
-${theme.muted("  " + "─".repeat(50))}
-  ${theme.secondary("/redact <text>")}       Quick redact text
-  ${theme.secondary("/interactive")}         Enter interactive redaction mode
-  ${theme.secondary("/info")}                Show system information
-  ${theme.secondary("/provider")}            Change API provider
-  ${theme.secondary("/model <id>")}          Change model
-  ${theme.secondary("/clear")}               Clear conversation
-  ${theme.secondary("/markdown")}            Toggle markdown rendering
-  ${theme.secondary("/help")}                Show this help
-  ${theme.secondary("/exit")}                Exit
+        VulpesOutput_1.out.print(`
+${theme_1.theme.info.bold("  COMMANDS")}
+${theme_1.theme.muted("  " + "─".repeat(50))}
+  ${theme_1.theme.secondary("/redact <text>")}       Quick redact text
+  ${theme_1.theme.secondary("/interactive")}         Enter interactive redaction mode
+  ${theme_1.theme.secondary("/info")}                Show system information
+  ${theme_1.theme.secondary("/provider")}            Change API provider
+  ${theme_1.theme.secondary("/model <id>")}          Change model
+  ${theme_1.theme.secondary("/clear")}               Clear conversation
+  ${theme_1.theme.secondary("/markdown")}            Toggle markdown rendering
+  ${theme_1.theme.secondary("/help")}                Show this help
+  ${theme_1.theme.secondary("/exit")}                Exit
 
-${theme.agent.bold("  SUBAGENT COMMANDS")}
-${theme.muted("  " + "─".repeat(50))}
-  ${theme.secondary("/subagents")}           Toggle & configure subagent mode
-  ${theme.secondary("/orchestrate <task>")}  Delegate task to subagents
+${theme_1.theme.agent.bold("  SUBAGENT COMMANDS")}
+${theme_1.theme.muted("  " + "─".repeat(50))}
+  ${theme_1.theme.secondary("/subagents")}           Toggle & configure subagent mode
+  ${theme_1.theme.secondary("/orchestrate <task>")}  Delegate task to subagents
 
-${theme.muted("  Just type to chat, or paste clinical documents!")}
-${this.subagentsEnabled ? theme.agent("  Subagents: ENABLED - orchestrator will delegate complex tasks") : ""}
+${theme_1.theme.muted("  Just type to chat, or paste clinical documents!")}
+${this.subagentsEnabled ? theme_1.theme.agent("  Subagents: ENABLED - orchestrator will delegate complex tasks") : ""}
 `);
     }
     // ══════════════════════════════════════════════════════════════════════════

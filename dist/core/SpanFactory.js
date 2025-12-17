@@ -20,7 +20,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpanFactory = void 0;
 const Span_1 = require("../models/Span");
-const SpanBasedFilter_1 = require("./SpanBasedFilter");
+const FilterPriority_1 = require("../models/FilterPriority");
 /**
  * SpanFactory - Static utility class for creating Spans
  */
@@ -32,29 +32,29 @@ class SpanFactory {
      */
     static getDefaultPriority(filterType) {
         const priorityMap = {
-            [Span_1.FilterType.SSN]: SpanBasedFilter_1.FilterPriority.SSN,
-            [Span_1.FilterType.CREDIT_CARD]: SpanBasedFilter_1.FilterPriority.CREDITCARD,
-            [Span_1.FilterType.MRN]: SpanBasedFilter_1.FilterPriority.MRN,
-            [Span_1.FilterType.NPI]: SpanBasedFilter_1.FilterPriority.NPI,
-            [Span_1.FilterType.DEA]: SpanBasedFilter_1.FilterPriority.MRN,
-            [Span_1.FilterType.DEVICE]: SpanBasedFilter_1.FilterPriority.DEVICE,
-            [Span_1.FilterType.ACCOUNT]: SpanBasedFilter_1.FilterPriority.ACCOUNT,
-            [Span_1.FilterType.LICENSE]: SpanBasedFilter_1.FilterPriority.LICENSE,
-            [Span_1.FilterType.PASSPORT]: SpanBasedFilter_1.FilterPriority.LICENSE,
-            [Span_1.FilterType.HEALTH_PLAN]: SpanBasedFilter_1.FilterPriority.HEALTHPLAN,
-            [Span_1.FilterType.DATE]: SpanBasedFilter_1.FilterPriority.DATE,
-            [Span_1.FilterType.AGE]: SpanBasedFilter_1.FilterPriority.DATE,
-            [Span_1.FilterType.PHONE]: SpanBasedFilter_1.FilterPriority.PHONE,
-            [Span_1.FilterType.FAX]: SpanBasedFilter_1.FilterPriority.FAX,
-            [Span_1.FilterType.EMAIL]: SpanBasedFilter_1.FilterPriority.EMAIL,
-            [Span_1.FilterType.NAME]: SpanBasedFilter_1.FilterPriority.NAME,
-            [Span_1.FilterType.PROVIDER_NAME]: SpanBasedFilter_1.FilterPriority.NAME,
-            [Span_1.FilterType.ADDRESS]: SpanBasedFilter_1.FilterPriority.ADDRESS,
-            [Span_1.FilterType.ZIPCODE]: SpanBasedFilter_1.FilterPriority.ZIPCODE,
-            [Span_1.FilterType.VEHICLE]: SpanBasedFilter_1.FilterPriority.VEHICLE,
-            [Span_1.FilterType.BIOMETRIC]: SpanBasedFilter_1.FilterPriority.BIOMETRIC,
-            [Span_1.FilterType.URL]: SpanBasedFilter_1.FilterPriority.URL,
-            [Span_1.FilterType.IP]: SpanBasedFilter_1.FilterPriority.IP,
+            [Span_1.FilterType.SSN]: FilterPriority_1.FilterPriority.SSN,
+            [Span_1.FilterType.CREDIT_CARD]: FilterPriority_1.FilterPriority.CREDITCARD,
+            [Span_1.FilterType.MRN]: FilterPriority_1.FilterPriority.MRN,
+            [Span_1.FilterType.NPI]: FilterPriority_1.FilterPriority.NPI,
+            [Span_1.FilterType.DEA]: FilterPriority_1.FilterPriority.MRN,
+            [Span_1.FilterType.DEVICE]: FilterPriority_1.FilterPriority.DEVICE,
+            [Span_1.FilterType.ACCOUNT]: FilterPriority_1.FilterPriority.ACCOUNT,
+            [Span_1.FilterType.LICENSE]: FilterPriority_1.FilterPriority.LICENSE,
+            [Span_1.FilterType.PASSPORT]: FilterPriority_1.FilterPriority.LICENSE,
+            [Span_1.FilterType.HEALTH_PLAN]: FilterPriority_1.FilterPriority.HEALTHPLAN,
+            [Span_1.FilterType.DATE]: FilterPriority_1.FilterPriority.DATE,
+            [Span_1.FilterType.AGE]: FilterPriority_1.FilterPriority.DATE,
+            [Span_1.FilterType.PHONE]: FilterPriority_1.FilterPriority.PHONE,
+            [Span_1.FilterType.FAX]: FilterPriority_1.FilterPriority.FAX,
+            [Span_1.FilterType.EMAIL]: FilterPriority_1.FilterPriority.EMAIL,
+            [Span_1.FilterType.NAME]: FilterPriority_1.FilterPriority.NAME,
+            [Span_1.FilterType.PROVIDER_NAME]: FilterPriority_1.FilterPriority.NAME,
+            [Span_1.FilterType.ADDRESS]: FilterPriority_1.FilterPriority.ADDRESS,
+            [Span_1.FilterType.ZIPCODE]: FilterPriority_1.FilterPriority.ZIPCODE,
+            [Span_1.FilterType.VEHICLE]: FilterPriority_1.FilterPriority.VEHICLE,
+            [Span_1.FilterType.BIOMETRIC]: FilterPriority_1.FilterPriority.BIOMETRIC,
+            [Span_1.FilterType.URL]: FilterPriority_1.FilterPriority.URL,
+            [Span_1.FilterType.IP]: FilterPriority_1.FilterPriority.IP,
         };
         return priorityMap[filterType] ?? 5;
     }

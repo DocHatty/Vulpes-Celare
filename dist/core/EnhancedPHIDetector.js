@@ -55,6 +55,7 @@ const NameDictionary_1 = require("../dictionaries/NameDictionary");
 const lru_cache_1 = require("lru-cache");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 /**
  * Singleton orchestrator that combines all detection signals
  */
@@ -113,7 +114,7 @@ class EnhancedPHIDetector {
             this.initialized = true;
         }
         catch (error) {
-            console.error("EnhancedPHIDetector init error:", error);
+            VulpesLogger_1.vulpesLogger.error("EnhancedPHIDetector init error", { component: "EnhancedPHIDetector", error: String(error) });
             this.initialized = true; // Mark as initialized to avoid retry loops
         }
     }

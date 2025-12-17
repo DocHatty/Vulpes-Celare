@@ -22,6 +22,11 @@
  * @module redaction/gpu
  */
 
+import { vulpesLogger as log } from "../utils/VulpesLogger";
+
+// Component identifier for structured logging
+const COMPONENT = "WebGPUBatchProcessor";
+
 // Avoid circular dependency - config is passed through without type checking
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type VulpesCelareConfig = any;
@@ -216,11 +221,11 @@ export class WebGPUBatchProcessor {
     if (this.config.useGPU) {
       this.gpuAvailable = await checkWebGPUAvailability();
       if (this.gpuAvailable) {
-        console.log("[WebGPUBatchProcessor] WebGPU initialized successfully");
+        log.info("WebGPU initialized successfully", { component: COMPONENT });
       } else {
-        console.log(
-          "[WebGPUBatchProcessor] WebGPU unavailable, using CPU fallback",
-        );
+        log.info("WebGPU unavailable, using CPU fallback", {
+          component: COMPONENT,
+        });
       }
     }
 
@@ -290,9 +295,9 @@ export class WebGPUBatchProcessor {
   ): Promise<RedactionResult[]> {
     // TODO: Implement actual WebGPU processing
     // For now, fall back to CPU parallel
-    console.log(
-      "[WebGPUBatchProcessor] GPU processing not yet implemented, using CPU parallel",
-    );
+    log.info("GPU processing not yet implemented, using CPU parallel", {
+      component: COMPONENT,
+    });
     return this.processWithCPUParallel(documents);
   }
 

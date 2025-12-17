@@ -13,6 +13,7 @@ exports.withErrorBoundary = withErrorBoundary;
 exports.withRetry = withRetry;
 exports.withTimeout = withTimeout;
 const events_1 = require("events");
+const VulpesLogger_1 = require("../../utils/VulpesLogger");
 /**
  * Log levels
  */
@@ -99,23 +100,23 @@ class ImageServiceLogger extends events_1.EventEmitter {
         }
         // Emit event for external handlers
         this.emit('log', entry);
-        // Console output with formatting
-        const levelName = LogLevel[level];
-        const prefix = `[${entry.timestamp.toISOString()}] [${levelName}] [${service}:${operation}]`;
-        const consoleMsg = `${prefix} ${message}`;
+        // Route to VulpesLogger for consistent output
+        const context = { component: `${service}:${operation}`, ...metadata };
         switch (level) {
             case LogLevel.DEBUG:
-                console.debug(consoleMsg, metadata || '');
+                VulpesLogger_1.vulpesLogger.debug(message, context);
                 break;
             case LogLevel.INFO:
-                console.info(consoleMsg, metadata || '');
+                VulpesLogger_1.vulpesLogger.info(message, context);
                 break;
             case LogLevel.WARN:
-                console.warn(consoleMsg, metadata || '');
+                VulpesLogger_1.vulpesLogger.warn(message, context);
                 break;
             case LogLevel.ERROR:
+                VulpesLogger_1.vulpesLogger.error(message, { ...context, error: error?.message });
+                break;
             case LogLevel.FATAL:
-                console.error(consoleMsg, metadata || '', error || '');
+                VulpesLogger_1.vulpesLogger.fatal(message, { ...context, error: error?.message });
                 break;
         }
     }

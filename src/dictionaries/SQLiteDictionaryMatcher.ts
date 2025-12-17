@@ -23,6 +23,7 @@
  */
 
 import Database, { Database as DatabaseType, Statement } from "better-sqlite3";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 import * as path from "path";
 import * as fs from "fs";
 import { BloomFilter } from "bloom-filters";
@@ -86,9 +87,7 @@ export class SQLiteDictionaryMatcher {
     const dbPath = this.resolveDatabasePath(config.dbPath);
 
     if (!dbPath) {
-      console.warn(
-        "[SQLiteDictionaryMatcher] Database not found, operating in fallback mode",
-      );
+      log.warn("Database not found, operating in fallback mode", { component: "SQLiteDictionaryMatcher" });
       return;
     }
 
@@ -112,10 +111,10 @@ export class SQLiteDictionaryMatcher {
 
       this.isAvailable = true;
     } catch (error) {
-      console.warn(
-        "[SQLiteDictionaryMatcher] Failed to open database:",
-        (error as Error).message,
-      );
+      log.warn("Failed to open database", {
+        component: "SQLiteDictionaryMatcher",
+        error: (error as Error).message,
+      });
       this.db = null;
     }
   }

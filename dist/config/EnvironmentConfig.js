@@ -35,6 +35,7 @@ exports.isShadowPostFilterEnabled = isShadowPostFilterEnabled;
 exports.isShadowApplySpansEnabled = isShadowApplySpansEnabled;
 exports.getConfigurationSummary = getConfigurationSummary;
 exports.logConfiguration = logConfiguration;
+const VulpesOutput_1 = require("../utils/VulpesOutput");
 // ═══════════════════════════════════════════════════════════════════════════
 // PHASE 1: BLOOM FILTER CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
@@ -309,19 +310,19 @@ function getConfigurationSummary() {
     };
 }
 /**
- * Log current configuration to console
+ * Log current configuration (user-facing output)
  */
 function logConfiguration() {
     const config = getConfigurationSummary();
-    console.log("╔══════════════════════════════════════════════════════════════╗");
-    console.log("║           VULPES CELARE CONFIGURATION SUMMARY                ║");
-    console.log("╠══════════════════════════════════════════════════════════════╣");
-    console.log(`║ Phase 1 - Bloom Filter:        ${config.phase1.bloomFilter ? "ENABLED " : "DISABLED"}                     ║`);
-    console.log(`║ Phase 2 - SQLite Dictionary:   ${config.phase2.sqliteDictionary ? "ENABLED " : "DISABLED"}                     ║`);
-    console.log(`║ Phase 3 - Datalog Reasoner:    ${config.phase3.datalogReasoner ? "ENABLED " : "DISABLED"}                     ║`);
-    console.log(`║ Phase 4 - DFA Scan:            ${config.phase4.dfaScan ? "ENABLED " : "DISABLED"}                     ║`);
-    console.log(`║ Phase 5 - GPU Batch:           ${config.phase5.gpuBatch ? "ENABLED " : "DISABLED"}                     ║`);
-    console.log(`║ Phase 6 - Supervision:         ${config.phase6.supervision ? "ENABLED " : "DISABLED"}                     ║`);
-    console.log("╚══════════════════════════════════════════════════════════════╝");
+    VulpesOutput_1.out.print("╔══════════════════════════════════════════════════════════════╗");
+    VulpesOutput_1.out.print("║           VULPES CELARE CONFIGURATION SUMMARY                ║");
+    VulpesOutput_1.out.print("╠══════════════════════════════════════════════════════════════╣");
+    VulpesOutput_1.out.print(`║ Phase 1 - Bloom Filter:        ${config.phase1.bloomFilter ? "ENABLED " : "DISABLED"}                     ║`);
+    VulpesOutput_1.out.print(`║ Phase 2 - SQLite Dictionary:   ${config.phase2.sqliteDictionary ? "ENABLED " : "DISABLED"}                     ║`);
+    VulpesOutput_1.out.print(`║ Phase 3 - Datalog Reasoner:    ${config.phase3.datalogReasoner ? "ENABLED " : "DISABLED"}                     ║`);
+    VulpesOutput_1.out.print(`║ Phase 4 - DFA Scan:            ${config.phase4.dfaScan ? "ENABLED " : "DISABLED"}                     ║`);
+    VulpesOutput_1.out.print(`║ Phase 5 - GPU Batch:           ${config.phase5.gpuBatch ? "ENABLED " : "DISABLED"}                     ║`);
+    VulpesOutput_1.out.print(`║ Phase 6 - Supervision:         ${config.phase6.supervision ? "ENABLED " : "DISABLED"}                     ║`);
+    VulpesOutput_1.out.print("╚══════════════════════════════════════════════════════════════╝");
 }
 //# sourceMappingURL=EnvironmentConfig.js.map

@@ -56,28 +56,14 @@ exports.handleQuery = handleQuery;
 const fs = __importStar(require("fs"));
 const readline = __importStar(require("readline"));
 const https = __importStar(require("https"));
-const chalk_1 = __importDefault(require("chalk"));
 const ora_1 = __importDefault(require("ora"));
 const boxen_1 = __importDefault(require("boxen"));
 const figures_1 = __importDefault(require("figures"));
 const VulpesCelare_1 = require("../VulpesCelare");
-// ============================================================================
-// THEME (consistent with CLI.ts)
-// ============================================================================
-const theme = {
-    primary: chalk_1.default.hex("#FF6B35"),
-    secondary: chalk_1.default.hex("#4ECDC4"),
-    accent: chalk_1.default.hex("#FFE66D"),
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-    bold: chalk_1.default.bold,
-    dim: chalk_1.default.dim,
-    ai: chalk_1.default.hex("#8B5CF6"), // Purple for AI responses
-    redacted: chalk_1.default.hex("#EF4444"), // Red for redacted content
-};
+// Import unified theme system
+const theme_1 = require("../theme");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
+// Theme imported from unified theme system (../theme)
 // ============================================================================
 // SAFETY INSTRUCTIONS
 // ============================================================================
@@ -399,30 +385,30 @@ class LLMIntegration {
      * Interactive safe chat mode
      */
     async interactiveChat() {
-        console.log((0, boxen_1.default)(`${theme.bold("Safe Chat Mode")}\n\n` +
-            `${theme.muted("Provider:")} ${theme.secondary(this.provider.getName())}\n` +
-            `${theme.muted("Model:")} ${theme.secondary(this.config.model || this.provider.getDefaultModel())}\n\n` +
-            `${theme.success(figures_1.default.tick)} All messages are automatically redacted before sending\n` +
-            `${theme.success(figures_1.default.tick)} PHI is replaced with safe tokens\n` +
-            `${theme.success(figures_1.default.tick)} Safety instructions are auto-injected\n\n` +
-            `${theme.muted("Commands:")}\n` +
-            `  ${theme.secondary(".stats")}    Show session statistics\n` +
-            `  ${theme.secondary(".clear")}    Clear conversation history\n` +
-            `  ${theme.secondary(".system")}   Update system prompt\n` +
-            `  ${theme.secondary(".exit")}     Exit safe chat`, {
+        VulpesOutput_1.out.print((0, boxen_1.default)(`${theme_1.theme.bold("Safe Chat Mode")}\n\n` +
+            `${theme_1.theme.muted("Provider:")} ${theme_1.theme.secondary(this.provider.getName())}\n` +
+            `${theme_1.theme.muted("Model:")} ${theme_1.theme.secondary(this.config.model || this.provider.getDefaultModel())}\n\n` +
+            `${theme_1.theme.success(figures_1.default.tick)} All messages are automatically redacted before sending\n` +
+            `${theme_1.theme.success(figures_1.default.tick)} PHI is replaced with safe tokens\n` +
+            `${theme_1.theme.success(figures_1.default.tick)} Safety instructions are auto-injected\n\n` +
+            `${theme_1.theme.muted("Commands:")}\n` +
+            `  ${theme_1.theme.secondary(".stats")}    Show session statistics\n` +
+            `  ${theme_1.theme.secondary(".clear")}    Clear conversation history\n` +
+            `  ${theme_1.theme.secondary(".system")}   Update system prompt\n` +
+            `  ${theme_1.theme.secondary(".exit")}     Exit safe chat`, {
             padding: 1,
             borderStyle: "round",
             borderColor: "#8B5CF6",
             title: "VULPES SAFE CHAT",
             titleAlignment: "center",
         }));
-        console.log();
+        VulpesOutput_1.out.blank();
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
         });
         const prompt = () => {
-            rl.question(theme.primary("you") + theme.muted(" > "), async (input) => {
+            rl.question(theme_1.theme.primary("you") + theme_1.theme.muted(" > "), async (input) => {
                 input = input.trim();
                 if (!input) {
                     prompt();
@@ -436,7 +422,7 @@ class LLMIntegration {
                         case "quit":
                         case "q":
                             this.printStats();
-                            console.log(theme.info(`\n${figures_1.default.info} Goodbye! Your conversation was privacy-protected.`));
+                            VulpesOutput_1.out.print(theme_1.theme.info(`\n${figures_1.default.info} Goodbye! Your conversation was privacy-protected.`));
                             rl.close();
                             process.exit(0);
                             break;
@@ -445,7 +431,7 @@ class LLMIntegration {
                             break;
                         case "clear":
                             this.conversationHistory = this.conversationHistory.slice(0, 1); // Keep system prompt
-                            console.log(theme.success(`${figures_1.default.tick} Conversation cleared`));
+                            VulpesOutput_1.out.print(theme_1.theme.success(`${figures_1.default.tick} Conversation cleared`));
                             break;
                         case "system":
                             const newPrompt = input.slice(8).trim();
@@ -454,17 +440,17 @@ class LLMIntegration {
                                     role: "system",
                                     content: newPrompt,
                                 };
-                                console.log(theme.success(`${figures_1.default.tick} System prompt updated`));
+                                VulpesOutput_1.out.print(theme_1.theme.success(`${figures_1.default.tick} System prompt updated`));
                             }
                             else {
-                                console.log(theme.muted("Current system prompt:"));
-                                console.log(this.conversationHistory[0]?.content || "None");
+                                VulpesOutput_1.out.print(theme_1.theme.muted("Current system prompt:"));
+                                VulpesOutput_1.out.print(this.conversationHistory[0]?.content || "None");
                             }
                             break;
                         default:
-                            console.log(theme.warning(`Unknown command: .${cmd}`));
+                            VulpesOutput_1.out.print(theme_1.theme.warning(`Unknown command: .${cmd}`));
                     }
-                    console.log();
+                    VulpesOutput_1.out.blank();
                     prompt();
                     return;
                 }
@@ -478,7 +464,7 @@ class LLMIntegration {
                     // First show redaction
                     const redactionResult = await this.vulpes.process(input);
                     if (redactionResult.redactionCount > 0) {
-                        spinner.text = `${theme.redacted(redactionResult.redactionCount.toString())} PHI redacted. Sending to ${this.provider.getName()}...`;
+                        spinner.text = `${theme_1.theme.redacted(redactionResult.redactionCount.toString())} PHI redacted. Sending to ${this.provider.getName()}...`;
                     }
                     else {
                         spinner.text = `Sending to ${this.provider.getName()}...`;
@@ -487,23 +473,23 @@ class LLMIntegration {
                     spinner.stop();
                     // Show what was sent (if PHI was redacted)
                     if (result.phiCount > 0) {
-                        console.log(theme.muted("  [Sent: ") +
-                            theme.redacted(this.truncate(result.redactedInput, 80)) +
-                            theme.muted("]"));
+                        VulpesOutput_1.out.print(theme_1.theme.muted("  [Sent: ") +
+                            theme_1.theme.redacted(this.truncate(result.redactedInput, 80)) +
+                            theme_1.theme.muted("]"));
                     }
                     // Show response
-                    console.log();
-                    console.log(theme.ai("assistant") + theme.muted(" > "));
-                    console.log(this.formatResponse(result.response));
+                    VulpesOutput_1.out.blank();
+                    VulpesOutput_1.out.print(theme_1.theme.ai("assistant") + theme_1.theme.muted(" > "));
+                    VulpesOutput_1.out.print(this.formatResponse(result.response));
                     // Show token usage
                     if (result.usage) {
-                        console.log(theme.dim(`  [${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens]`));
+                        VulpesOutput_1.out.print(theme_1.theme.dim(`  [${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens]`));
                     }
                 }
                 catch (error) {
-                    spinner.fail(theme.error("Error: " + error.message));
+                    spinner.fail(theme_1.theme.error("Error: " + error.message));
                 }
-                console.log();
+                VulpesOutput_1.out.blank();
                 prompt();
             });
         };
@@ -519,12 +505,12 @@ class LLMIntegration {
         return { ...this.stats };
     }
     printStats() {
-        console.log();
-        console.log(theme.bold("Session Statistics:"));
-        console.log(`  ${theme.muted("Messages processed:")} ${this.stats.messagesProcessed}`);
-        console.log(`  ${theme.muted("PHI instances redacted:")} ${theme.redacted(this.stats.phiRedacted.toString())}`);
-        console.log(`  ${theme.muted("Tokens used:")} ${this.stats.tokensUsed.input} in / ${this.stats.tokensUsed.output} out`);
-        console.log(`  ${theme.muted("Conversation length:")} ${this.conversationHistory.length - 1} messages`);
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.bold("Session Statistics:"));
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Messages processed:")} ${this.stats.messagesProcessed}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("PHI instances redacted:")} ${theme_1.theme.redacted(this.stats.phiRedacted.toString())}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Tokens used:")} ${this.stats.tokensUsed.input} in / ${this.stats.tokensUsed.output} out`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Conversation length:")} ${this.conversationHistory.length - 1} messages`);
     }
     truncate(text, maxLength) {
         if (text.length <= maxLength)
@@ -583,15 +569,15 @@ async function handleQuery(text, options) {
         const result = await integration.query(input);
         spinner.succeed(`Redacted ${result.phiCount} PHI instances`);
         if (options.showRedacted) {
-            console.log(theme.muted("\nRedacted input:"));
-            console.log(theme.dim(result.redactedInput));
-            console.log();
+            VulpesOutput_1.out.print(theme_1.theme.muted("\nRedacted input:"));
+            VulpesOutput_1.out.print(theme_1.theme.dim(result.redactedInput));
+            VulpesOutput_1.out.blank();
         }
-        console.log(theme.bold("\nResponse:"));
-        console.log(result.response);
+        VulpesOutput_1.out.print(theme_1.theme.bold("\nResponse:"));
+        VulpesOutput_1.out.print(result.response);
     }
     catch (error) {
-        spinner.fail(theme.error("Error: " + error.message));
+        spinner.fail(theme_1.theme.error("Error: " + error.message));
         process.exit(1);
     }
 }

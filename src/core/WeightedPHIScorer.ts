@@ -993,9 +993,10 @@ export class WeightedPHIScorer {
       const data = fs.readFileSync(filePath, "utf-8");
       const weights = JSON.parse(data) as Partial<ScoringWeights>;
       return new WeightedPHIScorer(weights);
-    } catch (error) {
-      console.warn(
-        `[WeightedPHIScorer] Failed to load weights from ${filePath}, using defaults`,
+    } catch (_error) {
+      // Use stderr for diagnostic logging (silent in normal operation)
+      process.stderr.write(
+        `[WeightedPHIScorer] Failed to load weights from ${filePath}, using defaults\n`,
       );
       return new WeightedPHIScorer();
     }

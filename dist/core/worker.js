@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const worker_threads_1 = require("worker_threads");
 const FilterRegistry_1 = require("../filters/FilterRegistry");
+const VulpesLogger_1 = require("../utils/VulpesLogger");
 // Simple RedactionContext mock for workers
 // We can't pass the full context object as it contains methods/state that isn't serializable
 // and we don't want workers modifying the main context state directly anyway.
@@ -15,7 +16,7 @@ if (!worker_threads_1.isMainThread && worker_threads_1.parentPort) {
     // Initialize registry on worker startup
     // This loads all filter classes
     FilterRegistry_1.FilterRegistry.initialize().catch(err => {
-        console.error("Worker initialization failed:", err);
+        VulpesLogger_1.vulpesLogger.error("Worker initialization failed", { error: String(err) });
         process.exit(1);
     });
     worker_threads_1.parentPort.on("message", async (message) => {

@@ -50,6 +50,9 @@ exports.calibrationDataExtractor = exports.CalibrationDataExtractor = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const Span_1 = require("../models/Span");
+const VulpesLogger_1 = require("../utils/VulpesLogger");
+// Component identifier for structured logging
+const COMPONENT = "CalibrationDataExtractor";
 /**
  * CalibrationDataExtractor - Main extraction class
  */
@@ -86,7 +89,10 @@ class CalibrationDataExtractor {
      */
     extractFromPatterns() {
         if (!fs.existsSync(this.patternsPath)) {
-            console.warn(`[CalibrationDataExtractor] Patterns file not found: ${this.patternsPath}`);
+            VulpesLogger_1.vulpesLogger.warn("Patterns file not found", {
+                component: COMPONENT,
+                path: this.patternsPath,
+            });
             return [];
         }
         try {
@@ -119,7 +125,10 @@ class CalibrationDataExtractor {
             return dataPoints;
         }
         catch (error) {
-            console.error(`[CalibrationDataExtractor] Error reading patterns: ${error}`);
+            VulpesLogger_1.vulpesLogger.error("Error reading patterns", {
+                component: COMPONENT,
+                error: String(error),
+            });
             return [];
         }
     }

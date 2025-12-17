@@ -20,6 +20,7 @@ import * as path from "path";
 import { OCRService, OCRResult, TextBox } from "./OCRService";
 import { VulpesNative, VisualDetection, VisualBox } from "../../VulpesNative";
 import { getLogger } from "./logger";
+import { vulpesLogger as log } from "../../utils/VulpesLogger";
 
 /**
  * Region to be redacted in the output image
@@ -331,7 +332,7 @@ export class ImageRedactor {
           return { match: true, confidence: 0.9 };
         }
       } catch (error) {
-        console.warn("[ImageRedactor] Text redactor error:", error);
+        log.warn("Text redactor error", { component: "ImageRedactor", error: String(error) });
       }
     }
 

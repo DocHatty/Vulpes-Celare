@@ -48,6 +48,7 @@ const dicomParser = __importStar(require("dicom-parser"));
 const crypto = __importStar(require("crypto"));
 const dcmjs = __importStar(require("dcmjs"));
 const binding_1 = require("../../native/binding");
+const VulpesLogger_1 = require("../../utils/VulpesLogger");
 /**
  * Standard HIPAA Safe Harbor tags to anonymize
  */
@@ -167,7 +168,7 @@ class DicomStreamTransformer extends stream_1.Transform {
             parsed = DicomMessage.readFile(arrayBuffer);
         }
         catch (error) {
-            console.error("[DicomStreamTransformer] Failed to parse DICOM:", error);
+            VulpesLogger_1.vulpesLogger.error("Failed to parse DICOM", { component: "DicomStreamTransformer", error: String(error) });
             throw error;
         }
         const dict = parsed.dict || {};
@@ -288,7 +289,7 @@ class DicomStreamTransformer extends stream_1.Transform {
                 await this.processPixelData(dataSet, outputBuffer);
             }
             catch (error) {
-                console.error("[DicomStreamTransformer] Pixel redaction failed:", error);
+                VulpesLogger_1.vulpesLogger.error("Pixel redaction failed", { component: "DicomStreamTransformer", error: String(error) });
             }
         }
         if (this.config.onProgress) {
@@ -309,7 +310,7 @@ class DicomStreamTransformer extends stream_1.Transform {
         // Find PixelData element (7FE0,0010)
         const pixelDataElement = dataSet.elements["x7fe00010"];
         if (!pixelDataElement) {
-            console.log("[DicomStreamTransformer] No PixelData found");
+            VulpesLogger_1.vulpesLogger.debug("No PixelData found", { component: "DicomStreamTransformer" });
             return;
         }
         try {
@@ -320,7 +321,7 @@ class DicomStreamTransformer extends stream_1.Transform {
             const samplesPerPixel = dataSet.uint16("x00280002") || 1;
             const photometric = dataSet.string("x00280004") || "MONOCHROME2";
             if (rows === 0 || cols === 0) {
-                console.log("[DicomStreamTransformer] Invalid image dimensions");
+                VulpesLogger_1.vulpesLogger.debug("Invalid image dimensions", { component: "DicomStreamTransformer" });
                 return;
             }
             // Extract pixel data
@@ -357,11 +358,15 @@ class DicomStreamTransformer extends stream_1.Transform {
                     for (let i = 0; i < rows * cols && i < data.length; i++) {
                         buffer[pixelOffset + i] = data[i];
                     }
-                    console.log(`[DicomStreamTransformer] Applied ${result.redactions.length} pixel redactions`);
+                    VulpesLogger_1.vulpesLogger.info("Applied pixel redactions", {
+                        component: "DicomStreamTransformer",
+                        count: result.redactions.length,
+                    });
                 }
             }
             else {
-                console.log("[DicomStreamTransformer] Pixel format not supported for redaction:", {
+                VulpesLogger_1.vulpesLogger.debug("Pixel format not supported for redaction", {
+                    component: "DicomStreamTransformer",
                     bitsAllocated,
                     samplesPerPixel,
                     photometric,
@@ -369,7 +374,7 @@ class DicomStreamTransformer extends stream_1.Transform {
             }
         }
         catch (error) {
-            console.error("[DicomStreamTransformer] Pixel processing error:", error);
+            VulpesLogger_1.vulpesLogger.error("Pixel processing error", { component: "DicomStreamTransformer", error: String(error) });
         }
     }
 }

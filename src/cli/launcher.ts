@@ -8,11 +8,15 @@
  */
 
 import * as readline from "readline";
-import chalk from "chalk";
-import figures from "figures";
 
 import { VERSION, ENGINE_NAME } from "../meta";
 import { logger } from "../utils/Logger";
+
+// Import unified theme system
+import { theme } from "../theme";
+import { Status, Divider, Box } from "../theme/output";
+import { status as statusIcons } from "../theme/icons";
+import { out } from "../utils/VulpesOutput";
 
 // Lazy load heavy modules only when needed
 let handleNativeChat: typeof import("./NativeChat").handleNativeChat;
@@ -35,21 +39,7 @@ async function loadModules() {
   }
 }
 
-// ============================================================================
-// THEME
-// ============================================================================
-
-const theme = {
-  primary: chalk.hex("#FF6B35"),
-  secondary: chalk.hex("#4ECDC4"),
-  accent: chalk.hex("#FFE66D"),
-  success: chalk.hex("#2ECC71"),
-  warning: chalk.hex("#F39C12"),
-  error: chalk.hex("#E74C3C"),
-  info: chalk.hex("#3498DB"),
-  muted: chalk.hex("#95A5A6"),
-  highlight: chalk.hex("#9B59B6"),
-};
+// Theme imported from unified theme system (../theme)
 
 // ============================================================================
 // RESPONSIVE BANNER
@@ -106,33 +96,33 @@ VULPES`;
 
   const empty = pad("");
 
-  console.log("\n" + border);
+  out.print("\n" + border);
 
   // Logo lines
   const logoLines = logo.trim().split("\n");
   for (const line of logoLines) {
-    console.log(pad(theme.primary.bold(line)));
+    out.print(pad(theme.primary.bold(line)));
   }
 
-  console.log(empty);
-  console.log(pad(`  ${ENGINE_NAME} v${VERSION}`));
-  console.log(pad(`  ${theme.secondary("HIPAA PHI Redaction Engine")}`));
+  out.print(empty);
+  out.print(pad(`  ${ENGINE_NAME} v${VERSION}`));
+  out.print(pad(`  ${theme.secondary("HIPAA PHI Redaction Engine")}`));
 
   if (showStats) {
-    console.log(empty);
-    console.log(
-      pad(`  ${theme.success(figures.tick)} 17/18 Safe Harbor identifiers`),
+    out.print(empty);
+    out.print(
+      pad(`  ${theme.success(statusIcons.success)} 17/18 Safe Harbor identifiers`),
     );
-    console.log(
+    out.print(
       pad(
-        `  ${theme.success(figures.tick)} ≥99% sensitivity, ≥96% specificity`,
+        `  ${theme.success(statusIcons.success)} ≥99% sensitivity, ≥96% specificity`,
       ),
     );
-    console.log(pad(`  ${theme.success(figures.tick)} 2-3ms per document`));
+    out.print(pad(`  ${theme.success(statusIcons.success)} 2-3ms per document`));
   }
 
-  console.log(empty);
-  console.log(bottom);
+  out.print(empty);
+  out.print(bottom);
 }
 
 // ============================================================================
@@ -146,27 +136,27 @@ function printMenu(
 ): void {
   const width = getTerminalWidth();
 
-  console.log(theme.info.bold(`\n  ${title}\n`));
+  out.print(theme.info.bold(`\n  ${title}\n`));
 
   for (const opt of options) {
     const keyStyle = theme.accent.bold(`[${opt.key}]`);
     const labelStyle = theme.primary.bold(opt.label);
-    console.log(`  ${keyStyle} ${labelStyle}`);
+    out.print(`  ${keyStyle} ${labelStyle}`);
 
     for (const line of opt.desc) {
       // Truncate description lines if terminal is narrow
       const maxLen = width - 8;
       const truncated =
         line.length > maxLen ? line.slice(0, maxLen - 3) + "..." : line;
-      console.log(`      ${theme.muted(truncated)}`);
+      out.print(`      ${theme.muted(truncated)}`);
     }
-    console.log();
+    out.blank();
   }
 
   if (showBack) {
-    console.log(theme.muted("  [b] Back to main menu\n"));
+    out.print(theme.muted("  [b] Back to main menu\n"));
   } else {
-    console.log(theme.muted("  [q] Quit\n"));
+    out.print(theme.muted("  [q] Quit\n"));
   }
 }
 
@@ -217,7 +207,7 @@ async function showMainMenu(): Promise<void> {
 
   if (choice === "q" || choice === "quit" || choice === "exit") {
     logger.info("User quit from main menu");
-    console.log(theme.info("\n  Goodbye!\n"));
+    out.print("\n  " + Status.info("Goodbye!") + "\n");
     process.exit(0);
   }
 
@@ -231,7 +221,7 @@ async function showMainMenu(): Promise<void> {
     await showAgentSubmenu();
   } else {
     logger.warn("Invalid main menu choice", { choice });
-    console.log(theme.error(`\n  Invalid choice: ${choice}`));
+    out.print("\n  " + Status.error(`Invalid choice: ${choice}`));
     await showMainMenu();
   }
 }
@@ -298,7 +288,7 @@ async function showAgentSubmenu(): Promise<void> {
     });
   } else {
     logger.warn("Invalid agent submenu choice", { choice });
-    console.log(theme.error(`\n  Invalid choice: ${choice}`));
+    out.print("\n  " + Status.error(`Invalid choice: ${choice}`));
     await showAgentSubmenu();
   }
 }
@@ -379,7 +369,7 @@ async function main(): Promise<void> {
 function printUsage(): void {
   const width = getTerminalWidth();
 
-  console.log(`
+  out.print(`
 ${theme.primary.bold("VULPES CELARE")} - HIPAA PHI Redaction Engine
 
 ${theme.info.bold("USAGE:")}
@@ -407,7 +397,7 @@ ${theme.muted("For full CLI options: vulpes <command> --help")}
 
 main().catch((err) => {
   logger.exception("Fatal error in main", err);
-  console.error(theme.error(`\nError: ${err.message}`));
-  console.error(theme.muted(`  Log file: ${logger.getLogFilePath()}`));
+  out.print("\n" + Status.error(err.message));
+  out.print(theme.muted(`  Log file: ${logger.getLogFilePath()}`));
   process.exit(1);
 });

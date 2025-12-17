@@ -55,6 +55,7 @@ const child_process_1 = require("child_process");
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 const events_1 = require("events");
+const VulpesLogger_1 = require("../../../utils/VulpesLogger");
 const DEFAULT_CONFIG = {
     pythonPath: 'python',
     cortexScriptPath: path.join(__dirname, '../../../../python/cortex_brain.py'),
@@ -108,7 +109,7 @@ class CortexPythonBridge extends events_1.EventEmitter {
             const versionResult = await this.runCommand(pythonPath, ['--version']);
             const version = versionResult.trim();
             if (!version.startsWith('Python 3')) {
-                console.warn('[CortexBridge] Python 3.x required, found:', version);
+                VulpesLogger_1.vulpesLogger.warn('Python 3.x required', { component: 'CortexBridge', found: version });
                 this.pythonAvailable = false;
                 return false;
             }
@@ -118,15 +119,14 @@ class CortexPythonBridge extends events_1.EventEmitter {
                 'import pandas; import numpy; import torch; print("OK")'
             ]).catch(() => null);
             if (checkPackages?.trim() !== 'OK') {
-                console.warn('[CortexBridge] Required Python packages not installed.');
-                console.warn('[CortexBridge] Install: pip install pandas numpy torch');
+                VulpesLogger_1.vulpesLogger.warn('Required Python packages not installed. Install: pip install pandas numpy torch', { component: 'CortexBridge' });
                 // We still mark as available - some tasks may work
             }
             this.pythonAvailable = true;
             return true;
         }
         catch (error) {
-            console.warn('[CortexBridge] Python not available:', error);
+            VulpesLogger_1.vulpesLogger.warn('Python not available', { component: 'CortexBridge', error: String(error) });
             this.pythonAvailable = false;
             return false;
         }

@@ -98,6 +98,10 @@ import {
   getPreferences,
 } from "./VulpesStore";
 
+// Import unified theme system
+import { theme } from "../theme";
+import { out } from "../utils/VulpesOutput";
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -166,24 +170,7 @@ export interface OrchestratorConfig {
   autoRoute?: boolean; // Automatically detect workflow type
 }
 
-// ============================================================================
-// THEME
-// ============================================================================
-
-const theme = {
-  primary: chalk.hex("#FF6B35"),
-  secondary: chalk.hex("#4ECDC4"),
-  accent: chalk.hex("#FFE66D"),
-  success: chalk.hex("#2ECC71"),
-  warning: chalk.hex("#F39C12"),
-  error: chalk.hex("#E74C3C"),
-  info: chalk.hex("#3498DB"),
-  muted: chalk.hex("#95A5A6"),
-  orchestrator: chalk.hex("#9B59B6"),
-  subagent: chalk.hex("#3498DB"),
-  phase: chalk.hex("#E91E63"),
-  workflow: chalk.hex("#00BCD4"),
-};
+// Theme imported from unified theme system (../theme)
 
 // ============================================================================
 // WORKFLOW DETECTION - The "Brain" that chooses execution strategy
@@ -1497,15 +1484,15 @@ export class SubagentOrchestrator {
     const plan = template({ input: userMessage, ...context }) as WorkflowPlan;
 
     if (this.config.verbose) {
-      console.log(
+      out.print(
         theme.workflow(
           `\n  ${figures.pointer} Detected workflow: ${workflowType}`,
         ),
       );
-      console.log(
+      out.print(
         theme.workflow(`  ${figures.pointer} Execution mode: ${plan.mode}`),
       );
-      console.log(
+      out.print(
         theme.workflow(`  ${figures.pointer} Phases: ${plan.phases.length}`),
       );
     }
@@ -1527,7 +1514,7 @@ export class SubagentOrchestrator {
     const workflowStart = Date.now();
 
     if (this.config.verbose) {
-      console.log(
+      out.print(
         theme.orchestrator(
           `\n  ${figures.arrowRight} Executing: ${plan.description}\n`,
         ),
@@ -1539,7 +1526,7 @@ export class SubagentOrchestrator {
       const phase = plan.phases[phaseIdx];
 
       if (this.config.verbose) {
-        console.log(
+        out.print(
           theme.phase(
             `  Phase ${phaseIdx + 1}/${plan.phases.length}: ${phase.length} task(s)`,
           ),
@@ -1626,7 +1613,7 @@ export class SubagentOrchestrator {
 
     const icon = result.success ? figures.tick : figures.cross;
     const color = result.success ? theme.success : theme.error;
-    console.log(
+    out.print(
       color(
         `    ${icon} ${result.role.toUpperCase()} (${result.executionTimeMs}ms)`,
       ),

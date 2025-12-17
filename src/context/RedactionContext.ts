@@ -18,6 +18,7 @@ import {
   ReplacementScope,
 } from "../services/ReplacementContextService";
 import { FilterType } from "../models/Span";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 
 /**
  * Redaction Context - manages token mappings for a request
@@ -82,9 +83,7 @@ export class RedactionContext {
     const eventNumber = this.dateShiftingEngine.addDate(originalValue);
 
     if (eventNumber === null) {
-      console.warn(
-        `[RedactionContext] Failed to parse date: ${originalValue}, using generic redaction`,
-      );
+      log.warn(`Failed to parse date: ${originalValue}, using generic redaction`, { component: "RedactionContext" });
       return "[DATE_REDACTED]";
     }
 

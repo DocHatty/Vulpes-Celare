@@ -14,6 +14,7 @@
 import { doubleMetaphone } from "double-metaphone";
 import { closest, distance } from "fastest-levenshtein";
 import { loadNativeBinding } from "../native/binding";
+import { vulpesLogger as log } from "./VulpesLogger";
 
 /**
  * Pre-computed phonetic index for fast lookup
@@ -130,8 +131,9 @@ export class PhoneticMatcher {
         !process.argv.includes("-q")
       ) {
         const stats = this.nativeInstance.getStats?.();
-        console.log(
-          `[PhoneticMatcher] (native) Indexed ${stats?.firstNames ?? firstNames.length} first names and ${stats?.surnames ?? surnames.length} surnames in ${elapsed}ms`,
+        log.info(
+          `(native) Indexed ${stats?.firstNames ?? firstNames.length} first names and ${stats?.surnames ?? surnames.length} surnames`,
+          { component: "PhoneticMatcher", durationMs: elapsed }
         );
       }
       return;
@@ -149,15 +151,14 @@ export class PhoneticMatcher {
       !process.argv.includes("--quiet") &&
       !process.argv.includes("-q")
     ) {
-      console.log(
-        `[PhoneticMatcher] Indexing ${firstNames.length} first names and ${surnames.length} surnames...`,
-      );
-      console.log(`[PhoneticMatcher] Indexing complete in ${elapsed}ms`);
-      console.log(
-        `[PhoneticMatcher] First names: ${this.firstNameIndex.primary.size} primary codes, ${this.firstNameIndex.secondary.size} secondary codes`,
-      );
-      console.log(
-        `[PhoneticMatcher] Surnames: ${this.surnameIndex.primary.size} primary codes, ${this.surnameIndex.secondary.size} secondary codes`,
+      log.info(
+        `Indexed ${firstNames.length} first names and ${surnames.length} surnames`,
+        {
+          component: "PhoneticMatcher",
+          durationMs: elapsed,
+          firstNameCodes: this.firstNameIndex.primary.size,
+          surnameCodes: this.surnameIndex.primary.size,
+        }
       );
     }
   }
@@ -220,9 +221,7 @@ export class PhoneticMatcher {
    */
   matchFirstName(input: string): PhoneticMatch | null {
     if (!this.initialized) {
-      console.warn(
-        "[PhoneticMatcher] Not initialized - call initialize() first",
-      );
+      log.warn("Not initialized - call initialize() first", { component: "PhoneticMatcher" });
       return null;
     }
 
@@ -238,9 +237,7 @@ export class PhoneticMatcher {
    */
   matchSurname(input: string): PhoneticMatch | null {
     if (!this.initialized) {
-      console.warn(
-        "[PhoneticMatcher] Not initialized - call initialize() first",
-      );
+      log.warn("Not initialized - call initialize() first", { component: "PhoneticMatcher" });
       return null;
     }
 
@@ -257,9 +254,7 @@ export class PhoneticMatcher {
   matchAnyName(input: string): PhoneticMatch | null {
     if (this.nativeInstance) {
       if (!this.initialized) {
-        console.warn(
-          "[PhoneticMatcher] Not initialized - call initialize() first",
-        );
+        log.warn("Not initialized - call initialize() first", { component: "PhoneticMatcher" });
         return null;
       }
       return this.nativeInstance.matchAnyName(input);

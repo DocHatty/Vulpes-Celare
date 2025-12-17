@@ -26,12 +26,8 @@ const ProvenanceService_1 = require("./services/ProvenanceService");
 // Re-export for backward compatibility
 var RedactionContext_2 = require("./context/RedactionContext");
 Object.defineProperty(exports, "RedactionContext", { enumerable: true, get: function () { return RedactionContext_2.RedactionContext; } });
-/**
- * Base Filter - abstract class for all filters
- */
-class BaseFilter {
-}
-exports.BaseFilter = BaseFilter;
+var BaseFilter_1 = require("./core/BaseFilter");
+Object.defineProperty(exports, "BaseFilter", { enumerable: true, get: function () { return BaseFilter_1.BaseFilter; } });
 /**
  * RedactionEngine - Thin Orchestrator
  * Delegates to specialized services for each concern

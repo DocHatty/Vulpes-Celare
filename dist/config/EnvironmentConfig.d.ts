@@ -214,7 +214,7 @@ export interface ConfigurationSummary {
  */
 export declare function getConfigurationSummary(): ConfigurationSummary;
 /**
- * Log current configuration to console
+ * Log current configuration (user-facing output)
  */
 export declare function logConfiguration(): void;
 //# sourceMappingURL=EnvironmentConfig.d.ts.map

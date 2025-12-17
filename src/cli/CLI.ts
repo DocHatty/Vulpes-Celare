@@ -14,11 +14,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
-import chalk from "chalk";
 import ora, { Ora } from "ora";
 import Table from "cli-table3";
 import figures from "figures";
-import boxen from "boxen";
 
 import {
   VulpesCelare,
@@ -31,40 +29,12 @@ import { PolicyTemplates, PolicyCompiler } from "../PolicyDSL";
 import { VERSION, ENGINE_NAME, VARIANT } from "../meta";
 
 // ============================================================================
-// THEME & STYLING
+// UNIFIED THEME SYSTEM
 // ============================================================================
 
-const theme = {
-  // Brand colors
-  primary: chalk.hex("#FF6B35"), // Fox orange
-  secondary: chalk.hex("#4ECDC4"), // Teal accent
-  accent: chalk.hex("#FFE66D"), // Gold highlight
-
-  // Semantic colors
-  success: chalk.hex("#2ECC71"),
-  warning: chalk.hex("#F39C12"),
-  error: chalk.hex("#E74C3C"),
-  info: chalk.hex("#3498DB"),
-  muted: chalk.hex("#95A5A6"),
-
-  // Text styles
-  bold: chalk.bold,
-  dim: chalk.dim,
-  italic: chalk.italic,
-  underline: chalk.underline,
-
-  // PHI type colors
-  phi: {
-    name: chalk.hex("#E74C3C"),
-    ssn: chalk.hex("#9B59B6"),
-    phone: chalk.hex("#3498DB"),
-    email: chalk.hex("#1ABC9C"),
-    address: chalk.hex("#E67E22"),
-    date: chalk.hex("#F1C40F"),
-    mrn: chalk.hex("#E91E63"),
-    default: chalk.hex("#95A5A6"),
-  },
-};
+import { theme, getTableChars } from "../theme";
+import { Status, Divider, Progress, Box, Table as ThemeTable, Banner } from "../theme/output";
+import { out } from "../utils/VulpesOutput";
 
 // ============================================================================
 // CLI CLASS
@@ -78,52 +48,44 @@ export class CLI {
   // ══════════════════════════════════════════════════════════════════════════
 
   static getBanner(): string {
-    const fox = `
-    ${theme.primary("    /\\___/\\")}
-    ${theme.primary("   (  o o  )")}  ${theme.bold.white(ENGINE_NAME)}
-    ${theme.primary("   (  =^=  )")}  ${theme.muted(VARIANT)}
-    ${theme.primary("    )     (")}   ${theme.secondary(`v${VERSION}`)}
-    ${theme.primary("   (       )")}
-    ${theme.primary("  ( |     | )")}  ${theme.dim("HIPAA PHI Redaction Engine")}
-    ${theme.primary(" (__|     |__)")} ${theme.dim("99.6% Sensitivity | 2-3ms Processing")}
-`;
-    return fox;
+    // Use themed banner with fox art
+    return Banner.standard({ version: VERSION, showArt: true, artSize: "compact" });
   }
 
   static printBanner(): void {
-    console.log(this.getBanner());
+    out.print(this.getBanner());
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // OUTPUT HELPERS
+  // OUTPUT HELPERS (using unified output components)
   // ══════════════════════════════════════════════════════════════════════════
 
   static log(message: string): void {
-    console.log(message);
+    out.print(message);
   }
 
   static success(message: string): void {
-    console.log(`${theme.success(figures.tick)} ${message}`);
+    out.print(Status.success(message));
   }
 
   static error(message: string): void {
-    console.error(`${theme.error(figures.cross)} ${theme.error(message)}`);
+    out.print(Status.error(message));
   }
 
   static warn(message: string): void {
-    console.log(`${theme.warning(figures.warning)} ${theme.warning(message)}`);
+    out.print(Status.warning(message));
   }
 
   static infoMsg(message: string): void {
-    console.log(`${theme.info(figures.info)} ${message}`);
+    out.print(Status.info(message));
   }
 
   static divider(): void {
-    console.log(theme.muted("─".repeat(60)));
+    out.print(Divider.line({ width: 60 }));
   }
 
   static newline(): void {
-    console.log();
+    out.blank();
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -166,7 +128,7 @@ export class CLI {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // PROGRESS BAR
+  // PROGRESS BAR (using unified output components)
   // ══════════════════════════════════════════════════════════════════════════
 
   static progressBar(
@@ -174,16 +136,12 @@ export class CLI {
     total: number,
     width: number = 40,
   ): string {
-    const percent = Math.min(100, Math.floor((current / total) * 100));
-    const filled = Math.floor((current / total) * width);
-    const empty = width - filled;
-
-    const bar =
-      theme.primary("█".repeat(filled)) + theme.muted("░".repeat(empty));
-    const percentStr = `${percent}%`.padStart(4);
-    const countStr = theme.muted(`(${current}/${total})`);
-
-    return `${bar} ${theme.bold(percentStr)} ${countStr}`;
+    return Progress.bar(current / total, {
+      width,
+      showPercent: true,
+      showValue: true,
+      total,
+    });
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -273,7 +231,7 @@ export class CLI {
         this.log(theme.bold("REDACTED OUTPUT:"));
         this.divider();
       }
-      console.log(output);
+      out.print(output);
     }
 
     // Show breakdown if not quiet
@@ -449,7 +407,7 @@ export class CLI {
         [theme.muted("Output Directory"), outputDir],
       );
 
-      console.log(summaryTable.toString());
+      out.print(summaryTable.toString());
 
       if (errors.length > 0) {
         this.newline();
@@ -476,21 +434,17 @@ export class CLI {
     const config = this.parseConfig(options);
     const vulpes = new VulpesCelare(config);
 
-    console.log(
-      boxen(
-        `${theme.bold("Interactive Mode")}\n\n` +
-          `${theme.muted("Enter text to redact. Commands:")}\n` +
-          `  ${theme.secondary(".help")}    ${theme.muted("Show help")}\n` +
-          `  ${theme.secondary(".stats")}   ${theme.muted("Show session statistics")}\n` +
-          `  ${theme.secondary(".clear")}   ${theme.muted("Clear screen")}\n` +
-          `  ${theme.secondary(".exit")}    ${theme.muted("Exit interactive mode")}\n` +
-          `  ${theme.secondary(".file")}    ${theme.muted("Load and redact a file")}`,
-        {
-          padding: 1,
-          borderStyle: "round",
-          borderColor: "cyan",
-        },
-      ),
+    out.print(
+      Box.info([
+        theme.bold("Interactive Mode"),
+        "",
+        theme.muted("Enter text to redact. Commands:"),
+        `  ${theme.secondary(".help")}    ${theme.muted("Show help")}`,
+        `  ${theme.secondary(".stats")}   ${theme.muted("Show session statistics")}`,
+        `  ${theme.secondary(".clear")}   ${theme.muted("Clear screen")}`,
+        `  ${theme.secondary(".exit")}    ${theme.muted("Exit interactive mode")}`,
+        `  ${theme.secondary(".file")}    ${theme.muted("Load and redact a file")}`,
+      ], { title: "Interactive Mode" }),
     );
 
     this.newline();
@@ -563,7 +517,7 @@ export class CLI {
 
                     this.newline();
                     this.divider();
-                    console.log(result.text);
+                    out.print(result.text);
                     this.divider();
                     this.printBreakdown(result);
                   } else {
@@ -591,13 +545,13 @@ export class CLI {
 
           if (result.redactionCount > 0) {
             // Highlight redactions in output
-            console.log(this.highlightRedactions(result.text));
+            out.print(this.highlightRedactions(result.text));
             this.newline();
             this.success(
               `${result.redactionCount} PHI redacted in ${result.executionTimeMs}ms`,
             );
           } else {
-            console.log(theme.success(result.text));
+            out.print(theme.success(result.text));
             this.newline();
             this.infoMsg(`No PHI detected (${result.executionTimeMs}ms)`);
           }
@@ -644,14 +598,14 @@ export class CLI {
         executionTimeMs: result.executionTimeMs,
         breakdown: result.breakdown,
       };
-      console.log(JSON.stringify(analysis, null, 2));
+      out.print(JSON.stringify(analysis, null, 2));
       return;
     }
 
     if (options.format === "csv") {
-      console.log("type,count");
+      out.print("type,count");
       for (const [type, count] of Object.entries(result.breakdown)) {
-        console.log(`${type},${count}`);
+        out.print(`${type},${count}`);
       }
       return;
     }
@@ -679,7 +633,7 @@ export class CLI {
       [theme.muted("Analysis Time"), `${result.executionTimeMs}ms`],
     );
 
-    console.log(summaryTable.toString());
+    out.print(summaryTable.toString());
     this.newline();
 
     if (result.redactionCount > 0) {
@@ -701,19 +655,10 @@ export class CLI {
         phiTable.push([typeColor(type), theme.bold(count.toString())]);
       }
 
-      console.log(phiTable.toString());
+      out.print(phiTable.toString());
     } else {
-      console.log(
-        boxen(
-          theme.success(`${figures.tick} No PHI detected in this document`),
-          {
-            padding: 1,
-            borderStyle: "round",
-            borderColor: "green",
-            title: "CLEAN",
-            titleAlignment: "center",
-          },
-        ),
+      out.print(
+        Box.success("No PHI detected in this document", { title: "CLEAN" }),
       );
     }
   }
@@ -755,7 +700,7 @@ export class CLI {
       ]);
     }
 
-    console.log(table.toString());
+    out.print(table.toString());
     this.newline();
     this.infoMsg(
       `Use ${theme.secondary("vulpes policy show <name>")} for details`,
@@ -777,7 +722,7 @@ export class CLI {
     this.divider();
     this.newline();
 
-    console.log(JSON.stringify(template, null, 2));
+    out.print(JSON.stringify(template, null, 2));
   }
 
   static async policyCompile(file: string, options: any): Promise<void> {
@@ -852,7 +797,7 @@ export class CLI {
     };
 
     if (options.json) {
-      console.log(JSON.stringify(infoData, null, 2));
+      out.print(JSON.stringify(infoData, null, 2));
       return;
     }
 
@@ -873,15 +818,14 @@ export class CLI {
       [theme.muted("PHI Types"), infoData.phiTypes.toString()],
     );
 
-    console.log(table.toString());
+    out.print(table.toString());
     this.newline();
 
-    console.log(
-      boxen(
-        `${theme.muted("Documentation:")} ${theme.underline("https://github.com/DocHatty/Vulpes-Celare")}\n` +
-          `${theme.muted("License:")} Evaluation Only`,
-        { padding: 1, borderStyle: "round", borderColor: "gray" },
-      ),
+    out.print(
+      Box.create([
+        `${theme.muted("Documentation:")} ${theme.underline("https://github.com/DocHatty/Vulpes-Celare")}`,
+        `${theme.muted("License:")} Evaluation Only`,
+      ], { style: "rounded" }),
     );
   }
 
@@ -894,7 +838,7 @@ export class CLI {
     const activeFilters = vulpes.getActiveFilters();
 
     if (options.format === "json") {
-      console.log(
+      out.print(
         JSON.stringify(
           {
             count: activeFilters.length,
@@ -1104,7 +1048,7 @@ export class CLI {
       ],
     );
 
-    console.log(resultsTable.toString());
+    out.print(resultsTable.toString());
 
     if (!quiet) {
       this.newline();
@@ -1121,13 +1065,14 @@ export class CLI {
       const perfColor =
         avg < 3 ? "green" : avg < 10 ? "cyan" : avg < 50 ? "yellow" : "red";
 
-      console.log(
-        boxen(
-          `Performance Rating: ${perfRating}\n` +
-            `${theme.muted("Target: < 3ms per document")}`,
-          { padding: 1, borderStyle: "round", borderColor: perfColor },
-        ),
-      );
+      const perfBox = avg < 3
+        ? Box.success([`Performance Rating: ${perfRating}`, theme.muted("Target: < 3ms per document")])
+        : avg < 10
+          ? Box.info([`Performance Rating: ${perfRating}`, theme.muted("Target: < 3ms per document")])
+          : avg < 50
+            ? Box.warning([`Performance Rating: ${perfRating}`, theme.muted("Target: < 3ms per document")])
+            : Box.error([`Performance Rating: ${perfRating}`, theme.muted("Target: < 3ms per document")]);
+      out.print(perfBox);
     }
   }
 
@@ -1153,7 +1098,7 @@ export class CLI {
 
     rl.on("line", async (line) => {
       const result = await vulpes.process(line);
-      console.log(theme.primary("→ ") + result.text);
+      out.print(theme.primary("→ ") + result.text);
     });
 
     rl.on("close", () => {
@@ -1274,22 +1219,23 @@ export class CLI {
       table.push([typeColor(type), count.toString()]);
     }
 
-    console.log(table.toString());
+    out.print(table.toString());
   }
 
   private static printInteractiveHelp(): void {
     this.newline();
-    console.log(
-      boxen(
-        `${theme.bold("Interactive Commands")}\n\n` +
-          `${theme.secondary(".help, .h, .?")}   Show this help\n` +
-          `${theme.secondary(".stats")}         Show session statistics\n` +
-          `${theme.secondary(".clear, .cls")}   Clear the screen\n` +
-          `${theme.secondary(".file <path>")}   Load and redact a file\n` +
-          `${theme.secondary(".exit, .quit")}   Exit interactive mode\n\n` +
-          `${theme.muted("Or just type text to redact it immediately.")}`,
-        { padding: 1, borderStyle: "round", borderColor: "cyan" },
-      ),
+    out.print(
+      Box.info([
+        theme.bold("Interactive Commands"),
+        "",
+        `${theme.secondary(".help, .h, .?")}   Show this help`,
+        `${theme.secondary(".stats")}         Show session statistics`,
+        `${theme.secondary(".clear, .cls")}   Clear the screen`,
+        `${theme.secondary(".file <path>")}   Load and redact a file`,
+        `${theme.secondary(".exit, .quit")}   Exit interactive mode`,
+        "",
+        theme.muted("Or just type text to redact it immediately."),
+      ]),
     );
     this.newline();
   }
@@ -1323,7 +1269,7 @@ export class CLI {
       ],
     );
 
-    console.log(table.toString());
+    out.print(table.toString());
     this.newline();
   }
 
@@ -1332,8 +1278,8 @@ export class CLI {
     return text.replace(/\[([A-Z-]+)\]/g, (match) => theme.warning(match));
   }
 
-  private static getPhiColor(type: string): typeof chalk {
-    const colorMap: Record<string, typeof chalk> = {
+  private static getPhiColor(type: string): (text: string) => string {
+    const colorMap: Record<string, (text: string) => string> = {
       SmartNameFilter: theme.phi.name,
       FormattedNameFilter: theme.phi.name,
       TitledNameFilter: theme.phi.name,
@@ -1354,23 +1300,8 @@ export class CLI {
   }
 
   private static getTableChars() {
-    return {
-      top: "─",
-      "top-mid": "┬",
-      "top-left": "┌",
-      "top-right": "┐",
-      bottom: "─",
-      "bottom-mid": "┴",
-      "bottom-left": "└",
-      "bottom-right": "┘",
-      left: "│",
-      "left-mid": "├",
-      mid: "─",
-      "mid-mid": "┼",
-      right: "│",
-      "right-mid": "┤",
-      middle: "│",
-    };
+    // Use unified theme table characters
+    return getTableChars("sharp");
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -1391,8 +1322,8 @@ export class CLI {
   }): Promise<void> {
     if (!options.json) {
       this.printBanner();
-      console.log(theme.bold("\n  DEEP ANALYSIS ENGINE\n"));
-      console.log(
+      out.print(theme.bold("\n  DEEP ANALYSIS ENGINE\n"));
+      out.print(
         theme.muted("  Opus 4.5 Extended Thinking + Codex 5.2 High Max\n"),
       );
     }
@@ -1415,22 +1346,22 @@ export class CLI {
       const threshold: any = await engine.checkThreshold();
 
       if (!options.json) {
-        console.log(
+        out.print(
           theme.info(`  Documents analyzed: ${threshold.documentCount}`),
         );
-        console.log(
+        out.print(
           theme.info(
             `  Confidence level: ${threshold.confidenceLevel?.confidence}`,
           ),
         );
-        console.log(
+        out.print(
           theme.info(`  CI width: ${threshold.confidenceLevel?.ciWidth}\n`),
         );
       }
 
       if (!threshold.meetsMinimum && !options.force) {
         if (options.json) {
-          console.log(
+          out.print(
             JSON.stringify(
               {
                 success: false,
@@ -1443,10 +1374,10 @@ export class CLI {
           );
         } else {
           this.warn(threshold.recommendedAction?.message);
-          console.log(
+          out.print(
             theme.muted(`\n  Run: ${threshold.recommendedAction?.command}\n`),
           );
-          console.log(theme.muted("  Or use --force to run analysis anyway\n"));
+          out.print(theme.muted("  Or use --force to run analysis anyway\n"));
         }
         return;
       }
@@ -1464,24 +1395,24 @@ export class CLI {
       this.succeedSpinner("Deep analysis complete");
 
       if (options.json) {
-        console.log(JSON.stringify(analysis, null, 2));
+        out.print(JSON.stringify(analysis, null, 2));
       } else {
         // Print report
-        console.log(engine.generateReport(analysis));
+        out.print(engine.generateReport(analysis));
 
         // Show top recommendations
         const recs = analysis.phases?.deepResearch?.recommendations || [];
         if (recs.length > 0) {
-          console.log(theme.bold("\n  TOP RECOMMENDATIONS:\n"));
+          out.print(theme.bold("\n  TOP RECOMMENDATIONS:\n"));
           for (let i = 0; i < Math.min(3, recs.length); i++) {
             const rec = recs[i];
-            console.log(
+            out.print(
               theme.warning(`  ${i + 1}. [${rec.priority}] ${rec.action}`),
             );
-            console.log(
+            out.print(
               theme.muted(`     Files: ${(rec.files || []).join(", ")}`),
             );
-            console.log(
+            out.print(
               theme.muted(
                 `     Expected: ${rec.expectedImprovement || "Unknown"}\n`,
               ),
@@ -1490,16 +1421,16 @@ export class CLI {
         }
 
         // Show next steps
-        console.log(theme.bold("\n  NEXT STEPS:\n"));
-        console.log(theme.muted("  1. Review the recommendations above"));
-        console.log(theme.muted("  2. Apply fixes one at a time"));
-        console.log(theme.muted("  3. Run: npm test -- --log-file"));
-        console.log(theme.muted("  4. Compare metrics before/after\n"));
+        out.print(theme.bold("\n  NEXT STEPS:\n"));
+        out.print(theme.muted("  1. Review the recommendations above"));
+        out.print(theme.muted("  2. Apply fixes one at a time"));
+        out.print(theme.muted("  3. Run: npm test -- --log-file"));
+        out.print(theme.muted("  4. Compare metrics before/after\n"));
       }
     } catch (error) {
       this.failSpinner("Deep analysis failed");
       if (options.json) {
-        console.log(
+        out.print(
           JSON.stringify(
             {
               success: false,
@@ -1531,7 +1462,7 @@ export class CLI {
     verbose?: boolean;
   }): Promise<void> {
     this.printBanner();
-    console.log(theme.bold("\n  PHI DETECTION TEST SUITE\n"));
+    out.print(theme.bold("\n  PHI DETECTION TEST SUITE\n"));
 
     // Determine document count
     let count = parseInt(options.count || "200");
@@ -1540,14 +1471,14 @@ export class CLI {
 
     const profile = options.profile || "HIPAA_STRICT";
 
-    console.log(theme.info(`  Documents: ${count}`));
-    console.log(theme.info(`  Profile: ${profile}`));
-    console.log(
+    out.print(theme.info(`  Documents: ${count}`));
+    out.print(theme.info(`  Profile: ${profile}`));
+    out.print(
       theme.info(
         `  Self-correction: ${options.selfCorrect ? "enabled" : "disabled"}`,
       ),
     );
-    console.log(
+    out.print(
       theme.info(
         `  Checkpoints: ${options.checkpoints ? "enabled" : "disabled"}\n`,
       ),
@@ -1587,10 +1518,10 @@ export class CLI {
 
         this.stopSpinner();
 
-        console.log(orchestrator.generateReport());
+        out.print(orchestrator.generateReport());
 
         if (!result.success) {
-          console.log(
+          out.print(
             theme.error(`\n  Tests failed after ${result.attempts} attempts\n`),
           );
           process.exit(1);

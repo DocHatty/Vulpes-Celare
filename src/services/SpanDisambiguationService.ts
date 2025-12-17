@@ -15,6 +15,7 @@
 
 import { Span, FilterType } from "../models/Span";
 import { compareTwoStrings } from "../utils/stubs/string-similarity";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 
 /**
  * Context keyword vectors for each filter type
@@ -138,8 +139,10 @@ export class SpanDisambiguationService {
         const position = spans[0].characterStart;
         const text = spans[0].text;
 
-        console.error(`[Disambiguation] Disambiguating "${text}" at position ${position}`);
-        console.error(`[Disambiguation] Candidates: ${spans.map(s => s.filterType).join(", ")}`);
+        log.debug(`Disambiguating "${text}" at position ${position}`, {
+            component: "Disambiguation",
+            candidates: spans.map(s => s.filterType).join(", "),
+        });
 
         // Calculate context similarity for each candidate
         const scores = new Map<FilterType, number>();
@@ -147,7 +150,7 @@ export class SpanDisambiguationService {
         for (const span of spans) {
             const score = this.calculateContextScore(span);
             scores.set(span.filterType, score);
-            console.error(`[Disambiguation] ${span.filterType}: ${score.toFixed(3)}`);
+            log.trace(`${span.filterType}: ${score.toFixed(3)}`, { component: "Disambiguation" });
         }
 
         // Find best match
@@ -165,7 +168,7 @@ export class SpanDisambiguationService {
 
         // Check if best score meets threshold
         if (bestSpan && bestScore >= this.confidenceThreshold) {
-            console.error(`[Disambiguation] Selected: ${bestSpan.filterType} (score: ${bestScore.toFixed(3)})`);
+            log.debug(`Selected: ${bestSpan.filterType} (score: ${bestScore.toFixed(3)})`, { component: "Disambiguation" });
             bestSpan.disambiguationScore = bestScore;
             bestSpan.ambiguousWith = spans
                 .filter(s => s.filterType !== bestSpan!.filterType)
@@ -174,7 +177,7 @@ export class SpanDisambiguationService {
         }
 
         // If no clear winner, fall back to highest confidence or priority
-        console.error(`[Disambiguation] No clear winner, using fallback`);
+        log.debug("No clear winner, using fallback", { component: "Disambiguation" });
         return this.fallbackDisambiguation(spans);
     }
 

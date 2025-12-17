@@ -56,22 +56,12 @@ exports.createProviderFromOptions = createProviderFromOptions;
 const https = __importStar(require("https"));
 const http = __importStar(require("http"));
 const readline = __importStar(require("readline"));
-const chalk_1 = __importDefault(require("chalk"));
 const ora_1 = __importDefault(require("ora"));
 const figures_1 = __importDefault(require("figures"));
-// ============================================================================
-// THEME
-// ============================================================================
-const theme = {
-    primary: chalk_1.default.hex("#FF6B35"),
-    secondary: chalk_1.default.hex("#4ECDC4"),
-    accent: chalk_1.default.hex("#FFE66D"),
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-};
+// Import unified theme system
+const theme_1 = require("../theme");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
+// Theme imported from unified theme system (../theme)
 // ============================================================================
 // LOCAL API KEY STORAGE
 // ============================================================================
@@ -607,28 +597,28 @@ async function interactiveProviderSetup() {
             rl.question(prompt, (answer) => resolve(answer.trim()));
         });
     };
-    console.log(theme.info.bold("\n  SELECT API PROVIDER:\n"));
+    VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  SELECT API PROVIDER:\n"));
     const providerList = Object.values(exports.PROVIDERS);
     const savedKeys = loadSavedKeys();
     for (let i = 0; i < providerList.length; i++) {
         const p = providerList[i];
         let envStatus;
         if (!p.envKey) {
-            envStatus = theme.success(" [no key needed]");
+            envStatus = theme_1.theme.success(" [no key needed]");
         }
         else if (process.env[p.envKey]) {
-            envStatus = theme.success(" [env]");
+            envStatus = theme_1.theme.success(" [env]");
         }
         else if (savedKeys[p.envKey]) {
-            envStatus = theme.success(" [saved]");
+            envStatus = theme_1.theme.success(" [saved]");
         }
         else {
-            envStatus = theme.muted(" [no key]");
+            envStatus = theme_1.theme.muted(" [no key]");
         }
-        console.log(`  ${theme.accent.bold(`[${i + 1}]`)} ${theme.primary(p.name)}${envStatus}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.accent.bold(`[${i + 1}]`)} ${theme_1.theme.primary(p.name)}${envStatus}`);
     }
-    console.log(theme.muted("\n  [b] Back\n"));
-    const providerChoice = await question(theme.secondary("  Your choice: "));
+    VulpesOutput_1.out.print(theme_1.theme.muted("\n  [b] Back\n"));
+    const providerChoice = await question(theme_1.theme.secondary("  Your choice: "));
     if (providerChoice.toLowerCase() === "b") {
         rl.close();
         return null;
@@ -637,7 +627,7 @@ async function interactiveProviderSetup() {
     if (isNaN(providerIndex) ||
         providerIndex < 0 ||
         providerIndex >= providerList.length) {
-        console.log(theme.error("  Invalid choice"));
+        VulpesOutput_1.out.print(theme_1.theme.error("  Invalid choice"));
         rl.close();
         return null;
     }
@@ -646,22 +636,22 @@ async function interactiveProviderSetup() {
     let customUrl = "";
     // Ask for API key if not in env or saved locally
     if (selectedProviderConfig.envKey && !apiKey) {
-        console.log(theme.warning(`\n  ${selectedProviderConfig.envKey} not found.`));
-        apiKey = await question(theme.secondary(`  Enter API key (or press Enter to skip): `));
+        VulpesOutput_1.out.print(theme_1.theme.warning(`\n  ${selectedProviderConfig.envKey} not found.`));
+        apiKey = await question(theme_1.theme.secondary(`  Enter API key (or press Enter to skip): `));
         if (!apiKey) {
-            console.log(theme.error("  API key required for this provider."));
+            VulpesOutput_1.out.print(theme_1.theme.error("  API key required for this provider."));
             rl.close();
             return null;
         }
         // Save the key for future sessions
         saveApiKey(selectedProviderConfig.envKey, apiKey);
-        console.log(theme.success(`  ${figures_1.default.tick} API key saved to ~/.vulpes/api-keys.json`));
+        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} API key saved to ~/.vulpes/api-keys.json`));
     }
     // Ask for custom URL if custom provider
     if (selectedProviderConfig.id === "custom") {
-        customUrl = await question(theme.secondary("  Enter base URL (e.g., https://my-api.com): "));
+        customUrl = await question(theme_1.theme.secondary("  Enter base URL (e.g., https://my-api.com): "));
         if (!customUrl) {
-            console.log(theme.error("  Base URL required for custom provider."));
+            VulpesOutput_1.out.print(theme_1.theme.error("  Base URL required for custom provider."));
             rl.close();
             return null;
         }
@@ -677,28 +667,28 @@ async function interactiveProviderSetup() {
         const models = await provider.fetchAvailableModels();
         spinner.succeed(`Found ${models.length} models`);
         if (models.length === 0) {
-            console.log(theme.error("  No models available."));
+            VulpesOutput_1.out.print(theme_1.theme.error("  No models available."));
             rl.close();
             return null;
         }
         // Show model selection
-        console.log(theme.info.bold("\n  SELECT MODEL:\n"));
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  SELECT MODEL:\n"));
         // Show first 20 models in a clean format (just ID + context)
         const displayLimit = 20;
         const displayModels = models.slice(0, displayLimit);
         for (let i = 0; i < displayModels.length; i++) {
             const m = displayModels[i];
             const ctx = m.contextLength
-                ? theme.muted(` [${(m.contextLength / 1000).toFixed(0)}K]`)
+                ? theme_1.theme.muted(` [${(m.contextLength / 1000).toFixed(0)}K]`)
                 : "";
             // Just show model ID, no verbose descriptions
-            console.log(`  ${theme.accent.bold(`[${i + 1}]`)} ${theme.primary(m.id)}${ctx}`);
+            VulpesOutput_1.out.print(`  ${theme_1.theme.accent.bold(`[${i + 1}]`)} ${theme_1.theme.primary(m.id)}${ctx}`);
         }
         if (models.length > displayLimit) {
-            console.log(theme.muted(`\n  ... and ${models.length - displayLimit} more. Enter model ID directly to use others.`));
+            VulpesOutput_1.out.print(theme_1.theme.muted(`\n  ... and ${models.length - displayLimit} more. Enter model ID directly to use others.`));
         }
-        console.log();
-        const modelChoice = await question(theme.secondary("  Your choice (number or model ID): "));
+        VulpesOutput_1.out.blank();
+        const modelChoice = await question(theme_1.theme.secondary("  Your choice (number or model ID): "));
         let selectedModel;
         const modelIndex = parseInt(modelChoice) - 1;
         if (!isNaN(modelIndex) &&
@@ -718,18 +708,18 @@ async function interactiveProviderSetup() {
             }
         }
         else {
-            console.log(theme.error("  No model selected."));
+            VulpesOutput_1.out.print(theme_1.theme.error("  No model selected."));
             rl.close();
             return null;
         }
         provider.setModel(selectedModel);
-        console.log(theme.success(`\n  ${figures_1.default.tick} Selected: ${selectedModel}`));
+        VulpesOutput_1.out.print(theme_1.theme.success(`\n  ${figures_1.default.tick} Selected: ${selectedModel}`));
         rl.close();
         return { provider, model: selectedModel };
     }
     catch (error) {
         spinner.fail("Failed to fetch models");
-        console.log(theme.error(`  Error: ${error.message}`));
+        VulpesOutput_1.out.print(theme_1.theme.error(`  Error: ${error.message}`));
         rl.close();
         return null;
     }

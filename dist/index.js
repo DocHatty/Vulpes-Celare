@@ -372,7 +372,8 @@ Object.defineProperty(exports, "getTypeScriptOnlyTypes", { enumerable: true, get
 // ============================================================================
 // VERSION INFO
 // ============================================================================
-exports.VERSION = "1.0.0";
-exports.ENGINE_NAME = "Vulpes Celare";
-exports.VARIANT = "Hatkoff Redaction Engine";
+var meta_1 = require("./meta");
+Object.defineProperty(exports, "VERSION", { enumerable: true, get: function () { return meta_1.VERSION; } });
+Object.defineProperty(exports, "ENGINE_NAME", { enumerable: true, get: function () { return meta_1.ENGINE_NAME; } });
+Object.defineProperty(exports, "VARIANT", { enumerable: true, get: function () { return meta_1.VARIANT; } });
 //# sourceMappingURL=index.js.map

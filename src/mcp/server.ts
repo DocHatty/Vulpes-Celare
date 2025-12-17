@@ -17,6 +17,7 @@ import {
 
 // CRITICAL: Import VERSION directly, don't import VulpesCelare yet
 import { VERSION } from "../meta";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 
 // ============================================================================
 // ULTRA-LAZY INITIALIZATION
@@ -211,6 +212,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 const transport = new StdioServerTransport();
 server.connect(transport).catch((error) => {
-  console.error("[Vulpes MCP] Fatal:", error.message);
+  log.fatal("MCP server connection failed", { component: "Vulpes MCP", error: error.message });
   process.exit(1);
 });

@@ -15,6 +15,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { ConfidenceCalibrator, CalibrationMetrics } from "../core/ConfidenceCalibrator";
+import { vulpesLogger as log } from "../utils/VulpesLogger";
 
 /**
  * Calibration persistence metadata
@@ -115,9 +116,11 @@ export class CalibrationPersistence {
     const filePath = this.getCalibrationPath();
     fs.writeFileSync(filePath, JSON.stringify(persisted, null, 2), "utf-8");
 
-    console.log(
-      `[CalibrationPersistence] Saved calibration to ${filePath} (${dataPointCount} data points)`
-    );
+    log.info("Saved calibration", {
+      component: "CalibrationPersistence",
+      path: filePath,
+      dataPoints: dataPointCount,
+    });
   }
 
   /**
@@ -130,9 +133,7 @@ export class CalibrationPersistence {
     const filePath = this.getCalibrationPath();
 
     if (!fs.existsSync(filePath)) {
-      console.log(
-        `[CalibrationPersistence] No calibration file found at ${filePath}`
-      );
+      log.debug(`No calibration file found at ${filePath}`, { component: "CalibrationPersistence" });
       return false;
     }
 
@@ -142,25 +143,22 @@ export class CalibrationPersistence {
 
       // Check version compatibility
       if (!this.isVersionCompatible(persisted.metadata.version)) {
-        console.warn(
-          `[CalibrationPersistence] Incompatible calibration version: ${persisted.metadata.version} (expected ${CALIBRATION_VERSION})`
-        );
+        log.warn(`Incompatible calibration version: ${persisted.metadata.version} (expected ${CALIBRATION_VERSION})`, { component: "CalibrationPersistence" });
         return false;
       }
 
       // Import parameters into calibrator
       calibrator.importParameters(persisted.parameters);
 
-      console.log(
-        `[CalibrationPersistence] Loaded calibration from ${filePath} ` +
-          `(fitted ${persisted.metadata.fittedAt}, ${persisted.metadata.dataPointCount} points)`
-      );
+      log.info(`Loaded calibration from ${filePath}`, {
+        component: "CalibrationPersistence",
+        fittedAt: persisted.metadata.fittedAt,
+        dataPoints: persisted.metadata.dataPointCount,
+      });
 
       return true;
     } catch (error) {
-      console.error(
-        `[CalibrationPersistence] Error loading calibration: ${error}`
-      );
+      log.error(`Error loading calibration: ${error}`, { component: "CalibrationPersistence" });
       return false;
     }
   }
@@ -214,7 +212,7 @@ export class CalibrationPersistence {
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
-      console.log(`[CalibrationPersistence] Deleted calibration file: ${filePath}`);
+      log.info(`Deleted calibration file: ${filePath}`, { component: "CalibrationPersistence" });
     }
   }
 
@@ -235,7 +233,7 @@ export class CalibrationPersistence {
     );
 
     fs.copyFileSync(filePath, backupPath);
-    console.log(`[CalibrationPersistence] Created backup: ${backupPath}`);
+    log.info(`Created backup: ${backupPath}`, { component: "CalibrationPersistence" });
 
     return backupPath;
   }
@@ -267,9 +265,7 @@ export class CalibrationPersistence {
     calibrator: ConfidenceCalibrator
   ): boolean {
     if (!fs.existsSync(backupPath)) {
-      console.error(
-        `[CalibrationPersistence] Backup file not found: ${backupPath}`
-      );
+      log.error(`Backup file not found: ${backupPath}`, { component: "CalibrationPersistence" });
       return false;
     }
 
@@ -278,15 +274,11 @@ export class CalibrationPersistence {
       const persisted: PersistedCalibration = JSON.parse(content);
 
       calibrator.importParameters(persisted.parameters);
-      console.log(
-        `[CalibrationPersistence] Restored calibration from backup: ${backupPath}`
-      );
+      log.info(`Restored calibration from backup: ${backupPath}`, { component: "CalibrationPersistence" });
 
       return true;
     } catch (error) {
-      console.error(
-        `[CalibrationPersistence] Error restoring backup: ${error}`
-      );
+      log.error(`Error restoring backup: ${error}`, { component: "CalibrationPersistence" });
       return false;
     }
   }

@@ -40,15 +40,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const readline = __importStar(require("readline"));
-const chalk_1 = __importDefault(require("chalk"));
-const figures_1 = __importDefault(require("figures"));
-const index_1 = require("../index");
+const meta_1 = require("../meta");
 const Logger_1 = require("../utils/Logger");
+// Import unified theme system
+const theme_1 = require("../theme");
+const output_1 = require("../theme/output");
+const icons_1 = require("../theme/icons");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
 // Lazy load heavy modules only when needed
 let handleNativeChat;
 let handleAgent;
@@ -68,20 +68,7 @@ async function loadModules() {
         validateVulpesEnvironment = security.validateVulpesEnvironment;
     }
 }
-// ============================================================================
-// THEME
-// ============================================================================
-const theme = {
-    primary: chalk_1.default.hex("#FF6B35"),
-    secondary: chalk_1.default.hex("#4ECDC4"),
-    accent: chalk_1.default.hex("#FFE66D"),
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-    highlight: chalk_1.default.hex("#9B59B6"),
-};
+// Theme imported from unified theme system (../theme)
 // ============================================================================
 // RESPONSIVE BANNER
 // ============================================================================
@@ -116,56 +103,56 @@ function printBanner(showStats = true, clearScreen = true) {
  ╚╝ ╚═╝╩═╝╩  ╚═╝╚═╝`
             : `
 VULPES`;
-    const border = theme.primary("╭" + "─".repeat(boxWidth - 2) + "╮");
-    const bottom = theme.primary("╰" + "─".repeat(boxWidth - 2) + "╯");
-    const side = theme.primary("│");
+    const border = theme_1.theme.primary("╭" + "─".repeat(boxWidth - 2) + "╮");
+    const bottom = theme_1.theme.primary("╰" + "─".repeat(boxWidth - 2) + "╯");
+    const side = theme_1.theme.primary("│");
     const pad = (s) => {
         const visible = s.replace(/\x1b\[[0-9;]*m/g, "").length;
         const right = Math.max(0, innerWidth - visible);
         return `${side} ${s}${" ".repeat(right)} ${side}`;
     };
     const empty = pad("");
-    console.log("\n" + border);
+    VulpesOutput_1.out.print("\n" + border);
     // Logo lines
     const logoLines = logo.trim().split("\n");
     for (const line of logoLines) {
-        console.log(pad(theme.primary.bold(line)));
+        VulpesOutput_1.out.print(pad(theme_1.theme.primary.bold(line)));
     }
-    console.log(empty);
-    console.log(pad(`  ${index_1.ENGINE_NAME} v${index_1.VERSION}`));
-    console.log(pad(`  ${theme.secondary("HIPAA PHI Redaction Engine")}`));
+    VulpesOutput_1.out.print(empty);
+    VulpesOutput_1.out.print(pad(`  ${meta_1.ENGINE_NAME} v${meta_1.VERSION}`));
+    VulpesOutput_1.out.print(pad(`  ${theme_1.theme.secondary("HIPAA PHI Redaction Engine")}`));
     if (showStats) {
-        console.log(empty);
-        console.log(pad(`  ${theme.success(figures_1.default.tick)} 17/18 Safe Harbor identifiers`));
-        console.log(pad(`  ${theme.success(figures_1.default.tick)} ≥99% sensitivity, ≥96% specificity`));
-        console.log(pad(`  ${theme.success(figures_1.default.tick)} 2-3ms per document`));
+        VulpesOutput_1.out.print(empty);
+        VulpesOutput_1.out.print(pad(`  ${theme_1.theme.success(icons_1.status.success)} 17/18 Safe Harbor identifiers`));
+        VulpesOutput_1.out.print(pad(`  ${theme_1.theme.success(icons_1.status.success)} ≥99% sensitivity, ≥96% specificity`));
+        VulpesOutput_1.out.print(pad(`  ${theme_1.theme.success(icons_1.status.success)} 2-3ms per document`));
     }
-    console.log(empty);
-    console.log(bottom);
+    VulpesOutput_1.out.print(empty);
+    VulpesOutput_1.out.print(bottom);
 }
 // ============================================================================
 // MENU DISPLAY
 // ============================================================================
 function printMenu(title, options, showBack = false) {
     const width = getTerminalWidth();
-    console.log(theme.info.bold(`\n  ${title}\n`));
+    VulpesOutput_1.out.print(theme_1.theme.info.bold(`\n  ${title}\n`));
     for (const opt of options) {
-        const keyStyle = theme.accent.bold(`[${opt.key}]`);
-        const labelStyle = theme.primary.bold(opt.label);
-        console.log(`  ${keyStyle} ${labelStyle}`);
+        const keyStyle = theme_1.theme.accent.bold(`[${opt.key}]`);
+        const labelStyle = theme_1.theme.primary.bold(opt.label);
+        VulpesOutput_1.out.print(`  ${keyStyle} ${labelStyle}`);
         for (const line of opt.desc) {
             // Truncate description lines if terminal is narrow
             const maxLen = width - 8;
             const truncated = line.length > maxLen ? line.slice(0, maxLen - 3) + "..." : line;
-            console.log(`      ${theme.muted(truncated)}`);
+            VulpesOutput_1.out.print(`      ${theme_1.theme.muted(truncated)}`);
         }
-        console.log();
+        VulpesOutput_1.out.blank();
     }
     if (showBack) {
-        console.log(theme.muted("  [b] Back to main menu\n"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  [b] Back to main menu\n"));
     }
     else {
-        console.log(theme.muted("  [q] Quit\n"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  [q] Quit\n"));
     }
 }
 async function prompt(message) {
@@ -206,11 +193,11 @@ const MAIN_OPTIONS = [
 async function showMainMenu() {
     printBanner(true);
     printMenu("CHOOSE YOUR MODE:", MAIN_OPTIONS, false);
-    const choice = await prompt(theme.secondary("  Your choice: "));
+    const choice = await prompt(theme_1.theme.secondary("  Your choice: "));
     Logger_1.logger.debug("Main menu selection", { choice });
     if (choice === "q" || choice === "quit" || choice === "exit") {
         Logger_1.logger.info("User quit from main menu");
-        console.log(theme.info("\n  Goodbye!\n"));
+        VulpesOutput_1.out.print("\n  " + output_1.Status.info("Goodbye!") + "\n");
         process.exit(0);
     }
     await loadModules();
@@ -224,7 +211,7 @@ async function showMainMenu() {
     }
     else {
         Logger_1.logger.warn("Invalid main menu choice", { choice });
-        console.log(theme.error(`\n  Invalid choice: ${choice}`));
+        VulpesOutput_1.out.print("\n  " + output_1.Status.error(`Invalid choice: ${choice}`));
         await showMainMenu();
     }
 }
@@ -267,7 +254,7 @@ async function showAgentSubmenu() {
     // Clear and print compact banner (no double clear)
     printBanner(false, true); // Compact banner without stats, with clear
     printMenu("SELECT AI BACKEND:", AGENT_OPTIONS, true);
-    const choice = await prompt(theme.secondary("  Your choice: "));
+    const choice = await prompt(theme_1.theme.secondary("  Your choice: "));
     Logger_1.logger.debug("Agent submenu selection", { choice });
     if (choice === "b" || choice === "back") {
         Logger_1.logger.debug("User went back to main menu");
@@ -286,7 +273,7 @@ async function showAgentSubmenu() {
     }
     else {
         Logger_1.logger.warn("Invalid agent submenu choice", { choice });
-        console.log(theme.error(`\n  Invalid choice: ${choice}`));
+        VulpesOutput_1.out.print("\n  " + output_1.Status.error(`Invalid choice: ${choice}`));
         await showAgentSubmenu();
     }
 }
@@ -314,7 +301,7 @@ async function main() {
     process.env.VULPES_QUIET = "1";
     // Log startup
     Logger_1.logger.info("Vulpes CLI started", {
-        version: index_1.VERSION,
+        version: meta_1.VERSION,
         args: process.argv.slice(2),
         cwd: process.cwd(),
         platform: process.platform,
@@ -354,35 +341,35 @@ async function main() {
 }
 function printUsage() {
     const width = getTerminalWidth();
-    console.log(`
-${theme.primary.bold("VULPES CELARE")} - HIPAA PHI Redaction Engine
+    VulpesOutput_1.out.print(`
+${theme_1.theme.primary.bold("VULPES CELARE")} - HIPAA PHI Redaction Engine
 
-${theme.info.bold("USAGE:")}
+${theme_1.theme.info.bold("USAGE:")}
   vulpes              Interactive menu (recommended)
   vulpes chat         Native API chat with any provider
   vulpes agent        Wrap external AI CLIs (Claude Code, Codex, Copilot)
   vulpes --help       Show this help
 
-${theme.info.bold("SHORTCUTS:")}
-  vulpes              ${theme.muted("→")} Interactive menu
-  vulpes c            ${theme.muted("→")} Native API chat
-  vulpes a [backend]  ${theme.muted("→")} Agent mode (claude/codex/copilot)
+${theme_1.theme.info.bold("SHORTCUTS:")}
+  vulpes              ${theme_1.theme.muted("→")} Interactive menu
+  vulpes c            ${theme_1.theme.muted("→")} Native API chat
+  vulpes a [backend]  ${theme_1.theme.muted("→")} Agent mode (claude/codex/copilot)
 
-${theme.info.bold("IN-CHAT COMMANDS:")} ${theme.muted("(available in all modes)")}
-  /redact <text>      ${theme.muted("→")} Quick redact text
-  /interactive        ${theme.muted("→")} Bulk redaction REPL
-  /info               ${theme.muted("→")} System info & metrics
-  /subagents          ${theme.muted("→")} Enable parallel AI workers
-  /orchestrate <task> ${theme.muted("→")} Delegate to subagents
-  /help               ${theme.muted("→")} Show all commands
+${theme_1.theme.info.bold("IN-CHAT COMMANDS:")} ${theme_1.theme.muted("(available in all modes)")}
+  /redact <text>      ${theme_1.theme.muted("→")} Quick redact text
+  /interactive        ${theme_1.theme.muted("→")} Bulk redaction REPL
+  /info               ${theme_1.theme.muted("→")} System info & metrics
+  /subagents          ${theme_1.theme.muted("→")} Enable parallel AI workers
+  /orchestrate <task> ${theme_1.theme.muted("→")} Delegate to subagents
+  /help               ${theme_1.theme.muted("→")} Show all commands
 
-${theme.muted("For full CLI options: vulpes <command> --help")}
+${theme_1.theme.muted("For full CLI options: vulpes <command> --help")}
 `);
 }
 main().catch((err) => {
     Logger_1.logger.exception("Fatal error in main", err);
-    console.error(theme.error(`\nError: ${err.message}`));
-    console.error(theme.muted(`  Log file: ${Logger_1.logger.getLogFilePath()}`));
+    VulpesOutput_1.out.print("\n" + output_1.Status.error(err.message));
+    VulpesOutput_1.out.print(theme_1.theme.muted(`  Log file: ${Logger_1.logger.getLogFilePath()}`));
     process.exit(1);
 });
 //# sourceMappingURL=launcher.js.map

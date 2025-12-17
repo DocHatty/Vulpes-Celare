@@ -69,34 +69,20 @@ const path = __importStar(require("path"));
 const os = __importStar(require("os"));
 const readline = __importStar(require("readline"));
 const child_process_1 = require("child_process");
-const chalk_1 = __importDefault(require("chalk"));
 const SecurityUtils_1 = require("../utils/SecurityUtils");
 const ora_1 = __importDefault(require("ora"));
-const boxen_1 = __importDefault(require("boxen"));
 const figures_1 = __importDefault(require("figures"));
 const VulpesCelare_1 = require("../VulpesCelare");
-const index_1 = require("../index");
+const meta_1 = require("../meta");
 const Logger_1 = require("../utils/Logger");
 const SystemPrompts_1 = require("./SystemPrompts");
 const child_process_2 = require("child_process");
 const VulpesIntegration_1 = require("./VulpesIntegration");
-// ============================================================================
-// THEME
-// ============================================================================
-const theme = {
-    primary: chalk_1.default.hex("#FF6B35"),
-    secondary: chalk_1.default.hex("#4ECDC4"),
-    accent: chalk_1.default.hex("#FFE66D"),
-    success: chalk_1.default.hex("#2ECC71"),
-    warning: chalk_1.default.hex("#F39C12"),
-    error: chalk_1.default.hex("#E74C3C"),
-    info: chalk_1.default.hex("#3498DB"),
-    muted: chalk_1.default.hex("#95A5A6"),
-    agent: chalk_1.default.hex("#8B5CF6"),
-    original: chalk_1.default.hex("#EF4444"),
-    redacted: chalk_1.default.hex("#22C55E"),
-    code: chalk_1.default.hex("#60A5FA"),
-};
+// Import unified theme system
+const theme_1 = require("../theme");
+const output_1 = require("../theme/output");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
+// Theme imported from unified theme system (../theme)
 // ============================================================================
 // ENHANCED SYSTEM PROMPT FOR WRAPPED AGENTS
 // ============================================================================
@@ -162,7 +148,7 @@ Or in Node:
 const { VulpesCelare } = require('vulpes-celare');
 const v = new VulpesCelare();
 const result = await v.process("Patient John Smith SSN 123-45-6789");
-console.log(result.text); // Patient [NAME] SSN [SSN]
+out.print(result.text); // Patient [NAME] SSN [SSN]
 \`\`\`
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -277,14 +263,14 @@ class VulpesAgent {
             (!claudeMdExists || !slashCommandsExist || !mcpRegistered);
         const needsCodexSetup = this.config.backend === "codex" && !agentsMdExists;
         if (needsClaudeSetup || needsCodexSetup) {
-            console.log(theme.info("\n  Setting up Vulpes integration...\n"));
+            VulpesOutput_1.out.print("\n  " + output_1.Status.info("Setting up Vulpes integration...") + "\n");
             if (needsClaudeSetup) {
                 await integration.installClaudeCodeIntegration();
             }
             if (needsCodexSetup) {
                 await integration.installCodexIntegration();
             }
-            console.log(theme.success("  Integration ready!\n"));
+            VulpesOutput_1.out.print("  " + output_1.Status.success("Integration ready!") + "\n");
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -305,7 +291,7 @@ class VulpesAgent {
             ...process.env,
             VULPES_AGENT_MODE: this.config.mode,
             VULPES_WORKING_DIR: this.config.workingDir,
-            VULPES_VERSION: index_1.VERSION,
+            VULPES_VERSION: meta_1.VERSION,
             // Git bash for Windows
             CLAUDE_CODE_GIT_BASH_PATH: process.env.CLAUDE_CODE_GIT_BASH_PATH ||
                 "C:\\Program Files\\Git\\bin\\bash.exe",
@@ -318,10 +304,10 @@ class VulpesAgent {
             VULPES_WORKING_DIR: env.VULPES_WORKING_DIR,
             args: args,
         });
-        console.log(theme.info(`\n  Starting Claude Code with Vulpes integration...\n`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Vulpes context injected`));
-        console.log(theme.muted(`  ${figures_1.default.tick} CLAUDE.md provides full context`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Slash commands: /vulpes-redact, /vulpes-analyze, /vulpes-info\n`));
+        VulpesOutput_1.out.print("\n  " + output_1.Status.info("Starting Claude Code with Vulpes integration...") + "\n");
+        VulpesOutput_1.out.print(output_1.Status.bullet("Vulpes context injected", { indent: 1 }));
+        VulpesOutput_1.out.print(output_1.Status.bullet("CLAUDE.md provides full context", { indent: 1 }));
+        VulpesOutput_1.out.print(output_1.Status.bullet("Slash commands: /vulpes-redact, /vulpes-analyze, /vulpes-info", { indent: 1 }) + "\n");
         await this.spawnAgent("claude", args, env);
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -343,15 +329,15 @@ class VulpesAgent {
             ...process.env,
             VULPES_AGENT_MODE: this.config.mode,
             VULPES_WORKING_DIR: this.config.workingDir,
-            VULPES_VERSION: index_1.VERSION,
+            VULPES_VERSION: meta_1.VERSION,
             // Suppress internal update notifiers to prevent crash
             NO_UPDATE_NOTIFIER: "1",
             CI: "true",
         };
-        console.log(theme.info(`\n  Starting Codex with Vulpes integration...\n`));
-        console.log(theme.muted(`  ${figures_1.default.tick} AGENTS.md loaded with Vulpes instructions`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Model: ${this.config.model || "gpt-5.2"}`));
-        console.log(theme.muted(`  ${figures_1.default.tick} MCP server: vulpes (if configured)\n`));
+        VulpesOutput_1.out.print("\n  " + output_1.Status.info("Starting Codex with Vulpes integration...") + "\n");
+        VulpesOutput_1.out.print(output_1.Status.bullet("AGENTS.md loaded with Vulpes instructions", { indent: 1 }));
+        VulpesOutput_1.out.print(output_1.Status.bullet(`Model: ${this.config.model || "gpt-5.2"}`, { indent: 1 }));
+        VulpesOutput_1.out.print(output_1.Status.bullet("MCP server: vulpes (if configured)", { indent: 1 }) + "\n");
         await this.spawnAgent("codex", args, env);
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -375,22 +361,21 @@ class VulpesAgent {
     async startCopilot() {
         // Check if copilot CLI is installed
         if (!this.isCopilotInstalled()) {
-            console.log(theme.error("\n  GitHub Copilot CLI is not installed.\n"));
-            console.log(theme.info("  To install (same pattern as Claude & Codex):"));
-            console.log(theme.muted("  ─".repeat(28)));
-            console.log();
-            console.log(theme.accent("    npm install -g @github/copilot"));
-            console.log();
-            console.log(theme.muted("  ─".repeat(28)));
-            console.log(theme.info("\n  Then authenticate on first run:"));
-            console.log(theme.muted("  ─".repeat(28)));
-            console.log();
-            console.log(theme.accent("    copilot"));
-            console.log(theme.muted("    # Type: /login"));
-            console.log();
-            console.log(theme.muted("  ─".repeat(28)));
-            console.log(theme.muted("\n  Requires an active GitHub Copilot subscription."));
-            console.log(theme.muted("  (Copilot Pro, Pro+, Business, or Enterprise)\n"));
+            VulpesOutput_1.out.print("\n" + output_1.Box.error([
+                "GitHub Copilot CLI is not installed.",
+                "",
+                "To install (same pattern as Claude & Codex):",
+                "",
+                theme_1.theme.accent("  npm install -g @github/copilot"),
+                "",
+                "Then authenticate on first run:",
+                "",
+                theme_1.theme.accent("  copilot"),
+                theme_1.theme.muted("  # Type: /login"),
+                "",
+                theme_1.theme.muted("Requires an active GitHub Copilot subscription."),
+                theme_1.theme.muted("(Copilot Pro, Pro+, Business, or Enterprise)"),
+            ], { title: "Not Installed" }) + "\n");
             process.exit(1);
         }
         const args = [];
@@ -403,16 +388,16 @@ class VulpesAgent {
             ...process.env,
             VULPES_AGENT_MODE: this.config.mode,
             VULPES_WORKING_DIR: this.config.workingDir,
-            VULPES_VERSION: index_1.VERSION,
+            VULPES_VERSION: meta_1.VERSION,
             // Suppress internal update notifiers to prevent crash
             NO_UPDATE_NOTIFIER: "1",
             CI: "true",
         };
-        console.log(theme.info(`\n  Starting GitHub Copilot CLI with Vulpes integration...\n`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Copilot CLI detected`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Vulpes context available`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Use 'vulpes' CLI for PHI redaction`));
-        console.log(theme.muted(`  ${figures_1.default.tick} Type /login if not authenticated\n`));
+        VulpesOutput_1.out.print("\n  " + output_1.Status.info("Starting GitHub Copilot CLI with Vulpes integration...") + "\n");
+        VulpesOutput_1.out.print(output_1.Status.bullet("Copilot CLI detected", { indent: 1 }));
+        VulpesOutput_1.out.print(output_1.Status.bullet("Vulpes context available", { indent: 1 }));
+        VulpesOutput_1.out.print(output_1.Status.bullet("Use 'vulpes' CLI for PHI redaction", { indent: 1 }));
+        VulpesOutput_1.out.print(output_1.Status.bullet("Type /login if not authenticated", { indent: 1 }) + "\n");
         await this.spawnAgent("copilot", args, env);
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -423,17 +408,17 @@ class VulpesAgent {
             input: process.stdin,
             output: process.stdout,
         });
-        console.log(theme.muted("\n  Native Vulpes Agent - No external CLI required\n"));
-        console.log(theme.muted("  Commands:"));
-        console.log(theme.muted("    .test <text>     Test redaction"));
-        console.log(theme.muted("    .file <path>     Redact a file"));
-        console.log(theme.muted("    .interactive     Enter interactive mode"));
-        console.log(theme.muted("    .info            System information"));
-        console.log(theme.muted("    .filters         List active filters"));
-        console.log(theme.muted("    .help            Show all commands"));
-        console.log(theme.muted("    .exit            Exit\n"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("\n  Native Vulpes Agent - No external CLI required\n"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  Commands:"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    .test <text>     Test redaction"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    .file <path>     Redact a file"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    .interactive     Enter interactive mode"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    .info            System information"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    .filters         List active filters"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    .help            Show all commands"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("    .exit            Exit\n"));
         const prompt = () => {
-            rl.question(theme.primary("vulpes") + theme.muted(" > "), async (input) => {
+            rl.question(theme_1.theme.primary("vulpes") + theme_1.theme.muted(" > "), async (input) => {
                 input = input.trim();
                 if (!input) {
                     prompt();
@@ -482,24 +467,24 @@ class VulpesAgent {
                 code: err.code,
                 path: err.path,
             });
-            console.error(theme.error(`\n  Failed to start ${cmd}: ${err.message}`));
-            console.log(theme.muted(`  Make sure ${cmd} is installed and in your PATH\n`));
-            console.log(theme.muted(`  Log file: ${Logger_1.logger.getLogFilePath()}\n`));
+            VulpesOutput_1.out.print(theme_1.theme.error(`\n  Failed to start ${cmd}: ${err.message}`));
+            VulpesOutput_1.out.print(theme_1.theme.muted(`  Make sure ${cmd} is installed and in your PATH\n`));
+            VulpesOutput_1.out.print(theme_1.theme.muted(`  Log file: ${Logger_1.logger.getLogFilePath()}\n`));
             if (cmd === "claude") {
-                console.log(theme.muted("  Install: npm install -g @anthropic-ai/claude-code"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  Install: npm install -g @anthropic-ai/claude-code"));
             }
             else if (cmd === "codex") {
-                console.log(theme.muted("  Install: npm install -g @openai/codex"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  Install: npm install -g @openai/codex"));
             }
             else if (cmd === "copilot") {
-                console.log(theme.muted("  Install: npm install -g @githubnext/github-copilot-cli"));
-                console.log(theme.muted("  Or use: gh extension install github/gh-copilot"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  Install: npm install -g @githubnext/github-copilot-cli"));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  Or use: gh extension install github/gh-copilot"));
             }
             process.exit(1);
         });
         this.subprocess.on("exit", (code, signal) => {
             Logger_1.logger.info(`Agent ${cmd} exited`, { code, signal });
-            console.log(theme.muted(`\n  ${cmd} exited with code ${code}`));
+            VulpesOutput_1.out.print(theme_1.theme.muted(`\n  ${cmd} exited with code ${code}`));
             process.exit(code || 0);
         });
         // Log any unexpected close
@@ -547,28 +532,28 @@ class VulpesAgent {
     }
     printComparison(comparison) {
         const { original, redacted, result } = comparison;
-        console.log("\n" + theme.muted("═".repeat(70)));
+        VulpesOutput_1.out.print("\n" + theme_1.theme.muted("═".repeat(70)));
         if (this.config.mode !== "production") {
-            console.log(theme.original.bold(" ORIGINAL:"));
-            console.log(theme.muted("─".repeat(70)));
-            console.log(this.formatDocument(original, "original"));
-            console.log();
+            VulpesOutput_1.out.print(theme_1.theme.original.bold(" ORIGINAL:"));
+            VulpesOutput_1.out.print(theme_1.theme.muted("─".repeat(70)));
+            VulpesOutput_1.out.print(this.formatDocument(original, "original"));
+            VulpesOutput_1.out.blank();
         }
-        console.log(theme.redacted.bold(" REDACTED:"));
-        console.log(theme.muted("─".repeat(70)));
-        console.log(this.formatDocument(redacted, "redacted"));
-        console.log();
-        console.log(theme.info.bold(" STATS:"));
-        console.log(theme.muted("─".repeat(70)));
-        console.log(`  ${theme.muted("Time:")} ${result.executionTimeMs}ms`);
-        console.log(`  ${theme.muted("PHI Found:")} ${result.redactionCount}`);
+        VulpesOutput_1.out.print(theme_1.theme.redacted.bold(" REDACTED:"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("─".repeat(70)));
+        VulpesOutput_1.out.print(this.formatDocument(redacted, "redacted"));
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.info.bold(" STATS:"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("─".repeat(70)));
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Time:")} ${result.executionTimeMs}ms`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("PHI Found:")} ${result.redactionCount}`);
         if (Object.keys(result.breakdown).length > 0) {
-            console.log(`  ${theme.muted("Breakdown:")}`);
+            VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Breakdown:")}`);
             for (const [type, count] of Object.entries(result.breakdown).sort((a, b) => b[1] - a[1])) {
-                console.log(`    ${theme.code(type)}: ${count}`);
+                VulpesOutput_1.out.print(`    ${theme_1.theme.code(type)}: ${count}`);
             }
         }
-        console.log(theme.muted("═".repeat(70)) + "\n");
+        VulpesOutput_1.out.print(theme_1.theme.muted("═".repeat(70)) + "\n");
     }
     formatDocument(text, type) {
         const lines = text.split("\n");
@@ -576,8 +561,8 @@ class VulpesAgent {
         return lines
             .map((line) => {
             if (type === "redacted") {
-                line = line.replace(/\{\{[^}]+\}\}/g, (match) => theme.warning(match));
-                line = line.replace(/\[[A-Z_-]+\]/g, (match) => theme.warning(match));
+                line = line.replace(/\{\{[^}]+\}\}/g, (match) => theme_1.theme.warning(match));
+                line = line.replace(/\[[A-Z_-]+\]/g, (match) => theme_1.theme.warning(match));
             }
             if (line.length > maxWidth) {
                 return "  " + line.substring(0, maxWidth - 3) + "...";
@@ -598,7 +583,7 @@ class VulpesAgent {
             if (!latestVersion)
                 return;
             if (currentVersion !== latestVersion) {
-                console.log(theme.info(`\n  Update available for ${packageName}: ${theme.muted(currentVersion)} → ${theme.success(latestVersion)}`));
+                VulpesOutput_1.out.print(theme_1.theme.info(`\n  Update available for ${packageName}: ${theme_1.theme.muted(currentVersion)} → ${theme_1.theme.success(latestVersion)}`));
                 // In interactive mode, we could ask. For now, we auto-update if strictly needed or just notify 
                 // effectively without crashing. The user complaint was "shuts system down".
                 // Providing a safe way to update:
@@ -607,23 +592,23 @@ class VulpesAgent {
                     output: process.stdout
                 });
                 const answer = await new Promise(resolve => {
-                    rl.question(theme.accent(`  Do you want to update now? (y/N) `), resolve);
+                    rl.question(theme_1.theme.accent(`  Do you want to update now? (y/N) `), resolve);
                 });
                 rl.close();
                 if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
-                    console.log(theme.muted(`  Updating ${packageName}...`));
+                    VulpesOutput_1.out.print(theme_1.theme.muted(`  Updating ${packageName}...`));
                     try {
                         // Use synchronous exec to ensure it finishes before we move on
                         (0, child_process_2.execSync)(`npm install -g ${packageName}`, { stdio: 'inherit' });
-                        console.log(theme.success(`  Update complete! Starting agent...\n`));
+                        VulpesOutput_1.out.print(theme_1.theme.success(`  Update complete! Starting agent...\n`));
                     }
                     catch (e) {
-                        console.log(theme.error(`  Update failed: ${e.message}`));
-                        console.log(theme.muted(`  Continuing with current version...\n`));
+                        VulpesOutput_1.out.print(theme_1.theme.error(`  Update failed: ${e.message}`));
+                        VulpesOutput_1.out.print(theme_1.theme.muted(`  Continuing with current version...\n`));
                     }
                 }
                 else {
-                    console.log(theme.muted(`  Skipping update. Starting agent...\n`));
+                    VulpesOutput_1.out.print(theme_1.theme.muted(`  Skipping update. Starting agent...\n`));
                 }
             }
         }
@@ -662,7 +647,7 @@ class VulpesAgent {
             case "exit":
             case "quit":
             case "q":
-                console.log(theme.info("\n  Goodbye!\n"));
+                VulpesOutput_1.out.print("\n  " + output_1.Status.info("Goodbye!") + "\n");
                 rl.close();
                 process.exit(0);
                 break;
@@ -673,7 +658,7 @@ class VulpesAgent {
                     await this.testDocument(args.join(" "));
                 }
                 else {
-                    console.log(theme.warning("  Usage: .test <text to redact>"));
+                    VulpesOutput_1.out.print("  " + output_1.Status.warning("Usage: .test <text to redact>"));
                 }
                 break;
             case "file":
@@ -685,11 +670,11 @@ class VulpesAgent {
                         await this.testDocument(content);
                     }
                     else {
-                        console.log(theme.error(`  File not found: ${filePath}`));
+                        VulpesOutput_1.out.print("  " + output_1.Status.error(`File not found: ${filePath}`));
                     }
                 }
                 else {
-                    console.log(theme.warning("  Usage: .file <path>"));
+                    VulpesOutput_1.out.print("  " + output_1.Status.warning("Usage: .file <path>"));
                 }
                 break;
             case "interactive":
@@ -701,7 +686,7 @@ class VulpesAgent {
                 await this.printSystemInfo();
                 break;
             case "filters":
-                console.log(this.getFilterInfo());
+                VulpesOutput_1.out.print(this.getFilterInfo());
                 break;
             case "vulpesify":
                 const integration = new VulpesIntegration_1.VulpesIntegration({
@@ -713,26 +698,26 @@ class VulpesAgent {
             case "help":
             case "h":
             case "?":
-                console.log(this.getHelpText());
+                VulpesOutput_1.out.print(this.getHelpText());
                 break;
             default:
-                console.log(theme.warning(`  Unknown command: .${cmd}`));
-                console.log(theme.muted("  Type .help for available commands"));
+                VulpesOutput_1.out.print("  " + output_1.Status.warning(`Unknown command: .${cmd}`));
+                VulpesOutput_1.out.print(theme_1.theme.muted("  Type .help for available commands"));
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
     // INTERACTIVE REDACTION
     // ══════════════════════════════════════════════════════════════════════════
     async interactiveRedaction(rl) {
-        console.log(theme.info.bold("\n  INTERACTIVE REDACTION MODE"));
-        console.log(theme.muted("  Type text to redact. Empty line to finish.\n"));
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("\n  INTERACTIVE REDACTION MODE"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  Type text to redact. Empty line to finish.\n"));
         let sessionStats = { documents: 0, phiFound: 0, totalTime: 0 };
         let buffer = "";
         const processBuffer = async () => {
             if (buffer.trim()) {
                 const result = await this.vulpes.process(buffer);
-                console.log(theme.redacted("\n  → ") + result.text);
-                console.log(theme.muted(`    (${result.redactionCount} PHI, ${result.executionTimeMs}ms)\n`));
+                VulpesOutput_1.out.print(theme_1.theme.redacted("\n  → ") + result.text);
+                VulpesOutput_1.out.print(theme_1.theme.muted(`    (${result.redactionCount} PHI, ${result.executionTimeMs}ms)\n`));
                 sessionStats.documents++;
                 sessionStats.phiFound += result.redactionCount;
                 sessionStats.totalTime += result.executionTimeMs;
@@ -740,10 +725,10 @@ class VulpesAgent {
             buffer = "";
         };
         const interactivePrompt = () => {
-            rl.question(theme.accent("  > "), async (line) => {
+            rl.question(theme_1.theme.accent("  > "), async (line) => {
                 if (line === "") {
                     await processBuffer();
-                    console.log(theme.info(`\n  Session: ${sessionStats.documents} docs, ${sessionStats.phiFound} PHI, ${sessionStats.totalTime}ms total\n`));
+                    VulpesOutput_1.out.print(theme_1.theme.info(`\n  Session: ${sessionStats.documents} docs, ${sessionStats.phiFound} PHI, ${sessionStats.totalTime}ms total\n`));
                     return; // Exit interactive mode
                 }
                 buffer += line + "\n";
@@ -761,26 +746,26 @@ class VulpesAgent {
     // ══════════════════════════════════════════════════════════════════════════
     async printSystemInfo() {
         const filters = this.vulpes.getActiveFilters();
-        console.log();
-        console.log(theme.info.bold("  VULPES CELARE SYSTEM INFO"));
-        console.log(theme.muted("  " + "─".repeat(50)));
-        console.log(`  ${theme.muted("Engine:")}     ${index_1.ENGINE_NAME}`);
-        console.log(`  ${theme.muted("Version:")}    ${index_1.VERSION}`);
-        console.log(`  ${theme.muted("Mode:")}       ${this.getModeDisplay()}`);
-        console.log(`  ${theme.muted("Backend:")}    ${this.config.backend}`);
-        console.log(`  ${theme.muted("Filters:")}    ${filters.length} active`);
-        console.log(`  ${theme.muted("HIPAA:")}      17/18 Safe Harbor identifiers`);
-        console.log();
-        console.log(theme.muted("  Target Metrics:"));
-        console.log(`    ${theme.success("Sensitivity:")} ≥99% (CRITICAL)`);
-        console.log(`    ${theme.info("Specificity:")} ≥96%`);
-        console.log(`    ${theme.secondary("Speed:")}       2-3ms per document`);
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.info.bold("  VULPES CELARE SYSTEM INFO"));
+        VulpesOutput_1.out.print(theme_1.theme.muted("  " + "─".repeat(50)));
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Engine:")}     ${meta_1.ENGINE_NAME}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Version:")}    ${meta_1.VERSION}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Mode:")}       ${this.getModeDisplay()}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Backend:")}    ${this.config.backend}`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("Filters:")}    ${filters.length} active`);
+        VulpesOutput_1.out.print(`  ${theme_1.theme.muted("HIPAA:")}      17/18 Safe Harbor identifiers`);
+        VulpesOutput_1.out.blank();
+        VulpesOutput_1.out.print(theme_1.theme.muted("  Target Metrics:"));
+        VulpesOutput_1.out.print(`    ${theme_1.theme.success("Sensitivity:")} ≥99% (CRITICAL)`);
+        VulpesOutput_1.out.print(`    ${theme_1.theme.info("Specificity:")} ≥96%`);
+        VulpesOutput_1.out.print(`    ${theme_1.theme.secondary("Speed:")}       2-3ms per document`);
         if (this.lastComparison) {
-            console.log();
-            console.log(theme.muted("  Last Test:"));
-            console.log(`    ${this.lastComparison.result.redactionCount} PHI in ${this.lastComparison.result.executionTimeMs}ms`);
+            VulpesOutput_1.out.blank();
+            VulpesOutput_1.out.print(theme_1.theme.muted("  Last Test:"));
+            VulpesOutput_1.out.print(`    ${this.lastComparison.result.redactionCount} PHI in ${this.lastComparison.result.executionTimeMs}ms`);
         }
-        console.log();
+        VulpesOutput_1.out.blank();
     }
     // ══════════════════════════════════════════════════════════════════════════
     // HELPERS
@@ -799,11 +784,11 @@ class VulpesAgent {
     getModeDisplay() {
         switch (this.config.mode) {
             case "dev":
-                return theme.warning("DEVELOPMENT (full access)");
+                return theme_1.theme.warning("DEVELOPMENT (full access)");
             case "qa":
-                return theme.info("QA (read-only)");
+                return theme_1.theme.info("QA (read-only)");
             case "production":
-                return theme.success("PRODUCTION (redacted only)");
+                return theme_1.theme.success("PRODUCTION (redacted only)");
         }
     }
     getFilterInfo() {
@@ -816,61 +801,61 @@ class VulpesAgent {
             Financial: filters.filter((f) => /Credit|Account/.test(f)),
             Technical: filters.filter((f) => /IP|URL|Device|Vehicle|Biometric|Unique/.test(f)),
         };
-        let output = "\n" + theme.info.bold("  ACTIVE FILTERS") + "\n";
-        output += theme.muted("  " + "─".repeat(50)) + "\n";
+        let output = "\n" + theme_1.theme.info.bold("  ACTIVE FILTERS") + "\n";
+        output += theme_1.theme.muted("  " + "─".repeat(50)) + "\n";
         for (const [category, catFilters] of Object.entries(categories)) {
             if (catFilters.length > 0) {
-                output += `  ${theme.primary(category)}:\n`;
+                output += `  ${theme_1.theme.primary(category)}:\n`;
                 for (const f of catFilters) {
-                    output += `    ${theme.success(figures_1.default.tick)} ${f.replace("FilterSpan", "")}\n`;
+                    output += `    ${theme_1.theme.success(figures_1.default.tick)} ${f.replace("FilterSpan", "")}\n`;
                 }
             }
         }
-        output += theme.muted("  " + "─".repeat(50)) + "\n";
-        output += `  ${theme.muted("Total:")} ${filters.length} filters\n`;
+        output += theme_1.theme.muted("  " + "─".repeat(50)) + "\n";
+        output += `  ${theme_1.theme.muted("Total:")} ${filters.length} filters\n`;
         return output;
     }
     getHelpText() {
         return `
-${theme.info.bold("  VULPES AGENT COMMANDS")}
-${theme.muted("  " + "─".repeat(50))}
-  ${theme.secondary(".test <text>")}      Redact PHI from text
-  ${theme.secondary(".file <path>")}      Redact PHI from a file
-  ${theme.secondary(".interactive")}      Enter interactive redaction mode
-  ${theme.secondary(".info")}             Show system information
-  ${theme.secondary(".filters")}          List all active filters
-  ${theme.secondary(".vulpesify")}        Install full CLI integrations
-  ${theme.secondary(".help")}             Show this help
-  ${theme.secondary(".exit")}             Exit
+${theme_1.theme.info.bold("  VULPES AGENT COMMANDS")}
+${theme_1.theme.muted("  " + "─".repeat(50))}
+  ${theme_1.theme.secondary(".test <text>")}      Redact PHI from text
+  ${theme_1.theme.secondary(".file <path>")}      Redact PHI from a file
+  ${theme_1.theme.secondary(".interactive")}      Enter interactive redaction mode
+  ${theme_1.theme.secondary(".info")}             Show system information
+  ${theme_1.theme.secondary(".filters")}          List all active filters
+  ${theme_1.theme.secondary(".vulpesify")}        Install full CLI integrations
+  ${theme_1.theme.secondary(".help")}             Show this help
+  ${theme_1.theme.secondary(".exit")}             Exit
 
-${theme.muted("  Or just paste text to redact it!")}
+${theme_1.theme.muted("  Or just paste text to redact it!")}
 `;
     }
     printBanner() {
-        const modeColor = this.config.mode === "dev"
-            ? "yellow"
-            : this.config.mode === "qa"
-                ? "cyan"
-                : "green";
-        console.log((0, boxen_1.default)(`${theme.primary.bold("VULPES AGENT")}\n` +
-            `${theme.muted(index_1.ENGINE_NAME + " v" + index_1.VERSION)}\n\n` +
-            `${theme.muted("Mode:")} ${this.getModeDisplay()}\n` +
-            `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}\n\n` +
-            (this.config.mode === "dev"
-                ? `${theme.warning(figures_1.default.warning)} ${theme.warning("Full codebase access enabled")}\n` +
-                    `${theme.warning(figures_1.default.warning)} ${theme.warning("Only use with synthetic/test data")}`
-                : this.config.mode === "qa"
-                    ? `${theme.info(figures_1.default.info)} Can compare original vs redacted\n` +
-                        `${theme.info(figures_1.default.info)} Read-only codebase access`
-                    : `${theme.success(figures_1.default.tick)} Production mode - original text hidden\n` +
-                        `${theme.success(figures_1.default.tick)} Safe for real patient data`), {
-            padding: 1,
-            margin: { top: 1, bottom: 0 },
-            borderStyle: "round",
-            borderColor: modeColor,
-            title: "VULPESIFIED AI AGENT",
-            titleAlignment: "center",
-        }));
+        const content = [
+            theme_1.theme.primary.bold("VULPES AGENT"),
+            theme_1.theme.muted(meta_1.ENGINE_NAME + " v" + meta_1.VERSION),
+            "",
+            `${theme_1.theme.muted("Mode:")} ${this.getModeDisplay()}`,
+            `${theme_1.theme.muted("Backend:")} ${theme_1.theme.secondary(this.config.backend)}`,
+            "",
+        ];
+        if (this.config.mode === "dev") {
+            content.push(output_1.Status.warning("Full codebase access enabled"));
+            content.push(output_1.Status.warning("Only use with synthetic/test data"));
+        }
+        else if (this.config.mode === "qa") {
+            content.push(output_1.Status.info("Can compare original vs redacted"));
+            content.push(output_1.Status.info("Read-only codebase access"));
+        }
+        else {
+            content.push(output_1.Status.success("Production mode - original text hidden"));
+            content.push(output_1.Status.success("Safe for real patient data"));
+        }
+        const boxType = this.config.mode === "dev" ? output_1.Box.warning
+            : this.config.mode === "qa" ? output_1.Box.info
+                : output_1.Box.success;
+        VulpesOutput_1.out.print("\n" + boxType(content, { title: "VULPESIFIED AI AGENT" }));
     }
     // ══════════════════════════════════════════════════════════════════════════
     // SPINNER

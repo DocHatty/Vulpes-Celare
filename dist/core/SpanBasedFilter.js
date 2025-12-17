@@ -13,7 +13,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpanBasedFilter = exports.FilterPriority = void 0;
-const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("./SpanFactory");
 var FilterPriority_1 = require("../models/FilterPriority");
 Object.defineProperty(exports, "FilterPriority", { enumerable: true, get: function () { return FilterPriority_1.FilterPriority; } });
 /**
@@ -35,23 +35,10 @@ class SpanBasedFilter {
     createSpanFromMatch(text, match, filterType, confidence = 0.9, priority) {
         const start = match.index;
         const end = start + match[0].length;
-        return new Span_1.Span({
-            text: match[0],
-            originalValue: match[0],
-            characterStart: start,
-            characterEnd: end,
-            filterType: filterType,
-            confidence: confidence,
+        return SpanFactory_1.SpanFactory.fromMatch(text, match, filterType, {
+            confidence,
             priority: priority ?? this.getPriority(),
             context: this.extractContext(text, start, end),
-            window: [],
-            replacement: null,
-            salt: null,
-            pattern: null,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
         });
     }
     /**

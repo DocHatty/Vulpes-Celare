@@ -12,6 +12,7 @@ import * as dicomParser from "dicom-parser";
 import * as crypto from "crypto";
 import * as dcmjs from "dcmjs";
 import { loadNativeBinding } from "../../native/binding";
+import { vulpesLogger as log } from "../../utils/VulpesLogger";
 
 /**
  * DICOM tag anonymization rule
@@ -178,7 +179,7 @@ export class DicomStreamTransformer extends Transform {
       );
       parsed = DicomMessage.readFile(arrayBuffer);
     } catch (error) {
-      console.error("[DicomStreamTransformer] Failed to parse DICOM:", error);
+      log.error("Failed to parse DICOM", { component: "DicomStreamTransformer", error: String(error) });
       throw error;
     }
 
@@ -319,10 +320,7 @@ export class DicomStreamTransformer extends Transform {
         const dataSet = dicomParser.parseDicom(outputBuffer);
         await this.processPixelData(dataSet, outputBuffer);
       } catch (error) {
-        console.error(
-          "[DicomStreamTransformer] Pixel redaction failed:",
-          error,
-        );
+        log.error("Pixel redaction failed", { component: "DicomStreamTransformer", error: String(error) });
       }
     }
 
@@ -350,7 +348,7 @@ export class DicomStreamTransformer extends Transform {
     // Find PixelData element (7FE0,0010)
     const pixelDataElement = dataSet.elements["x7fe00010"];
     if (!pixelDataElement) {
-      console.log("[DicomStreamTransformer] No PixelData found");
+      log.debug("No PixelData found", { component: "DicomStreamTransformer" });
       return;
     }
 
@@ -363,7 +361,7 @@ export class DicomStreamTransformer extends Transform {
       const photometric = dataSet.string("x00280004") || "MONOCHROME2";
 
       if (rows === 0 || cols === 0) {
-        console.log("[DicomStreamTransformer] Invalid image dimensions");
+        log.debug("Invalid image dimensions", { component: "DicomStreamTransformer" });
         return;
       }
 
@@ -408,22 +406,21 @@ export class DicomStreamTransformer extends Transform {
             buffer[pixelOffset + i] = data[i];
           }
 
-          console.log(
-            `[DicomStreamTransformer] Applied ${result.redactions.length} pixel redactions`,
-          );
+          log.info("Applied pixel redactions", {
+            component: "DicomStreamTransformer",
+            count: result.redactions.length,
+          });
         }
       } else {
-        console.log(
-          "[DicomStreamTransformer] Pixel format not supported for redaction:",
-          {
-            bitsAllocated,
-            samplesPerPixel,
-            photometric,
-          },
-        );
+        log.debug("Pixel format not supported for redaction", {
+          component: "DicomStreamTransformer",
+          bitsAllocated,
+          samplesPerPixel,
+          photometric,
+        });
       }
     } catch (error) {
-      console.error("[DicomStreamTransformer] Pixel processing error:", error);
+      log.error("Pixel processing error", { component: "DicomStreamTransformer", error: String(error) });
     }
   }
 }
