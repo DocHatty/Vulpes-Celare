@@ -1,20 +1,24 @@
 # VULPES CELARE
 
-<table>
-<tr>
-<td>
+<p align="center">
+<b>Source-Available</b> · Evaluation License · <a href="#license--commercial-use">Commercial licensing available</a>
+</p>
 
-**Source-Available** · Evaluation License · [Commercial licensing available](#license--commercial-use)
+<p align="center">
+<img src="https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb" alt="Vulpes Celare Logo">
+</p>
 
-</td>
-</tr>
-</table>
+<p align="center">
+<img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+<img src="https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white" alt="Rust">
+<img src="https://img.shields.io/badge/License-Source_Available-blue" alt="License">
+</p>
 
-![Vulpes Celare Logo](https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb)
-
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white) ![License](https://img.shields.io/badge/License-Evaluation_Only-red)
-
-A PHI redaction engine for clinical text, images, and DICOM data. The project combines TypeScript orchestration with Rust-accelerated compute paths to provide a fully inspectable, auditable de-identification pipeline suitable for healthcare research and air-gapped deployments.
+<p align="center">
+A PHI redaction engine for clinical text, images, and DICOM data.<br>
+TypeScript orchestration with Rust-accelerated compute paths for a fully inspectable,<br>
+auditable de-identification pipeline suitable for healthcare research and air-gapped deployments.
+</p>
 
 | Metric | Vulpes Celare | vs. Presidio |
 |:------:|:-------------:|:------------:|
@@ -89,15 +93,31 @@ PHI never crosses the network boundary. The LLM receives only tokenized placehol
 
 ## Design Goals
 
-**Healthcare-Specific Detection** — 28 filters targeting clinical documentation patterns. Coverage includes all 18 HIPAA Safe Harbor identifiers plus extended types (NPI, DEA, VIN). See [docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md](docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md) for the complete coverage matrix.
+<table>
+<tr><td>
 
-**Performance** — Rust acceleration handles compute-intensive operations. Typical clinical notes process in under 10ms. Streaming support enables real-time dictation workflows.
+**Healthcare-Specific Detection**
 
-**Air-Gapped Operation** — No cloud dependencies. All processing runs locally.
+28 filters targeting clinical documentation patterns. Coverage includes all 18 HIPAA Safe Harbor identifiers plus extended types (NPI, DEA, VIN). See [docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md](docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md) for the complete coverage matrix.
 
-**Auditability** — No black-box ML for PHI detection. Fully inspectable TypeScript + Rust with deterministic rule-based detection. Trust bundles provide tamper-evident provenance.
+**Performance**
 
-**Clinical Utility Preservation** — Medical terminology allowlist prevents over-redaction of disease names, medications, and procedures. 99.7% clinical entity retention.
+Rust acceleration handles compute-intensive operations. Typical clinical notes process in under 10ms. Streaming support enables real-time dictation workflows.
+
+**Air-Gapped Operation**
+
+No cloud dependencies. All processing runs locally.
+
+**Auditability**
+
+No black-box ML for PHI detection. Fully inspectable TypeScript + Rust with deterministic rule-based detection. Trust bundles provide tamper-evident provenance.
+
+**Clinical Utility Preservation**
+
+Medical terminology allowlist prevents over-redaction of disease names, medications, and procedures. 99.7% clinical entity retention.
+
+</td></tr>
+</table>
 
 ## Installation
 
@@ -242,12 +262,12 @@ Eleven Rust accelerators handle text processing: phonetic matching, tokenization
 
 ### Advanced Capabilities
 
-- **DFA Multi-Pattern Scanning** — O(n) single-pass detection of 50+ identifier patterns
-- **WebGPU Batch Processing** — GPU-accelerated batch redaction with automatic CPU fallback
-- **Auto-Calibration** — Automatic confidence threshold tuning from test data
-- **Clinical Context Detection** — Context-aware confidence boosting for medical documentation
-- **Supervision & Circuit Breakers** — Erlang-style fault tolerance for production deployments
-- **MCP Server** — Model Context Protocol integration for IDE and agent tooling
+- **DFA Multi-Pattern Scanning** - O(n) single-pass detection of 50+ identifier patterns
+- **WebGPU Batch Processing** - GPU-accelerated batch redaction with automatic CPU fallback
+- **Auto-Calibration** - Automatic confidence threshold tuning from test data
+- **Clinical Context Detection** - Context-aware confidence boosting for medical documentation
+- **Supervision & Circuit Breakers** - Erlang-style fault tolerance for production deployments
+- **MCP Server** - Model Context Protocol integration for IDE and agent tooling
 
 ### ONNX Runtime
 
