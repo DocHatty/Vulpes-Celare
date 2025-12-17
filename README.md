@@ -310,7 +310,7 @@ Vulpes Celare is **source-available** under an [Evaluation License](LICENSE-EVAL
 - Research and non-clinical experimentation
 - Academic publication and citation
 
-**Clinical use, commercial deployment, redistribution, or incorporation into revenue-generating systems is available under a separate commercial agreement.**
+**For intended clinical use, commercial deployment, redistribution, or incorporation into revenue-generating systems, interested parties should refer to separate commercial agreement, with any further inquiries welcome to the author's project email, seperated detailed below.**
 
 ### Commercial & Strategic Partnerships
 
