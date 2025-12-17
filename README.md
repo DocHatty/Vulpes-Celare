@@ -1,7 +1,7 @@
 # VULPES CELARE
 
 <p align="center">
-<b>Source-Available</b> · Evaluation License · <a href="#license--commercial-use">Commercial discussions welcomed</a>
+<b>Source-Available</b> · Evaluation License · <a href="#license--commercial-use"> Discussion, Research and Collaboration welcomed</a>
 </p>
 
 <p align="center">
