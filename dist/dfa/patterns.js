@@ -327,7 +327,6 @@ exports.ZIPCODE_PATTERNS = [
 // ═══════════════════════════════════════════════════════════════════════════
 // ALL PATTERNS COMBINED
 // ═══════════════════════════════════════════════════════════════════════════
-// NOTE: NPI and DEA patterns removed - these are provider identifiers, not patient PHI
 exports.ALL_PATTERNS = [
     ...exports.SSN_PATTERNS,
     ...exports.PHONE_PATTERNS,
@@ -388,7 +387,6 @@ function validateIPv4(ip) {
     // Reject private/reserved ranges? (optional - currently allowing all valid IPs)
     return true;
 }
-// NOTE: validateNPI and validateDEA removed - these are provider identifiers, not patient PHI
 // ═══════════════════════════════════════════════════════════════════════════
 // PATTERN STATISTICS
 // ═══════════════════════════════════════════════════════════════════════════

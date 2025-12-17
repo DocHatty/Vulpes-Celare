@@ -49,7 +49,7 @@ These are opt-in until they are fully validated across evaluation suites:
 - `VULPES_SHADOW_RUST_NAME_SMART=1`: runs the Rust SmartName scanner in parallel and records a diff summary in the execution report (no behavior change).
 - `VULPES_STREAM_KERNEL=1`: uses the Rust streaming buffer kernel inside `src/StreamingRedactor.ts` (incremental boundary tracking + overlap buffering; TS still runs full redaction on emitted segments).
 - `VulpesStreamingIdentifierScanner` (Rust): stateful rolling-window identifier scanner for streams (no env flag; use via `src/utils/RustStreamingIdentifierScanner.ts`).
-- `VULPES_SCAN_ACCEL=1`: uses the Rust multi-identifier scan kernel for regex-heavy identifier filters (EMAIL/URL/IP/PHONE/SSN/DATE/MRN/DEA/CREDITCARD/ACCOUNT/LICENSE/PASSPORT/HEALTHPLAN/FAX/ZIPCODE/NPI/ADDRESS/VEHICLE/DEVICE/UNIQUE_ID) while keeping the filter orchestration in TS.
+- `VULPES_SCAN_ACCEL=1`: uses the Rust multi-identifier scan kernel for regex-heavy identifier filters (EMAIL/URL/IP/PHONE/SSN/DATE/MRN/CREDITCARD/ACCOUNT/LICENSE/PASSPORT/HEALTHPLAN/FAX/ZIPCODE/ADDRESS/VEHICLE/DEVICE) while keeping the filter orchestration in TS.
 - `VULPES_POSTFILTER_ACCEL=1`: enables Rust post-filter decisions in `src/core/filters/PostFilterService.ts` (false-positive pruning).
 - `VULPES_SHADOW_POSTFILTER=1`: runs Rust + TS post-filtering in parallel and records a diff summary in the execution report (no behavior change).
 

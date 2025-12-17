@@ -943,7 +943,7 @@ export class CLI {
 
         CHIEF COMPLAINT: Patient presents with recurring headaches.
 
-        HISTORY: The patient was previously seen by Dr. Robert Johnson (NPI: 1234567890)
+        HISTORY: The patient was previously seen by Dr. Robert Johnson
         at Springfield General Hospital. Email correspondence: mthompson@email.com
 
         Insurance: BlueCross BlueShield, Policy #: BCBS-2024-123456
@@ -962,7 +962,7 @@ export class CLI {
         Address: 1234 Medical Center Drive, Suite 100, Healthcare City, CA 90210
 
         The patient was admitted on 01/15/2024 with complaints of chest pain.
-        Attending physician: Dr. Smith (NPI: 1234567890)
+        Attending physician: Dr. Smith
 
         DIAGNOSIS: Acute myocardial infarction, NSTEMI
         PROCEDURES: Cardiac catheterization, stent placement

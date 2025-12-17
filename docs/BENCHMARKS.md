@@ -49,13 +49,12 @@ Microsoft Presidio is the industry-standard open-source PII detection library. W
 | PHONE | 99.9% | 98.4% | 99.7% | 97.1% |
 | EMAIL | 100.0% | 99.9% | 100.0% | 99.8% |
 | MRN | 99.4% | 76.2% | 98.9% | 82.4% |
-| NPI | 99.8% | 84.5% | 99.6% | 91.2% |
 
 ### Analysis
 
 **Where Vulpes Celare outperforms Presidio:**
 
-1. **Medical-specific identifiers** (MRN, NPI, DEA): Presidio is general-purpose; Vulpes has healthcare-specific patterns.
+1. **Medical-specific identifiers** (MRN): Presidio is general-purpose; Vulpes has healthcare-specific patterns.
 
 2. **Name detection**: Phonetic matching catches misspellings. Context scoring reduces false positives on drug names that look like names (Flomax, Prozac).
 

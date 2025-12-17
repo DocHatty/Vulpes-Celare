@@ -76,8 +76,6 @@ All Rust accelerators are enabled by default when the native addon is available.
 #### Medical Identifier Filters
 - MRNFilter
 - AccountNumberFilter
-- DEANumberFilter
-- NPIFilterSpan
 - PassportNumberFilter
 - HealthPlanNumberFilter
 

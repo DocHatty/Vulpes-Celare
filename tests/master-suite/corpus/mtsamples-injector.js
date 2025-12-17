@@ -20,8 +20,6 @@ const {
   generateDate,
   generateDOB,
   generateAddress,
-  generateNPI,
-  generateDEA,
   generateIP,
   generateURL,
   generateCreditCard,
@@ -215,9 +213,6 @@ function generatePHI(type, subtype, errorLevel) {
     case "HEALTH_PLAN_ID":
       value = generateHealthPlanID();
       break;
-      
-    // Note: NPI and DEA are provider identifiers, NOT patient PHI under HIPAA Safe Harbor
-    // They are intentionally not generated as PHI for testing purposes
       
     case "IP":
       value = generateIP();

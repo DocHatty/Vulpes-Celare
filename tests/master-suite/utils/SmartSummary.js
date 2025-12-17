@@ -350,8 +350,7 @@ ${'─'.repeat(60)}`;
       'NAME': 'Review SmartNameFilterSpan.ts - Add missing patterns or dictionary entries',
       'DATE': 'Check DateFilterSpan.ts - Add OCR-tolerant date patterns',
       'SSN': 'Review SSNFilterSpan.ts - Check for format variations',
-      'MRN': 'Update MRNFilterSpan.ts - Add hospital-specific patterns',
-      'DEA': 'Check DEAFilterSpan.ts - Validate DEA number regex'
+      'MRN': 'Update MRNFilterSpan.ts - Add hospital-specific patterns'
     };
 
     return suggestions[type] || `Review ${type} filter patterns`;

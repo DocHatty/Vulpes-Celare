@@ -61,12 +61,7 @@ class FilterRegistry {
         RadiologyLogger_1.RadiologyLogger.loading("REDACTION", "Loading Span-based filters for parallel execution...");
         try {
             // Load all Span-based filters
-            const [{ EmailFilterSpan }, { PhoneFilterSpan }, { SSNFilterSpan }, { DateFilterSpan }, { URLFilterSpan }, { IPAddressFilterSpan }, { CreditCardFilterSpan }, { ZipCodeFilterSpan }, { AddressFilterSpan }, { MRNFilterSpan }, { AccountNumberFilterSpan }, { LicenseNumberFilterSpan }, { HealthPlanNumberFilterSpan }, { TitledNameFilterSpan }, { FamilyNameFilterSpan }, { FormattedNameFilterSpan }, { SmartNameFilterSpan }, { FaxNumberFilterSpan }, { VehicleIdentifierFilterSpan }, { DeviceIdentifierFilterSpan }, { BiometricContextFilterSpan }, { PassportNumberFilterSpan }, { AgeFilterSpan },
-            // REMOVED FILTERS:
-            // - NPIFilterSpan: Provider identifier, not patient PHI
-            // - DEAFilterSpan: Provider identifier, not patient PHI
-            // - UniqueIdentifierFilterSpan: Gym/airline/loyalty - not medical PHI
-            ] = await Promise.all([
+            const [{ EmailFilterSpan }, { PhoneFilterSpan }, { SSNFilterSpan }, { DateFilterSpan }, { URLFilterSpan }, { IPAddressFilterSpan }, { CreditCardFilterSpan }, { ZipCodeFilterSpan }, { AddressFilterSpan }, { MRNFilterSpan }, { AccountNumberFilterSpan }, { LicenseNumberFilterSpan }, { HealthPlanNumberFilterSpan }, { TitledNameFilterSpan }, { FamilyNameFilterSpan }, { FormattedNameFilterSpan }, { SmartNameFilterSpan }, { FaxNumberFilterSpan }, { VehicleIdentifierFilterSpan }, { DeviceIdentifierFilterSpan }, { BiometricContextFilterSpan }, { PassportNumberFilterSpan }, { AgeFilterSpan },] = await Promise.all([
                 Promise.resolve().then(() => __importStar(require("./EmailFilterSpan"))),
                 Promise.resolve().then(() => __importStar(require("./PhoneFilterSpan"))),
                 Promise.resolve().then(() => __importStar(require("./SSNFilterSpan"))),

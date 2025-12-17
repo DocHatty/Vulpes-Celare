@@ -154,7 +154,7 @@ High-performance O(n) pattern matching:
 
 - `MultiPatternScanner.ts` — Deterministic finite automaton for 50+ identifier patterns
 - Single-pass scanning regardless of pattern count
-- Patterns: SSN, phone, email, date, MRN, credit card, IP, ZIP, NPI, DEA
+- Patterns: SSN, phone, email, date, MRN, credit card, IP, ZIP
 
 ### GPU Batch Processing (`src/gpu/`)
 

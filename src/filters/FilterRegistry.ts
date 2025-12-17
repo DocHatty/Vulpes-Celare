@@ -60,10 +60,7 @@ export class FilterRegistry {
         { BiometricContextFilterSpan },
         { PassportNumberFilterSpan },
         { AgeFilterSpan },
-        // REMOVED FILTERS:
-        // - NPIFilterSpan: Provider identifier, not patient PHI
-        // - DEAFilterSpan: Provider identifier, not patient PHI
-        // - UniqueIdentifierFilterSpan: Gym/airline/loyalty - not medical PHI
+
       ] = await Promise.all([
         import("./EmailFilterSpan"),
         import("./PhoneFilterSpan"),

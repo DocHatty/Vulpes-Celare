@@ -154,8 +154,6 @@ class ValidationUtils {
         const testPrefixes = ["4532", "4556", "5425", "2221", "3782", "6011"];
         return testPrefixes.some((prefix) => digits.startsWith(prefix));
     }
-    // NOTE: DEA validation is handled by DEAFilterSpan.isValidDEA()
-    // See src/filters/DEAFilterSpan.ts for the authoritative implementation
     // =========================================================================
     // PHONE NUMBER VALIDATION
     // =========================================================================

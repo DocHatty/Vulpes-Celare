@@ -40,8 +40,6 @@ const {
   generateDate,
   generateDOB,
   generateAddress,
-  generateNPI,
-  generateDEA,
   generateIP,
   generateURL,
   generateCreditCard,
@@ -147,18 +145,6 @@ function generateCompletePHIDataset(errorLevel = "medium") {
   const scrubNurseData = generateProviderName("first_last_suffix", "none");
   const circNurseData = generateProviderName("first_last_suffix", "none");
   const registrarData = generateProviderName("first_last_suffix", "none");
-
-  // ========================================
-  // PROVIDER IDENTIFIERS (PHI if patient-specific context)
-  // ========================================
-  const attendingNpi = generateNPI();
-  const pcpNpi = generateNPI();
-  const surgeonNpi = generateNPI();
-  const surgeonDea = generateDEA();
-  const pathologistNpi = generateNPI();
-  const referringNpi = generateNPI();
-  const hospitalNpi = generateNPI();
-  const pharmacyNpi = generateNPI();
 
   // ========================================
   // INSURANCE IDENTIFIERS
@@ -317,9 +303,7 @@ function generateCompletePHIDataset(errorLevel = "medium") {
 
     // Providers (NOT PHI)
     attendingName: attendingNameData.formatted,
-    attendingNpi,
     pcpName: pcpNameData.formatted,
-    pcpNpi,
     pcpPhone: generatePhone(false),
     pcpFax,
     pcpPractice: random([
@@ -329,18 +313,14 @@ function generateCompletePHIDataset(errorLevel = "medium") {
     ]),
     pcpAddress: generateAddress(false).full,
     surgeonName: surgeonNameData.formatted,
-    surgeonNpi,
-    surgeonDea,
     assistantName: assistantNameData.formatted,
     anesthesiologistName: anesthesiologistNameData.formatted,
     pathologistName: pathologistNameData.formatted,
-    pathologistNpi,
     scrubNurseName: scrubNurseData.formatted,
     circNurseName: circNurseData.formatted,
     registrarName: registrarData.formatted,
     employeeId: `EMP-${randomInt(10000, 99999)}`,
     referringName: referringNameData.formatted,
-    referringNpi,
     referringPhone: generatePhone(false),
     referringPractice: random([
       "Specialty Associates",
@@ -353,11 +333,9 @@ function generateCompletePHIDataset(errorLevel = "medium") {
     hospital,
     hospitalPhone,
     hospitalFax,
-    hospitalNpi,
     providerTaxId,
     pharmacyPhone,
     pharmacyAddress: generateAddress(false).full,
-    pharmacyNpi,
 
     // Medical Content (NOT PHI)
     specialty,
@@ -467,9 +445,6 @@ function generateCompletePHIDataset(errorLevel = "medium") {
       // Vehicle
       { type: "VIN", value: vin, source: "vin" },
       { type: "LICENSE_PLATE", value: licensePlate, source: "license_plate" },
-
-      // Note: NPI and DEA are provider identifiers, NOT patient PHI under HIPAA Safe Harbor
-      // They are NOT included in _groundTruthPHI and should NOT be redacted
     ],
 
     // ========================================

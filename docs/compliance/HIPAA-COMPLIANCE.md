@@ -46,7 +46,7 @@ The Safe Harbor method requires removal of the following 18 identifiers. **Vulpe
 | 15 | **IP addresses** | ✅ IPv4 and IPv6 detection | `IPAddressFilterSpan` |
 | 16 | **Biometric identifiers** | ✅ Context-based detection + Vision | `BiometricContextFilterSpan` + Rust UltraFace |
 | 17 | **Full-face photographs** | ✅ Rust vision module | UltraFace detection (`src/rust/src/vision/face.rs`) |
-| 18 | **Any other unique identifying number** | ✅ Pattern-based detection | `UniqueIdentifierFilterSpan`, `NPIFilterSpan`, `PassportNumberFilterSpan`, `CreditCardFilterSpan`, `DeviceIdentifierFilterSpan` |
+| 18 | **Any other unique identifying number** | ✅ Pattern-based detection | `PassportNumberFilterSpan`, `CreditCardFilterSpan`, `DeviceIdentifierFilterSpan` |
 
 ### Extended Coverage (Beyond HIPAA 18)
 
@@ -54,8 +54,6 @@ Vulpes Celare provides additional filters for comprehensive protection:
 
 | Extended Type | Filter | Description |
 |--------------|--------|-------------|
-| NPI | `NPIFilterSpan` | National Provider Identifiers |
-| DEA | `DEAFilterSpan` | Drug Enforcement Administration numbers |
 | VIN | `VehicleIdentifierFilterSpan` | Vehicle Identification Numbers |
 | LICENSE_PLATE | `VehicleIdentifierFilterSpan` | License plate numbers |
 | CREDIT_CARD | `CreditCardFilterSpan` | Financial card numbers |

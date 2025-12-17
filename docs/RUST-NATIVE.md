@@ -142,7 +142,7 @@ VulpesNameScanner::detect_smart(text) -> Vec<Detection>
 scan_all_identifiers(text) -> Vec<IdentifierDetection>
 ```
 - Single-pass detection of 50+ identifier patterns
-- Types: SSN, MRN, NPI, DEA, phone, email, credit card, etc.
+- Types: SSN, MRN, phone, email, credit card, etc.
 - Wiring: `src/utils/RustScanKernel.ts`
 
 ### Streaming (`src/rust/src/streaming.rs`, `name_stream.rs`, `scan_stream.rs`)

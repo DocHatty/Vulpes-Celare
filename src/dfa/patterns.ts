@@ -351,8 +351,6 @@ export const ZIPCODE_PATTERNS: PatternDef[] = [
 // ALL PATTERNS COMBINED
 // ═══════════════════════════════════════════════════════════════════════════
 
-// NOTE: NPI and DEA patterns removed - these are provider identifiers, not patient PHI
-
 export const ALL_PATTERNS: PatternDef[] = [
   ...SSN_PATTERNS,
   ...PHONE_PATTERNS,
@@ -421,8 +419,6 @@ function validateIPv4(ip: string): boolean {
   // Reject private/reserved ranges? (optional - currently allowing all valid IPs)
   return true;
 }
-
-// NOTE: validateNPI and validateDEA removed - these are provider identifiers, not patient PHI
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PATTERN STATISTICS

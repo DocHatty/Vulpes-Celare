@@ -280,24 +280,6 @@ function generateAddress(applyErr = true, errorLevel = "medium") {
 }
 
 /**
- * Generate NPI (National Provider Identifier)
- */
-function generateNPI() {
-  return String(randomInt(1000000000, 9999999999));
-}
-
-/**
- * Generate DEA number
- */
-function generateDEA() {
-  const letters = "ABCDEFGHJKLMNPRSTUVWXYZ";
-  const prefix =
-    letters[randomInt(0, letters.length - 1)] +
-    letters[randomInt(0, letters.length - 1)];
-  return prefix + String(randomInt(1000000, 9999999));
-}
-
-/**
  * Generate IP address
  */
 function generateIP() {
@@ -450,8 +432,6 @@ module.exports = {
   generateDate,
   generateDOB,
   generateAddress,
-  generateNPI,
-  generateDEA,
   generateIP,
   generateURL,
   generateCreditCard,

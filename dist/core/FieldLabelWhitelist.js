@@ -759,7 +759,6 @@ class FieldLabelWhitelist {
         "ACCOUNT",
         "CREDIT_CARD",
         "CREDITCARD",
-        "NPI",
         "LICENSE",
         "PASSPORT",
         "DEVICE",

@@ -292,7 +292,6 @@ Attending Physician: ${phi.attendingName}
 Date/Time:          ${phi.admitDate}
 
 Electronically signed by: ${phi.attendingName}
-NPI: ${phi.attendingNpi}
 ════════════════════════════════════════════════════════════════════════════════
                          CONFIDENTIAL PATIENT INFORMATION
            This document contains Protected Health Information (PHI)
@@ -328,8 +327,6 @@ SURGICAL TEAM
 ══════════════════════════════════════════════════════════════════════════════
 
 Primary Surgeon:        ${phi.surgeonName}
-                        NPI: ${phi.surgeonNpi}
-                        DEA: ${phi.surgeonDea}
 
 First Assistant:        ${phi.assistantName}
 Anesthesiologist:       ${phi.anesthesiologistName}
@@ -594,7 +591,6 @@ SECTION 8: PRIMARY CARE PROVIDER
 
 PCP Name:                            ${phi.pcpName}
 Practice Name:                       ${phi.pcpPractice || "Primary Care Associates"}
-NPI:                                 ${phi.pcpNpi}
 Phone:                               ${phi.pcpPhone}
 Fax:                                 ${phi.pcpFax}
 Address:                             ${phi.pcpAddress || "On file"}
@@ -604,7 +600,6 @@ SECTION 9: REFERRING PROVIDER (if applicable)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Referring Provider Name:             ${phi.referringName || "Self-referral"}
-NPI:                                 ${phi.referringNpi || "N/A"}
 Phone:                               ${phi.referringPhone || "N/A"}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -614,7 +609,6 @@ SECTION 10: PHARMACY INFORMATION
 Preferred Pharmacy:                  ${random(["CVS", "Walgreens", "Rite Aid", "Walmart", "Kroger"])}
 Pharmacy Phone:                      ${phi.pharmacyPhone}
 Pharmacy Address:                    ${phi.pharmacyAddress || "On file"}
-NPI:                                 ${phi.pharmacyNpi || "N/A"}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SECTION 11: CONSENT AND SIGNATURES
@@ -717,7 +711,6 @@ ${phi.hospital}
 
 Phone: ${phi.hospitalPhone}
 Fax: ${phi.hospitalFax}
-NPI: ${phi.attendingNpi}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 cc: ${phi.pcpName}, Primary Care Provider
@@ -761,7 +754,6 @@ Date of Collection:      ${phi.surgeryDate1}
 Date Received:           ${phi.surgeryDate1}
 Date of Report:          ${phi.admitDate}
 Requesting Physician:    ${phi.surgeonName}
-                         NPI: ${phi.surgeonNpi}
 
 CLINICAL HISTORY
 ══════════════════════════════════════════════════════════════════════════════
@@ -844,8 +836,6 @@ Immunohistochemistry (performed on block A3):
 This report was electronically signed by:
 ${phi.pathologistName}
 Board Certified Anatomic and Clinical Pathology
-
-NPI: ${phi.pathologistNpi}
 Date: ${phi.admitDate}
 
 ══════════════════════════════════════════════════════════════════════════════
@@ -891,10 +881,8 @@ PROVIDER INFORMATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Provider Name:           ${phi.attendingName}
-Provider NPI:            ${phi.attendingNpi}
 Provider Tax ID:         ${phi.providerTaxId}
 Facility:                ${phi.hospital}
-Facility NPI:            ${phi.hospitalNpi}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CLAIM DETAILS

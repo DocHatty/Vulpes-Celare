@@ -303,17 +303,6 @@ class PatternRecognizer {
           });
         }
         break;
-
-      case "DEA":
-        // DEA numbers have specific format: 2 letters + 7 digits
-        if (!/^[A-Za-z]{2}\d{7}$/.test(value.replace(/\s/g, ""))) {
-          patterns.push({
-            type: "FORMAT_VARIATION",
-            confidence: 0.8,
-            evidence: `Non-standard DEA format: "${value}"`,
-          });
-        }
-        break;
     }
 
     return patterns;

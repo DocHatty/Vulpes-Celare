@@ -98,7 +98,7 @@ PHI never crosses the network boundary. The LLM receives only tokenized placehol
 
 **Healthcare-Specific Detection**
 
-28 filters targeting clinical documentation patterns. Coverage includes all 18 HIPAA Safe Harbor identifiers plus extended types (NPI, DEA, VIN). See [docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md](docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md) for the complete coverage matrix.
+21 filters targeting clinical documentation patterns. Coverage includes all 18 HIPAA Safe Harbor patient identifiers plus extended types (VIN, biometrics). See [docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md](docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md) for the complete coverage matrix.
 
 **Performance**
 

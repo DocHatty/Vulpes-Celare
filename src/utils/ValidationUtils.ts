@@ -172,9 +172,6 @@ export class ValidationUtils {
     return testPrefixes.some((prefix) => digits.startsWith(prefix));
   }
 
-  // NOTE: DEA validation is handled by DEAFilterSpan.isValidDEA()
-  // See src/filters/DEAFilterSpan.ts for the authoritative implementation
-
   // =========================================================================
   // PHONE NUMBER VALIDATION
   // =========================================================================

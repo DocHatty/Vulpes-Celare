@@ -30,7 +30,7 @@
  *
  * WHY THIS MATTERS:
  * - Can't improve what you don't understand
- * - Decision engine needs to know "we have a DEA filter but it's failing"
+ * - Decision engine needs to know which filters are working and which are failing
  * - Need to track "we added fuzzy matching to SSN filter" → "SSN detection improved"
  * - Must know current state to recommend next steps
  */
@@ -270,7 +270,6 @@ class CodebaseAnalyzer {
     if (typeMatch) return typeMatch[1];
 
     // Infer from filename
-    // Note: NPI and DEA removed - they are provider identifiers, not patient PHI
     const nameMap = {
       SSN: "SSN",
       Phone: "PHONE",

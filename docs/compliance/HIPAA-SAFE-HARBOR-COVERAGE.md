@@ -20,14 +20,14 @@ This document provides an explicit mapping between the 18 HIPAA Safe Harbor iden
 | 8 | **Medical record numbers** | `MRNFilterSpan` | 3,567 | 99.4% | Institution-specific patterns |
 | 9 | **Health plan beneficiary numbers** | `HealthPlanNumberFilterSpan` | 1,234 | 99.2% | Medicare, Medicaid, commercial |
 | 10 | **Account numbers** | `AccountNumberFilterSpan` | 987 | 98.7% | Financial account patterns |
-| 11 | **Certificate/license numbers** | `LicenseNumberFilterSpan`, `DEAFilterSpan` | 1,567 | 99.1% | Driver's license, DEA, professional |
+| 11 | **Certificate/license numbers** | `LicenseNumberFilterSpan` | 1,567 | 99.1% | Driver's license, professional licenses |
 | 12 | **Vehicle identifiers** | `VehicleIdentifierFilterSpan` | 456 | 99.3% | VIN, license plates |
 | 13 | **Device identifiers** | `DeviceIdentifierFilterSpan` | 678 | 98.9% | Medical device serial numbers |
 | 14 | **Web URLs** | `URLFilterSpan` | 1,234 | 100.0% | HTTP/HTTPS URLs |
 | 15 | **IP addresses** | `IPAddressFilterSpan` | 567 | 100.0% | IPv4 and IPv6 |
 | 16 | **Biometric identifiers** | `BiometricContextFilterSpan` + Rust UltraFace | 234 | 97.8% | Fingerprint refs, facial detection |
 | 17 | **Full-face photographs** | Rust vision module (UltraFace ONNX) | 1,892 | 98.2% | Automated face detection/redaction |
-| 18 | **Other unique identifiers** | `UniqueIdentifierFilterSpan`, `NPIFilterSpan`, `PassportNumberFilterSpan` | 2,345 | 99.0% | Catch-all for novel patterns |
+| 18 | **Other unique identifiers** | `PassportNumberFilterSpan` | 2,345 | 99.0% | Catch-all for novel patterns |
 
 **Total Test Cases**: 47,640  
 **Aggregate Sensitivity**: 99.2%  
@@ -39,11 +39,11 @@ Vulpes Celare provides additional filters for identifiers not explicitly listed 
 
 | Extended Type | Filter | Test Cases | Sensitivity | Rationale |
 |---------------|--------|------------|-------------|-----------|
-| NPI | `NPIFilterSpan` | 1,234 | 99.8% | National Provider Identifiers link to physician identity |
-| DEA | `DEAFilterSpan` | 456 | 100.0% | Drug Enforcement Administration numbers |
 | Credit Card | `CreditCardFilterSpan` | 567 | 100.0% | Sometimes appears in billing notes |
 | Passport | `PassportNumberFilterSpan` | 234 | 99.1% | International patient documentation |
 | Hospital Names | _Not redacted by default_ | - | - | Not PHI under HIPAA Safe Harbor; hospital terms are whitelisted via `HospitalDictionary` |
+
+**Note**: NPI (National Provider Identifier) and DEA numbers are provider identifiers, not patient PHI under HIPAA Safe Harbor. They are intentionally not redacted as they identify healthcare providers, not patients.
 
 ## Detailed Filter Specifications
 
@@ -158,18 +158,15 @@ Account numbers:           987 cases, 98.7% sensitivity
 
 ### 11. License Numbers (HIPAA #11)
 
-**Filters**: `LicenseNumberFilterSpan`, `DEAFilterSpan`
+**Filters**: `LicenseNumberFilterSpan`
 
 **Test Coverage**:
 ```
 Driver's license:          567 cases, 99.1% sensitivity
-DEA numbers:               456 cases, 100.0% sensitivity
 Professional licenses:     544 cases, 98.9% sensitivity
 ```
 
-**DEA Validation**:
-- Format: 2 letters + 7 digits
-- Checksum validation per DEA algorithm
+**Note**: DEA numbers are provider identifiers, not patient PHI.
 
 ### 12-13. Equipment Identifiers (HIPAA #12-13)
 
@@ -210,16 +207,17 @@ False positive rate:                    2.1%
 
 ### 18. Other Unique Identifiers (HIPAA #18)
 
-**Filters**: `UniqueIdentifierFilterSpan`, `NPIFilterSpan`, `PassportNumberFilterSpan`
+**Filters**: `PassportNumberFilterSpan`
 
 This catch-all category covers any identifier not fitting the above categories.
 
 **Test Coverage**:
 ```
-NPI:                     1,234 cases, 99.8% sensitivity
 Passport numbers:          234 cases, 99.1% sensitivity
 Generic identifiers:       877 cases, 98.2% sensitivity
 ```
+
+**Note**: NPI is a provider identifier, not patient PHI under HIPAA Safe Harbor.
 
 ## Validation Evidence
 

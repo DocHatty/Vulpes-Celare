@@ -789,33 +789,16 @@ static LICENSE_PATTERNS: Lazy<Vec<(Regex, Option<usize>, &'static str)>> = Lazy:
             "State license format",
         ),
         (
-            Regex::new(r"(?i)\b(?:Medical|Nursing|Professional|RN|MD|NP|PA|DEA)\s+(?:License|Lic|Number|#)\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,19})\b")
+            Regex::new(r"(?i)\b(?:Medical|Nursing|Professional|RN|MD|NP|PA)\s+(?:License|Lic|Number|#)\s*[#:]?\s*([A-Z0-9][A-Z0-9-]{4,19})\b")
                 .expect("invalid LICENSE professional"),
             Some(1),
             "Professional license",
-        ),
-        (
-            Regex::new(r"(?i)\b(?:NPI)(?:\s+(?:Number|No|#))?\s*[#:]?\s*([0-9]{10})\b")
-                .expect("invalid LICENSE NPI"),
-            Some(1),
-            "NPI number",
         ),
         (
             Regex::new(r"(?i)\b(?:License|Lic)(?:\s+(?:Number|No))?\s*[#:]\s*([A-Z0-9][A-Z0-9-]{5,19})\b")
                 .expect("invalid LICENSE generic"),
             Some(1),
             "Generic license",
-        ),
-        (
-            Regex::new(r"(?i)\bDEA(?:\s+(?:License|Lic|Number|No|#))?\s*[#:]?\s*([ABFGMPRX][A-Z][0-9]{7})\b")
-                .expect("invalid LICENSE DEA labeled"),
-            Some(1),
-            "DEA number",
-        ),
-        (
-            Regex::new(r"\b([ABFGMPRX][A-Z][0-9]{7})\b").expect("invalid LICENSE DEA standalone"),
-            Some(1),
-            "Standalone DEA number",
         ),
         (
             Regex::new(r"(?i)\b((?:RN|LPN|LVN|APRN|NP|CNS|CNM|CRNA|CNA|MD|DO|PA|MBBS|RPH|PHARMD|PT|PTA|OT|OTA|SLP|RT|RRT|LCSW|LMFT|LPC|LPCC|LMHC|PSYD|DDS|DMD|RDH|DC|DPM|OD|AUD)[-#]?\d{5,10})\b")
@@ -1913,11 +1896,6 @@ pub fn scan_all_identifiers(text: String) -> Vec<IdentifierDetection> {
                 let end = byte_to_utf16(&source_map, m.end());
                 let key = ((start as u64) << 32) | (end as u64);
                 if phone_seen.contains(&key) {
-                    continue;
-                }
-
-                // Skip if preceding label indicates this is an NPI
-                if is_npi_label_before(source, m.start()) {
                     continue;
                 }
 

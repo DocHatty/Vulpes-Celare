@@ -302,7 +302,7 @@ function typeMatches(detected: string, expected: string): boolean {
   const hierarchy: Record<string, string[]> = {
     'NAME': ['PATIENT_NAME', 'DOCTOR_NAME', 'FAMILY_NAME'],
     'DATE': ['DOB', 'ADMISSION_DATE', 'DISCHARGE_DATE'],
-    'IDENTIFIER': ['SSN', 'MRN', 'NPI', 'DEA']
+    'IDENTIFIER': ['SSN', 'MRN']
   };
   
   for (const [parent, children] of Object.entries(hierarchy)) {

@@ -72,7 +72,6 @@ The system detects these HIPAA Safe Harbor identifiers:
 | **Email** | Email addresses |
 | **Addresses** | Street, city, state, ZIP |
 | **MRN** | Medical Record Numbers |
-| **NPI** | National Provider Identifiers |
 | **Health Plan IDs** | Insurance identifiers |
 | **Account Numbers** | Financial account numbers |
 | **URLs/IPs** | Web addresses, IP addresses |

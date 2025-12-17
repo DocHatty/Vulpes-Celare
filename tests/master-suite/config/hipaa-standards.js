@@ -152,10 +152,7 @@ module.exports = {
       includes: [
         "drivers_license"
       ],
-      // Note: NPI and DEA are provider identifiers, NOT patient PHI under HIPAA Safe Harbor
       excludes: [
-        "npi",
-        "dea_number",
         "professional_license",
         "nursing_license",
         "medical_license"
@@ -230,9 +227,7 @@ module.exports = {
         "military_id",
         "unique_barcodes",
         "qr_codes_with_phi"
-      ],
-      // Note: NPI and DEA are provider identifiers, NOT patient PHI
-      excludes: ["npi", "dea"]
+      ]
     }
   },
 

@@ -1263,11 +1263,17 @@
       "timestamp": "2025-12-17T13:50:54.302Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765980892651",
+      "timestamp": "2025-12-17T14:14:52.651Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 211,
+    "total": 212,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 210
+    "noHistoryFound": 211
   }
 }

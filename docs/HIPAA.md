@@ -28,7 +28,7 @@
 | 8 | **MRN** | Medical Record Numbers |
 | 9 | **Health Plan IDs** | Member/beneficiary numbers |
 | 10 | **Account Numbers** | Financial accounts |
-| 11 | **Licenses** | Driver's license, professional licenses, DEA |
+| 11 | **Licenses** | Driver's license, professional licenses |
 | 12 | **Vehicle IDs** | VINs, license plates |
 | 13 | **Device IDs** | Implant IDs, serial numbers |
 | 14 | **URLs** | Patient portal URLs |
