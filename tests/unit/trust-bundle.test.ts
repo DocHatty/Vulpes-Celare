@@ -30,7 +30,6 @@ Assessment: Possible angina, rule out MI.
 Plan: EKG, cardiac enzymes, cardiology consult.
 
 Dr. Sarah Johnson
-NPI: 1234567890
 `;
 
 describe("TrustBundleExporter", () => {

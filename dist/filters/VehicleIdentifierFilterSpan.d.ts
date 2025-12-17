@@ -4,12 +4,10 @@
  * Detects and redacts vehicle identifiers per HIPAA requirement #12:
  * - Vehicle Identification Numbers (VINs): 17-character alphanumeric
  * - License plate numbers with context
- * - GPS coordinates (latitude/longitude)
- * - Workstation IDs (medical equipment identifiers)
- * - IPv6 addresses
  *
- * Production-grade with validation to avoid false positives
- * Parallel-execution ready.
+ * Simplified to focus on core HIPAA-required vehicle identifiers only.
+ * GPS coordinates, IPv6, and workstation IDs are handled by other filters
+ * or are not patient PHI under HIPAA Safe Harbor.
  *
  * @module filters
  */
@@ -42,48 +40,6 @@ export declare class VehicleIdentifierFilterSpan extends SpanBasedFilter {
      */
     private isVitalSignContext;
     /**
-     * Pattern 5: GPS Coordinates (Decimal Degrees)
-     */
-    private detectGPSCoordinates;
-    /**
-     * Pattern 6: IPv6 Addresses (full and compressed)
-     */
-    private detectIPv6Addresses;
-    /**
-     * Pattern 7: Workstation IDs (explicit format)
-     */
-    private detectExplicitWorkstationIDs;
-    /**
-     * Pattern 8: Workstation IDs with context
-     */
-    private detectContextualWorkstationIDs;
-    /**
-     * Common vehicle makes for pattern matching
-     */
-    private static readonly VEHICLE_MAKES;
-    /**
-     * Common vehicle model names (partial list for validation)
-     */
-    private static readonly COMMON_MODELS;
-    /**
-     * Pattern 9: Vehicle Make/Model/Year combinations
-     * Detects: "2019 Toyota Camry", "Toyota Camry 2019", "19 Ford F-150"
-     */
-    private detectVehicleMakeModelYear;
-    /**
-     * Pattern 10: Vehicle descriptions with context
-     * Detects vehicle mentions with explicit labels like "patient's vehicle", "drives a", etc.
-     */
-    private detectVehicleDescriptions;
-    /**
-     * Check if the match appears in vehicle-related context
-     */
-    private hasVehicleContext;
-    /**
-     * Validate that a string looks like a vehicle description
-     */
-    private isValidVehicleDescription;
-    /**
      * Validation Methods
      */
     /**
@@ -97,13 +53,5 @@ export declare class VehicleIdentifierFilterSpan extends SpanBasedFilter {
      * Validate license plate format
      */
     private isValidLicensePlate;
-    /**
-     * Validate GPS coordinates
-     */
-    private isValidGPSCoordinate;
-    /**
-     * Validate IPv6 address
-     */
-    private isValidIPv6;
 }
 //# sourceMappingURL=VehicleIdentifierFilterSpan.d.ts.map

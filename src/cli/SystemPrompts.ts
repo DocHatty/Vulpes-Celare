@@ -58,7 +58,7 @@ export const CODEBASE_KNOWLEDGE = `## CODEBASE STRUCTURE
 | Test Runner | tests/master-suite/run.js |
 | Test Results | tests/results/verbose-*.log |
 
-### Filter Types (28 Total)
+### Filter Types (25 Total)
 - NAME: SmartNameFilterSpan.ts - Person names with dictionary + ML scoring
 - SSN: SSNFilterSpan.ts - Social Security Numbers
 - DATE: DateFilterSpan.ts - Dates of birth, admission, etc.

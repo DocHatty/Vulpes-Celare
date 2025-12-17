@@ -228,12 +228,7 @@ fn phone_confidence(phone: &str) -> f64 {
     conf
 }
 
-fn is_npi_label_before(source: &str, byte_start: usize) -> bool {
-    let window_start = prev_char_boundary(source, byte_start.saturating_sub(20));
-    let byte_start = prev_char_boundary(source, byte_start);
-    let prefix = &source[window_start..byte_start];
-    prefix.to_ascii_lowercase().contains("npi")
-}
+
 
 // =============================================================================
 // SSN (ported patterns + permissive validation)
@@ -315,14 +310,6 @@ fn is_valid_ssn(ssn: &str) -> bool {
 }
 
 // =============================================================================
-// NPI (explicitly labeled)
-// =============================================================================
-
-static NPI_RE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?i)\bNPI(?:\s+(?:Number|No|#))?\s*[#:]*\s*([0-9]{10})\b").expect("invalid NPI_RE")
-});
-
-// =============================================================================
 // ZIP CODE
 // =============================================================================
 
@@ -396,55 +383,6 @@ static MRN_PATTERNS: Lazy<Vec<Regex>> = Lazy::new(|| {
 
 fn is_tokenized(full_match: &str) -> bool {
     full_match.contains("{{") || full_match.contains("}}")
-}
-
-// =============================================================================
-// DEA
-// =============================================================================
-
-static DEA_PATTERNS: Lazy<Vec<Regex>> = Lazy::new(|| {
-    let sources: Vec<&str> = vec![
-        r"\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}\d{7})\b",
-        r"\b([A-Z]{2}\d{7})\b",
-        r"\bDEA(?:\s+(?:Number|No|#))?\s*[:#]?\s*([A-Z]{2}[0-9OoIlBbSs]{7})\b",
-        r"\b([A-Z]{2}[0-9OoIlBbSs]{7})\b",
-        r"\bDEA\s*[:#-]?\s*([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b",
-        r"\b([A-Z]{2})[-\s]?([0-9OoIlBbSs]{2})[-\s]?([0-9OoIlBbSs]{5})\b",
-    ];
-
-    sources
-        .into_iter()
-        .map(|s| Regex::new(&format!("(?i){}", s)).expect("invalid DEA pattern"))
-        .collect()
-});
-
-fn normalize_dea_alnum(dea: &str) -> String {
-    dea.chars()
-        .filter(|c| c.is_ascii_alphanumeric())
-        .map(|c| c.to_ascii_uppercase())
-        .collect()
-}
-
-fn is_valid_dea(dea: &str) -> bool {
-    let normalized = normalize_dea_alnum(dea);
-    if normalized.len() != 9 {
-        return false;
-    }
-    let chars: Vec<char> = normalized.chars().collect();
-    if !chars[0].is_ascii_alphabetic() || !chars[1].is_ascii_alphabetic() {
-        return false;
-    }
-    let digits: String = chars[2..]
-        .iter()
-        .map(|c| match *c {
-            'O' => '0',
-            'I' | 'L' | '|' => '1',
-            'B' => '8',
-            'S' => '5',
-            other => other,
-        })
-        .collect();
-    digits.chars().all(|c| c.is_ascii_digit())
 }
 
 // =============================================================================
@@ -2037,20 +1975,6 @@ pub fn scan_all_identifiers(text: String) -> Vec<IdentifierDetection> {
         }
     }
 
-    // NPI (labeled)
-    for caps in NPI_RE.captures_iter(&text) {
-        if let Some(m) = caps.get(1) {
-            out.push(IdentifierDetection {
-                filter_type: "NPI".to_string(),
-                character_start: byte_to_utf16(&map, m.start()),
-                character_end: byte_to_utf16(&map, m.end()),
-                text: m.as_str().to_string(),
-                confidence: 0.95,
-                pattern: "Rust NPI".to_string(),
-            });
-        }
-    }
-
     // ZIPCODE (dedupe)
     let mut zip_seen: HashSet<u64> = HashSet::new();
     for re in ZIP_PATTERNS.iter() {
@@ -2137,43 +2061,6 @@ pub fn scan_all_identifiers(text: String) -> Vec<IdentifierDetection> {
                 text: m.as_str().to_string(),
                 confidence: 0.9,
                 pattern: "Rust MRN".to_string(),
-            });
-        }
-    }
-
-    // DEA
-    let mut dea_seen: HashSet<u64> = HashSet::new();
-    for re in DEA_PATTERNS.iter() {
-        for caps in re.captures_iter(&text) {
-            let full = caps.get(0).expect("DEA match missing group 0");
-
-            let (start_byte, end_byte) = if let (Some(g1), Some(g3)) = (caps.get(1), caps.get(3)) {
-                (g1.start(), g3.end())
-            } else if let Some(g1) = caps.get(1) {
-                (g1.start(), g1.end())
-            } else {
-                (full.start(), full.end())
-            };
-
-            let slice = &text[start_byte..end_byte];
-            if !is_valid_dea(slice) {
-                continue;
-            }
-
-            let start = byte_to_utf16(&map, start_byte);
-            let end = byte_to_utf16(&map, end_byte);
-            let key = ((start as u64) << 32) | (end as u64);
-            if dea_seen.contains(&key) {
-                continue;
-            }
-            dea_seen.insert(key);
-            out.push(IdentifierDetection {
-                filter_type: "DEA".to_string(),
-                character_start: start,
-                character_end: end,
-                text: slice.to_string(),
-                confidence: 0.95,
-                pattern: "Rust DEA".to_string(),
             });
         }
     }

@@ -468,14 +468,8 @@ function generateCompletePHIDataset(errorLevel = "medium") {
       { type: "VIN", value: vin, source: "vin" },
       { type: "LICENSE_PLATE", value: licensePlate, source: "license_plate" },
 
-      // NPIs in patient context
-      { type: "NPI", value: attendingNpi, source: "attending_npi" },
-      { type: "NPI", value: pcpNpi, source: "pcp_npi" },
-      { type: "NPI", value: surgeonNpi, source: "surgeon_npi" },
-      { type: "NPI", value: pathologistNpi, source: "pathologist_npi" },
-
-      // DEA
-      { type: "DEA", value: surgeonDea, source: "surgeon_dea" },
+      // Note: NPI and DEA are provider identifiers, NOT patient PHI under HIPAA Safe Harbor
+      // They are NOT included in _groundTruthPHI and should NOT be redacted
     ],
 
     // ========================================

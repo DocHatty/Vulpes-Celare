@@ -49,7 +49,6 @@ class PolicyCompiler {
         'professions', 'profession',
         'ids', 'id',
         'ages', 'age',
-        'npi',
         'credit_cards', 'credit_card',
         'accounts', 'account',
         'health_plan',
@@ -58,7 +57,6 @@ class PolicyCompiler {
         'vehicle',
         'device',
         'biometric',
-        'unique_id',
         'zip',
         'fax',
         'ip',
@@ -310,7 +308,6 @@ policy HIPAA_STRICT {
   redact urls
   redact ip
   redact biometric
-  redact unique_id
   redact ages where age > 89
 
   threshold 0.5

@@ -67,8 +67,6 @@ export class SpanFactory {
       [FilterType.SSN]: FilterPriority.SSN,
       [FilterType.CREDIT_CARD]: FilterPriority.CREDITCARD,
       [FilterType.MRN]: FilterPriority.MRN,
-      [FilterType.NPI]: FilterPriority.NPI,
-      [FilterType.DEA]: FilterPriority.MRN,
       [FilterType.DEVICE]: FilterPriority.DEVICE,
       [FilterType.ACCOUNT]: FilterPriority.ACCOUNT,
       [FilterType.LICENSE]: FilterPriority.LICENSE,

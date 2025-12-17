@@ -258,8 +258,6 @@ export class CalibrationDataExtractor {
       URL: FilterType.URL,
       CREDIT_CARD: FilterType.CREDIT_CARD,
       ACCOUNT: FilterType.ACCOUNT,
-      NPI: FilterType.NPI,
-      DEA: FilterType.DEA,
       LICENSE: FilterType.LICENSE,
       PASSPORT: FilterType.PASSPORT,
       FAX: FilterType.FAX,

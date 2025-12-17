@@ -471,7 +471,6 @@ static HIGH_PRECISION_TYPES: Lazy<HashSet<&'static str>> = Lazy::new(|| {
         "PHONE",
         "FAX",
         "MRN",
-        "NPI",
         "CREDIT_CARD",
         "ACCOUNT",
         "IP",

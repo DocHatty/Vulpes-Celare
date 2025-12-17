@@ -150,11 +150,15 @@ module.exports = {
       description: "Certificate/license numbers",
       mustRedact: true,
       includes: [
-        "drivers_license",
+        "drivers_license"
+      ],
+      // Note: NPI and DEA are provider identifiers, NOT patient PHI under HIPAA Safe Harbor
+      excludes: [
+        "npi",
+        "dea_number",
         "professional_license",
         "nursing_license",
-        "medical_license",
-        "dea_number"
+        "medical_license"
       ]
     },
 
@@ -220,15 +224,15 @@ module.exports = {
       description: "Any other unique identifying number, characteristic, or code",
       mustRedact: true,
       includes: [
-        "npi", // National Provider Identifier - patient-linked context
-        "dea", // DEA number - patient-linked context
         "passport_number",
         "alien_registration_number",
         "employer_id",
         "military_id",
         "unique_barcodes",
         "qr_codes_with_phi"
-      ]
+      ],
+      // Note: NPI and DEA are provider identifiers, NOT patient PHI
+      excludes: ["npi", "dea"]
     }
   },
 

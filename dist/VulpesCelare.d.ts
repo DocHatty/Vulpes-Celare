@@ -24,7 +24,7 @@ import { SpanBasedFilter } from "./core/SpanBasedFilter";
 import { RedactionContext } from "./context/RedactionContext";
 import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
 import { SupervisedStreamingRedactor, SupervisedStreamingConfig } from "./SupervisedStreamingRedactor";
-export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "npi" | "dea" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "unique_id" | "zip" | "fax" | "age";
+export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "zip" | "fax" | "age";
 export type ReplacementStyle = "brackets" | "asterisks" | "empty";
 export interface VulpesCelareConfig {
     enabledTypes?: PHIType[];
@@ -51,6 +51,7 @@ export declare class VulpesCelare {
     private policy;
     private config;
     static readonly ALL_PHI_TYPES: PHIType[];
+    static readonly OPTIONAL_PHI_TYPES: PHIType[];
     static readonly VERSION = "1.0.0";
     static readonly NAME = "Vulpes Celare";
     static readonly VARIANT = "Hatkoff Redaction Engine";

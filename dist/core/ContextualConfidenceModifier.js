@@ -40,12 +40,10 @@ const DEFAULT_CONFIG = {
     // Penalty is MINIMAL - we strongly prefer false positives over missed PHI (HIPAA priority)
     // Only penalize when there's truly NO clinical context AND the detection is weak
     noContextPenalty: 0.05,
-    // SSN, MRN, NPI are ALWAYS PHI - structural patterns are definitive
+    // SSN, MRN are ALWAYS PHI - structural patterns are definitive
     contextIndependentTypes: new Set([
         Span_1.FilterType.SSN,
         Span_1.FilterType.MRN,
-        Span_1.FilterType.NPI,
-        Span_1.FilterType.DEA,
         Span_1.FilterType.EMAIL,
         Span_1.FilterType.CREDIT_CARD,
         Span_1.FilterType.IP,

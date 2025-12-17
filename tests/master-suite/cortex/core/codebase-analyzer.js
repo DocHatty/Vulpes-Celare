@@ -270,6 +270,7 @@ class CodebaseAnalyzer {
     if (typeMatch) return typeMatch[1];
 
     // Infer from filename
+    // Note: NPI and DEA removed - they are provider identifiers, not patient PHI
     const nameMap = {
       SSN: "SSN",
       Phone: "PHONE",
@@ -278,8 +279,6 @@ class CodebaseAnalyzer {
       Name: "NAME",
       Address: "ADDRESS",
       MRN: "MRN",
-      NPI: "NPI",
-      DEA: "DEA",
       CreditCard: "CREDIT_CARD",
       IP: "IP",
       URL: "URL",
@@ -293,7 +292,6 @@ class CodebaseAnalyzer {
       Biometric: "BIOMETRIC",
       Device: "DEVICE",
       Passport: "PASSPORT",
-      UniqueIdentifier: "UNIQUE_ID",
     };
 
     for (const [key, type] of Object.entries(nameMap)) {

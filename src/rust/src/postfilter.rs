@@ -662,7 +662,7 @@ fn label_like(after_newline_trimmed: &str) -> bool {
     let lower = after_newline_trimmed.to_ascii_lowercase();
     const LABELS: &[&str] = &[
         "dx", "dob", "mrn", "age", "phone", "fax", "email", "address", "street", "zip", "zipcode",
-        "npi", "dea", "ssn", "patient", "provider",
+        "ssn", "patient", "provider",
     ];
 
     for &label in LABELS {

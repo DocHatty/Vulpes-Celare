@@ -329,9 +329,9 @@ You are working in a codebase that includes **Vulpes Celare**, a HIPAA-compliant
 
 ## PHI Types Detected
 
-Names, SSN, Dates, Phone/Fax, Email, Addresses, ZIP codes, MRN, NPI,
+Names, SSN, Dates, Phone/Fax, Email, Addresses, ZIP codes, MRN,
 Health Plan IDs, Account Numbers, License Numbers, Vehicle IDs,
-Device IDs, URLs, IP Addresses, Biometrics, Unique Identifiers
+Device IDs, URLs, IP Addresses, Biometrics
 
 ## When Working with Clinical Documents
 

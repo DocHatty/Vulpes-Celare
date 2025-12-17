@@ -29,8 +29,6 @@ export {
   CREDIT_CARD_PATTERNS,
   IP_PATTERNS,
   ZIPCODE_PATTERNS,
-  NPI_PATTERNS,
-  DEA_PATTERNS,
   getPatternStats,
 } from "./patterns";
 

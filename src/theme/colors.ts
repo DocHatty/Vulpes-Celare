@@ -91,12 +91,9 @@ export const phi = {
   DEVICE: "#78716C", // Stone
   BIOMETRIC: "#DC2626", // Red-600
   PASSPORT: "#7C3AED", // Violet-600
-  NPI: "#2563EB", // Blue-600
-  DEA: "#059669", // Emerald-600
   CREDIT_CARD: "#B91C1C", // Red-700
   HEALTH_PLAN: "#0891B2", // Cyan-600
   RELATIVE_DATE: "#65A30D", // Lime-600
-  UNIQUE_ID: "#9333EA", // Purple-600
   DEFAULT: "#71717A", // Neutral-500
 } as const;
 

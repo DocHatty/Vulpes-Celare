@@ -210,8 +210,6 @@ class CalibrationDataExtractor {
             URL: Span_1.FilterType.URL,
             CREDIT_CARD: Span_1.FilterType.CREDIT_CARD,
             ACCOUNT: Span_1.FilterType.ACCOUNT,
-            NPI: Span_1.FilterType.NPI,
-            DEA: Span_1.FilterType.DEA,
             LICENSE: Span_1.FilterType.LICENSE,
             PASSPORT: Span_1.FilterType.PASSPORT,
             FAX: Span_1.FilterType.FAX,

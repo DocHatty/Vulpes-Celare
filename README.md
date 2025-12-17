@@ -290,7 +290,7 @@ Vulpes Celare is **source-available** under an [Evaluation License](LICENSE-EVAL
 - Research and non-clinical experimentation
 - Academic publication and citation
 
-**Clinical use, commercial deployment, redistribution, or incorporation into revenue-generating systems requires a separate commercial license.**
+**Clinical use, commercial deployment, redistribution, or incorporation into revenue-generating systems is available under a separate commercial agreement.**
 
 ### Commercial & Strategic Partnerships
 
@@ -298,7 +298,9 @@ Commercial licensing, enterprise deployment, acquisition, and strategic partners
 
 Licensing structures may include standalone commercial licenses, dual-license models, OEM/embedded agreements, or strategic IP arrangements. Initial discussions are lightweight and exploratory.
 
-If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) or contact the maintainer to initiate a conversation.
+Where applicable, licensing terms may be coordinated with standard institutional IP processes; this is handled collaboratively during the commercial discussion.
+
+If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) (public or private) or email [andrew@vulpescelare.com](mailto:andrew@vulpescelare.com) to start a licensing conversation.
 
 ## Contributing
 

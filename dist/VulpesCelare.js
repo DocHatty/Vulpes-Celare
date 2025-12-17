@@ -80,8 +80,6 @@ const AddressFilterSpan_1 = require("./filters/AddressFilterSpan");
 const ZipCodeFilterSpan_1 = require("./filters/ZipCodeFilterSpan");
 // Medical Identifier Filters
 const MRNFilterSpan_1 = require("./filters/MRNFilterSpan");
-const NPIFilterSpan_1 = require("./filters/NPIFilterSpan");
-const DEAFilterSpan_1 = require("./filters/DEAFilterSpan");
 const HealthPlanNumberFilterSpan_1 = require("./filters/HealthPlanNumberFilterSpan");
 // HospitalFilterSpan removed - hospital names are NOT PHI under HIPAA Safe Harbor
 const AgeFilterSpan_1 = require("./filters/AgeFilterSpan");
@@ -95,7 +93,6 @@ const URLFilterSpan_1 = require("./filters/URLFilterSpan");
 const DeviceIdentifierFilterSpan_1 = require("./filters/DeviceIdentifierFilterSpan");
 const VehicleIdentifierFilterSpan_1 = require("./filters/VehicleIdentifierFilterSpan");
 const BiometricContextFilterSpan_1 = require("./filters/BiometricContextFilterSpan");
-const UniqueIdentifierFilterSpan_1 = require("./filters/UniqueIdentifierFilterSpan");
 // Context-Aware Filters - OPTIONAL, enabled via VULPES_CONTEXT_FILTERS=1
 // The ContextualConfidenceModifier in the pipeline provides the WIN-WIN effect
 // These filters add additional context-based detection but may increase false positives
@@ -112,6 +109,9 @@ class VulpesCelare {
     filters;
     policy;
     config;
+    // Default PHI types enabled for HIPAA Safe Harbor compliance
+    // Note: credit_card and passport are available but not enabled by default
+    // (credit_card is PCI-DSS, passport is not in HIPAA 18 identifiers)
     static ALL_PHI_TYPES = [
         "name",
         "ssn",
@@ -120,22 +120,24 @@ class VulpesCelare {
         "address",
         "date",
         "mrn",
-        "npi",
-        "dea",
         "ip",
         "url",
-        "credit_card",
         "account",
         "health_plan",
         "license",
-        "passport",
         "vehicle",
         "device",
         "biometric",
-        "unique_id",
         "zip",
         "fax",
         "age",
+    ];
+    // Optional PHI types (not enabled by default)
+    // - credit_card: PCI-DSS compliance, not HIPAA
+    // - passport: Not in HIPAA Safe Harbor 18 identifiers
+    static OPTIONAL_PHI_TYPES = [
+        "credit_card",
+        "passport",
     ];
     static VERSION = meta_1.VERSION;
     static NAME = meta_1.ENGINE_NAME;
@@ -332,8 +334,6 @@ class VulpesCelare {
             },
             zip: () => [new ZipCodeFilterSpan_1.ZipCodeFilterSpan()],
             mrn: () => [new MRNFilterSpan_1.MRNFilterSpan()],
-            npi: () => [new NPIFilterSpan_1.NPIFilterSpan()],
-            dea: () => [new DEAFilterSpan_1.DEAFilterSpan()],
             health_plan: () => [new HealthPlanNumberFilterSpan_1.HealthPlanNumberFilterSpan()],
             // hospital filter removed - hospital names are NOT PHI under HIPAA Safe Harbor
             age: () => [new AgeFilterSpan_1.AgeFilterSpan()],
@@ -352,7 +352,6 @@ class VulpesCelare {
             device: () => [new DeviceIdentifierFilterSpan_1.DeviceIdentifierFilterSpan()],
             vehicle: () => [new VehicleIdentifierFilterSpan_1.VehicleIdentifierFilterSpan()],
             biometric: () => [new BiometricContextFilterSpan_1.BiometricContextFilterSpan()],
-            unique_id: () => [new UniqueIdentifierFilterSpan_1.UniqueIdentifierFilterSpan()],
         };
         let types = config.enabledTypes || VulpesCelare.ALL_PHI_TYPES;
         if (config.disabledTypes)

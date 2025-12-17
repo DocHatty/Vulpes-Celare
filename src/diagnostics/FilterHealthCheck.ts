@@ -84,7 +84,6 @@ export class FilterHealthCheck {
     "DEVICE",
     "URL",
     "IP",
-    "NPI",
     "BIOMETRIC",
   ];
 
@@ -261,15 +260,6 @@ export class FilterHealthCheck {
       expectedType: "ACCOUNT",
       shouldDetect: true,
       description: "Labeled account number",
-    },
-
-    // NPI tests
-    {
-      name: "NPI labeled",
-      input: "NPI: 1234567890",
-      expectedType: "NPI",
-      shouldDetect: true,
-      description: "National Provider Identifier",
     },
 
     // HEALTHPLAN tests

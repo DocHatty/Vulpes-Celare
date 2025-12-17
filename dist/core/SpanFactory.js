@@ -35,8 +35,6 @@ class SpanFactory {
             [Span_1.FilterType.SSN]: FilterPriority_1.FilterPriority.SSN,
             [Span_1.FilterType.CREDIT_CARD]: FilterPriority_1.FilterPriority.CREDITCARD,
             [Span_1.FilterType.MRN]: FilterPriority_1.FilterPriority.MRN,
-            [Span_1.FilterType.NPI]: FilterPriority_1.FilterPriority.NPI,
-            [Span_1.FilterType.DEA]: FilterPriority_1.FilterPriority.MRN,
             [Span_1.FilterType.DEVICE]: FilterPriority_1.FilterPriority.DEVICE,
             [Span_1.FilterType.ACCOUNT]: FilterPriority_1.FilterPriority.ACCOUNT,
             [Span_1.FilterType.LICENSE]: FilterPriority_1.FilterPriority.LICENSE,

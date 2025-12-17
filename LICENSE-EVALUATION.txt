@@ -58,8 +58,8 @@ TERMS AND CONDITIONS
      (g) Incorporation of the Software into other products;
      (h) Offering the Software as a hosted or managed service.
 
-   Commercial licenses are available. See the "Commercial Licensing"
-   section below.
+   These uses are available under a separate commercial agreement.
+   See the "Commercial Licensing" section below.
 
 
 4. ATTRIBUTION
@@ -128,10 +128,16 @@ Available licensing structures include:
 Initial discussions are lightweight and exploratory. Licensing terms
 are handled collaboratively as part of standard commercial discussions.
 
+Where applicable, licensing terms may be coordinated with standard
+institutional IP processes; this is handled collaboratively during
+the commercial discussion.
+
 For inquiries:
 
+    Email:    andrew@vulpescelare.com
     GitHub:   https://github.com/DocHatty/Vulpes-Celare/issues
+              (public or private issues welcome)
 
-Open an issue to initiate a conversation about your use case.
+Email or open an issue to start a licensing conversation.
 
 ========================================================================

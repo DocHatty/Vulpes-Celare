@@ -137,10 +137,10 @@ These work in your current session:
 | Tests | tests/master-suite/ |
 | MCP Cortex | localhost:3100 |
 
-## PHI TYPES DETECTED (28 filters, 17/18 HIPAA Safe Harbor)
+## PHI TYPES DETECTED (25 filters, 17/18 HIPAA Safe Harbor)
 
-Names, SSN, Dates, Phone, Fax, Email, Address, ZIP, MRN, NPI,
-Health Plan IDs, Account Numbers, License Numbers, DEA Numbers,
+Names, SSN, Dates, Phone, Fax, Email, Address, ZIP, MRN,
+Health Plan IDs, Account Numbers, License Numbers,
 Vehicle IDs, Device IDs, URLs, IP Addresses, Biometrics, Passport Numbers
 
 ## QUICK TEST
@@ -948,7 +948,7 @@ export class VulpesAgent {
       /\b\d{3}-\d{2}-\d{4}\b/,
       /\b\d{3}[-.)]\s?\d{3}[-.)]\s?\d{4}\b/,
       /\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/,
-      /DOB|MRN|NPI|SSN/i,
+      /      DOB|MRN|SSN/i,
       /diagnosis|treatment|medication/i,
     ];
 
@@ -970,9 +970,9 @@ export class VulpesAgent {
     const filters = this.vulpes.getActiveFilters();
     const categories: Record<string, string[]> = {
       Identity: filters.filter((f) => f.includes("Name")),
-      Government: filters.filter((f) => /SSN|Passport|License|DEA/.test(f)),
+      Government: filters.filter((f) => /SSN|Passport|License/.test(f)),
       Contact: filters.filter((f) => /Phone|Fax|Email|Address|Zip/.test(f)),
-      Medical: filters.filter((f) => /MRN|NPI|Health|Age|Date/.test(f)),
+      Medical: filters.filter((f) => /MRN|Health|Age|Date/.test(f)),
       Financial: filters.filter((f) => /Credit|Account/.test(f)),
       Technical: filters.filter((f) =>
         /IP|URL|Device|Vehicle|Biometric|Unique/.test(f),

@@ -83,7 +83,6 @@ export { FamilyNameFilterSpan } from "./filters/FamilyNameFilterSpan";
 export { SSNFilterSpan } from "./filters/SSNFilterSpan";
 export { PassportNumberFilterSpan } from "./filters/PassportNumberFilterSpan";
 export { LicenseNumberFilterSpan } from "./filters/LicenseNumberFilterSpan";
-export { DEAFilterSpan } from "./filters/DEAFilterSpan";
 
 // ============================================================================
 // CONTACT FILTERS
@@ -100,7 +99,6 @@ export { ZipCodeFilterSpan } from "./filters/ZipCodeFilterSpan";
 // ============================================================================
 
 export { MRNFilterSpan } from "./filters/MRNFilterSpan";
-export { NPIFilterSpan } from "./filters/NPIFilterSpan";
 export { HealthPlanNumberFilterSpan } from "./filters/HealthPlanNumberFilterSpan";
 // HospitalFilterSpan removed - hospital names are NOT PHI under HIPAA Safe Harbor
 export { AgeFilterSpan } from "./filters/AgeFilterSpan";
@@ -122,7 +120,6 @@ export { URLFilterSpan } from "./filters/URLFilterSpan";
 export { DeviceIdentifierFilterSpan } from "./filters/DeviceIdentifierFilterSpan";
 export { VehicleIdentifierFilterSpan } from "./filters/VehicleIdentifierFilterSpan";
 export { BiometricContextFilterSpan } from "./filters/BiometricContextFilterSpan";
-export { UniqueIdentifierFilterSpan } from "./filters/UniqueIdentifierFilterSpan";
 
 // ============================================================================
 // CONTEXT-AWARE FILTERS (WIN-WIN: increase sensitivity AND specificity)
@@ -375,8 +372,6 @@ export {
   CREDIT_CARD_PATTERNS,
   IP_PATTERNS,
   ZIPCODE_PATTERNS,
-  NPI_PATTERNS,
-  DEA_PATTERNS,
   getPatternStats,
 } from "./dfa/patterns";
 

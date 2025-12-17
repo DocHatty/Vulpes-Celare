@@ -24,7 +24,7 @@ struct ScoredSpan {
 fn type_specificity(filter_type: &str) -> u32 {
     match filter_type {
         "SSN" => 100,
-        "MRN" | "NPI" | "DEA" => 95,
+        "MRN" => 95,
         "CREDIT_CARD" => 90,
         "ACCOUNT" | "LICENSE" | "PASSPORT" | "IBAN" | "HEALTH_PLAN" => 85,
         "EMAIL" => 80,

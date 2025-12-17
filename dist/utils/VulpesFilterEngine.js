@@ -121,8 +121,6 @@ function getRustSupportedTypes() {
         Span_1.FilterType.FAX,
         Span_1.FilterType.MRN,
         Span_1.FilterType.ZIPCODE,
-        Span_1.FilterType.DEA,
-        Span_1.FilterType.NPI,
         Span_1.FilterType.CREDIT_CARD,
         Span_1.FilterType.ACCOUNT,
         Span_1.FilterType.LICENSE,

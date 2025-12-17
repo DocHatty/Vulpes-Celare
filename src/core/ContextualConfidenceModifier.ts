@@ -88,12 +88,10 @@ const DEFAULT_CONFIG: ContextModifierConfig = {
   // Only penalize when there's truly NO clinical context AND the detection is weak
   noContextPenalty: 0.05,
 
-  // SSN, MRN, NPI are ALWAYS PHI - structural patterns are definitive
+  // SSN, MRN are ALWAYS PHI - structural patterns are definitive
   contextIndependentTypes: new Set([
     FilterType.SSN,
     FilterType.MRN,
-    FilterType.NPI,
-    FilterType.DEA,
     FilterType.EMAIL,
     FilterType.CREDIT_CARD,
     FilterType.IP,

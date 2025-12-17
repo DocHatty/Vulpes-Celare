@@ -58,8 +58,6 @@ var FilterType;
     FilterType["IBAN"] = "IBAN";
     // Medical
     FilterType["MRN"] = "MRN";
-    FilterType["NPI"] = "NPI";
-    FilterType["DEA"] = "DEA";
     FilterType["HEALTH_PLAN"] = "HEALTH_PLAN";
     FilterType["DEVICE"] = "DEVICE";
     FilterType["LICENSE"] = "LICENSE";

@@ -172,14 +172,6 @@ const SUPPORTIVE_RULES = [
         strength: 0.40,
         description: "SSN near name strongly indicates identity section",
     },
-    {
-        name: "PROVIDER_NPI",
-        type1: Span_1.FilterType.PROVIDER_NAME,
-        type2: Span_1.FilterType.NPI,
-        relationship: "SUPPORTIVE",
-        strength: 0.50,
-        description: "Provider name and NPI reinforce healthcare provider identity",
-    },
 ];
 // Combine all rules
 const ALL_RULES = [...EXCLUSIVE_RULES, ...SUPPORTIVE_RULES];

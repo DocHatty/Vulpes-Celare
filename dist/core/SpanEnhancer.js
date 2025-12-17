@@ -36,7 +36,6 @@ const HIGH_PRECISION_TYPES = new Set([
     Span_1.FilterType.PHONE,
     Span_1.FilterType.FAX,
     Span_1.FilterType.MRN,
-    Span_1.FilterType.NPI,
     Span_1.FilterType.CREDIT_CARD,
     Span_1.FilterType.ACCOUNT,
     Span_1.FilterType.IP,

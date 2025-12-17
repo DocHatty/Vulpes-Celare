@@ -216,13 +216,8 @@ function generatePHI(type, subtype, errorLevel) {
       value = generateHealthPlanID();
       break;
       
-    case "NPI":
-      value = generateNPI();
-      break;
-      
-    case "DEA":
-      value = generateDEA();
-      break;
+    // Note: NPI and DEA are provider identifiers, NOT patient PHI under HIPAA Safe Harbor
+    // They are intentionally not generated as PHI for testing purposes
       
     case "IP":
       value = generateIP();

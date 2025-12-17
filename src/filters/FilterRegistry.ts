@@ -48,8 +48,6 @@ export class FilterRegistry {
         { AddressFilterSpan },
         { MRNFilterSpan },
         { AccountNumberFilterSpan },
-        { NPIFilterSpan },
-        { DEAFilterSpan },
         { LicenseNumberFilterSpan },
         { HealthPlanNumberFilterSpan },
         { TitledNameFilterSpan },
@@ -61,16 +59,11 @@ export class FilterRegistry {
         { DeviceIdentifierFilterSpan },
         { BiometricContextFilterSpan },
         { PassportNumberFilterSpan },
-        { UniqueIdentifierFilterSpan },
         { AgeFilterSpan },
-        // Context-aware filters DISABLED - causing too many false positives
-        // The ContextualConfidenceModifier provides the WIN-WIN without new pattern matches
-        // { ContextAwareNameFilter },
-        // { ContextAwareAddressFilter },
-        // { RelativeDateFilterSpan },
-        // HospitalFilterSpan removed - hospital names are NOT patient PHI under HIPAA Safe Harbor
-        // Hospital names should be PROTECTED (whitelisted), not redacted
-        // See SmartNameFilterSpan which uses HospitalDictionary for whitelisting
+        // REMOVED FILTERS:
+        // - NPIFilterSpan: Provider identifier, not patient PHI
+        // - DEAFilterSpan: Provider identifier, not patient PHI
+        // - UniqueIdentifierFilterSpan: Gym/airline/loyalty - not medical PHI
       ] = await Promise.all([
         import("./EmailFilterSpan"),
         import("./PhoneFilterSpan"),
@@ -83,8 +76,6 @@ export class FilterRegistry {
         import("./AddressFilterSpan"),
         import("./MRNFilterSpan"),
         import("./AccountNumberFilterSpan"),
-        import("./NPIFilterSpan"),
-        import("./DEAFilterSpan"),
         import("./LicenseNumberFilterSpan"),
         import("./HealthPlanNumberFilterSpan"),
         import("./TitledNameFilterSpan"),
@@ -96,13 +87,7 @@ export class FilterRegistry {
         import("./DeviceIdentifierFilterSpan"),
         import("./BiometricContextFilterSpan"),
         import("./PassportNumberFilterSpan"),
-        import("./UniqueIdentifierFilterSpan"),
         import("./AgeFilterSpan"),
-        // Context-aware filter imports DISABLED - causing too many false positives
-        // import("./ContextAwareNameFilter"),
-        // import("./ContextAwareAddressFilter"),
-        // import("./RelativeDateFilterSpan"),
-        // HospitalFilterSpan import removed - hospitals are whitelisted, not redacted
       ]);
 
       // Register all Span-based filters
@@ -118,8 +103,6 @@ export class FilterRegistry {
         new AddressFilterSpan(),
         new MRNFilterSpan(),
         new AccountNumberFilterSpan(),
-        new NPIFilterSpan(),
-        new DEAFilterSpan(),
         new LicenseNumberFilterSpan(),
         new HealthPlanNumberFilterSpan(),
         new TitledNameFilterSpan(),
@@ -131,18 +114,12 @@ export class FilterRegistry {
         new DeviceIdentifierFilterSpan(),
         new BiometricContextFilterSpan(),
         new PassportNumberFilterSpan(),
-        new UniqueIdentifierFilterSpan(),
         new AgeFilterSpan(),
-        // Context-aware filters DISABLED - causing too many false positives
-        // new ContextAwareNameFilter(),
-        // new ContextAwareAddressFilter(),
-        // new RelativeDateFilterSpan(),
-        // HospitalFilterSpan removed from pipeline - hospitals are NOT PHI
       ];
 
       RadiologyLogger.success(
         "REDACTION",
-        `Parallel Span-based redaction ready: ${this.spanFilters.length} filters loaded (includes FAX, VEHICLE, DEVICE, BIOMETRIC, PASSPORT, UNIQUE_ID, AGE)`,
+        `Parallel Span-based redaction ready: ${this.spanFilters.length} filters loaded`,
       );
 
       this.isInitialized = true;

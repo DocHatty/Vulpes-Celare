@@ -1078,8 +1078,6 @@ exports.EXCLUDED_ACRONYMS = new Set([
     "DOB",
     "MRN",
     "SSN",
-    "NPI",
-    "DEA",
     "VIN",
     "EIN",
     "TIN",

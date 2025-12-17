@@ -30,8 +30,6 @@ export declare enum FilterType {
     BITCOIN = "BITCOIN",
     IBAN = "IBAN",
     MRN = "MRN",
-    NPI = "NPI",
-    DEA = "DEA",
     HEALTH_PLAN = "HEALTH_PLAN",
     DEVICE = "DEVICE",
     LICENSE = "LICENSE",

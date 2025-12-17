@@ -161,8 +161,6 @@ export function getRustSupportedTypes(): FilterType[] {
     FilterType.FAX,
     FilterType.MRN,
     FilterType.ZIPCODE,
-    FilterType.DEA,
-    FilterType.NPI,
     FilterType.CREDIT_CARD,
     FilterType.ACCOUNT,
     FilterType.LICENSE,

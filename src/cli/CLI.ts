@@ -869,7 +869,6 @@ export class CLI {
         "SSNFilterSpan",
         "PassportNumberFilterSpan",
         "LicenseNumberFilterSpan",
-        "DEAFilterSpan",
       ],
       Contact: [
         "PhoneFilterSpan",
@@ -880,7 +879,6 @@ export class CLI {
       ],
       Medical: [
         "MRNFilterSpan",
-        "NPIFilterSpan",
         "HealthPlanNumberFilterSpan",
         "AgeFilterSpan",
         "DateFilterSpan",
@@ -892,7 +890,6 @@ export class CLI {
         "DeviceIdentifierFilterSpan",
         "VehicleIdentifierFilterSpan",
         "BiometricContextFilterSpan",
-        "UniqueIdentifierFilterSpan",
       ],
     };
 

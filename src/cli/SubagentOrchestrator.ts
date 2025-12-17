@@ -712,7 +712,7 @@ HIPAA SAFE HARBOR IDENTIFIERS:
 15. IP addresses ✓
 16. Biometric identifiers ✓
 17. Photos/images ✗ (not text-based)
-18. Any other unique identifier ✓
+18. Any other unique identifier ✗ (context-dependent)
 
 OUTPUT FORMAT (JSON):
 {

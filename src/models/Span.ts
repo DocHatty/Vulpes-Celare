@@ -62,8 +62,6 @@ export enum FilterType {
 
   // Medical
   MRN = "MRN",
-  NPI = "NPI",
-  DEA = "DEA",
   HEALTH_PLAN = "HEALTH_PLAN",
   DEVICE = "DEVICE",
   LICENSE = "LICENSE",

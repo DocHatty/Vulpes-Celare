@@ -71,12 +71,9 @@ export declare const phi: {
     readonly DEVICE: "#78716C";
     readonly BIOMETRIC: "#DC2626";
     readonly PASSPORT: "#7C3AED";
-    readonly NPI: "#2563EB";
-    readonly DEA: "#059669";
     readonly CREDIT_CARD: "#B91C1C";
     readonly HEALTH_PLAN: "#0891B2";
     readonly RELATIVE_DATE: "#65A30D";
-    readonly UNIQUE_ID: "#9333EA";
     readonly DEFAULT: "#71717A";
 };
 export declare const roles: {
@@ -163,12 +160,9 @@ export declare const colors: {
         readonly DEVICE: "#78716C";
         readonly BIOMETRIC: "#DC2626";
         readonly PASSPORT: "#7C3AED";
-        readonly NPI: "#2563EB";
-        readonly DEA: "#059669";
         readonly CREDIT_CARD: "#B91C1C";
         readonly HEALTH_PLAN: "#0891B2";
         readonly RELATIVE_DATE: "#65A30D";
-        readonly UNIQUE_ID: "#9333EA";
         readonly DEFAULT: "#71717A";
     };
     readonly roles: {

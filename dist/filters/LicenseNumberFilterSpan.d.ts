@@ -1,7 +1,7 @@
 /**
- * LicenseNumberFilterSpan - License Number Detection (Span-Based)
+ * LicenseNumberFilterSpan - Driver's License Detection (Span-Based)
  *
- * Detects driver's licenses and professional licenses and returns Spans.
+ * Detects driver's licenses and returns Spans.
  * Parallel-execution ready.
  *
  * @module filters
@@ -11,11 +11,7 @@ import { SpanBasedFilter } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 export declare class LicenseNumberFilterSpan extends SpanBasedFilter {
     /**
-     * Professional license prefixes commonly used in healthcare
-     */
-    private static readonly PROFESSIONAL_PREFIXES;
-    /**
-     * License number pattern definitions
+     * License number pattern definitions - Driver's licenses ONLY
      */
     private static readonly LICENSE_PATTERN_DEFS;
     /**

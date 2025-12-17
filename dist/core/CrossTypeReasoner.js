@@ -172,14 +172,6 @@ class CrossTypeReasoner {
             strength: 0.4,
             reason: "SSN near name strongly indicates identity section",
         });
-        // PROVIDER_NAME + NPI
-        this.constraints.push({
-            type1: Span_1.FilterType.PROVIDER_NAME,
-            type2: Span_1.FilterType.NPI,
-            relationship: "SUPPORTIVE",
-            strength: 0.5,
-            reason: "Provider name and NPI reinforce healthcare provider identity",
-        });
     }
     /**
      * Add custom constraint

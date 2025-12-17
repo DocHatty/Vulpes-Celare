@@ -35,8 +35,6 @@ export declare const MRN_PATTERNS: PatternDef[];
 export declare const CREDIT_CARD_PATTERNS: PatternDef[];
 export declare const IP_PATTERNS: PatternDef[];
 export declare const ZIPCODE_PATTERNS: PatternDef[];
-export declare const NPI_PATTERNS: PatternDef[];
-export declare const DEA_PATTERNS: PatternDef[];
 export declare const ALL_PATTERNS: PatternDef[];
 export declare function getPatternStats(): {
     total: number;

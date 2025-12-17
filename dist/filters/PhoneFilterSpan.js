@@ -187,14 +187,6 @@ class PhoneFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                     const key = `${offset}-${match[0].length}`;
                     if (seen.has(key))
                         continue;
-                    // Skip if preceding label indicates this is an NPI
-                    const windowStart = Math.max(0, offset - 20);
-                    const labelWindow = source
-                        .substring(windowStart, offset)
-                        .toLowerCase();
-                    if (labelWindow.includes("npi")) {
-                        continue;
-                    }
                     // Validate minimum digit count (7 digits minimum for most formats)
                     // For vanity numbers, letters count as digits (e.g., 555-TEETH = 7 chars)
                     const digitCount = (phone.match(/\d/g) || []).length;

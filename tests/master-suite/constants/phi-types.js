@@ -68,8 +68,7 @@ const PHI_TYPES = {
   // ----------------------------------------
   // License/Certificate Identifiers
   // ----------------------------------------
-  NPI: "NPI", // #11 - National Provider Identifier (10-digit)
-  DEA: "DEA", // #11 - DEA registration number
+  LICENSE: "LICENSE", // #11 - Driver's license numbers
 
   // ----------------------------------------
   // Vehicle Identifiers
@@ -284,7 +283,7 @@ const HIPAA_SAFE_HARBOR = {
   10: { name: "Account numbers", types: [PHI_TYPES.ACCOUNT_NUMBER] },
   11: {
     name: "Certificate/license numbers",
-    types: [PHI_TYPES.NPI, PHI_TYPES.DEA],
+    types: [PHI_TYPES.LICENSE],
   },
   12: {
     name: "Vehicle identifiers",

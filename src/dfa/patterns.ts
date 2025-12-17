@@ -348,54 +348,10 @@ export const ZIPCODE_PATTERNS: PatternDef[] = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
-// NPI PATTERNS
-// ═══════════════════════════════════════════════════════════════════════════
-
-export const NPI_PATTERNS: PatternDef[] = [
-  {
-    id: "NPI_STANDARD",
-    regex: /\b(1\d{9})\b/g,
-    filterType: FilterType.NPI,
-    confidence: 0.85,
-    description: "NPI: 10 digits starting with 1",
-    validator: validateNPI,
-  },
-  {
-    id: "NPI_LABELED",
-    regex: /\b(?:npi|national\s*provider(?:\s*(?:id|identifier|number))?)[:\s#]*\s*(1\d{9})\b/gi,
-    filterType: FilterType.NPI,
-    confidence: 0.98,
-    description: "Labeled NPI: NPI: 1234567890",
-    validator: validateNPI,
-  },
-];
-
-// ═══════════════════════════════════════════════════════════════════════════
-// DEA PATTERNS
-// ═══════════════════════════════════════════════════════════════════════════
-
-export const DEA_PATTERNS: PatternDef[] = [
-  {
-    id: "DEA_STANDARD",
-    regex: /\b([ABCDEFGHJKLMNPRSTUX][A-Z9]\d{7})\b/g,
-    filterType: FilterType.DEA,
-    confidence: 0.90,
-    description: "DEA number format",
-    validator: validateDEA,
-  },
-  {
-    id: "DEA_LABELED",
-    regex: /\b(?:dea(?:\s*(?:number|#|no\.?))?)[:\s#]*\s*([ABCDEFGHJKLMNPRSTUX][A-Z9]\d{7})\b/gi,
-    filterType: FilterType.DEA,
-    confidence: 0.98,
-    description: "Labeled DEA: DEA: AB1234563",
-    validator: validateDEA,
-  },
-];
-
-// ═══════════════════════════════════════════════════════════════════════════
 // ALL PATTERNS COMBINED
 // ═══════════════════════════════════════════════════════════════════════════
+
+// NOTE: NPI and DEA patterns removed - these are provider identifiers, not patient PHI
 
 export const ALL_PATTERNS: PatternDef[] = [
   ...SSN_PATTERNS,
@@ -406,8 +362,6 @@ export const ALL_PATTERNS: PatternDef[] = [
   ...CREDIT_CARD_PATTERNS,
   ...IP_PATTERNS,
   ...ZIPCODE_PATTERNS,
-  ...NPI_PATTERNS,
-  ...DEA_PATTERNS,
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -468,30 +422,7 @@ function validateIPv4(ip: string): boolean {
   return true;
 }
 
-function validateNPI(npi: string): boolean {
-  const digits = npi.replace(/\D/g, "");
-  if (digits.length !== 10) return false;
-  if (digits[0] !== "1") return false;
-
-  // Luhn check on NPI (with prefix 80840)
-  const withPrefix = "80840" + digits;
-  return validateLuhn(withPrefix);
-}
-
-function validateDEA(dea: string): boolean {
-  if (dea.length !== 9) return false;
-
-  const digits = dea.substring(2).split("").map(Number);
-  if (digits.some(isNaN)) return false;
-
-  // DEA checksum: (d1+d3+d5) + 2*(d2+d4+d6) mod 10 = d7
-  const sum =
-    digits[0] +
-    digits[2] +
-    digits[4] +
-    2 * (digits[1] + digits[3] + digits[5]);
-  return sum % 10 === digits[6];
-}
+// NOTE: validateNPI and validateDEA removed - these are provider identifiers, not patient PHI
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PATTERN STATISTICS

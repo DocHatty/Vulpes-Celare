@@ -19,7 +19,6 @@ export const FilterPriority = {
 
   // Medical identifiers
   MRN: 9,
-  NPI: 9,
   DEVICE: 9,
 
   // Financial and technical
@@ -62,8 +61,6 @@ export const TYPE_SPECIFICITY = {
   // High specificity - structured patterns
   SSN: 100,
   MRN: 95,
-  NPI: 95,
-  DEA: 95,
   CREDIT_CARD: 90,
   ACCOUNT: 85,
   LICENSE: 85,

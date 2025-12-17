@@ -699,7 +699,6 @@ class CLI {
                 "SSNFilterSpan",
                 "PassportNumberFilterSpan",
                 "LicenseNumberFilterSpan",
-                "DEAFilterSpan",
             ],
             Contact: [
                 "PhoneFilterSpan",
@@ -710,7 +709,6 @@ class CLI {
             ],
             Medical: [
                 "MRNFilterSpan",
-                "NPIFilterSpan",
                 "HealthPlanNumberFilterSpan",
                 "AgeFilterSpan",
                 "DateFilterSpan",
@@ -722,7 +720,6 @@ class CLI {
                 "DeviceIdentifierFilterSpan",
                 "VehicleIdentifierFilterSpan",
                 "BiometricContextFilterSpan",
-                "UniqueIdentifierFilterSpan",
             ],
         };
         for (const [category, filters] of Object.entries(categories)) {

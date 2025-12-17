@@ -72,7 +72,6 @@ const HIGH_PRECISION_TYPES: Set<FilterType> = new Set([
   FilterType.PHONE,
   FilterType.FAX,
   FilterType.MRN,
-  FilterType.NPI,
   FilterType.CREDIT_CARD,
   FilterType.ACCOUNT,
   FilterType.IP,
