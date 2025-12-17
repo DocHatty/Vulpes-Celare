@@ -28,7 +28,7 @@ import {
   ReplacementStyle,
 } from "../VulpesCelare";
 import { PolicyTemplates, PolicyCompiler } from "../PolicyDSL";
-import { VERSION, ENGINE_NAME, VARIANT } from "../index";
+import { VERSION, ENGINE_NAME, VARIANT } from "../meta";
 
 // ============================================================================
 // THEME & STYLING

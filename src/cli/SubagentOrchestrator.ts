@@ -84,7 +84,7 @@ import figures from "figures";
 import PQueue from "p-queue";
 
 import { VulpesCelare } from "../VulpesCelare";
-import { VERSION, ENGINE_NAME } from "../index";
+import { VERSION, ENGINE_NAME } from "../meta";
 import {
   APIProvider,
   createProviderFromOptions,

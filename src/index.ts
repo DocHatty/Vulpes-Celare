@@ -516,6 +516,4 @@ export {
 // VERSION INFO
 // ============================================================================
 
-export const VERSION = "1.0.0";
-export const ENGINE_NAME = "Vulpes Celare";
-export const VARIANT = "Hatkoff Redaction Engine";
+export { VERSION, ENGINE_NAME, VARIANT } from "./meta";

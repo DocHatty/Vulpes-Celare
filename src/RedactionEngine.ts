@@ -24,18 +24,7 @@ import { ProvenanceService } from "./services/ProvenanceService";
 
 // Re-export for backward compatibility
 export { RedactionContext } from "./context/RedactionContext";
-
-/**
- * Base Filter - abstract class for all filters
- */
-export abstract class BaseFilter {
-  abstract apply(
-    text: string,
-    config: any,
-    context: RedactionContext,
-  ): string | Promise<string>;
-  abstract getType(): string;
-}
+export { BaseFilter } from "./core/BaseFilter";
 
 /**
  * RedactionEngine - Thin Orchestrator

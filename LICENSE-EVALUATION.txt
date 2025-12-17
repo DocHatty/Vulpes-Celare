@@ -1,0 +1,52 @@
+VULPES CELARE - EVALUATION LICENSE
+
+Copyright 2025 Vulpes Celare Contributors. All rights reserved.
+
+================================================================================
+                        NOT FOR CLINICAL OR PRODUCTION USE
+================================================================================
+
+This software is provided for EVALUATION AND RESEARCH PURPOSES ONLY.
+
+PERMITTED USES:
+  - Viewing, studying, and analyzing the source code
+  - Running the software locally for evaluation and testing
+  - Non-commercial academic research
+  - Personal learning and education
+  - Proof-of-concept demonstrations (internal only)
+  - Citation in academic publications
+
+PROHIBITED USES (without prior written permission):
+  - Clinical use or deployment in healthcare settings
+  - Production deployment of any kind
+  - Commercial use, including consulting services using this software
+  - Redistribution, in whole or in part, in any form
+  - Incorporation into other software products
+  - Modification and distribution of derivative works
+  - Use in any system that processes real patient data
+  - Offering the software as a service (SaaS, hosted, or otherwise)
+
+NO WARRANTY:
+
+THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+CLINICAL DISCLAIMER:
+
+This software has NOT been validated for clinical use. It has NOT been cleared
+or approved by any regulatory body (FDA, CE, etc.). Using this software in
+clinical settings could result in patient harm. You assume all risk for any
+use of this software.
+
+LICENSING INQUIRIES:
+
+For commercial licensing, clinical deployment authorization, or other inquiries:
+  - Open an issue on GitHub: https://github.com/DocHatty/Vulpes-Celare
+  - Contact the maintainers directly
+
+================================================================================

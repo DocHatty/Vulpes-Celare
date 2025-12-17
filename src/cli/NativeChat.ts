@@ -33,7 +33,7 @@ import { Marked } from "marked";
 import { markedTerminal } from "marked-terminal";
 
 import { VulpesCelare, RedactionResult } from "../VulpesCelare";
-import { VERSION, ENGINE_NAME } from "../index";
+import { VERSION, ENGINE_NAME } from "../meta";
 import { getSystemPrompt } from "./SystemPrompts";
 import {
   APIProvider,

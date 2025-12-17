@@ -36,6 +36,10 @@ This file tracks structural issues, technical debt, and architectural concerns d
 | M2 | Hardcoded OCR suffix patterns | AddressFilterSpan.ts | 2024-12-16 | Open | OCR_SUFFIX_PATTERNS added inline. Should be centralized OCR error dictionary. |
 | M3 | No centralized OCR error mapping | Multiple filters | 2024-12-16 | Open | Each filter has its own OCR patterns. Should have shared OCR character substitution service. |
 | M4 | Priority/confidence thresholds scattered | Multiple filters | 2024-12-16 | Open | Magic numbers like 150, 180, 0.85 scattered across filters. Should be centralized config. |
+| M5 | Version metadata duplicated/hardcoded | src/index.ts, src/mcp/server.ts, src/cli/* | 2025-12-17 | Resolved | Centralized VERSION/ENGINE_NAME/VARIANT in src/meta.ts to avoid heavyweight imports and drift. |
+| M6 | Deprecated engine types used internally | src/RedactionEngine.ts, src/core/FilterAdapter.ts | 2025-12-17 | Resolved | Moved BaseFilter to src/core/BaseFilter.ts; RedactionEngine re-exports for backward compatibility. |
+| M7 | Removed hospital filter still present | src/filters/HospitalFilterSpan.ts, docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md | 2025-12-17 | Resolved | Deleted unused HospitalFilterSpan and updated compliance docs to match current behavior (whitelist, not redact). |
+| M8 | Outdated "Ferrari" naming | src/rust/src/lib.rs, src/core/images/OCRService.ts | 2025-12-17 | Resolved | Updated strings to "Vulpes Celare Native Core" for consistency. |
 
 ### Low (Nice to have)
 

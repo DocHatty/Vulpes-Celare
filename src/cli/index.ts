@@ -23,7 +23,7 @@ import { handleSafeChat, handleQuery } from "./LLMIntegration";
 import { handleAgent } from "./Agent";
 import { handleNativeChat } from "./NativeChat";
 import { handleVulpesify } from "./VulpesIntegration";
-import { VERSION, ENGINE_NAME, VARIANT } from "../index";
+import { VERSION, ENGINE_NAME, VARIANT } from "../meta";
 
 const program = new Command();
 

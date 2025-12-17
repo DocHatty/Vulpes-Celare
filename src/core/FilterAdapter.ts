@@ -9,7 +9,7 @@
 
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter } from "./SpanBasedFilter";
-import { BaseFilter } from "../RedactionEngine";
+import { BaseFilter } from "./BaseFilter";
 import { RedactionContext } from "../context/RedactionContext";
 
 /**

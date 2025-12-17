@@ -1,10 +1,14 @@
 # VULPES CELARE
 
+> **EVALUATION LICENSE ONLY**
+> Not for clinical use. No commercial use. No redistribution.
+> See [LICENSE-EVALUATION.txt](LICENSE-EVALUATION.txt) for terms.
+
 ![Vulpes Celare Logo](https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
 
-An open-source PHI redaction engine for clinical text, images, and DICOM data. The project combines TypeScript orchestration with Rust-accelerated compute paths to provide a fully inspectable, auditable de-identification pipeline suitable for healthcare research and air-gapped deployments.
+A PHI redaction engine for clinical text, images, and DICOM data. The project combines TypeScript orchestration with Rust-accelerated compute paths to provide a fully inspectable, auditable de-identification pipeline suitable for healthcare research and air-gapped deployments.
 
 | Metric | Vulpes Celare | vs. Presidio |
 |:------:|:-------------:|:------------:|
@@ -272,7 +276,9 @@ npm run test:strict
 
 ## License
 
-Interim license (pending Apache 2.0). Research and non-commercial use permitted. See `LICENSE`.
+**Evaluation License Only.** This software is provided for evaluation and research purposes only. Not for clinical use, commercial use, or redistribution. See [LICENSE-EVALUATION.txt](LICENSE-EVALUATION.txt) for full terms.
+
+For commercial licensing or clinical deployment inquiries, open an issue on GitHub.
 
 ## Contributing
 

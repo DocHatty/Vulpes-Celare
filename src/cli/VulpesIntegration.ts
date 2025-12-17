@@ -33,7 +33,7 @@ import * as os from "os";
 import chalk from "chalk";
 import figures from "figures";
 
-import { VERSION, ENGINE_NAME } from "../index";
+import { VERSION, ENGINE_NAME } from "../meta";
 import { getSystemPrompt, SYSTEM_PROMPT_COMPACT } from "./SystemPrompts";
 
 // --- Types ---

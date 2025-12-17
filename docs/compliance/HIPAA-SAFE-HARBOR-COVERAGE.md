@@ -43,7 +43,7 @@ Vulpes Celare provides additional filters for identifiers not explicitly listed 
 | DEA | `DEAFilterSpan` | 456 | 100.0% | Drug Enforcement Administration numbers |
 | Credit Card | `CreditCardFilterSpan` | 567 | 100.0% | Sometimes appears in billing notes |
 | Passport | `PassportNumberFilterSpan` | 234 | 99.1% | International patient documentation |
-| Hospital Names | `HospitalFilterSpan` | 2,345 | 97.2% | Can enable geographic re-identification |
+| Hospital Names | _Not redacted by default_ | - | - | Not PHI under HIPAA Safe Harbor; hospital terms are whitelisted via `HospitalDictionary` |
 
 ## Detailed Filter Specifications
 

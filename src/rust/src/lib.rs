@@ -60,8 +60,8 @@ pub fn init_core() -> String {
     let _ = tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .try_init();
-    tracing::info!("Vulpes Ferrari Engine Initialized");
-    "Vulpes Ferrari Engine Online (Rust)".to_string()
+    tracing::info!("Vulpes Celare Native Core Initialized");
+    "Vulpes Celare Native Core Online (Rust)".to_string()
 }
 
 #[napi]

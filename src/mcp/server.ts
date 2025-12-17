@@ -16,7 +16,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 // CRITICAL: Import VERSION directly, don't import VulpesCelare yet
-const VERSION = "1.0.0";
+import { VERSION } from "../meta";
 
 // ============================================================================
 // ULTRA-LAZY INITIALIZATION

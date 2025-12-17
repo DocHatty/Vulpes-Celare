@@ -11,7 +11,7 @@ import * as readline from "readline";
 import chalk from "chalk";
 import figures from "figures";
 
-import { VERSION, ENGINE_NAME } from "../index";
+import { VERSION, ENGINE_NAME } from "../meta";
 import { logger } from "../utils/Logger";
 
 // Lazy load heavy modules only when needed

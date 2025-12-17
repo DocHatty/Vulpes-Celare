@@ -1,5 +1,5 @@
 /**
- * OCRService - High-Performance Text Extraction using Vulpes "Ferrari" Engine (Rust)
+ * OCRService - High-Performance Text Extraction using Vulpes Celare Native Core (Rust)
  *
  * This service wraps the high-performance Rust core (VulpesNative) which provides:
  * - PaddleOCR v4 Detection & Recognition via ONNX Runtime (C++)
@@ -129,7 +129,7 @@ export class OCRService {
       this.logger.info(
         SERVICE_NAME,
         "initialize",
-        "Vulpes Ferrari Engine (Rust) ready",
+        "Vulpes Celare Native Core (Rust) ready",
       );
     } catch (error) {
       this.initError =

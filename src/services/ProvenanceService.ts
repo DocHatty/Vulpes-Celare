@@ -5,6 +5,8 @@
  * Extracted from `RedactionEngine` to keep orchestration concerns separate.
  */
 
+import { ENGINE_NAME, VERSION } from "../meta";
+
 export type ProvenanceRecordOptions = {
   /** Override the default endpoint (default: http://localhost:3106/provenance/record) */
   endpoint?: string;
@@ -30,7 +32,7 @@ export class ProvenanceService {
 
     const manifest = {
       timestamp: new Date().toISOString(),
-      engine: options.engine ?? "Vulpes-Celare RedactionEngine v1.0",
+      engine: options.engine ?? `${ENGINE_NAME} v${VERSION}`,
     };
 
     const payload = {

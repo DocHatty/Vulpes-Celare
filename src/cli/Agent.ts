@@ -37,7 +37,7 @@ import boxen from "boxen";
 import figures from "figures";
 
 import { VulpesCelare, RedactionResult } from "../VulpesCelare";
-import { VERSION, ENGINE_NAME } from "../index";
+import { VERSION, ENGINE_NAME } from "../meta";
 import { logger } from "../utils/Logger";
 import {
   getSystemPrompt,

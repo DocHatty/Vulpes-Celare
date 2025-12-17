@@ -12,7 +12,7 @@
 
 import { RadiologyLogger } from "../utils/RadiologyLogger";
 import { ConfigLoader } from "../utils/ConfigLoader";
-import type { BaseFilter } from "../RedactionEngine";
+import type { BaseFilter } from "../core/BaseFilter";
 import { SpanBasedFilter } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 

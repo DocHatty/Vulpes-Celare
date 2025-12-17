@@ -36,6 +36,11 @@ import {
   SupervisedStreamingConfig,
   createSupervisedStreamingRedactor,
 } from "./SupervisedStreamingRedactor";
+import {
+  ENGINE_NAME,
+  VARIANT as ENGINE_VARIANT,
+  VERSION as PACKAGE_VERSION,
+} from "./meta";
 
 // ============================================================================
 // FILTER IMPORTS - Organized by Category
@@ -184,9 +189,9 @@ export class VulpesCelare {
     "age",
   ];
 
-  static readonly VERSION = "1.0.0";
-  static readonly NAME = "Vulpes Celare";
-  static readonly VARIANT = "Hatkoff Redaction Engine";
+  static readonly VERSION = PACKAGE_VERSION;
+  static readonly NAME = ENGINE_NAME;
+  static readonly VARIANT = ENGINE_VARIANT;
 
   constructor(
     config: VulpesCelareConfig = {},
