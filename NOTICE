@@ -1,17 +1,19 @@
-================================================================================
-                              VULPES CELARE
-                         EVALUATION LICENSE ONLY
-================================================================================
+Vulpes Celare
+Copyright (c) 2025 Vulpes Celare Contributors
 
-This software is NOT open source.
+========================================================================
 
-- NOT FOR CLINICAL USE
-- NO COMMERCIAL USE
-- NO REDISTRIBUTION
+                     EVALUATION LICENSE ONLY
 
-This software is provided for EVALUATION AND RESEARCH PURPOSES ONLY.
+   This software is NOT open source and is NOT free software.
 
-See LICENSE-EVALUATION.txt for complete terms.
+             * No clinical use       * No commercial use
+             * No redistribution     * No derivative works
 
-For licensing inquiries: https://github.com/DocHatty/Vulpes-Celare/issues
-================================================================================
+   This software is provided solely for evaluation, research, and
+   educational purposes. Any other use requires written permission.
+
+========================================================================
+
+License:    LICENSE-EVALUATION.txt
+Inquiries:  https://github.com/DocHatty/Vulpes-Celare/issues

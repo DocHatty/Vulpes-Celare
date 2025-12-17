@@ -1,12 +1,18 @@
 # VULPES CELARE
 
-> **EVALUATION LICENSE ONLY**
-> Not for clinical use. No commercial use. No redistribution.
-> See [LICENSE-EVALUATION.txt](LICENSE-EVALUATION.txt) for terms.
+<table>
+<tr>
+<td>
+
+**Evaluation License Only** | Not for clinical use | Not for commercial use | No redistribution
+
+</td>
+</tr>
+</table>
 
 ![Vulpes Celare Logo](https://github.com/user-attachments/assets/ebc320d1-ff4d-4610-b0de-7aad2a1da5cb)
 
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white) ![License](https://img.shields.io/badge/License-Evaluation_Only-red)
 
 A PHI redaction engine for clinical text, images, and DICOM data. The project combines TypeScript orchestration with Rust-accelerated compute paths to provide a fully inspectable, auditable de-identification pipeline suitable for healthcare research and air-gapped deployments.
 
@@ -276,9 +282,13 @@ npm run test:strict
 
 ## License
 
-**Evaluation License Only.** This software is provided for evaluation and research purposes only. Not for clinical use, commercial use, or redistribution. See [LICENSE-EVALUATION.txt](LICENSE-EVALUATION.txt) for full terms.
+**This software is not open source.**
 
-For commercial licensing or clinical deployment inquiries, open an issue on GitHub.
+Vulpes Celare is provided under an [Evaluation License](LICENSE-EVALUATION.txt) for research and educational use only. You may view, study, and run the software locally for evaluation purposes.
+
+You may **not** use this software for clinical care, commercial purposes, or redistribute it in any form without prior written permission.
+
+For licensing inquiries, contact the maintainers via [GitHub Issues](https://github.com/DocHatty/Vulpes-Celare/issues).
 
 ## Contributing
 

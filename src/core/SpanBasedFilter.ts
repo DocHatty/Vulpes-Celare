@@ -13,6 +13,7 @@
 
 import { Span, FilterType } from "../models/Span";
 import { RedactionContext } from "../context/RedactionContext";
+import { SpanFactory } from "./SpanFactory";
 export { FilterPriority } from "../models/FilterPriority";
 
 /**
@@ -62,23 +63,10 @@ export abstract class SpanBasedFilter {
     const start = match.index!;
     const end = start + match[0].length;
 
-    return new Span({
-      text: match[0],
-      originalValue: match[0],
-      characterStart: start,
-      characterEnd: end,
-      filterType: filterType,
-      confidence: confidence,
+    return SpanFactory.fromMatch(text, match, filterType, {
+      confidence,
       priority: priority ?? this.getPriority(),
       context: this.extractContext(text, start, end),
-      window: [],
-      replacement: null,
-      salt: null,
-      pattern: null,
-      applied: false,
-      ignored: false,
-      ambiguousWith: [],
-      disambiguationScore: null,
     });
   }
 

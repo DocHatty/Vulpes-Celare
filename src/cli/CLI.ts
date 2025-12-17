@@ -879,7 +879,7 @@ export class CLI {
     console.log(
       boxen(
         `${theme.muted("Documentation:")} ${theme.underline("https://github.com/DocHatty/Vulpes-Celare")}\n` +
-          `${theme.muted("License:")} AGPL-3.0-only`,
+          `${theme.muted("License:")} Evaluation Only`,
         { padding: 1, borderStyle: "round", borderColor: "gray" },
       ),
     );

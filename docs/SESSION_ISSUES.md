@@ -40,6 +40,7 @@ This file tracks structural issues, technical debt, and architectural concerns d
 | M6 | Deprecated engine types used internally | src/RedactionEngine.ts, src/core/FilterAdapter.ts | 2025-12-17 | Resolved | Moved BaseFilter to src/core/BaseFilter.ts; RedactionEngine re-exports for backward compatibility. |
 | M7 | Removed hospital filter still present | src/filters/HospitalFilterSpan.ts, docs/compliance/HIPAA-SAFE-HARBOR-COVERAGE.md | 2025-12-17 | Resolved | Deleted unused HospitalFilterSpan and updated compliance docs to match current behavior (whitelist, not redact). |
 | M8 | Outdated "Ferrari" naming | src/rust/src/lib.rs, src/core/images/OCRService.ts | 2025-12-17 | Resolved | Updated strings to "Vulpes Celare Native Core" for consistency. |
+| M9 | Duplicate Span creation helpers | src/core/SpanBasedFilter.ts, src/core/SpanFactory.ts | 2025-12-17 | Resolved | Made SpanBasedFilter.createSpanFromMatch delegate to SpanFactory; SpanFactory now imports FilterPriority from models to avoid cycles. |
 
 ### Low (Nice to have)
 

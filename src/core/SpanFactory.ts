@@ -18,7 +18,7 @@
  */
 
 import { Span, SpanMetadata, FilterType } from "../models/Span";
-import { FilterPriority } from "./SpanBasedFilter";
+import { FilterPriority } from "../models/FilterPriority";
 
 /**
  * Options for Span creation - all optional with sensible defaults

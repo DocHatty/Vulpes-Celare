@@ -145,7 +145,7 @@ All Rust accelerators have TypeScript fallbacks. Set `VULPES_*_ACCEL=0` to disab
 | **HIPAA 18/18** | ✓ | Partial | ✓ | ✓ |
 | **Healthcare-specific** | ✓ | ✗ | ✓ | ✓ |
 | **Image/DICOM** | ✓ | ✗ | ✗ | ✗ |
-| **Open source** | ✓ | ✓ | ✓ | ✗ |
+| **Source available** | ✓ | ✓ | ✓ | ✗ |
 | **Trust bundles** | ✓ | ✗ | ✗ | ✗ |
 
 *Philter score from published paper on i2b2 2014

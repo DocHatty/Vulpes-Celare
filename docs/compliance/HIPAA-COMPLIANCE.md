@@ -379,7 +379,7 @@ async function safeSend(note: string, llmProvider: LLM) {
 
 | Scenario | BAA Required? | Notes |
 |----------|---------------|-------|
-| **Using Vulpes Celare (open source)** | ❌ No | You're using software, not a service |
+| **Using Vulpes Celare locally** | ❌ No | You're using software, not a service |
 | **Using cloud LLM after redaction** | ✅ Yes | Even with redacted data, BAA recommended |
 | **Using local LLM after redaction** | ❌ No | No third party involved |
 | **Hiring consultant to configure Vulpes Celare** | ✅ Yes | If consultant has access to PHI |
