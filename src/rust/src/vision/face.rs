@@ -6,6 +6,8 @@ use ort::{session::Session, value::Value};
 use std::{error::Error, io, path::Path, sync::Mutex};
 use tracing::{info, instrument, warn};
 
+use super::gpu_provider::{SessionConfig, build_session_with_config};
+
 type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
 
 /// Bounding box for visual detections.
@@ -55,9 +57,10 @@ fn get_face_session(model_path: &str) -> Result<&'static Mutex<Session>> {
         return Err(other_error(format!("Face model not found: {}", model_path)));
     }
 
-    let session = Session::builder()?
-        .with_intra_threads(4)?
-        .commit_from_file(model_path)?;
+    // Use GPU-aware session configuration
+    // Respects VULPES_GPU_PROVIDER environment variable
+    let config = SessionConfig::new().with_intra_threads(4);
+    let session = build_session_with_config(model_path, &config)?;
 
     let _ = FACE_MODEL_PATH.set(model_path.to_string());
     let _ = FACE_SESSION.set(Mutex::new(session));

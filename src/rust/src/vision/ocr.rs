@@ -5,6 +5,8 @@ use ort::{session::Session, value::Value};
 use std::error::Error;
 use tracing::{info, instrument, warn};
 
+use super::gpu_provider::{SessionConfig, build_session_with_config};
+
 type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
 
 /// Text detection result from the OCR engine.
@@ -31,13 +33,12 @@ impl OcrEngine {
     pub fn new(det_path: &str, rec_path: &str) -> Result<Self> {
         info!("Initializing OcrEngine: det={}, rec={}", det_path, rec_path);
 
-        let det_session = Session::builder()?
-            .with_intra_threads(4)?
-            .commit_from_file(det_path)?;
-
-        let rec_session = Session::builder()?
-            .with_intra_threads(4)?
-            .commit_from_file(rec_path)?;
+        // Use GPU-aware session configuration
+        // Respects VULPES_GPU_PROVIDER environment variable
+        let config = SessionConfig::new().with_intra_threads(4);
+        
+        let det_session = build_session_with_config(det_path, &config)?;
+        let rec_session = build_session_with_config(rec_path, &config)?;
 
         let rec_chars: Vec<char> = DEFAULT_CHAR_SET.chars().collect();
 

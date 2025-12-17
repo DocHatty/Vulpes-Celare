@@ -174,6 +174,17 @@ export declare class ConfidenceCalibrator {
         confidence: number;
         filterType?: FilterType;
     }>, labels: boolean[], method?: "platt" | "isotonic" | "beta" | "temperature"): ConfidenceCalibrator;
+    /**
+     * Load calibration from persisted file
+     *
+     * Attempts to load calibration parameters from the default location.
+     * Returns true if loaded successfully, false otherwise.
+     */
+    loadFromPersistence(): boolean;
+    /**
+     * Create a calibrator with auto-loaded persistence
+     */
+    static createWithPersistence(method?: "platt" | "isotonic" | "beta" | "temperature"): ConfidenceCalibrator;
 }
 export declare const confidenceCalibrator: ConfidenceCalibrator;
 export {};

@@ -125,6 +125,28 @@ export { BiometricContextFilterSpan } from "./filters/BiometricContextFilterSpan
 export { UniqueIdentifierFilterSpan } from "./filters/UniqueIdentifierFilterSpan";
 
 // ============================================================================
+// CONTEXT-AWARE FILTERS (WIN-WIN: increase sensitivity AND specificity)
+// ============================================================================
+
+export { ContextAwareNameFilter } from "./filters/ContextAwareNameFilter";
+export { RelativeDateFilterSpan } from "./filters/RelativeDateFilterSpan";
+export { ContextAwareAddressFilter } from "./filters/ContextAwareAddressFilter";
+
+// ============================================================================
+// CLINICAL CONTEXT DETECTION
+// ============================================================================
+
+export {
+  ClinicalContextDetector,
+  contextDetector,
+  RELATIVE_DATE_PATTERNS,
+  type ContextWindow,
+  type ContextIndicator,
+  type ContextType,
+  type ContextStrength,
+} from "./context/ClinicalContextDetector";
+
+// ============================================================================
 // SUPPORT SERVICES
 // ============================================================================
 
@@ -162,6 +184,34 @@ export {
   CalibrationMetrics,
   CalibrationResult,
 } from "./core/ConfidenceCalibrator";
+
+// ============================================================================
+// CALIBRATION SYSTEM (Auto-calibration from test data)
+// ============================================================================
+
+export {
+  AutoCalibrator,
+  autoCalibrator,
+  initializeCalibration,
+  getCalibratedConfidence,
+  CalibrationDataExtractor,
+  calibrationDataExtractor,
+  CalibrationPersistence,
+  calibrationPersistence,
+  type AutoCalibrationOptions,
+  type CalibrationResult as AutoCalibrationResult,
+  type LiveTestResult,
+  type CalibrationMetadata,
+  type FilterCalibrationStats,
+} from "./calibration";
+
+export {
+  ContextualConfidenceModifier,
+  contextualConfidenceModifier,
+  isContextModifierEnabled,
+  type ContextModifierConfig,
+  type ContextModificationResult,
+} from "./core/ContextualConfidenceModifier";
 
 export {
   WeightedPHIScorer,

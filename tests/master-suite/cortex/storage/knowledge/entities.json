@@ -7053,6 +7053,995 @@
         "t_valid_from": "2025-12-17T02:08:10.085Z",
         "t_valid_until": null
       }
+    },
+    "run_1765938341192_gxi75ku0d": {
+      "id": "run_1765938341192_gxi75ku0d",
+      "timestamp": "2025-12-17T02:25:41.192Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1719,
+        "specificity": 94.969,
+        "precision": 99.0333,
+        "f1Score": 98.6007,
+        "mcc": 0.9148
+      },
+      "confusionMatrix": {
+        "tp": 6659,
+        "tn": 1227,
+        "fp": 65,
+        "fn": 124,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.915 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:25:41.192Z",
+        "t_occurred": "2025-12-17T02:25:41.192Z",
+        "t_valid_from": "2025-12-17T02:25:41.192Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765938618849_gxi75ku0d": {
+      "id": "run_1765938618849_gxi75ku0d",
+      "timestamp": "2025-12-17T02:30:18.849Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.9802,
+        "specificity": 95.0464,
+        "precision": 99.0462,
+        "f1Score": 98.5103,
+        "mcc": 0.91
+      },
+      "confusionMatrix": {
+        "tp": 6646,
+        "tn": 1228,
+        "fp": 64,
+        "fn": 137,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 98.0% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.0% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.910 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:30:18.849Z",
+        "t_occurred": "2025-12-17T02:30:18.849Z",
+        "t_valid_from": "2025-12-17T02:30:18.849Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765938806996_gxi75ku0d": {
+      "id": "run_1765938806996_gxi75ku0d",
+      "timestamp": "2025-12-17T02:33:26.996Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.9802,
+        "specificity": 95.2012,
+        "precision": 99.0757,
+        "f1Score": 98.5249,
+        "mcc": 0.9109
+      },
+      "confusionMatrix": {
+        "tp": 6646,
+        "tn": 1230,
+        "fp": 62,
+        "fn": 137,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 98.0% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.2% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.911 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:33:26.996Z",
+        "t_occurred": "2025-12-17T02:33:26.996Z",
+        "t_valid_from": "2025-12-17T02:33:26.996Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765938909128_gxi75ku0d": {
+      "id": "run_1765938909128_gxi75ku0d",
+      "timestamp": "2025-12-17T02:35:09.128Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.57,
+        "specificity": 93.0341,
+        "precision": 98.6718,
+        "f1Score": 98.6208,
+        "mcc": 0.914
+      },
+      "confusionMatrix": {
+        "tp": 6686,
+        "tn": 1202,
+        "fp": 90,
+        "fn": 97,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.914 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:35:09.129Z",
+        "t_occurred": "2025-12-17T02:35:09.128Z",
+        "t_valid_from": "2025-12-17T02:35:09.129Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765938969306_gxi75ku0d": {
+      "id": "run_1765938969306_gxi75ku0d",
+      "timestamp": "2025-12-17T02:36:09.306Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.5257,
+        "specificity": 93.0341,
+        "precision": 98.6712,
+        "f1Score": 98.5984,
+        "mcc": 0.9127
+      },
+      "confusionMatrix": {
+        "tp": 6683,
+        "tn": 1202,
+        "fp": 90,
+        "fn": 100,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.913 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:36:09.306Z",
+        "t_occurred": "2025-12-17T02:36:09.306Z",
+        "t_valid_from": "2025-12-17T02:36:09.306Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939123557_gxi75ku0d": {
+      "id": "run_1765939123557_gxi75ku0d",
+      "timestamp": "2025-12-17T02:38:43.557Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.9802,
+        "specificity": 95.1238,
+        "precision": 99.061,
+        "f1Score": 98.5176,
+        "mcc": 0.9105
+      },
+      "confusionMatrix": {
+        "tp": 6646,
+        "tn": 1229,
+        "fp": 63,
+        "fn": 137,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 98.0% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.1% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.910 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:38:43.557Z",
+        "t_occurred": "2025-12-17T02:38:43.557Z",
+        "t_valid_from": "2025-12-17T02:38:43.557Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939181138_gxi75ku0d": {
+      "id": "run_1765939181138_gxi75ku0d",
+      "timestamp": "2025-12-17T02:39:41.138Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1572,
+        "specificity": 95.2012,
+        "precision": 99.0774,
+        "f1Score": 98.6151,
+        "mcc": 0.9159
+      },
+      "confusionMatrix": {
+        "tp": 6658,
+        "tn": 1230,
+        "fp": 62,
+        "fn": 125,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.2% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.916 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:39:41.138Z",
+        "t_occurred": "2025-12-17T02:39:41.138Z",
+        "t_valid_from": "2025-12-17T02:39:41.138Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939233936_gxi75ku0d": {
+      "id": "run_1765939233936_gxi75ku0d",
+      "timestamp": "2025-12-17T02:40:33.936Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1719,
+        "specificity": 95.0464,
+        "precision": 99.048,
+        "f1Score": 98.608,
+        "mcc": 0.9153
+      },
+      "confusionMatrix": {
+        "tp": 6659,
+        "tn": 1228,
+        "fp": 64,
+        "fn": 124,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.0% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.915 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:40:33.937Z",
+        "t_occurred": "2025-12-17T02:40:33.936Z",
+        "t_valid_from": "2025-12-17T02:40:33.937Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939335467_gxi75ku0d": {
+      "id": "run_1765939335467_gxi75ku0d",
+      "timestamp": "2025-12-17T02:42:15.467Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.9655,
+        "specificity": 95.2786,
+        "precision": 99.0904,
+        "f1Score": 98.5247,
+        "mcc": 0.911
+      },
+      "confusionMatrix": {
+        "tp": 6645,
+        "tn": 1231,
+        "fp": 61,
+        "fn": 138,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 98.0% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.3% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.911 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:42:15.467Z",
+        "t_occurred": "2025-12-17T02:42:15.467Z",
+        "t_valid_from": "2025-12-17T02:42:15.467Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939387502_gxi75ku0d": {
+      "id": "run_1765939387502_gxi75ku0d",
+      "timestamp": "2025-12-17T02:43:07.502Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.9508,
+        "specificity": 95.1238,
+        "precision": 99.0607,
+        "f1Score": 98.5026,
+        "mcc": 0.9096
+      },
+      "confusionMatrix": {
+        "tp": 6644,
+        "tn": 1229,
+        "fp": 63,
+        "fn": 139,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 98.0% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.1% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.910 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:43:07.502Z",
+        "t_occurred": "2025-12-17T02:43:07.502Z",
+        "t_valid_from": "2025-12-17T02:43:07.502Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939443558_gxi75ku0d": {
+      "id": "run_1765939443558_gxi75ku0d",
+      "timestamp": "2025-12-17T02:44:03.558Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1129,
+        "specificity": 95.0464,
+        "precision": 99.0475,
+        "f1Score": 98.578,
+        "mcc": 0.9137
+      },
+      "confusionMatrix": {
+        "tp": 6655,
+        "tn": 1228,
+        "fp": 64,
+        "fn": 128,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.0% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.914 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:44:03.558Z",
+        "t_occurred": "2025-12-17T02:44:03.558Z",
+        "t_valid_from": "2025-12-17T02:44:03.558Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939502382_gxi75ku0d": {
+      "id": "run_1765939502382_gxi75ku0d",
+      "timestamp": "2025-12-17T02:45:02.382Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.9213,
+        "specificity": 95.0464,
+        "precision": 99.0456,
+        "f1Score": 98.4802,
+        "mcc": 0.9083
+      },
+      "confusionMatrix": {
+        "tp": 6642,
+        "tn": 1228,
+        "fp": 64,
+        "fn": 141,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 97.9% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.0% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.908 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:45:02.382Z",
+        "t_occurred": "2025-12-17T02:45:02.382Z",
+        "t_valid_from": "2025-12-17T02:45:02.382Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765939613409_gxi75ku0d": {
+      "id": "run_1765939613409_gxi75ku0d",
+      "timestamp": "2025-12-17T02:46:53.409Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1424,
+        "specificity": 95.1238,
+        "precision": 99.0625,
+        "f1Score": 98.6003,
+        "mcc": 0.915
+      },
+      "confusionMatrix": {
+        "tp": 6657,
+        "tn": 1229,
+        "fp": 63,
+        "fn": 126,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.1% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.915 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:46:53.410Z",
+        "t_occurred": "2025-12-17T02:46:53.409Z",
+        "t_valid_from": "2025-12-17T02:46:53.410Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765940188212_gxi75ku0d": {
+      "id": "run_1765940188212_gxi75ku0d",
+      "timestamp": "2025-12-17T02:56:28.212Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 97.936,
+        "specificity": 94.4272,
+        "precision": 98.9278,
+        "f1Score": 98.4294,
+        "mcc": 0.9048
+      },
+      "confusionMatrix": {
+        "tp": 6643,
+        "tn": 1220,
+        "fp": 72,
+        "fn": 140,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "ACCEPTABLE",
+        "issues": [
+          {
+            "severity": "MEDIUM",
+            "metric": "sensitivity",
+            "message": "Sensitivity 97.9% is good but could be improved.",
+            "threshold": "98%"
+          }
+        ],
+        "strengths": [
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.905 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.4%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System meets minimum requirements. Improvements recommended before production."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:56:28.212Z",
+        "t_occurred": "2025-12-17T02:56:28.212Z",
+        "t_valid_from": "2025-12-17T02:56:28.212Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765940286938_gxi75ku0d": {
+      "id": "run_1765940286938_gxi75ku0d",
+      "timestamp": "2025-12-17T02:58:06.938Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.0245,
+        "specificity": 95.0464,
+        "precision": 99.0466,
+        "f1Score": 98.5329,
+        "mcc": 0.9112
+      },
+      "confusionMatrix": {
+        "tp": 6649,
+        "tn": 1228,
+        "fp": 64,
+        "fn": 134,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.0% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.911 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.5%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T02:58:06.938Z",
+        "t_occurred": "2025-12-17T02:58:06.938Z",
+        "t_valid_from": "2025-12-17T02:58:06.938Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765940615277_gxi75ku0d": {
+      "id": "run_1765940615277_gxi75ku0d",
+      "timestamp": "2025-12-17T03:03:35.277Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1129,
+        "specificity": 95.356,
+        "precision": 99.1065,
+        "f1Score": 98.6072,
+        "mcc": 0.9156
+      },
+      "confusionMatrix": {
+        "tp": 6655,
+        "tn": 1232,
+        "fp": 60,
+        "fn": 128,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.4% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.916 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T03:03:35.278Z",
+        "t_occurred": "2025-12-17T03:03:35.277Z",
+        "t_valid_from": "2025-12-17T03:03:35.278Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765941596631_gxi75ku0d": {
+      "id": "run_1765941596631_gxi75ku0d",
+      "timestamp": "2025-12-17T03:19:56.631Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1129,
+        "specificity": 95.0464,
+        "precision": 99.0475,
+        "f1Score": 98.578,
+        "mcc": 0.9137
+      },
+      "confusionMatrix": {
+        "tp": 6655,
+        "tn": 1228,
+        "fp": 64,
+        "fn": 128,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.0% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.914 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T03:19:56.632Z",
+        "t_occurred": "2025-12-17T03:19:56.631Z",
+        "t_valid_from": "2025-12-17T03:19:56.632Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765941758418_gxi75ku0d": {
+      "id": "run_1765941758418_gxi75ku0d",
+      "timestamp": "2025-12-17T03:22:38.418Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1277,
+        "specificity": 95.0464,
+        "precision": 99.0476,
+        "f1Score": 98.5855,
+        "mcc": 0.9141
+      },
+      "confusionMatrix": {
+        "tp": 6656,
+        "tn": 1228,
+        "fp": 64,
+        "fn": 127,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.0% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.914 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T03:22:38.418Z",
+        "t_occurred": "2025-12-17T03:22:38.418Z",
+        "t_valid_from": "2025-12-17T03:22:38.418Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765941826242_gxi75ku0d": {
+      "id": "run_1765941826242_gxi75ku0d",
+      "timestamp": "2025-12-17T03:23:46.242Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.1129,
+        "specificity": 95.1238,
+        "precision": 99.0622,
+        "f1Score": 98.5853,
+        "mcc": 0.9142
+      },
+      "confusionMatrix": {
+        "tp": 6655,
+        "tn": 1229,
+        "fp": 63,
+        "fn": 128,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "specificity",
+            "message": "Good specificity 95.1% - minimal over-redaction."
+          },
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.914 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.6%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T03:23:46.242Z",
+        "t_occurred": "2025-12-17T03:23:46.242Z",
+        "t_valid_from": "2025-12-17T03:23:46.242Z",
+        "t_valid_until": null
+      }
+    },
+    "run_1765941900124_gxi75ku0d": {
+      "id": "run_1765941900124_gxi75ku0d",
+      "timestamp": "2025-12-17T03:25:00.124Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.3636,
+        "specificity": 94.969,
+        "precision": 99.0352,
+        "f1Score": 98.6982,
+        "mcc": 0.9203
+      },
+      "confusionMatrix": {
+        "tp": 6672,
+        "tn": 1227,
+        "fp": 65,
+        "fn": 111,
+        "total": 8075,
+        "actualPositive": 6783,
+        "actualNegative": 1292
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "mcc",
+            "message": "Excellent MCC 0.920 - strong overall performance."
+          },
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 98.7%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-17T03:25:00.124Z",
+        "t_occurred": "2025-12-17T03:25:00.124Z",
+        "t_valid_from": "2025-12-17T03:25:00.124Z",
+        "t_valid_until": null
+      }
     }
   },
   "Intervention": {

@@ -44,6 +44,7 @@ Complete documentation for the Vulpes Celare PHI redaction engine.
 |----------|-------------|
 | [IMAGE-DICOM.md](IMAGE-DICOM.md) | Image redaction (faces + OCR) and DICOM anonymization |
 | [CLI.md](CLI.md) | Command-line interface usage |
+| MCP Server | Model Context Protocol server (`npx vulpes-mcp`) for AI agent integration |
 
 ### Deployment
 
@@ -85,6 +86,17 @@ CLI configuration stored in `~/.vulpes/`:
 
 All platforms have TypeScript fallbacks. Set `VULPES_REQUIRE_NATIVE=1` to require native bindings.
 
+## Advanced Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| Auto-Calibration | Automatic confidence threshold tuning from test data |
+| Clinical Context Detection | Context-aware processing for medical documentation |
+| DFA Multi-Pattern Scanning | O(n) single-pass detection of 50+ identifier patterns |
+| WebGPU Batch Processing | GPU-accelerated batch redaction with CPU fallback |
+| Supervision & Circuit Breakers | Erlang-style fault tolerance for production |
+| Datalog Reasoning | Declarative constraint solving for span disambiguation |
+
 ## Performance
 
 Typical performance (Windows x64, Rust accelerators enabled):
@@ -95,3 +107,4 @@ Typical performance (Windows x64, Rust accelerators enabled):
 | Streaming chunk | <5ms |
 | Image redaction | 100-500ms |
 | DICOM anonymization | 50-200ms |
+| Batch processing (WebGPU) | ~1000+ docs/sec |

@@ -27,6 +27,7 @@ const RustNameScanner_1 = require("../utils/RustNameScanner");
 const RustApplyKernel_1 = require("../utils/RustApplyKernel");
 const RustAccelConfig_1 = require("../config/RustAccelConfig");
 const FilterWorkerPool_1 = require("./FilterWorkerPool");
+const ContextualConfidenceModifier_1 = require("./ContextualConfidenceModifier");
 /**
  * Parallel Redaction Engine
  * Orchestrates parallel filter execution and span merging
@@ -251,6 +252,16 @@ class ParallelRedactionEngine {
         const crossTypeResults = CrossTypeReasoner_1.crossTypeReasoner.reason(disambiguatedSpans, text);
         const crossTypeAdjusted = crossTypeResults.filter((r) => Math.abs(r.adjustedConfidence - r.originalConfidence) > 0.01).length;
         RadiologyLogger_1.RadiologyLogger.pipelineStage("CROSS-TYPE", `Cross-type reasoning: ${crossTypeAdjusted} spans adjusted, ${CrossTypeReasoner_1.crossTypeReasoner.getStatistics().totalConstraints} constraints applied`, disambiguatedSpans.length);
+        // STEP 2.85: CLINICAL CONTEXT MODIFICATION - Universal context-based confidence adjustment
+        // WIN-WIN: Boosts confidence in clinical context (sensitivity++), penalizes without (specificity++)
+        if ((0, ContextualConfidenceModifier_1.isContextModifierEnabled)()) {
+            const contextResults = ContextualConfidenceModifier_1.contextualConfidenceModifier.modifyAll(disambiguatedSpans, text);
+            const summary = ContextualConfidenceModifier_1.ContextualConfidenceModifier.summarize(contextResults);
+            RadiologyLogger_1.RadiologyLogger.pipelineStage("CONTEXT", `Clinical context: ${summary.boosted} boosted (+${(summary.avgBoost * 100).toFixed(1)}%), ${summary.penalized} penalized (-${(summary.avgPenalty * 100).toFixed(1)}%)`, disambiguatedSpans.length);
+        }
+        else {
+            RadiologyLogger_1.RadiologyLogger.pipelineStage("CONTEXT", "Context modification disabled", disambiguatedSpans.length);
+        }
         // STEP 2.9: CONFIDENCE CALIBRATION - Transform raw scores to calibrated probabilities
         // Uses isotonic regression for monotonic calibration (Zadrozny & Elkan, 2002)
         if (ConfidenceCalibrator_1.confidenceCalibrator.isFittedStatus()) {

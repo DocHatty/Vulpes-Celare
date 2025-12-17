@@ -55,6 +55,10 @@ export { DeviceIdentifierFilterSpan } from "./filters/DeviceIdentifierFilterSpan
 export { VehicleIdentifierFilterSpan } from "./filters/VehicleIdentifierFilterSpan";
 export { BiometricContextFilterSpan } from "./filters/BiometricContextFilterSpan";
 export { UniqueIdentifierFilterSpan } from "./filters/UniqueIdentifierFilterSpan";
+export { ContextAwareNameFilter } from "./filters/ContextAwareNameFilter";
+export { RelativeDateFilterSpan } from "./filters/RelativeDateFilterSpan";
+export { ContextAwareAddressFilter } from "./filters/ContextAwareAddressFilter";
+export { ClinicalContextDetector, contextDetector, RELATIVE_DATE_PATTERNS, type ContextWindow, type ContextIndicator, type ContextType, type ContextStrength, } from "./context/ClinicalContextDetector";
 export { FilterRegistry } from "./filters/FilterRegistry";
 export { WindowService } from "./services/WindowService";
 export { ConfidenceModifierService } from "./services/ConfidenceModifierService";
@@ -63,6 +67,8 @@ export { ProvenanceService, type ProvenanceRecordOptions, } from "./services/Pro
 export { MLWeightOptimizer, mlWeightOptimizer, TrainingDocument, GroundTruthLabel, OptimizationResult, } from "./core/MLWeightOptimizer";
 export { CrossTypeReasoner, crossTypeReasoner, ReasoningResult, } from "./core/CrossTypeReasoner";
 export { ConfidenceCalibrator, confidenceCalibrator, CalibrationDataPoint, CalibrationMetrics, CalibrationResult, } from "./core/ConfidenceCalibrator";
+export { AutoCalibrator, autoCalibrator, initializeCalibration, getCalibratedConfidence, CalibrationDataExtractor, calibrationDataExtractor, CalibrationPersistence, calibrationPersistence, type AutoCalibrationOptions, type CalibrationResult as AutoCalibrationResult, type LiveTestResult, type CalibrationMetadata, type FilterCalibrationStats, } from "./calibration";
+export { ContextualConfidenceModifier, contextualConfidenceModifier, isContextModifierEnabled, type ContextModifierConfig, type ContextModificationResult, } from "./core/ContextualConfidenceModifier";
 export { WeightedPHIScorer, weightedScorer, ScoringWeights, ScoringResult, } from "./core/WeightedPHIScorer";
 export { SpanEnhancer, spanEnhancer, EnhancementResult, EnhancementConfig, } from "./core/SpanEnhancer";
 export { EnsembleVoter, VoteSignal, EnsembleVote, VotingConfig, InterPHIDisambiguator, } from "./core/EnsembleVoter";

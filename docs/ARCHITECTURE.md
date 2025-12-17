@@ -130,6 +130,56 @@ DICOM anonymization is implemented in Node today:
 
 See `docs/IMAGE-DICOM.md` for usage and hashing/UID behavior (HMAC-SHA256 hashing prefers the Rust crypto helper when available).
 
+## Advanced Systems
+
+### Auto-Calibration (`src/calibration/`)
+
+The calibration system automatically tunes confidence thresholds from test data:
+
+- `AutoCalibrator.ts` — Extracts ground truth from test corpus and adjusts per-filter thresholds
+- `CalibrationDataExtractor.ts` — Collects sensitivity/specificity metrics per filter
+- `CalibrationPersistence.ts` — Serializes calibration data for reproducibility
+
+### Clinical Context Detection (`src/context/`)
+
+Context-aware processing for medical documentation:
+
+- `ClinicalContextDetector.ts` — Detects clinical context (medications, diagnoses, procedures)
+- `DocumentStructureAnalyzer.ts` — Identifies document sections (headers, demographics, body)
+- Context types: PATIENT_IDENTIFICATION, MEDICAL_RECORD, MEDICATION, DIAGNOSIS, PROCEDURE
+
+### DFA Multi-Pattern Scanning (`src/dfa/`)
+
+High-performance O(n) pattern matching:
+
+- `MultiPatternScanner.ts` — Deterministic finite automaton for 50+ identifier patterns
+- Single-pass scanning regardless of pattern count
+- Patterns: SSN, phone, email, date, MRN, credit card, IP, ZIP, NPI, DEA
+
+### GPU Batch Processing (`src/gpu/`)
+
+WebGPU acceleration for batch document processing:
+
+- `WebGPUBatchProcessor.ts` — Parallel redaction across document batches
+- Automatic fallback to CPU-parallel when WebGPU unavailable
+- Optimal for 10+ documents per batch
+
+### Supervision & Fault Tolerance (`src/supervision/`)
+
+Erlang-style process supervision for production reliability:
+
+- `Supervisor.ts` — Parent-child process monitoring with automatic restart
+- `CircuitBreaker.ts` — Fault isolation with configurable failure thresholds
+- `BackpressureQueue.ts` — Flow control for high-throughput scenarios
+
+### MCP Server (`src/mcp/`)
+
+Model Context Protocol server for AI agent integration:
+
+- Exposes `redact_text`, `analyze_redaction`, `get_system_info` tools
+- Zero-latency startup for IDE integration
+- Compatible with Claude Code and other MCP clients
+
 ## Build & Test
 
 ```bash

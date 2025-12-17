@@ -74,6 +74,13 @@ import { DeviceIdentifierFilterSpan } from "./filters/DeviceIdentifierFilterSpan
 import { VehicleIdentifierFilterSpan } from "./filters/VehicleIdentifierFilterSpan";
 import { BiometricContextFilterSpan } from "./filters/BiometricContextFilterSpan";
 import { UniqueIdentifierFilterSpan } from "./filters/UniqueIdentifierFilterSpan";
+
+// Context-Aware Filters DISABLED - causing too many false positives
+// The ContextualConfidenceModifier in the pipeline provides the WIN-WIN effect
+// import { ContextAwareNameFilter } from "./filters/ContextAwareNameFilter";
+// import { RelativeDateFilterSpan } from "./filters/RelativeDateFilterSpan";
+// import { ContextAwareAddressFilter } from "./filters/ContextAwareAddressFilter";
+
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
@@ -361,6 +368,7 @@ export class VulpesCelare {
         new FormattedNameFilterSpan(),
         new TitledNameFilterSpan(),
         new FamilyNameFilterSpan(),
+        // ContextAwareNameFilter DISABLED - causing false positives
       ],
       ssn: () => [new SSNFilterSpan()],
       passport: () => [new PassportNumberFilterSpan()],
@@ -368,7 +376,10 @@ export class VulpesCelare {
       phone: () => [new PhoneFilterSpan()],
       fax: () => [new FaxNumberFilterSpan()],
       email: () => [new EmailFilterSpan()],
-      address: () => [new AddressFilterSpan()],
+      address: () => [
+        new AddressFilterSpan(),
+        // ContextAwareAddressFilter DISABLED - causing false positives
+      ],
       zip: () => [new ZipCodeFilterSpan()],
       mrn: () => [new MRNFilterSpan()],
       npi: () => [new NPIFilterSpan()],
@@ -376,7 +387,10 @@ export class VulpesCelare {
       health_plan: () => [new HealthPlanNumberFilterSpan()],
       // hospital filter removed - hospital names are NOT PHI under HIPAA Safe Harbor
       age: () => [new AgeFilterSpan()],
-      date: () => [new DateFilterSpan()],
+      date: () => [
+        new DateFilterSpan(),
+        // RelativeDateFilterSpan DISABLED - causing false positives
+      ],
       credit_card: () => [new CreditCardFilterSpan()],
       account: () => [new AccountNumberFilterSpan()],
       ip: () => [new IPAddressFilterSpan()],

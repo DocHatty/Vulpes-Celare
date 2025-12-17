@@ -62,6 +62,11 @@ class FilterRegistry {
         try {
             // Load all Span-based filters
             const [{ EmailFilterSpan }, { PhoneFilterSpan }, { SSNFilterSpan }, { DateFilterSpan }, { URLFilterSpan }, { IPAddressFilterSpan }, { CreditCardFilterSpan }, { ZipCodeFilterSpan }, { AddressFilterSpan }, { MRNFilterSpan }, { AccountNumberFilterSpan }, { NPIFilterSpan }, { DEAFilterSpan }, { LicenseNumberFilterSpan }, { HealthPlanNumberFilterSpan }, { TitledNameFilterSpan }, { FamilyNameFilterSpan }, { FormattedNameFilterSpan }, { SmartNameFilterSpan }, { FaxNumberFilterSpan }, { VehicleIdentifierFilterSpan }, { DeviceIdentifierFilterSpan }, { BiometricContextFilterSpan }, { PassportNumberFilterSpan }, { UniqueIdentifierFilterSpan }, { AgeFilterSpan },
+            // Context-aware filters DISABLED - causing too many false positives
+            // The ContextualConfidenceModifier provides the WIN-WIN without new pattern matches
+            // { ContextAwareNameFilter },
+            // { ContextAwareAddressFilter },
+            // { RelativeDateFilterSpan },
             // HospitalFilterSpan removed - hospital names are NOT patient PHI under HIPAA Safe Harbor
             // Hospital names should be PROTECTED (whitelisted), not redacted
             // See SmartNameFilterSpan which uses HospitalDictionary for whitelisting
@@ -92,6 +97,10 @@ class FilterRegistry {
                 Promise.resolve().then(() => __importStar(require("./PassportNumberFilterSpan"))),
                 Promise.resolve().then(() => __importStar(require("./UniqueIdentifierFilterSpan"))),
                 Promise.resolve().then(() => __importStar(require("./AgeFilterSpan"))),
+                // Context-aware filter imports DISABLED - causing too many false positives
+                // import("./ContextAwareNameFilter"),
+                // import("./ContextAwareAddressFilter"),
+                // import("./RelativeDateFilterSpan"),
                 // HospitalFilterSpan import removed - hospitals are whitelisted, not redacted
             ]);
             // Register all Span-based filters
@@ -122,6 +131,10 @@ class FilterRegistry {
                 new PassportNumberFilterSpan(),
                 new UniqueIdentifierFilterSpan(),
                 new AgeFilterSpan(),
+                // Context-aware filters DISABLED - causing too many false positives
+                // new ContextAwareNameFilter(),
+                // new ContextAwareAddressFilter(),
+                // new RelativeDateFilterSpan(),
                 // HospitalFilterSpan removed from pipeline - hospitals are NOT PHI
             ];
             RadiologyLogger_1.RadiologyLogger.success("REDACTION", `Parallel Span-based redaction ready: ${this.spanFilters.length} filters loaded (includes FAX, VEHICLE, DEVICE, BIOMETRIC, PASSPORT, UNIQUE_ID, AGE)`);

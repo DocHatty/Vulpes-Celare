@@ -36,6 +36,11 @@ import {
 } from "../utils/RustApplyKernel";
 import { RustAccelConfig } from "../config/RustAccelConfig";
 import { FilterWorkerPool } from "./FilterWorkerPool";
+import {
+  ContextualConfidenceModifier,
+  contextualConfidenceModifier,
+  isContextModifierEnabled,
+} from "./ContextualConfidenceModifier";
 
 /**
  * Filter execution result with detailed diagnostics
@@ -445,6 +450,27 @@ export class ParallelRedactionEngine {
       disambiguatedSpans.length,
     );
 
+    // STEP 2.85: CLINICAL CONTEXT MODIFICATION - Universal context-based confidence adjustment
+    // WIN-WIN: Boosts confidence in clinical context (sensitivity++), penalizes without (specificity++)
+    if (isContextModifierEnabled()) {
+      const contextResults = contextualConfidenceModifier.modifyAll(
+        disambiguatedSpans,
+        text,
+      );
+      const summary = ContextualConfidenceModifier.summarize(contextResults);
+      RadiologyLogger.pipelineStage(
+        "CONTEXT",
+        `Clinical context: ${summary.boosted} boosted (+${(summary.avgBoost * 100).toFixed(1)}%), ${summary.penalized} penalized (-${(summary.avgPenalty * 100).toFixed(1)}%)`,
+        disambiguatedSpans.length,
+      );
+    } else {
+      RadiologyLogger.pipelineStage(
+        "CONTEXT",
+        "Context modification disabled",
+        disambiguatedSpans.length,
+      );
+    }
+
     // STEP 2.9: CONFIDENCE CALIBRATION - Transform raw scores to calibrated probabilities
     // Uses isotonic regression for monotonic calibration (Zadrozny & Elkan, 2002)
     if (confidenceCalibrator.isFittedStatus()) {
@@ -616,15 +642,15 @@ export class ParallelRedactionEngine {
     const postfilterShadow: PostFilterShadowReport | undefined =
       process.env.VULPES_SHADOW_POSTFILTER === "1"
         ? {
-          enabled: true,
-          rustAvailable: false,
-          rustEnabled: false,
-          inputSpans: mergedSpans.length,
-          tsKept: 0,
-          rustKept: 0,
-          missingInRust: 0,
-          extraInRust: 0,
-        }
+            enabled: true,
+            rustAvailable: false,
+            rustEnabled: false,
+            inputSpans: mergedSpans.length,
+            tsKept: 0,
+            rustKept: 0,
+            missingInRust: 0,
+            extraInRust: 0,
+          }
         : undefined;
 
     if (postfilterShadow) {

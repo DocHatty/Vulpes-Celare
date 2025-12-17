@@ -653,7 +653,56 @@ export class ConfidenceCalibrator {
 
     return calibrator;
   }
+
+  /**
+   * Load calibration from persisted file
+   *
+   * Attempts to load calibration parameters from the default location.
+   * Returns true if loaded successfully, false otherwise.
+   */
+  loadFromPersistence(): boolean {
+    try {
+      // Dynamic import to avoid circular dependencies
+      const fs = require("fs");
+      const path = require("path");
+
+      const calibrationPath = path.join(
+        process.cwd(),
+        "data",
+        "calibration",
+        "calibration.json",
+      );
+
+      if (!fs.existsSync(calibrationPath)) {
+        return false;
+      }
+
+      const content = fs.readFileSync(calibrationPath, "utf-8");
+      const persisted = JSON.parse(content);
+
+      if (persisted.parameters) {
+        this.importParameters(persisted.parameters);
+        return true;
+      }
+
+      return false;
+    } catch {
+      // Silently fail - calibration is optional
+      return false;
+    }
+  }
+
+  /**
+   * Create a calibrator with auto-loaded persistence
+   */
+  static createWithPersistence(
+    method: "platt" | "isotonic" | "beta" | "temperature" = "isotonic",
+  ): ConfidenceCalibrator {
+    const calibrator = new ConfidenceCalibrator(method);
+    calibrator.loadFromPersistence();
+    return calibrator;
+  }
 }
 
-// Export singleton for convenience
-export const confidenceCalibrator = new ConfidenceCalibrator("isotonic");
+// Export singleton for convenience - attempts to load from persistence
+export const confidenceCalibrator = ConfidenceCalibrator.createWithPersistence("isotonic");

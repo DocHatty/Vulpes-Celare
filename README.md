@@ -207,6 +207,17 @@ See [tests/master-suite/README.md](tests/master-suite/README.md) for complete te
 | [RUST-NATIVE.md](docs/RUST-NATIVE.md) | Native accelerator details |
 | [tests/master-suite/README.md](tests/master-suite/README.md) | Test suite documentation |
 
+### MCP Server
+
+Vulpes Celare includes an MCP (Model Context Protocol) server for integration with Claude Code and other AI agents:
+
+```bash
+# Start MCP server
+npx vulpes-mcp
+```
+
+The MCP server exposes redaction tools (`redact_text`, `analyze_redaction`, `get_system_info`) for use in AI-assisted workflows.
+
 ## Native Rust Core
 
 The Rust addon (`src/rust/`) handles compute-intensive tasks:
@@ -218,6 +229,15 @@ The Rust addon (`src/rust/`) handles compute-intensive tasks:
 ### Text Accelerators
 
 Eleven Rust accelerators handle text processing: phonetic matching, tokenization, span operations, name scanning, fuzzy matching, OCR chaos detection, multi-identifier scanning, and streaming kernels. All have TypeScript fallbacks. Set `VULPES_*_ACCEL=0` to disable specific accelerators.
+
+### Advanced Capabilities
+
+- **DFA Multi-Pattern Scanning** — O(n) single-pass detection of 50+ identifier patterns
+- **WebGPU Batch Processing** — GPU-accelerated batch redaction with automatic CPU fallback
+- **Auto-Calibration** — Automatic confidence threshold tuning from test data
+- **Clinical Context Detection** — Context-aware confidence boosting for medical documentation
+- **Supervision & Circuit Breakers** — Erlang-style fault tolerance for production deployments
+- **MCP Server** — Model Context Protocol integration for IDE and agent tooling
 
 ### ONNX Runtime
 

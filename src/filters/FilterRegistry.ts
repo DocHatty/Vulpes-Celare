@@ -63,6 +63,11 @@ export class FilterRegistry {
         { PassportNumberFilterSpan },
         { UniqueIdentifierFilterSpan },
         { AgeFilterSpan },
+        // Context-aware filters DISABLED - causing too many false positives
+        // The ContextualConfidenceModifier provides the WIN-WIN without new pattern matches
+        // { ContextAwareNameFilter },
+        // { ContextAwareAddressFilter },
+        // { RelativeDateFilterSpan },
         // HospitalFilterSpan removed - hospital names are NOT patient PHI under HIPAA Safe Harbor
         // Hospital names should be PROTECTED (whitelisted), not redacted
         // See SmartNameFilterSpan which uses HospitalDictionary for whitelisting
@@ -93,6 +98,10 @@ export class FilterRegistry {
         import("./PassportNumberFilterSpan"),
         import("./UniqueIdentifierFilterSpan"),
         import("./AgeFilterSpan"),
+        // Context-aware filter imports DISABLED - causing too many false positives
+        // import("./ContextAwareNameFilter"),
+        // import("./ContextAwareAddressFilter"),
+        // import("./RelativeDateFilterSpan"),
         // HospitalFilterSpan import removed - hospitals are whitelisted, not redacted
       ]);
 
@@ -124,6 +133,10 @@ export class FilterRegistry {
         new PassportNumberFilterSpan(),
         new UniqueIdentifierFilterSpan(),
         new AgeFilterSpan(),
+        // Context-aware filters DISABLED - causing too many false positives
+        // new ContextAwareNameFilter(),
+        // new ContextAwareAddressFilter(),
+        // new RelativeDateFilterSpan(),
         // HospitalFilterSpan removed from pipeline - hospitals are NOT PHI
       ];
 

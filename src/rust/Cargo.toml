@@ -6,6 +6,15 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
+[features]
+default = []
+# Enable DirectML GPU acceleration (Windows only)
+# Requires ONNX Runtime built with DirectML support
+directml = []
+# Enable CUDA GPU acceleration (NVIDIA GPUs)
+# Requires ONNX Runtime built with CUDA support
+cuda = []
+
 [dependencies]
 # NAPI-RS: The Bridge
 napi = { version = "2.16", default-features = false, features = ["napi4", "async", "tokio_rt"] }
@@ -20,6 +29,9 @@ regex = "1.11"
 lazy_static = "1.5"
 
 # Deep Learning Inference
+# GPU acceleration is controlled by environment variable VULPES_GPU_PROVIDER
+# Set to "directml" (Windows) or "cuda" (NVIDIA) to enable GPU
+# Falls back to CPU if GPU is unavailable
 ort = { version = "=2.0.0-rc.10", features = ["load-dynamic", "ndarray"] }
 
 # Image Processing

@@ -264,6 +264,7 @@ class VulpesCelare {
                 new FormattedNameFilterSpan_1.FormattedNameFilterSpan(),
                 new TitledNameFilterSpan_1.TitledNameFilterSpan(),
                 new FamilyNameFilterSpan_1.FamilyNameFilterSpan(),
+                // ContextAwareNameFilter DISABLED - causing false positives
             ],
             ssn: () => [new SSNFilterSpan_1.SSNFilterSpan()],
             passport: () => [new PassportNumberFilterSpan_1.PassportNumberFilterSpan()],
@@ -271,7 +272,10 @@ class VulpesCelare {
             phone: () => [new PhoneFilterSpan_1.PhoneFilterSpan()],
             fax: () => [new FaxNumberFilterSpan_1.FaxNumberFilterSpan()],
             email: () => [new EmailFilterSpan_1.EmailFilterSpan()],
-            address: () => [new AddressFilterSpan_1.AddressFilterSpan()],
+            address: () => [
+                new AddressFilterSpan_1.AddressFilterSpan(),
+                // ContextAwareAddressFilter DISABLED - causing false positives
+            ],
             zip: () => [new ZipCodeFilterSpan_1.ZipCodeFilterSpan()],
             mrn: () => [new MRNFilterSpan_1.MRNFilterSpan()],
             npi: () => [new NPIFilterSpan_1.NPIFilterSpan()],
@@ -279,7 +283,10 @@ class VulpesCelare {
             health_plan: () => [new HealthPlanNumberFilterSpan_1.HealthPlanNumberFilterSpan()],
             // hospital filter removed - hospital names are NOT PHI under HIPAA Safe Harbor
             age: () => [new AgeFilterSpan_1.AgeFilterSpan()],
-            date: () => [new DateFilterSpan_1.DateFilterSpan()],
+            date: () => [
+                new DateFilterSpan_1.DateFilterSpan(),
+                // RelativeDateFilterSpan DISABLED - causing false positives
+            ],
             credit_card: () => [new CreditCardFilterSpan_1.CreditCardFilterSpan()],
             account: () => [new AccountNumberFilterSpan_1.AccountNumberFilterSpan()],
             ip: () => [new IPAddressFilterSpan_1.IPAddressFilterSpan()],
