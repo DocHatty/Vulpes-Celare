@@ -22,8 +22,8 @@ auditable de-identification pipeline suitable for healthcare research and air-ga
 
 | Metric | Vulpes Celare | vs. Presidio |
 |:------:|:-------------:|:------------:|
-| Sensitivity | 99.2% | +5.1% |
-| Precision | 97.8% | +6.0% |
+| Sensitivity | 98.2% | +5.1% |
+| Precision | 96.8% | +6.0% |
 | F1 Score | 98.5% | +5.6% |
 | Processing | <10ms | — |
 | HIPAA Coverage | 18/18 | — |
