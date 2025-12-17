@@ -4,7 +4,7 @@
 <tr>
 <td>
 
-**Evaluation License Only** | Not for clinical use | Not for commercial use | No redistribution
+**Source-Available** · Evaluation License · [Commercial licensing available](#license--commercial-use)
 
 </td>
 </tr>
@@ -280,15 +280,25 @@ Strict gating (non-zero exit on threshold failures):
 npm run test:strict
 ```
 
-## License
+## License & Commercial Use
 
-**This software is not open source.**
+Vulpes Celare is **source-available** under an [Evaluation License](LICENSE-EVALUATION.txt) for research, educational, and technical assessment purposes.
 
-Vulpes Celare is provided under an [Evaluation License](LICENSE-EVALUATION.txt) for research and educational use only. You may view, study, and run the software locally for evaluation purposes.
+**This license permits:**
+- Local evaluation and benchmarking
+- Code inspection and security review
+- Research and non-clinical experimentation
+- Academic publication and citation
 
-You may **not** use this software for clinical care, commercial purposes, or redistribute it in any form without prior written permission.
+**Clinical use, commercial deployment, redistribution, or incorporation into revenue-generating systems requires a separate commercial license.**
 
-For licensing inquiries, contact the maintainers via [GitHub Issues](https://github.com/DocHatty/Vulpes-Celare/issues).
+### Commercial & Strategic Partnerships
+
+Commercial licensing, enterprise deployment, acquisition, and strategic partnerships are explicitly welcomed.
+
+Licensing structures may include standalone commercial licenses, dual-license models, OEM/embedded agreements, or strategic IP arrangements. Initial discussions are lightweight and exploratory.
+
+If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) or contact the maintainer to initiate a conversation.
 
 ## Contributing
 
