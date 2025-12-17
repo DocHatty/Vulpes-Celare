@@ -38,9 +38,15 @@ export {
   ScanMatch,
   ScanResult,
   MultiPatternScanner,
-  ZigDFAScanner,
-  ZigDFAScannerInterface,
+  RustDFAScanner,
+  RustDFAScannerInterface,
+  ZigDFAScanner, // Legacy alias
   getMultiPatternScanner,
   isDFAScanningEnabled,
+  isRustAccelerationAvailable,
   scanWithDFA,
 } from "./MultiPatternScanner";
+
+// Legacy type alias for backwards compatibility
+export type ZigDFAScannerInterface = RustDFAScannerInterface;
+import type { RustDFAScannerInterface } from "./MultiPatternScanner";

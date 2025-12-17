@@ -13,6 +13,7 @@ pub mod phonetic;
 pub mod postfilter;
 pub mod scan;
 pub mod scan_stream;
+pub mod scorer;
 pub mod span;
 pub mod streaming;
 pub mod tokenize;

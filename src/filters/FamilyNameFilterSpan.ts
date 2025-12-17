@@ -15,6 +15,7 @@ import {
   NameDetectionUtils,
   PROVIDER_TITLE_PREFIXES,
 } from "../utils/NameDetectionUtils";
+import { RustNameScanner } from "../utils/RustNameScanner";
 
 export class FamilyNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -26,6 +27,42 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    // Try Rust acceleration first - detectSmart includes family member patterns
+    const rustDetections = RustNameScanner.detectSmart(text);
+    if (rustDetections.length > 0) {
+      // Filter for family-related patterns
+      const familyPatterns = rustDetections.filter(
+        (d) => d.pattern.includes("Family") || d.pattern.includes("Possessive"),
+      );
+      if (familyPatterns.length > 0) {
+        return familyPatterns.map((d) => {
+          return new Span({
+            text: d.text,
+            originalValue: d.text,
+            characterStart: d.characterStart,
+            characterEnd: d.characterEnd,
+            filterType: FilterType.NAME,
+            confidence: d.confidence,
+            priority: this.getPriority(),
+            context: this.extractContext(
+              text,
+              d.characterStart,
+              d.characterEnd,
+            ),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: d.pattern,
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          });
+        });
+      }
+    }
+
+    // TypeScript fallback
     const spans: Span[] = [];
 
     // PRIMARY PATTERNS: Family relationships (specialized focus)

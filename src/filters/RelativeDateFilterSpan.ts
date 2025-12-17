@@ -26,6 +26,7 @@ import {
   ClinicalContextDetector,
   RELATIVE_DATE_PATTERNS,
 } from "../context/ClinicalContextDetector";
+import { RustScanKernel } from "../utils/RustScanKernel";
 
 /**
  * Additional relative date patterns not in ClinicalContextDetector
@@ -38,13 +39,15 @@ const EXTENDED_RELATIVE_PATTERNS: {
 }[] = [
   // Day of week references (narrow to specific date)
   {
-    pattern: /\b(?:last|this|next)\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi,
+    pattern:
+      /\b(?:last|this|next)\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi,
     baseConfidence: 0.8,
     requiresContext: true,
     description: "Day of week reference",
   },
   {
-    pattern: /\bon\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi,
+    pattern:
+      /\bon\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi,
     baseConfidence: 0.7,
     requiresContext: true,
     description: "Day reference",
@@ -78,7 +81,8 @@ const EXTENDED_RELATIVE_PATTERNS: {
     description: "Admission/discharge reference",
   },
   {
-    pattern: /\b(?:since|prior\s+to|before|after)\s+(?:admission|discharge|surgery|procedure)\b/gi,
+    pattern:
+      /\b(?:since|prior\s+to|before|after)\s+(?:admission|discharge|surgery|procedure)\b/gi,
     baseConfidence: 0.85,
     requiresContext: false,
     description: "Clinical event reference",
@@ -108,13 +112,15 @@ const EXTENDED_RELATIVE_PATTERNS: {
 
   // Time-bound phrases
   {
-    pattern: /\b(?:within|over)\s+the\s+(?:past|last|next)\s+\d+\s+(?:hours?|days?|weeks?|months?)\b/gi,
+    pattern:
+      /\b(?:within|over)\s+the\s+(?:past|last|next)\s+\d+\s+(?:hours?|days?|weeks?|months?)\b/gi,
     baseConfidence: 0.8,
     requiresContext: true,
     description: "Time-bound phrase",
   },
   {
-    pattern: /\bfor\s+the\s+(?:past|last)\s+\d+\s+(?:hours?|days?|weeks?|months?)\b/gi,
+    pattern:
+      /\bfor\s+the\s+(?:past|last)\s+\d+\s+(?:hours?|days?|weeks?|months?)\b/gi,
     baseConfidence: 0.8,
     requiresContext: true,
     description: "Duration phrase",
@@ -122,7 +128,8 @@ const EXTENDED_RELATIVE_PATTERNS: {
 
   // Recently/newly qualifiers with clinical actions
   {
-    pattern: /\b(?:recently|newly)\s+(?:diagnosed|started|began|developed|admitted|discharged)\b/gi,
+    pattern:
+      /\b(?:recently|newly)\s+(?:diagnosed|started|began|developed|admitted|discharged)\b/gi,
     baseConfidence: 0.8,
     requiresContext: false,
     description: "Recent clinical action",
@@ -130,7 +137,8 @@ const EXTENDED_RELATIVE_PATTERNS: {
 
   // Appointment references
   {
-    pattern: /\b(?:last|previous|prior|next|upcoming)\s+(?:visit|appointment|follow[- ]?up)\b/gi,
+    pattern:
+      /\b(?:last|previous|prior|next|upcoming)\s+(?:visit|appointment|follow[- ]?up)\b/gi,
     baseConfidence: 0.8,
     requiresContext: true,
     description: "Appointment reference",
@@ -188,7 +196,8 @@ const EXTENDED_RELATIVE_PATTERNS: {
 
   // Life event markers
   {
-    pattern: /\b(?:since|after|before)\s+(?:retirement|graduation|marriage|divorce)\b/gi,
+    pattern:
+      /\b(?:since|after|before)\s+(?:retirement|graduation|marriage|divorce)\b/gi,
     baseConfidence: 0.7,
     requiresContext: true,
     description: "Life event marker",
@@ -196,7 +205,8 @@ const EXTENDED_RELATIVE_PATTERNS: {
 
   // Medication timing
   {
-    pattern: /\b(?:started|stopped|discontinued)\s+\d+\s+(?:days?|weeks?|months?)\s+ago\b/gi,
+    pattern:
+      /\b(?:started|stopped|discontinued)\s+\d+\s+(?:days?|weeks?|months?)\s+ago\b/gi,
     baseConfidence: 0.85,
     requiresContext: false,
     description: "Medication timing",
@@ -225,6 +235,36 @@ export class RelativeDateFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    // Try Rust acceleration first
+    const accelerated = RustScanKernel.getDetections(
+      context,
+      text,
+      "RELATIVE_DATE",
+    );
+    if (accelerated && accelerated.length > 0) {
+      return accelerated.map((d) => {
+        return new Span({
+          text: d.text,
+          originalValue: d.text,
+          characterStart: d.characterStart,
+          characterEnd: d.characterEnd,
+          filterType: FilterType.DATE,
+          confidence: d.confidence,
+          priority: this.getPriority(),
+          context: this.extractContext(text, d.characterStart, d.characterEnd),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: d.pattern,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+      });
+    }
+
+    // TypeScript fallback
     const spans: Span[] = [];
     const seen = new Set<string>();
 
@@ -248,7 +288,7 @@ export class RelativeDateFilterSpan extends SpanBasedFilter {
           const contextResult = ClinicalContextDetector.analyzeContext(
             text,
             start,
-            matchText.length
+            matchText.length,
           );
 
           // Skip if no clinical context
@@ -264,16 +304,17 @@ export class RelativeDateFilterSpan extends SpanBasedFilter {
         let confidence = patternDef.baseConfidence;
         if (!patternDef.requiresContext) {
           // Already clinical, still apply small boost for strong context
-          confidence += ClinicalContextDetector.getContextConfidenceBoost(
-            text,
-            start,
-            matchText.length
-          ) * 0.5;
+          confidence +=
+            ClinicalContextDetector.getContextConfidenceBoost(
+              text,
+              start,
+              matchText.length,
+            ) * 0.5;
         } else {
           confidence += ClinicalContextDetector.getContextConfidenceBoost(
             text,
             start,
-            matchText.length
+            matchText.length,
           );
         }
         confidence = Math.min(0.95, confidence);

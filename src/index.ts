@@ -384,12 +384,18 @@ export {
   ScanMatch,
   ScanResult,
   MultiPatternScanner,
-  ZigDFAScanner,
-  ZigDFAScannerInterface,
+  RustDFAScanner,
+  RustDFAScannerInterface,
+  ZigDFAScanner, // Legacy alias
   getMultiPatternScanner,
   isDFAScanningEnabled,
+  isRustAccelerationAvailable,
   scanWithDFA,
 } from "./dfa/MultiPatternScanner";
+
+// Legacy type alias for backwards compatibility
+export type ZigDFAScannerInterface = RustDFAScannerInterface;
+import type { RustDFAScannerInterface } from "./dfa/MultiPatternScanner";
 
 // ============================================================================
 // GPU BATCH PROCESSING (Phase 5: WebGPU Acceleration)

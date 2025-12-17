@@ -16,6 +16,7 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { RustScanKernel } from "../utils/RustScanKernel";
 
 export class AgeFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -27,6 +28,32 @@ export class AgeFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    // Try Rust acceleration first
+    const accelerated = RustScanKernel.getDetections(context, text, "AGE");
+    if (accelerated && accelerated.length > 0) {
+      return accelerated.map((d) => {
+        return new Span({
+          text: d.text,
+          originalValue: d.text,
+          characterStart: d.characterStart,
+          characterEnd: d.characterEnd,
+          filterType: FilterType.AGE,
+          confidence: d.confidence,
+          priority: this.getPriority(),
+          context: this.extractContext(text, d.characterStart, d.characterEnd),
+          window: [],
+          replacement: "90+",
+          salt: null,
+          pattern: d.pattern,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+      });
+    }
+
+    // TypeScript fallback
     const spans: Span[] = [];
 
     // Pattern 1: Explicit age statements (e.g., "92 years old", "age 95")

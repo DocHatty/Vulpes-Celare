@@ -1125,11 +1125,29 @@
       "timestamp": "2025-12-17T03:58:41.857Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765965598990",
+      "timestamp": "2025-12-17T09:59:58.990Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765966567471",
+      "timestamp": "2025-12-17T10:16:07.471Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765966920604",
+      "timestamp": "2025-12-17T10:22:00.604Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 188,
+    "total": 191,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 187
+    "noHistoryFound": 190
   }
 }

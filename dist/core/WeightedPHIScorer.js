@@ -9,6 +9,11 @@
  * - Whitelist penalties (medical terms, disease eponyms)
  * - Type-specific confidence thresholds
  *
+ * RUST ACCELERATION:
+ * - Uses Rust VulpesPHIScorer for 10-50x speedup when available
+ * - Batch scoring via optimized Rust implementation
+ * - Falls back to TypeScript when Rust binding unavailable
+ *
  * PERFORMANCE: Designed for high-throughput batch scoring
  *
  * @module redaction/core
@@ -16,6 +21,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.weightedScorer = exports.WeightedPHIScorer = void 0;
 const Span_1 = require("../models/Span");
+const binding_1 = require("../native/binding");
+// Rust binding cache
+let cachedBinding = undefined;
+function getBinding() {
+    if (cachedBinding !== undefined)
+        return cachedBinding;
+    try {
+        cachedBinding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
+    }
+    catch {
+        cachedBinding = null;
+    }
+    return cachedBinding;
+}
+function isScorerAccelEnabled() {
+    // Use same config as other accelerators, default enabled
+    return process.env.VULPES_SCORER_ACCEL !== "0";
+}
 /**
  * Default scoring weights (calibrated from Vulpes-NeuralNetwork)
  */
@@ -23,28 +46,28 @@ const DEFAULT_WEIGHTS = {
     // Regex pattern weights
     lastFirstFormat: 0.95,
     titledName: 0.92,
-    patientLabel: 0.90,
+    patientLabel: 0.9,
     labeledName: 0.91,
-    familyRelation: 0.90,
-    generalFullName: 0.70,
+    familyRelation: 0.9,
+    generalFullName: 0.7,
     highPrecisionPattern: 0.95,
     // Neural detection weights
-    nerBaseWeight: 0.60,
+    nerBaseWeight: 0.6,
     nerConfidenceMultiplier: 0.35,
     nerHighConfidenceBonus: 0.15,
     // Context bonuses
     titleContextBonus: 0.25,
-    familyContextBonus: 0.30,
-    phiLabelBonus: 0.20,
+    familyContextBonus: 0.3,
+    phiLabelBonus: 0.2,
     clinicalRoleBonus: 0.25,
     // Whitelist penalties (negative to reduce score)
     diseaseEponymPenalty: -0.85,
-    diseaseNamePenalty: -0.80,
+    diseaseNamePenalty: -0.8,
     medicationPenalty: -0.75,
-    procedurePenalty: -0.70,
+    procedurePenalty: -0.7,
     anatomicalPenalty: -0.65,
-    sectionHeaderPenalty: -0.90,
-    organizationPenalty: -0.60,
+    sectionHeaderPenalty: -0.9,
+    organizationPenalty: -0.6,
 };
 /**
  * PHI types that use high-precision pattern matching
@@ -67,95 +90,294 @@ const HIGH_PRECISION_TYPES = new Set([
 function buildMedicalWhitelists() {
     return {
         diseaseEponyms: new Set([
-            "parkinson", "parkinson's", "parkinsons",
-            "alzheimer", "alzheimer's", "alzheimers",
-            "hodgkin", "hodgkin's", "hodgkins",
-            "crohn", "crohn's", "crohns",
-            "addison", "addison's", "addisons",
-            "cushing", "cushing's", "cushings",
-            "graves", "graves'",
-            "hashimoto", "hashimoto's", "hashimotos",
-            "bell", "bell's", "bells palsy",
-            "raynaud", "raynaud's", "raynauds",
-            "meniere", "meniere's", "menieres",
-            "tourette", "tourette's", "tourettes",
-            "wilson", "wilson's", "wilsons disease",
-            "huntington", "huntington's", "huntingtons",
-            "marfan", "marfan's", "marfans",
-            "sjogren", "sjogren's", "sjogrens",
-            "guillain", "guillain-barre", "guillain barre",
-            "kaposi", "kaposi's", "kaposis",
+            "parkinson",
+            "parkinson's",
+            "parkinsons",
+            "alzheimer",
+            "alzheimer's",
+            "alzheimers",
+            "hodgkin",
+            "hodgkin's",
+            "hodgkins",
+            "crohn",
+            "crohn's",
+            "crohns",
+            "addison",
+            "addison's",
+            "addisons",
+            "cushing",
+            "cushing's",
+            "cushings",
+            "graves",
+            "graves'",
+            "hashimoto",
+            "hashimoto's",
+            "hashimotos",
+            "bell",
+            "bell's",
+            "bells palsy",
+            "raynaud",
+            "raynaud's",
+            "raynauds",
+            "meniere",
+            "meniere's",
+            "menieres",
+            "tourette",
+            "tourette's",
+            "tourettes",
+            "wilson",
+            "wilson's",
+            "wilsons disease",
+            "huntington",
+            "huntington's",
+            "huntingtons",
+            "marfan",
+            "marfan's",
+            "marfans",
+            "sjogren",
+            "sjogren's",
+            "sjogrens",
+            "guillain",
+            "guillain-barre",
+            "guillain barre",
+            "kaposi",
+            "kaposi's",
+            "kaposis",
             "kawasaki",
-            "paget", "paget's", "pagets",
-        ].map(s => s.toLowerCase())),
+            "paget",
+            "paget's",
+            "pagets",
+        ].map((s) => s.toLowerCase())),
         diseaseNames: new Set([
-            "diabetes", "hypertension", "cancer", "leukemia", "lymphoma",
-            "pneumonia", "bronchitis", "asthma", "copd", "emphysema",
-            "arthritis", "osteoporosis", "fibromyalgia",
-            "depression", "anxiety", "schizophrenia", "bipolar",
-            "hepatitis", "cirrhosis", "pancreatitis",
-            "stroke", "aneurysm", "thrombosis", "embolism",
-            "carcinoma", "melanoma", "sarcoma", "tumor",
-            "infection", "sepsis", "abscess",
-            "fracture", "dislocation", "sprain",
-            "anemia", "thrombocytopenia", "neutropenia",
-            "dementia", "neuropathy", "myopathy",
-            "colitis", "gastritis", "esophagitis",
-            "nephritis", "cystitis", "pyelonephritis",
-            "dermatitis", "eczema", "psoriasis",
-            "sinusitis", "otitis", "conjunctivitis",
-        ].map(s => s.toLowerCase())),
+            "diabetes",
+            "hypertension",
+            "cancer",
+            "leukemia",
+            "lymphoma",
+            "pneumonia",
+            "bronchitis",
+            "asthma",
+            "copd",
+            "emphysema",
+            "arthritis",
+            "osteoporosis",
+            "fibromyalgia",
+            "depression",
+            "anxiety",
+            "schizophrenia",
+            "bipolar",
+            "hepatitis",
+            "cirrhosis",
+            "pancreatitis",
+            "stroke",
+            "aneurysm",
+            "thrombosis",
+            "embolism",
+            "carcinoma",
+            "melanoma",
+            "sarcoma",
+            "tumor",
+            "infection",
+            "sepsis",
+            "abscess",
+            "fracture",
+            "dislocation",
+            "sprain",
+            "anemia",
+            "thrombocytopenia",
+            "neutropenia",
+            "dementia",
+            "neuropathy",
+            "myopathy",
+            "colitis",
+            "gastritis",
+            "esophagitis",
+            "nephritis",
+            "cystitis",
+            "pyelonephritis",
+            "dermatitis",
+            "eczema",
+            "psoriasis",
+            "sinusitis",
+            "otitis",
+            "conjunctivitis",
+        ].map((s) => s.toLowerCase())),
         medications: new Set([
-            "lisinopril", "metformin", "amlodipine", "metoprolol", "omeprazole",
-            "simvastatin", "losartan", "gabapentin", "hydrochlorothiazide",
-            "atorvastatin", "levothyroxine", "prednisone", "amoxicillin",
-            "azithromycin", "alprazolam", "tramadol", "furosemide",
-            "pantoprazole", "escitalopram", "sertraline", "fluoxetine",
-            "trazodone", "clopidogrel", "warfarin", "aspirin", "ibuprofen",
-            "acetaminophen", "naproxen", "oxycodone", "morphine", "fentanyl",
-            "insulin", "methotrexate", "prolia", "humira", "enbrel",
-            "xarelto", "eliquis", "pradaxa", "coumadin",
-            "lipitor", "crestor", "zocor", "pravachol",
-            "norvasc", "cardizem", "procardia",
-            "lasix", "bumex", "aldactone",
-            "zoloft", "prozac", "lexapro", "celexa", "paxil",
-            "xanax", "ativan", "valium", "klonopin",
-            "ambien", "lunesta", "sonata",
-        ].map(s => s.toLowerCase())),
+            "lisinopril",
+            "metformin",
+            "amlodipine",
+            "metoprolol",
+            "omeprazole",
+            "simvastatin",
+            "losartan",
+            "gabapentin",
+            "hydrochlorothiazide",
+            "atorvastatin",
+            "levothyroxine",
+            "prednisone",
+            "amoxicillin",
+            "azithromycin",
+            "alprazolam",
+            "tramadol",
+            "furosemide",
+            "pantoprazole",
+            "escitalopram",
+            "sertraline",
+            "fluoxetine",
+            "trazodone",
+            "clopidogrel",
+            "warfarin",
+            "aspirin",
+            "ibuprofen",
+            "acetaminophen",
+            "naproxen",
+            "oxycodone",
+            "morphine",
+            "fentanyl",
+            "insulin",
+            "methotrexate",
+            "prolia",
+            "humira",
+            "enbrel",
+            "xarelto",
+            "eliquis",
+            "pradaxa",
+            "coumadin",
+            "lipitor",
+            "crestor",
+            "zocor",
+            "pravachol",
+            "norvasc",
+            "cardizem",
+            "procardia",
+            "lasix",
+            "bumex",
+            "aldactone",
+            "zoloft",
+            "prozac",
+            "lexapro",
+            "celexa",
+            "paxil",
+            "xanax",
+            "ativan",
+            "valium",
+            "klonopin",
+            "ambien",
+            "lunesta",
+            "sonata",
+        ].map((s) => s.toLowerCase())),
         procedures: new Set([
-            "ct scan", "ct", "mri", "x-ray", "xray", "ultrasound",
-            "echocardiogram", "ekg", "ecg", "eeg",
-            "colonoscopy", "endoscopy", "bronchoscopy", "laparoscopy",
-            "biopsy", "surgery", "operation", "procedure",
-            "catheterization", "angiogram", "angioplasty",
-            "dialysis", "chemotherapy", "radiation", "immunotherapy",
-            "physical therapy", "occupational therapy", "speech therapy",
-            "mammogram", "pap smear", "bone scan", "pet scan",
-            "injection", "infusion", "transfusion",
-        ].map(s => s.toLowerCase())),
+            "ct scan",
+            "ct",
+            "mri",
+            "x-ray",
+            "xray",
+            "ultrasound",
+            "echocardiogram",
+            "ekg",
+            "ecg",
+            "eeg",
+            "colonoscopy",
+            "endoscopy",
+            "bronchoscopy",
+            "laparoscopy",
+            "biopsy",
+            "surgery",
+            "operation",
+            "procedure",
+            "catheterization",
+            "angiogram",
+            "angioplasty",
+            "dialysis",
+            "chemotherapy",
+            "radiation",
+            "immunotherapy",
+            "physical therapy",
+            "occupational therapy",
+            "speech therapy",
+            "mammogram",
+            "pap smear",
+            "bone scan",
+            "pet scan",
+            "injection",
+            "infusion",
+            "transfusion",
+        ].map((s) => s.toLowerCase())),
         anatomical: new Set([
-            "abdomen", "pelvis", "thorax", "chest", "head", "neck",
-            "liver", "kidney", "spleen", "pancreas", "gallbladder",
-            "heart", "lung", "brain", "spine", "colon",
-            "stomach", "intestine", "bladder", "prostate",
-            "uterus", "ovary", "breast", "thyroid",
-            "artery", "vein", "nerve", "muscle", "bone", "joint",
-            "skin", "tissue", "membrane", "cartilage",
-        ].map(s => s.toLowerCase())),
+            "abdomen",
+            "pelvis",
+            "thorax",
+            "chest",
+            "head",
+            "neck",
+            "liver",
+            "kidney",
+            "spleen",
+            "pancreas",
+            "gallbladder",
+            "heart",
+            "lung",
+            "brain",
+            "spine",
+            "colon",
+            "stomach",
+            "intestine",
+            "bladder",
+            "prostate",
+            "uterus",
+            "ovary",
+            "breast",
+            "thyroid",
+            "artery",
+            "vein",
+            "nerve",
+            "muscle",
+            "bone",
+            "joint",
+            "skin",
+            "tissue",
+            "membrane",
+            "cartilage",
+        ].map((s) => s.toLowerCase())),
         sectionHeaders: new Set([
-            "assessment", "plan", "diagnosis", "history", "examination",
-            "medications", "allergies", "vitals", "labs", "imaging",
-            "chief complaint", "hpi", "ros", "physical exam",
-            "impression", "recommendations", "follow-up",
-            "subjective", "objective", "problem list",
-        ].map(s => s.toLowerCase())),
+            "assessment",
+            "plan",
+            "diagnosis",
+            "history",
+            "examination",
+            "medications",
+            "allergies",
+            "vitals",
+            "labs",
+            "imaging",
+            "chief complaint",
+            "hpi",
+            "ros",
+            "physical exam",
+            "impression",
+            "recommendations",
+            "follow-up",
+            "subjective",
+            "objective",
+            "problem list",
+        ].map((s) => s.toLowerCase())),
         organizations: new Set([
-            "hospital", "clinic", "medical center", "health center",
-            "healthcare", "health system", "medical group",
-            "pharmacy", "laboratory", "urgent care",
-            "emergency room", "emergency department",
-            "nursing home", "rehabilitation", "hospice",
-        ].map(s => s.toLowerCase())),
+            "hospital",
+            "clinic",
+            "medical center",
+            "health center",
+            "healthcare",
+            "health system",
+            "medical group",
+            "pharmacy",
+            "laboratory",
+            "urgent care",
+            "emergency room",
+            "emergency department",
+            "nursing home",
+            "rehabilitation",
+            "hospice",
+        ].map((s) => s.toLowerCase())),
     };
 }
 const CONTEXT_PATTERNS = {
@@ -166,20 +388,89 @@ const CONTEXT_PATTERNS = {
 };
 /**
  * WeightedPHIScorer - Main scoring class
+ *
+ * Uses Rust acceleration when available for 10-50x speedup.
  */
 class WeightedPHIScorer {
     weights;
     whitelists;
     decisionThreshold;
-    constructor(weights = {}, decisionThreshold = 0.50) {
+    rustScorer = null;
+    useRust = false;
+    constructor(weights = {}, decisionThreshold = 0.5) {
         this.weights = { ...DEFAULT_WEIGHTS, ...weights };
         this.whitelists = buildMedicalWhitelists();
         this.decisionThreshold = decisionThreshold;
+        // Initialize Rust acceleration
+        if (isScorerAccelEnabled()) {
+            const binding = getBinding();
+            if (binding?.VulpesPHIScorer) {
+                try {
+                    const rustWeights = {
+                        lastFirstFormat: this.weights.lastFirstFormat,
+                        titledName: this.weights.titledName,
+                        patientLabel: this.weights.patientLabel,
+                        labeledName: this.weights.labeledName,
+                        familyRelation: this.weights.familyRelation,
+                        generalFullName: this.weights.generalFullName,
+                        highPrecisionPattern: this.weights.highPrecisionPattern,
+                        titleContextBonus: this.weights.titleContextBonus,
+                        familyContextBonus: this.weights.familyContextBonus,
+                        phiLabelBonus: this.weights.phiLabelBonus,
+                        clinicalRoleBonus: this.weights.clinicalRoleBonus,
+                        diseaseEponymPenalty: this.weights.diseaseEponymPenalty,
+                        diseaseNamePenalty: this.weights.diseaseNamePenalty,
+                        medicationPenalty: this.weights.medicationPenalty,
+                        procedurePenalty: this.weights.procedurePenalty,
+                        anatomicalPenalty: this.weights.anatomicalPenalty,
+                        sectionHeaderPenalty: this.weights.sectionHeaderPenalty,
+                        organizationPenalty: this.weights.organizationPenalty,
+                    };
+                    this.rustScorer = new binding.VulpesPHIScorer(rustWeights, decisionThreshold);
+                    this.useRust = true;
+                }
+                catch {
+                    // Fall back to TypeScript implementation
+                }
+            }
+        }
+    }
+    /**
+     * Check if Rust acceleration is active
+     */
+    isRustAccelerated() {
+        return this.useRust;
     }
     /**
      * Score a single span
      */
     score(span, context) {
+        // Try Rust path first
+        if (this.useRust && this.rustScorer) {
+            try {
+                const rustSpan = {
+                    text: span.text,
+                    filterType: span.filterType,
+                    confidence: span.confidence,
+                    pattern: span.pattern ?? undefined, // Convert null to undefined for Rust
+                    characterStart: span.characterStart,
+                    characterEnd: span.characterEnd,
+                };
+                const result = this.rustScorer.score(rustSpan, context);
+                return {
+                    finalScore: result.finalScore,
+                    baseScore: result.baseScore,
+                    contextBonus: result.contextBonus,
+                    whitelistPenalty: result.whitelistPenalty,
+                    recommendation: result.recommendation,
+                    breakdown: result.breakdown,
+                };
+            }
+            catch {
+                // Fall through to TypeScript
+            }
+        }
+        // TypeScript fallback
         const breakdown = [];
         let baseScore = 0;
         let contextBonus = 0;
@@ -195,13 +486,13 @@ class WeightedPHIScorer {
         // 5. Make recommendation
         let recommendation;
         if (finalScore >= this.decisionThreshold + 0.15) {
-            recommendation = 'PHI';
+            recommendation = "PHI";
         }
         else if (finalScore < this.decisionThreshold - 0.15) {
-            recommendation = 'NOT_PHI';
+            recommendation = "NOT_PHI";
         }
         else {
-            recommendation = 'UNCERTAIN';
+            recommendation = "UNCERTAIN";
         }
         return {
             finalScore,
@@ -214,9 +505,41 @@ class WeightedPHIScorer {
     }
     /**
      * Score multiple spans (batch mode)
+     *
+     * Uses Rust batch scoring for optimal performance when available.
      */
     scoreBatch(spans, fullText) {
         const results = new Map();
+        // Try Rust batch scoring first (most efficient)
+        if (this.useRust && this.rustScorer && spans.length > 0) {
+            try {
+                const rustSpans = spans.map((span) => ({
+                    text: span.text,
+                    filterType: span.filterType,
+                    confidence: span.confidence,
+                    pattern: span.pattern ?? undefined, // Convert null to undefined for Rust
+                    characterStart: span.characterStart,
+                    characterEnd: span.characterEnd,
+                }));
+                const rustResults = this.rustScorer.scoreBatch(rustSpans, fullText);
+                for (let i = 0; i < spans.length; i++) {
+                    const r = rustResults[i];
+                    results.set(spans[i], {
+                        finalScore: r.finalScore,
+                        baseScore: r.baseScore,
+                        contextBonus: r.contextBonus,
+                        whitelistPenalty: r.whitelistPenalty,
+                        recommendation: r.recommendation,
+                        breakdown: r.breakdown,
+                    });
+                }
+                return results;
+            }
+            catch {
+                // Fall through to TypeScript
+            }
+        }
+        // TypeScript fallback
         for (const span of spans) {
             // Extract context around span
             const contextStart = Math.max(0, span.characterStart - 100);
@@ -233,7 +556,7 @@ class WeightedPHIScorer {
         // High-precision patterns (SSN, Phone, Email, etc.)
         if (HIGH_PRECISION_TYPES.has(span.filterType)) {
             breakdown.push({
-                source: 'pattern',
+                source: "pattern",
                 value: this.weights.highPrecisionPattern,
                 reason: `High-precision ${span.filterType} pattern`,
             });
@@ -241,52 +564,54 @@ class WeightedPHIScorer {
         }
         // Name patterns - check for specific pattern types
         if (span.filterType === Span_1.FilterType.NAME) {
-            const pattern = span.pattern?.toLowerCase() || '';
-            if (pattern.includes('last') && pattern.includes('first')) {
+            const pattern = span.pattern?.toLowerCase() || "";
+            if (pattern.includes("last") && pattern.includes("first")) {
                 breakdown.push({
-                    source: 'pattern',
+                    source: "pattern",
                     value: this.weights.lastFirstFormat,
-                    reason: 'Last, First name format',
+                    reason: "Last, First name format",
                 });
                 return this.weights.lastFirstFormat;
             }
-            if (pattern.includes('title') || pattern.includes('dr') || pattern.includes('mr')) {
+            if (pattern.includes("title") ||
+                pattern.includes("dr") ||
+                pattern.includes("mr")) {
                 breakdown.push({
-                    source: 'pattern',
+                    source: "pattern",
                     value: this.weights.titledName,
-                    reason: 'Titled name pattern',
+                    reason: "Titled name pattern",
                 });
                 return this.weights.titledName;
             }
-            if (pattern.includes('patient')) {
+            if (pattern.includes("patient")) {
                 breakdown.push({
-                    source: 'pattern',
+                    source: "pattern",
                     value: this.weights.patientLabel,
-                    reason: 'Patient label pattern',
+                    reason: "Patient label pattern",
                 });
                 return this.weights.patientLabel;
             }
-            if (pattern.includes('family') || pattern.includes('relation')) {
+            if (pattern.includes("family") || pattern.includes("relation")) {
                 breakdown.push({
-                    source: 'pattern',
+                    source: "pattern",
                     value: this.weights.familyRelation,
-                    reason: 'Family relation pattern',
+                    reason: "Family relation pattern",
                 });
                 return this.weights.familyRelation;
             }
             // Default full name
             breakdown.push({
-                source: 'pattern',
+                source: "pattern",
                 value: this.weights.generalFullName,
-                reason: 'General full name pattern',
+                reason: "General full name pattern",
             });
             return this.weights.generalFullName;
         }
         // Default to span's existing confidence
         breakdown.push({
-            source: 'confidence',
+            source: "confidence",
             value: span.confidence,
-            reason: 'Original detection confidence',
+            reason: "Original detection confidence",
         });
         return span.confidence;
     }
@@ -299,36 +624,36 @@ class WeightedPHIScorer {
         if (CONTEXT_PATTERNS.titles.test(context)) {
             bonus += this.weights.titleContextBonus;
             breakdown.push({
-                source: 'context',
+                source: "context",
                 value: this.weights.titleContextBonus,
-                reason: 'Title prefix detected (Mr/Mrs/Dr)',
+                reason: "Title prefix detected (Mr/Mrs/Dr)",
             });
         }
         // Check for family terms
         if (CONTEXT_PATTERNS.familyTerms.test(context)) {
             bonus += this.weights.familyContextBonus;
             breakdown.push({
-                source: 'context',
+                source: "context",
                 value: this.weights.familyContextBonus,
-                reason: 'Family relationship context',
+                reason: "Family relationship context",
             });
         }
         // Check for PHI labels
         if (CONTEXT_PATTERNS.phiLabels.test(context)) {
             bonus += this.weights.phiLabelBonus;
             breakdown.push({
-                source: 'context',
+                source: "context",
                 value: this.weights.phiLabelBonus,
-                reason: 'PHI label context (Name:, Patient:)',
+                reason: "PHI label context (Name:, Patient:)",
             });
         }
         // Check for clinical roles
         if (CONTEXT_PATTERNS.clinicalRoles.test(context)) {
             bonus += this.weights.clinicalRoleBonus;
             breakdown.push({
-                source: 'context',
+                source: "context",
                 value: this.weights.clinicalRoleBonus,
-                reason: 'Clinical role context (Performed by:)',
+                reason: "Clinical role context (Performed by:)",
             });
         }
         return bonus;
@@ -347,7 +672,7 @@ class WeightedPHIScorer {
         if (this.whitelists.diseaseEponyms.has(lowerText)) {
             penalty += this.weights.diseaseEponymPenalty;
             breakdown.push({
-                source: 'whitelist',
+                source: "whitelist",
                 value: this.weights.diseaseEponymPenalty,
                 reason: `Disease eponym: ${span.text}`,
             });
@@ -358,7 +683,7 @@ class WeightedPHIScorer {
             if (lowerText.includes(disease)) {
                 penalty += this.weights.diseaseNamePenalty;
                 breakdown.push({
-                    source: 'whitelist',
+                    source: "whitelist",
                     value: this.weights.diseaseNamePenalty,
                     reason: `Disease name: ${disease}`,
                 });
@@ -370,7 +695,7 @@ class WeightedPHIScorer {
             if (lowerText.includes(med)) {
                 penalty += this.weights.medicationPenalty;
                 breakdown.push({
-                    source: 'whitelist',
+                    source: "whitelist",
                     value: this.weights.medicationPenalty,
                     reason: `Medication: ${med}`,
                 });
@@ -382,7 +707,7 @@ class WeightedPHIScorer {
             if (lowerText.includes(proc)) {
                 penalty += this.weights.procedurePenalty;
                 breakdown.push({
-                    source: 'whitelist',
+                    source: "whitelist",
                     value: this.weights.procedurePenalty,
                     reason: `Procedure: ${proc}`,
                 });
@@ -394,7 +719,7 @@ class WeightedPHIScorer {
             if (lowerText === anat) {
                 penalty += this.weights.anatomicalPenalty;
                 breakdown.push({
-                    source: 'whitelist',
+                    source: "whitelist",
                     value: this.weights.anatomicalPenalty,
                     reason: `Anatomical term: ${anat}`,
                 });
@@ -406,7 +731,7 @@ class WeightedPHIScorer {
             if (lowerText.includes(header)) {
                 penalty += this.weights.sectionHeaderPenalty;
                 breakdown.push({
-                    source: 'whitelist',
+                    source: "whitelist",
                     value: this.weights.sectionHeaderPenalty,
                     reason: `Section header: ${header}`,
                 });
@@ -418,7 +743,7 @@ class WeightedPHIScorer {
             if (lowerText.includes(org)) {
                 penalty += this.weights.organizationPenalty;
                 breakdown.push({
-                    source: 'whitelist',
+                    source: "whitelist",
                     value: this.weights.organizationPenalty,
                     reason: `Organization term: ${org}`,
                 });
@@ -456,8 +781,8 @@ class WeightedPHIScorer {
      */
     static loadFromFile(filePath) {
         try {
-            const fs = require('fs');
-            const data = fs.readFileSync(filePath, 'utf-8');
+            const fs = require("fs");
+            const data = fs.readFileSync(filePath, "utf-8");
             const weights = JSON.parse(data);
             return new WeightedPHIScorer(weights);
         }
@@ -471,8 +796,8 @@ class WeightedPHIScorer {
      * Looks for weights file at: data/calibration/weights.json
      */
     static autoLoad() {
-        const path = require('path');
-        const weightsPath = path.join(__dirname, '../../data/calibration/weights.json');
+        const path = require("path");
+        const weightsPath = path.join(__dirname, "../../data/calibration/weights.json");
         return WeightedPHIScorer.loadFromFile(weightsPath);
     }
 }

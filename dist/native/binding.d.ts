@@ -245,6 +245,125 @@ export type VulpesNativeBinding = {
         text: string;
     }[]) => number[][];
     getFilterTypeSpecificity?: (filterType: string) => number;
+    VulpesPHIScorer?: new (weights?: {
+        lastFirstFormat: number;
+        titledName: number;
+        patientLabel: number;
+        labeledName: number;
+        familyRelation: number;
+        generalFullName: number;
+        highPrecisionPattern: number;
+        titleContextBonus: number;
+        familyContextBonus: number;
+        phiLabelBonus: number;
+        clinicalRoleBonus: number;
+        diseaseEponymPenalty: number;
+        diseaseNamePenalty: number;
+        medicationPenalty: number;
+        procedurePenalty: number;
+        anatomicalPenalty: number;
+        sectionHeaderPenalty: number;
+        organizationPenalty: number;
+    }, decisionThreshold?: number) => {
+        score(span: {
+            text: string;
+            filterType: string;
+            confidence: number;
+            pattern?: string;
+            characterStart: number;
+            characterEnd: number;
+        }, context: string): {
+            finalScore: number;
+            baseScore: number;
+            contextBonus: number;
+            whitelistPenalty: number;
+            recommendation: string;
+            breakdown: {
+                source: string;
+                value: number;
+                reason: string;
+            }[];
+        };
+        scoreBatch(spans: {
+            text: string;
+            filterType: string;
+            confidence: number;
+            pattern?: string;
+            characterStart: number;
+            characterEnd: number;
+        }[], fullText: string): {
+            finalScore: number;
+            baseScore: number;
+            contextBonus: number;
+            whitelistPenalty: number;
+            recommendation: string;
+            breakdown: {
+                source: string;
+                value: number;
+                reason: string;
+            }[];
+        }[];
+        getWeights(): {
+            lastFirstFormat: number;
+            titledName: number;
+            patientLabel: number;
+            labeledName: number;
+            familyRelation: number;
+            generalFullName: number;
+            highPrecisionPattern: number;
+            titleContextBonus: number;
+            familyContextBonus: number;
+            phiLabelBonus: number;
+            clinicalRoleBonus: number;
+            diseaseEponymPenalty: number;
+            diseaseNamePenalty: number;
+            medicationPenalty: number;
+            procedurePenalty: number;
+            anatomicalPenalty: number;
+            sectionHeaderPenalty: number;
+            organizationPenalty: number;
+        };
+        setThreshold(threshold: number): void;
+    };
+    createPhiScorer?: (weights?: object, threshold?: number) => InstanceType<NonNullable<VulpesNativeBinding["VulpesPHIScorer"]>>;
+    scorePhiSpan?: (span: {
+        text: string;
+        filterType: string;
+        confidence: number;
+        pattern?: string;
+        characterStart: number;
+        characterEnd: number;
+    }, context: string, weights?: object) => {
+        finalScore: number;
+        baseScore: number;
+        contextBonus: number;
+        whitelistPenalty: number;
+        recommendation: string;
+        breakdown: {
+            source: string;
+            value: number;
+            reason: string;
+        }[];
+    };
+    scorePhiSpansBatch?: (spans: {
+        text: string;
+        filterType: string;
+        confidence: number;
+        pattern?: string;
+        characterStart: number;
+        characterEnd: number;
+    }[], fullText: string, weights?: object) => {
+        finalScore: number;
+        baseScore: number;
+        contextBonus: number;
+        whitelistPenalty: number;
+        recommendation: string;
+        breakdown: {
+            source: string;
+            value: number;
+            reason: string;
+        }[];
+    }[];
     VulpesIntervalTree?: new () => {
         insert(span: {
             characterStart: number;

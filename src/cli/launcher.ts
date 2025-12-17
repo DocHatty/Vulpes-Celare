@@ -80,19 +80,19 @@ function printBanner(
   const logo =
     width >= 70
       ? `
- ██╗   ██╗ ██╗   ██╗ ██╗     ███████╗ ███████╗ ███████╗
- ██║   ██║ ██║   ██║ ██║     ██╔══██╗ ██╔════╝ ██╔════╝
- ██║   ██║ ██║   ██║ ██║     ██████╔╝ █████╗   ███████╗
- ╚██╗ ██╔╝ ██║   ██║ ██║     ██╔═══╝  ██╔══╝   ╚════██║
-  ╚████╔╝  ╚██████╔╝ ███████╗██║      ███████╗ ███████║
-   ╚═══╝    ╚═════╝  ╚══════╝╚═╝      ╚══════╝ ╚══════╝`
+██╗   ██╗██╗   ██╗██╗     ██████╗ ███████╗███████╗
+██║   ██║██║   ██║██║     ██╔══██╗██╔════╝██╔════╝
+██║   ██║██║   ██║██║     ██████╔╝█████╗  ███████╗
+╚██╗ ██╔╝██║   ██║██║     ██╔═══╝ ██╔══╝  ╚════██║
+ ╚████╔╝ ╚██████╔╝███████╗██║     ███████╗███████║
+  ╚═══╝   ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝`
       : width >= 50
         ? `
- ╦  ╦╦ ╦╦  ╔═╗╔═╗╔═╗
- ╚╗╔╝║ ║║  ╠═╝║╣ ╚═╗
-  ╚╝ ╚═╝╩═╝╩  ╚═╝╚═╝`
+╦  ╦╦ ╦╦  ╔═╗╔═╗╔═╗
+╚╗╔╝║ ║║  ╠═╝║╣ ╚═╗
+ ╚╝ ╚═╝╩═╝╩  ╚═╝╚═╝`
         : `
- VULPES`;
+VULPES`;
 
   const border = theme.primary("╭" + "─".repeat(boxWidth - 2) + "╮");
   const bottom = theme.primary("╰" + "─".repeat(boxWidth - 2) + "╯");
@@ -310,7 +310,7 @@ async function showAgentSubmenu(): Promise<void> {
 async function silentVulpesify(): Promise<void> {
   try {
     const originalLog = console.log;
-    console.log = () => { };
+    console.log = () => {};
     await handleVulpesify({ mode: "dev", silent: true });
     console.log = originalLog;
   } catch {

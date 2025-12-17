@@ -92,7 +92,10 @@ export type { DicomAnonymizationRule, DicomTransformerConfig, } from "./core/dic
 export { CortexPythonBridge } from "./core/cortex/python/CortexPythonBridge";
 export type { CortexTask, CortexTaskRequest, CortexTaskResponse, CortexBridgeConfig, } from "./core/cortex/python/CortexPythonBridge";
 export { PatternDef, ALL_PATTERNS, SSN_PATTERNS, PHONE_PATTERNS, EMAIL_PATTERNS, DATE_PATTERNS, MRN_PATTERNS, CREDIT_CARD_PATTERNS, IP_PATTERNS, ZIPCODE_PATTERNS, NPI_PATTERNS, DEA_PATTERNS, getPatternStats, } from "./dfa/patterns";
-export { ScanMatch, ScanResult, MultiPatternScanner, ZigDFAScanner, ZigDFAScannerInterface, getMultiPatternScanner, isDFAScanningEnabled, scanWithDFA, } from "./dfa/MultiPatternScanner";
+export { ScanMatch, ScanResult, MultiPatternScanner, RustDFAScanner, RustDFAScannerInterface, ZigDFAScanner, // Legacy alias
+getMultiPatternScanner, isDFAScanningEnabled, isRustAccelerationAvailable, scanWithDFA, } from "./dfa/MultiPatternScanner";
+export type ZigDFAScannerInterface = RustDFAScannerInterface;
+import type { RustDFAScannerInterface } from "./dfa/MultiPatternScanner";
 export { WebGPUBatchProcessor, BatchProcessingConfig, BatchResult, BatchStats, getBatchProcessor, processBatch, shouldUseBatchProcessing, } from "./gpu";
 export { Supervisor, SupervisorConfig, ChildSpec, ChildProcess, RestartStrategy, RestartType, } from "./supervision/Supervisor";
 export { CircuitBreaker, CircuitBreakerConfig, CircuitOpenError, CircuitState, } from "./supervision/CircuitBreaker";

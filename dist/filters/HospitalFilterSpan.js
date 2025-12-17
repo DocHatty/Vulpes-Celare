@@ -22,6 +22,7 @@ exports.HospitalFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
+const RustScanKernel_1 = require("../utils/RustScanKernel");
 class HospitalFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "ADDRESS"; // Using ADDRESS as facility location is geographic PHI
@@ -30,6 +31,31 @@ class HospitalFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         return SpanBasedFilter_1.FilterPriority.ADDRESS;
     }
     detect(text, config, context) {
+        // Try Rust acceleration first for pattern-based hospital detection
+        const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "HOSPITAL");
+        if (accelerated && accelerated.length > 0) {
+            return accelerated.map((d) => {
+                return new Span_1.Span({
+                    text: d.text,
+                    originalValue: d.text,
+                    characterStart: d.characterStart,
+                    characterEnd: d.characterEnd,
+                    filterType: Span_1.FilterType.ADDRESS, // Facility names are location PHI
+                    confidence: d.confidence,
+                    priority: this.getPriority(),
+                    context: this.extractContext(text, d.characterStart, d.characterEnd),
+                    window: [],
+                    replacement: null,
+                    salt: null,
+                    pattern: d.pattern,
+                    applied: false,
+                    ignored: false,
+                    ambiguousWith: [],
+                    disambiguationScore: null,
+                });
+            });
+        }
+        // TypeScript fallback with dictionary lookup
         const spans = [];
         // Quick check: does text contain hospital-related keywords?
         if (!HospitalDictionary_1.HospitalDictionary.hasHospitalKeywords(text)) {

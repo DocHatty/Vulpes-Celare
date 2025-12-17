@@ -16,6 +16,7 @@ import {
   NameDetectionUtils,
   PROVIDER_TITLE_PREFIXES,
 } from "../utils/NameDetectionUtils";
+import { RustNameScanner } from "../utils/RustNameScanner";
 
 export class TitledNameFilterSpan extends SpanBasedFilter {
   /**
@@ -66,6 +67,45 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    // Try Rust acceleration first - detectSmart includes titled names
+    const rustDetections = RustNameScanner.detectSmart(text);
+    if (rustDetections.length > 0) {
+      // Filter for titled name patterns only
+      const titledPatterns = rustDetections.filter(
+        (d) =>
+          d.pattern.includes("Titled") ||
+          d.pattern.includes("Family") ||
+          d.pattern.includes("Patient"),
+      );
+      if (titledPatterns.length > 0) {
+        return titledPatterns.map((d) => {
+          return new Span({
+            text: d.text,
+            originalValue: d.text,
+            characterStart: d.characterStart,
+            characterEnd: d.characterEnd,
+            filterType: FilterType.PROVIDER_NAME,
+            confidence: d.confidence,
+            priority: this.getPriority(),
+            context: this.extractContext(
+              text,
+              d.characterStart,
+              d.characterEnd,
+            ),
+            window: [],
+            replacement: null,
+            salt: null,
+            pattern: d.pattern,
+            applied: false,
+            ignored: false,
+            ambiguousWith: [],
+            disambiguationScore: null,
+          });
+        });
+      }
+    }
+
+    // TypeScript fallback
     const spans: Span[] = [];
 
     // Use multiple detection strategies for comprehensive coverage

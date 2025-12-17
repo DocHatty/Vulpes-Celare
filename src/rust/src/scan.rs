@@ -1758,6 +1758,143 @@ static UNIQUE_CONTEXT_KEYWORDS: [&str; 12] = [
 ];
 
 // =============================================================================
+// AGE 90+ (HIPAA Safe Harbor requires aggregation of ages 90+)
+// =============================================================================
+
+// Pattern: "92 years old", "91 y/o", "94 yo", "aged 96"
+static AGE_EXPLICIT_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(
+        r"(?i)\b(9\d|1[0-2]\d)\s*(?:years?\s+old|y\.?o\.?|yr\.?s?\s+old|years?\s+of\s+age)\b",
+    )
+    .expect("invalid AGE_EXPLICIT_RE")
+});
+
+// Pattern: "age 95", "aged 91"
+static AGE_LABELED_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:age|aged)\s*[:#]?\s*(9\d|1[0-2]\d)\b").expect("invalid AGE_LABELED_RE")
+});
+
+// Pattern: "Age: 92", "Patient Age: 94"
+static AGE_FIELD_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:patient\s+)?age\s*[:\-=]\s*(9\d|1[0-2]\d)(?:\s*(?:years?\s*(?:old)?|y\.?o\.?|yo))?\b")
+        .expect("invalid AGE_FIELD_RE")
+});
+
+// Pattern: "93-year-old"
+static AGE_COMPOUND_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(9\d|1[0-2]\d)[-–]year[-–]old\b").expect("invalid AGE_COMPOUND_RE")
+});
+
+// Pattern: "in her 90s", "early 90s", "late 90s"
+static AGE_ORDINAL_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(
+        r"(?i)\b(?:in\s+)?(?:his|her|their|the)\s+(?:early\s+|mid[- ]?|late\s+)?(90|100|110)s\b",
+    )
+    .expect("invalid AGE_ORDINAL_RE")
+});
+
+// Pattern: "92 M", "98 F" (demographic)
+static AGE_DEMOGRAPHIC_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"\b(9\d|1[0-2]\d)\s*([MF]|Male|Female)\b").expect("invalid AGE_DEMOGRAPHIC_RE")
+});
+
+// Pattern: age ranges "90-95 years", "92-98"
+static AGE_RANGE_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(9\d|1[0-2]\d)\s*[-–—to]+\s*(\d{2,3})\s*(?:years?\s+old|years?|y\.?o\.?)?\b")
+        .expect("invalid AGE_RANGE_RE")
+});
+
+fn is_age_90_plus(age_str: &str) -> bool {
+    if let Ok(age) = age_str.parse::<u32>() {
+        age >= 90 && age <= 125
+    } else {
+        false
+    }
+}
+
+// =============================================================================
+// BIOMETRIC IDENTIFIERS (contextual detection)
+// =============================================================================
+
+// Pattern: labeled biometric data
+static BIOMETRIC_LABELED_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:fingerprint|retina|iris|voiceprint|facial\s*recognition|biometric)\s*(?:id|identifier|data|scan|template|hash|record|sample)\s*[:#]?\s*([A-Z0-9][A-Z0-9\-_]{5,})\b")
+        .expect("invalid BIOMETRIC_LABELED_RE")
+});
+
+// Pattern: DNA/genetic identifiers
+static BIOMETRIC_DNA_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:dna|genetic|genome|genotype)\s*(?:id|identifier|profile|sample|marker|sequence)\s*[:#]?\s*([A-Z0-9][A-Z0-9\-_]{5,})\b")
+        .expect("invalid BIOMETRIC_DNA_RE")
+});
+
+// Pattern: face/photo ID references
+static BIOMETRIC_FACE_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:face|facial|photo)\s*(?:id|identifier|recognition|template|encoding|vector)\s*[:#]?\s*([A-Z0-9][A-Z0-9\-_]{5,})\b")
+        .expect("invalid BIOMETRIC_FACE_RE")
+});
+
+// =============================================================================
+// RELATIVE DATES (temporal expressions that may identify individuals)
+// =============================================================================
+
+// Pattern: "last Tuesday", "next Monday", etc.
+static RELATIVE_DAY_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:last|next|this|past|previous|coming|upcoming)\s+(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b")
+        .expect("invalid RELATIVE_DAY_RE")
+});
+
+// Pattern: "2 days ago", "3 weeks ago", "in 5 days"
+static RELATIVE_AGO_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:(\d+)\s+(?:days?|weeks?|months?|years?)\s+ago|in\s+(\d+)\s+(?:days?|weeks?|months?|years?))\b")
+        .expect("invalid RELATIVE_AGO_RE")
+});
+
+// Pattern: "yesterday", "today", "tomorrow"
+static RELATIVE_KEYWORD_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(
+        r"(?i)\b(?:yesterday|today|tomorrow|day\s+before\s+yesterday|day\s+after\s+tomorrow)\b",
+    )
+    .expect("invalid RELATIVE_KEYWORD_RE")
+});
+
+// Pattern: "last week", "next month", "this year"
+static RELATIVE_PERIOD_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(
+        r"(?i)\b(?:last|next|this|past|previous|coming)\s+(?:week|month|year|quarter|semester)\b",
+    )
+    .expect("invalid RELATIVE_PERIOD_RE")
+});
+
+// Pattern: "earlier today", "later this week"
+static RELATIVE_CONTEXT_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:earlier|later)\s+(?:today|this\s+(?:week|month|year))\b")
+        .expect("invalid RELATIVE_CONTEXT_RE")
+});
+
+// =============================================================================
+// HOSPITAL / HEALTHCARE FACILITY NAMES
+// =============================================================================
+
+// Common hospital name patterns
+static HOSPITAL_PATTERN_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+){0,3})\s+(?:Hospital|Medical\s+Center|Health\s+Center|Healthcare|Clinic|Memorial|Regional|General|Community|University|Children'?s|Veterans|VA)\b")
+        .expect("invalid HOSPITAL_PATTERN_RE")
+});
+
+// Pattern: "St. Mary's Hospital", "Mount Sinai"
+static HOSPITAL_SAINT_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:St\.?|Saint|Mount|Mt\.?)\s+[A-Z][A-Za-z]+(?:'s)?\s*(?:Hospital|Medical\s+Center|Health|Clinic|Memorial|Regional)?\b")
+        .expect("invalid HOSPITAL_SAINT_RE")
+});
+
+// Pattern: labeled hospital references
+static HOSPITAL_LABELED_RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?i)\b(?:hospital|facility|institution|center|clinic)\s*[:#]\s*([A-Z][A-Za-z\s]+(?:Hospital|Medical|Health|Clinic|Memorial|Center))\b")
+        .expect("invalid HOSPITAL_LABELED_RE")
+});
+
+// =============================================================================
 // MAIN ENTRYPOINT
 // =============================================================================
 
@@ -2911,6 +3048,365 @@ pub fn scan_all_identifiers(text: String) -> Vec<IdentifierDetection> {
             text: code.to_string(),
             confidence: 0.88,
             pattern: "Contextual membership ID".to_string(),
+        });
+    }
+
+    // AGE 90+ (HIPAA Safe Harbor)
+    let mut age_seen: HashSet<u64> = HashSet::new();
+
+    // Explicit ages: "92 years old", "91 y/o"
+    for m in AGE_EXPLICIT_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if age_seen.contains(&key) {
+            continue;
+        }
+        age_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "AGE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.96,
+            pattern: "Rust Age 90+ explicit".to_string(),
+        });
+    }
+
+    // Labeled ages: "age 95", "aged 91"
+    for m in AGE_LABELED_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if age_seen.contains(&key) {
+            continue;
+        }
+        age_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "AGE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.95,
+            pattern: "Rust Age 90+ labeled".to_string(),
+        });
+    }
+
+    // Field ages: "Age: 92", "Patient Age: 94"
+    for m in AGE_FIELD_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if age_seen.contains(&key) {
+            continue;
+        }
+        age_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "AGE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.97,
+            pattern: "Rust Age 90+ field".to_string(),
+        });
+    }
+
+    // Compound ages: "93-year-old"
+    for m in AGE_COMPOUND_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if age_seen.contains(&key) {
+            continue;
+        }
+        age_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "AGE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.96,
+            pattern: "Rust Age 90+ compound".to_string(),
+        });
+    }
+
+    // Ordinal ages: "in her 90s"
+    for m in AGE_ORDINAL_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if age_seen.contains(&key) {
+            continue;
+        }
+        age_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "AGE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.92,
+            pattern: "Rust Age 90s ordinal".to_string(),
+        });
+    }
+
+    // Demographic ages: "92 M", "98 F"
+    for m in AGE_DEMOGRAPHIC_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if age_seen.contains(&key) {
+            continue;
+        }
+        age_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "AGE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.92,
+            pattern: "Rust Age 90+ demographic".to_string(),
+        });
+    }
+
+    // Age ranges: "90-95 years"
+    for caps in AGE_RANGE_RE.captures_iter(&text) {
+        let m = match caps.get(0) {
+            Some(v) => v,
+            None => continue,
+        };
+        // Check if either end of range is 90+
+        let age1_str = caps.get(1).map(|v| v.as_str()).unwrap_or("0");
+        let age2_str = caps.get(2).map(|v| v.as_str()).unwrap_or("0");
+        let age1: u32 = age1_str.parse().unwrap_or(0);
+        let age2: u32 = age2_str.parse().unwrap_or(0);
+        if age1 < 90 && age2 < 90 {
+            continue;
+        }
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if age_seen.contains(&key) {
+            continue;
+        }
+        age_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "AGE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.94,
+            pattern: "Rust Age range 90+".to_string(),
+        });
+    }
+
+    // BIOMETRIC IDENTIFIERS
+    let mut biometric_seen: HashSet<u64> = HashSet::new();
+
+    for m in BIOMETRIC_LABELED_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if biometric_seen.contains(&key) {
+            continue;
+        }
+        biometric_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "BIOMETRIC".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.94,
+            pattern: "Rust Biometric labeled".to_string(),
+        });
+    }
+
+    for m in BIOMETRIC_DNA_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if biometric_seen.contains(&key) {
+            continue;
+        }
+        biometric_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "BIOMETRIC".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.95,
+            pattern: "Rust DNA/Genetic identifier".to_string(),
+        });
+    }
+
+    for m in BIOMETRIC_FACE_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if biometric_seen.contains(&key) {
+            continue;
+        }
+        biometric_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "BIOMETRIC".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.93,
+            pattern: "Rust Facial identifier".to_string(),
+        });
+    }
+
+    // RELATIVE DATES
+    let mut relative_seen: HashSet<u64> = HashSet::new();
+
+    for m in RELATIVE_DAY_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if relative_seen.contains(&key) {
+            continue;
+        }
+        relative_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "RELATIVE_DATE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.88,
+            pattern: "Rust Relative day".to_string(),
+        });
+    }
+
+    for m in RELATIVE_AGO_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if relative_seen.contains(&key) {
+            continue;
+        }
+        relative_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "RELATIVE_DATE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.90,
+            pattern: "Rust Relative ago/in".to_string(),
+        });
+    }
+
+    for m in RELATIVE_KEYWORD_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if relative_seen.contains(&key) {
+            continue;
+        }
+        relative_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "RELATIVE_DATE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.92,
+            pattern: "Rust Relative keyword".to_string(),
+        });
+    }
+
+    for m in RELATIVE_PERIOD_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if relative_seen.contains(&key) {
+            continue;
+        }
+        relative_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "RELATIVE_DATE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.89,
+            pattern: "Rust Relative period".to_string(),
+        });
+    }
+
+    for m in RELATIVE_CONTEXT_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if relative_seen.contains(&key) {
+            continue;
+        }
+        relative_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "RELATIVE_DATE".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.87,
+            pattern: "Rust Relative context".to_string(),
+        });
+    }
+
+    // HOSPITAL / HEALTHCARE FACILITY
+    let mut hospital_seen: HashSet<u64> = HashSet::new();
+
+    for m in HOSPITAL_PATTERN_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if hospital_seen.contains(&key) {
+            continue;
+        }
+        hospital_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "HOSPITAL".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.90,
+            pattern: "Rust Hospital name".to_string(),
+        });
+    }
+
+    for m in HOSPITAL_SAINT_RE.find_iter(&text) {
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if hospital_seen.contains(&key) {
+            continue;
+        }
+        hospital_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "HOSPITAL".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.92,
+            pattern: "Rust St./Mount hospital".to_string(),
+        });
+    }
+
+    for caps in HOSPITAL_LABELED_RE.captures_iter(&text) {
+        let m = match caps.get(0) {
+            Some(v) => v,
+            None => continue,
+        };
+        let start = byte_to_utf16(&map, m.start());
+        let end = byte_to_utf16(&map, m.end());
+        let key = ((start as u64) << 32) | (end as u64);
+        if hospital_seen.contains(&key) {
+            continue;
+        }
+        hospital_seen.insert(key);
+        out.push(IdentifierDetection {
+            filter_type: "HOSPITAL".to_string(),
+            character_start: start,
+            character_end: end,
+            text: m.as_str().to_string(),
+            confidence: 0.94,
+            pattern: "Rust Hospital labeled".to_string(),
         });
     }
 

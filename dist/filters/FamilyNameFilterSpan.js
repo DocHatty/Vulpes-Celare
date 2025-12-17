@@ -13,6 +13,7 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const NameFilterConstants_1 = require("./constants/NameFilterConstants");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
+const RustNameScanner_1 = require("../utils/RustNameScanner");
 class FamilyNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "NAME";
@@ -21,6 +22,35 @@ class FamilyNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         return SpanBasedFilter_1.FilterPriority.NAME;
     }
     detect(text, config, context) {
+        // Try Rust acceleration first - detectSmart includes family member patterns
+        const rustDetections = RustNameScanner_1.RustNameScanner.detectSmart(text);
+        if (rustDetections.length > 0) {
+            // Filter for family-related patterns
+            const familyPatterns = rustDetections.filter((d) => d.pattern.includes("Family") || d.pattern.includes("Possessive"));
+            if (familyPatterns.length > 0) {
+                return familyPatterns.map((d) => {
+                    return new Span_1.Span({
+                        text: d.text,
+                        originalValue: d.text,
+                        characterStart: d.characterStart,
+                        characterEnd: d.characterEnd,
+                        filterType: Span_1.FilterType.NAME,
+                        confidence: d.confidence,
+                        priority: this.getPriority(),
+                        context: this.extractContext(text, d.characterStart, d.characterEnd),
+                        window: [],
+                        replacement: null,
+                        salt: null,
+                        pattern: d.pattern,
+                        applied: false,
+                        ignored: false,
+                        ambiguousWith: [],
+                        disambiguationScore: null,
+                    });
+                });
+            }
+        }
+        // TypeScript fallback
         const spans = [];
         // PRIMARY PATTERNS: Family relationships (specialized focus)
         // Pattern 1: RELATIONSHIP LABELS + NAMES

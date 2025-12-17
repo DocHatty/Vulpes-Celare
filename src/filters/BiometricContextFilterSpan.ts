@@ -18,11 +18,9 @@
  */
 
 import { Span, FilterType } from "../models/Span";
-import {
-  SpanBasedFilter,
-  FilterPriority,
-} from "../core/SpanBasedFilter";
+import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { RustScanKernel } from "../utils/RustScanKernel";
 
 export class BiometricContextFilterSpan extends SpanBasedFilter {
   /**
@@ -76,6 +74,36 @@ export class BiometricContextFilterSpan extends SpanBasedFilter {
   }
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
+    // Try Rust acceleration first
+    const accelerated = RustScanKernel.getDetections(
+      context,
+      text,
+      "BIOMETRIC",
+    );
+    if (accelerated && accelerated.length > 0) {
+      return accelerated.map((d) => {
+        return new Span({
+          text: d.text,
+          originalValue: d.text,
+          characterStart: d.characterStart,
+          characterEnd: d.characterEnd,
+          filterType: FilterType.BIOMETRIC,
+          confidence: d.confidence,
+          priority: this.getPriority(),
+          context: this.extractContext(text, d.characterStart, d.characterEnd),
+          window: [],
+          replacement: null,
+          salt: null,
+          pattern: d.pattern,
+          applied: false,
+          ignored: false,
+          ambiguousWith: [],
+          disambiguationScore: null,
+        });
+      });
+    }
+
+    // TypeScript fallback
     const spans: Span[] = [];
 
     // Pattern 1: Sentence-level detection with biometric keywords

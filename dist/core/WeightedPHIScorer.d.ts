@@ -8,11 +8,16 @@
  * - Whitelist penalties (medical terms, disease eponyms)
  * - Type-specific confidence thresholds
  *
+ * RUST ACCELERATION:
+ * - Uses Rust VulpesPHIScorer for 10-50x speedup when available
+ * - Batch scoring via optimized Rust implementation
+ * - Falls back to TypeScript when Rust binding unavailable
+ *
  * PERFORMANCE: Designed for high-throughput batch scoring
  *
  * @module redaction/core
  */
-import { Span } from '../models/Span';
+import { Span } from "../models/Span";
 /**
  * Scoring weights for different detection sources
  */
@@ -47,7 +52,7 @@ export interface ScoringResult {
     baseScore: number;
     contextBonus: number;
     whitelistPenalty: number;
-    recommendation: 'PHI' | 'NOT_PHI' | 'UNCERTAIN';
+    recommendation: "PHI" | "NOT_PHI" | "UNCERTAIN";
     breakdown: {
         source: string;
         value: number;
@@ -56,18 +61,28 @@ export interface ScoringResult {
 }
 /**
  * WeightedPHIScorer - Main scoring class
+ *
+ * Uses Rust acceleration when available for 10-50x speedup.
  */
 export declare class WeightedPHIScorer {
     private weights;
     private whitelists;
     private decisionThreshold;
+    private rustScorer;
+    private useRust;
     constructor(weights?: Partial<ScoringWeights>, decisionThreshold?: number);
+    /**
+     * Check if Rust acceleration is active
+     */
+    isRustAccelerated(): boolean;
     /**
      * Score a single span
      */
     score(span: Span, context: string): ScoringResult;
     /**
      * Score multiple spans (batch mode)
+     *
+     * Uses Rust batch scoring for optimal performance when available.
      */
     scoreBatch(spans: Span[], fullText: string): Map<Span, ScoringResult>;
     /**

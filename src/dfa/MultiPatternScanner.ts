@@ -2,28 +2,55 @@
  * MultiPatternScanner - High-Performance Multi-Pattern Matching
  *
  * Scans text against all PHI patterns in a single optimized pass.
- * This is the TypeScript implementation that can be replaced with
- * Zig comptime DFA for 50-200x performance improvement.
  *
- * CURRENT IMPLEMENTATION:
+ * RUST ACCELERATION (PRIMARY):
+ * - Uses Rust `scan_all_identifiers` for 50-100x speedup
+ * - All patterns compiled into optimized Rust regex engine
+ * - Automatic UTF-16 index mapping for JS interop
+ * - Enabled by default via VULPES_SCAN_ACCEL=1
+ *
+ * TYPESCRIPT FALLBACK:
  * - Groups patterns by type for cache-friendly access
  * - Uses sticky regex for efficient sequential scanning
- * - Caches compiled patterns
- *
- * FUTURE ZIG IMPLEMENTATION:
- * - All patterns compiled into ONE DFA at build time
- * - Single-pass O(n) scan regardless of pattern count
- * - SIMD-accelerated state transitions
+ * - Used when Rust binding unavailable
  *
  * @module redaction/dfa
  */
 
 import { FilterType } from "../models/Span";
-import {
-  ALL_PATTERNS,
-  PatternDef,
-  getPatternStats,
-} from "./patterns";
+import { ALL_PATTERNS, PatternDef, getPatternStats } from "./patterns";
+import { loadNativeBinding } from "../native/binding";
+import { RustAccelConfig } from "../config/RustAccelConfig";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RUST BINDING CACHE
+// ═══════════════════════════════════════════════════════════════════════════
+
+type RustScanResult = {
+  filterType: string;
+  characterStart: number;
+  characterEnd: number;
+  text: string;
+  confidence: number;
+  pattern: string;
+};
+
+let cachedBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
+  undefined;
+
+function getBinding(): ReturnType<typeof loadNativeBinding> | null {
+  if (cachedBinding !== undefined) return cachedBinding;
+  try {
+    cachedBinding = loadNativeBinding({ configureOrt: false });
+  } catch {
+    cachedBinding = null;
+  }
+  return cachedBinding;
+}
+
+function isRustScanEnabled(): boolean {
+  return RustAccelConfig.isScanKernelEnabled();
+}
 
 export interface ScanMatch {
   patternId: string;
@@ -47,19 +74,35 @@ export interface ScanResult {
 
 /**
  * MultiPatternScanner - Main scanner class
+ *
+ * Uses Rust acceleration by default for 50-100x speedup.
+ * Falls back to TypeScript implementation when Rust unavailable.
  */
 export class MultiPatternScanner {
   private patterns: PatternDef[];
   private patternsByType: Map<FilterType, PatternDef[]>;
+  private useRust: boolean = false;
+  private rustScanFn: ((text: string) => RustScanResult[]) | null = null;
 
   // Statistics
   private totalScans = 0;
   private totalMatches = 0;
   private totalTimeMs = 0;
+  private rustScans = 0;
+  private tsScans = 0;
 
   constructor(customPatterns?: PatternDef[]) {
     this.patterns = customPatterns || ALL_PATTERNS;
     this.patternsByType = this.groupByType();
+
+    // Initialize Rust acceleration
+    if (isRustScanEnabled()) {
+      const binding = getBinding();
+      if (binding?.scanAllIdentifiers) {
+        this.rustScanFn = binding.scanAllIdentifiers;
+        this.useRust = true;
+      }
+    }
   }
 
   private groupByType(): Map<FilterType, PatternDef[]> {
@@ -77,8 +120,59 @@ export class MultiPatternScanner {
 
   /**
    * Scan text for all patterns
+   *
+   * Uses Rust scan_all_identifiers when available (50-100x faster).
+   * Falls back to TypeScript regex scanning otherwise.
    */
   scan(text: string): ScanResult {
+    const startTime = performance.now();
+
+    // Try Rust path first (primary)
+    if (this.useRust && this.rustScanFn) {
+      try {
+        const rustMatches = this.rustScanFn(text);
+        const endTime = performance.now();
+        const scanTimeMs = endTime - startTime;
+
+        // Convert Rust results to ScanMatch format
+        const matches: ScanMatch[] = rustMatches.map((rm) => ({
+          patternId: `RUST_${rm.filterType}`,
+          filterType: rm.filterType as FilterType,
+          text: rm.text,
+          start: rm.characterStart,
+          end: rm.characterEnd,
+          confidence: rm.confidence,
+          groups: [],
+        }));
+
+        // Update stats
+        this.totalScans++;
+        this.rustScans++;
+        this.totalMatches += matches.length;
+        this.totalTimeMs += scanTimeMs;
+
+        return {
+          matches,
+          stats: {
+            textLength: text.length,
+            patternsChecked: this.patterns.length,
+            matchesFound: matches.length,
+            scanTimeMs,
+          },
+        };
+      } catch {
+        // Fall through to TypeScript path
+      }
+    }
+
+    // TypeScript fallback path
+    return this.scanTypeScript(text);
+  }
+
+  /**
+   * TypeScript-only scan (fallback)
+   */
+  private scanTypeScript(text: string): ScanResult {
     const startTime = performance.now();
     const matches: ScanMatch[] = [];
 
@@ -110,6 +204,7 @@ export class MultiPatternScanner {
 
     // Update stats
     this.totalScans++;
+    this.tsScans++;
     this.totalMatches += matches.length;
     this.totalTimeMs += scanTimeMs;
 
@@ -122,6 +217,13 @@ export class MultiPatternScanner {
         scanTimeMs,
       },
     };
+  }
+
+  /**
+   * Check if Rust acceleration is active
+   */
+  isRustAccelerated(): boolean {
+    return this.useRust;
   }
 
   /**
@@ -165,7 +267,7 @@ export class MultiPatternScanner {
         textLength: text.length,
         patternsChecked: types.reduce(
           (sum, t) => sum + (this.patternsByType.get(t)?.length || 0),
-          0
+          0,
         ),
         matchesFound: matches.length,
         scanTimeMs: endTime - startTime,
@@ -178,7 +280,14 @@ export class MultiPatternScanner {
    */
   getStats(): {
     patterns: { total: number; byType: Record<string, number> };
-    scans: { total: number; totalMatches: number; avgTimeMs: number };
+    scans: {
+      total: number;
+      totalMatches: number;
+      avgTimeMs: number;
+      rustScans: number;
+      tsScans: number;
+      rustAccelerated: boolean;
+    };
   } {
     return {
       patterns: getPatternStats(),
@@ -186,6 +295,9 @@ export class MultiPatternScanner {
         total: this.totalScans,
         totalMatches: this.totalMatches,
         avgTimeMs: this.totalScans > 0 ? this.totalTimeMs / this.totalScans : 0,
+        rustScans: this.rustScans,
+        tsScans: this.tsScans,
+        rustAccelerated: this.useRust,
       },
     };
   }
@@ -201,57 +313,66 @@ export class MultiPatternScanner {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIG DFA SCANNER INTERFACE (Future implementation)
+// RUST DFA SCANNER INTERFACE
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Interface for native Zig DFA scanner
+ * Interface for native Rust DFA scanner
  *
- * When implemented, the Zig scanner will provide:
- * - Comptime DFA generation (all patterns compiled into one automaton)
- * - Single-pass O(n) scanning regardless of pattern count
- * - SIMD-accelerated state transitions
- * - 50-200x speedup over TypeScript regex
+ * The Rust scanner provides:
+ * - All PHI patterns compiled into optimized Rust regex engine
+ * - Single-pass scanning with UTF-16 index mapping
+ * - 50-100x speedup over TypeScript regex
+ * - Automatic OCR normalization for fuzzy matching
  */
-export interface ZigDFAScannerInterface {
+export interface RustDFAScannerInterface {
   scan(text: string): ScanMatch[];
   isAvailable(): boolean;
 }
 
 /**
- * Zig DFA Scanner - Auto-detects native binding availability
+ * Rust DFA Scanner - Uses scan_all_identifiers from Rust binding
  *
- * To enable Zig acceleration:
- * 1. Build the Zig DFA module: `zig build -Drelease-fast`
- * 2. Place vulpes_dfa.node in native/ directory
- * 3. The scanner will auto-detect and use it
- *
- * Currently falls back to TypeScript MultiPatternScanner.
+ * Enabled by default when Rust binding is available.
+ * Set VULPES_SCAN_ACCEL=0 to disable.
  */
-class ZigDFAScannerImpl implements ZigDFAScannerInterface {
-  private nativeBinding: ZigDFAScannerInterface | null = null;
+class RustDFAScannerImpl implements RustDFAScannerInterface {
   private initialized = false;
+  private available = false;
+  private scanFn: ((text: string) => RustScanResult[]) | null = null;
 
   private init(): void {
     if (this.initialized) return;
     this.initialized = true;
 
+    if (!isRustScanEnabled()) {
+      return;
+    }
+
     try {
-      // Future: Load Zig native module when available
-      // const binding = require('../../native/vulpes_dfa.node');
-      // if (binding && typeof binding.scan === 'function') {
-      //   this.nativeBinding = binding;
-      //   console.log('[ZigDFA] Native Zig DFA scanner loaded');
-      // }
+      const binding = getBinding();
+      if (binding?.scanAllIdentifiers) {
+        this.scanFn = binding.scanAllIdentifiers;
+        this.available = true;
+      }
     } catch {
-      // Zig binding not available - this is expected until implemented
+      // Rust binding not available
     }
   }
 
   scan(text: string): ScanMatch[] {
     this.init();
-    if (this.nativeBinding) {
-      return this.nativeBinding.scan(text);
+    if (this.available && this.scanFn) {
+      const rustMatches = this.scanFn(text);
+      return rustMatches.map((rm) => ({
+        patternId: `RUST_${rm.filterType}`,
+        filterType: rm.filterType as FilterType,
+        text: rm.text,
+        start: rm.characterStart,
+        end: rm.characterEnd,
+        confidence: rm.confidence,
+        groups: [],
+      }));
     }
     // Fall back to TypeScript implementation
     return getMultiPatternScanner().scan(text).matches;
@@ -259,11 +380,14 @@ class ZigDFAScannerImpl implements ZigDFAScannerInterface {
 
   isAvailable(): boolean {
     this.init();
-    return this.nativeBinding !== null;
+    return this.available;
   }
 }
 
-export const ZigDFAScanner: ZigDFAScannerInterface = new ZigDFAScannerImpl();
+export const RustDFAScanner: RustDFAScannerInterface = new RustDFAScannerImpl();
+
+// Legacy alias for backwards compatibility
+export const ZigDFAScanner = RustDFAScanner;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FACTORY FUNCTION
@@ -282,30 +406,27 @@ export function getMultiPatternScanner(): MultiPatternScanner {
 }
 
 /**
- * Check if DFA scanning is enabled (via Zig or TypeScript fallback)
+ * Check if DFA scanning is enabled (Rust acceleration)
  */
 export function isDFAScanningEnabled(): boolean {
-  return process.env.VULPES_DFA_SCAN === "1";
+  return RustDFAScanner.isAvailable() || process.env.VULPES_DFA_SCAN === "1";
+}
+
+/**
+ * Check if Rust acceleration is available
+ */
+export function isRustAccelerationAvailable(): boolean {
+  return RustDFAScanner.isAvailable();
 }
 
 /**
  * Scan text using the best available method
+ *
+ * Priority:
+ * 1. Rust scan_all_identifiers (50-100x faster)
+ * 2. TypeScript regex fallback
  */
 export function scanWithDFA(text: string): ScanResult {
-  // Try Zig DFA first
-  if (ZigDFAScanner.isAvailable()) {
-    const matches = ZigDFAScanner.scan(text);
-    return {
-      matches,
-      stats: {
-        textLength: text.length,
-        patternsChecked: ALL_PATTERNS.length,
-        matchesFound: matches.length,
-        scanTimeMs: 0, // Zig reports its own timing
-      },
-    };
-  }
-
-  // Fall back to TypeScript
+  // The MultiPatternScanner already handles Rust vs TS selection
   return getMultiPatternScanner().scan(text);
 }

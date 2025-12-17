@@ -14,6 +14,7 @@ const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const NameFilterConstants_1 = require("./constants/NameFilterConstants");
 const DocumentVocabulary_1 = require("../vocabulary/DocumentVocabulary");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
+const RustNameScanner_1 = require("../utils/RustNameScanner");
 class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     /**
      * Common formal name prefixes
@@ -58,6 +59,37 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         return SpanBasedFilter_1.FilterPriority.NAME;
     }
     detect(text, config, context) {
+        // Try Rust acceleration first - detectSmart includes titled names
+        const rustDetections = RustNameScanner_1.RustNameScanner.detectSmart(text);
+        if (rustDetections.length > 0) {
+            // Filter for titled name patterns only
+            const titledPatterns = rustDetections.filter((d) => d.pattern.includes("Titled") ||
+                d.pattern.includes("Family") ||
+                d.pattern.includes("Patient"));
+            if (titledPatterns.length > 0) {
+                return titledPatterns.map((d) => {
+                    return new Span_1.Span({
+                        text: d.text,
+                        originalValue: d.text,
+                        characterStart: d.characterStart,
+                        characterEnd: d.characterEnd,
+                        filterType: Span_1.FilterType.PROVIDER_NAME,
+                        confidence: d.confidence,
+                        priority: this.getPriority(),
+                        context: this.extractContext(text, d.characterStart, d.characterEnd),
+                        window: [],
+                        replacement: null,
+                        salt: null,
+                        pattern: d.pattern,
+                        applied: false,
+                        ignored: false,
+                        ambiguousWith: [],
+                        disambiguationScore: null,
+                    });
+                });
+            }
+        }
+        // TypeScript fallback
         const spans = [];
         // Use multiple detection strategies for comprehensive coverage
         this.detectTitledNames(text, spans);
