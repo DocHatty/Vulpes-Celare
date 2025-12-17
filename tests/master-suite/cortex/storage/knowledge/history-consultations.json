@@ -1239,11 +1239,23 @@
       "timestamp": "2025-12-17T12:53:02.791Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765976380289",
+      "timestamp": "2025-12-17T12:59:40.289Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765976431771",
+      "timestamp": "2025-12-17T13:00:31.771Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 207,
+    "total": 209,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 206
+    "noHistoryFound": 208
   }
 }
