@@ -94,6 +94,19 @@ export declare class WeightedPHIScorer {
      * Get current weights
      */
     getWeights(): ScoringWeights;
+    /**
+     * Export weights to JSON
+     */
+    exportWeights(): string;
+    /**
+     * Load weights from JSON file (static factory)
+     */
+    static loadFromFile(filePath: string): WeightedPHIScorer;
+    /**
+     * Auto-load optimized weights if available
+     * Looks for weights file at: data/calibration/weights.json
+     */
+    static autoLoad(): WeightedPHIScorer;
 }
 export declare const weightedScorer: WeightedPHIScorer;
 //# sourceMappingURL=WeightedPHIScorer.d.ts.map

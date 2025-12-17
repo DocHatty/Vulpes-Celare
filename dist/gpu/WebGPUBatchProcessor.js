@@ -57,12 +57,18 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebGPUBatchProcessor = void 0;
+exports.getGPUInfo = getGPUInfo;
 exports.getBatchProcessor = getBatchProcessor;
 exports.processBatch = processBatch;
 exports.shouldUseBatchProcessing = shouldUseBatchProcessing;
 let gpuDevice = null;
 let gpuAvailabilityChecked = false;
 let gpuAvailable = false;
+let gpuInfo = { available: false };
+/**
+ * Check WebGPU availability with improved adapter detection
+ * Prefers high-performance adapter for batch processing workloads
+ */
 async function checkWebGPUAvailability() {
     if (gpuAvailabilityChecked)
         return gpuAvailable;
@@ -72,22 +78,54 @@ async function checkWebGPUAvailability() {
         // WebGPU is available in Node.js 20+ with --experimental-webgpu flag
         const globalGPU = globalThis.gpu;
         if (!globalGPU) {
+            gpuInfo = { available: false, reason: "WebGPU not available (no navigator.gpu)" };
             gpuAvailable = false;
             return false;
         }
-        const adapter = await globalGPU.requestAdapter();
+        // Request high-performance adapter for compute workloads
+        let adapter = await globalGPU.requestAdapter({
+            powerPreference: "high-performance",
+        });
+        // Fallback to any adapter if high-performance not available
         if (!adapter) {
+            adapter = await globalGPU.requestAdapter();
+        }
+        if (!adapter) {
+            gpuInfo = { available: false, reason: "No WebGPU adapter found" };
             gpuAvailable = false;
             return false;
         }
+        // Get adapter info if available
+        const adapterInfo = adapter.info;
         gpuDevice = await adapter.requestDevice();
-        gpuAvailable = !!gpuDevice;
-        return gpuAvailable;
+        if (!gpuDevice) {
+            gpuInfo = { available: false, reason: "Failed to create GPU device" };
+            gpuAvailable = false;
+            return false;
+        }
+        gpuInfo = {
+            available: true,
+            vendor: adapterInfo?.vendor || "unknown",
+            device: adapterInfo?.device || adapterInfo?.description || "unknown",
+            maxBufferSize: adapter.limits?.maxBufferSize,
+        };
+        gpuAvailable = true;
+        return true;
     }
-    catch {
+    catch (error) {
+        gpuInfo = {
+            available: false,
+            reason: error instanceof Error ? error.message : "Unknown error",
+        };
         gpuAvailable = false;
         return false;
     }
+}
+/**
+ * Get detailed GPU availability information
+ */
+function getGPUInfo() {
+    return { ...gpuInfo };
 }
 // ═══════════════════════════════════════════════════════════════════════════
 // BATCH PROCESSOR CLASS

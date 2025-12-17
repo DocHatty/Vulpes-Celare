@@ -223,8 +223,9 @@ class DatalogReasoner {
         }
     }
     isDatalogEnabled() {
-        // Opt-in for now until fully validated
-        return process.env.VULPES_USE_DATALOG === "1";
+        // Enabled by default - opt-out with VULPES_USE_DATALOG=0
+        // Falls back to CrossTypeReasoner if Datalog fails
+        return process.env.VULPES_USE_DATALOG !== "0";
     }
     /**
      * Run the Datalog-style reasoning engine

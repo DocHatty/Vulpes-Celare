@@ -61,6 +61,17 @@ export interface BatchStats {
     method: "webgpu" | "cpu-parallel" | "cpu-sequential";
     gpuAvailable: boolean;
 }
+interface WebGPUInfo {
+    available: boolean;
+    vendor?: string;
+    device?: string;
+    maxBufferSize?: number;
+    reason?: string;
+}
+/**
+ * Get detailed GPU availability information
+ */
+export declare function getGPUInfo(): WebGPUInfo;
 export declare class WebGPUBatchProcessor {
     private config;
     private initialized;

@@ -57,12 +57,13 @@ export function isSQLiteDictionaryEnabled(): boolean {
  *
  * Enable/disable Datalog constraint solver.
  * Provides declarative rules with full provenance tracking.
+ * Falls back to CrossTypeReasoner if Datalog encounters errors.
  *
- * Default: "0" (disabled - opt-in)
- * Set to "1" to enable Datalog reasoning
+ * Default: "1" (enabled)
+ * Set to "0" to disable and use imperative CrossTypeReasoner
  */
 export function isDatalogReasonerEnabled(): boolean {
-  return process.env.VULPES_USE_DATALOG === "1";
+  return process.env.VULPES_USE_DATALOG !== "0";
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

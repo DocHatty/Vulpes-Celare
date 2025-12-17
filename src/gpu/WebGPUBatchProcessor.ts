@@ -80,18 +80,45 @@ export interface BatchStats {
 interface GPUDevice {
   createBuffer: (desc: unknown) => unknown;
   createShaderModule: (desc: unknown) => unknown;
+  limits?: Record<string, number>;
+}
+
+interface GPUAdapterInfo {
+  vendor?: string;
+  architecture?: string;
+  device?: string;
+  description?: string;
+}
+
+interface GPUAdapter {
+  requestDevice: () => Promise<GPUDevice>;
+  info?: GPUAdapterInfo;
+  limits?: Record<string, number>;
 }
 
 interface GPU {
-  requestAdapter: () => Promise<{
-    requestDevice: () => Promise<GPUDevice>;
-  } | null>;
+  requestAdapter: (options?: {
+    powerPreference?: "low-power" | "high-performance";
+  }) => Promise<GPUAdapter | null>;
+}
+
+interface WebGPUInfo {
+  available: boolean;
+  vendor?: string;
+  device?: string;
+  maxBufferSize?: number;
+  reason?: string;
 }
 
 let gpuDevice: GPUDevice | null = null;
 let gpuAvailabilityChecked = false;
 let gpuAvailable = false;
+let gpuInfo: WebGPUInfo = { available: false };
 
+/**
+ * Check WebGPU availability with improved adapter detection
+ * Prefers high-performance adapter for batch processing workloads
+ */
 async function checkWebGPUAvailability(): Promise<boolean> {
   if (gpuAvailabilityChecked) return gpuAvailable;
 
@@ -102,23 +129,61 @@ async function checkWebGPUAvailability(): Promise<boolean> {
     // WebGPU is available in Node.js 20+ with --experimental-webgpu flag
     const globalGPU = (globalThis as { gpu?: GPU }).gpu;
     if (!globalGPU) {
+      gpuInfo = { available: false, reason: "WebGPU not available (no navigator.gpu)" };
       gpuAvailable = false;
       return false;
     }
 
-    const adapter = await globalGPU.requestAdapter();
+    // Request high-performance adapter for compute workloads
+    let adapter = await globalGPU.requestAdapter({
+      powerPreference: "high-performance",
+    });
+
+    // Fallback to any adapter if high-performance not available
     if (!adapter) {
+      adapter = await globalGPU.requestAdapter();
+    }
+
+    if (!adapter) {
+      gpuInfo = { available: false, reason: "No WebGPU adapter found" };
       gpuAvailable = false;
       return false;
     }
+
+    // Get adapter info if available
+    const adapterInfo = adapter.info;
 
     gpuDevice = await adapter.requestDevice();
-    gpuAvailable = !!gpuDevice;
-    return gpuAvailable;
-  } catch {
+    if (!gpuDevice) {
+      gpuInfo = { available: false, reason: "Failed to create GPU device" };
+      gpuAvailable = false;
+      return false;
+    }
+
+    gpuInfo = {
+      available: true,
+      vendor: adapterInfo?.vendor || "unknown",
+      device: adapterInfo?.device || adapterInfo?.description || "unknown",
+      maxBufferSize: adapter.limits?.maxBufferSize,
+    };
+
+    gpuAvailable = true;
+    return true;
+  } catch (error) {
+    gpuInfo = {
+      available: false,
+      reason: error instanceof Error ? error.message : "Unknown error",
+    };
     gpuAvailable = false;
     return false;
   }
+}
+
+/**
+ * Get detailed GPU availability information
+ */
+export function getGPUInfo(): WebGPUInfo {
+  return { ...gpuInfo };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

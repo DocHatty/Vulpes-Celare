@@ -125,5 +125,10 @@ export declare class ParallelRedactionEngine {
      * Section headings in ALL CAPS are common in medical documents
      */
     private static filterAllCapsStructure;
+    /**
+     * Convert DFA scan matches to Span objects
+     * DFA matches are fast pre-scan results that get merged with filter outputs
+     */
+    private static dfaMatchesToSpans;
 }
 //# sourceMappingURL=ParallelRedactionEngine.d.ts.map

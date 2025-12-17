@@ -786,6 +786,43 @@ async function main() {
     // Save results
     const { jsonPath, reportPath } = assessment.saveResults();
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // AUTO-CALIBRATION HOOK
+    // Automatically recalibrates confidence scores after test run
+    // ═══════════════════════════════════════════════════════════════════════════
+    if (!options.jsonOnly) {
+      try {
+        const { initializeCalibration } = require("../../dist/calibration");
+        log("\n" + fmt.divider());
+        log(fmt.headerBox("AUTO-CALIBRATION"));
+        log(fmt.divider() + "\n");
+
+        const calibrationResult = await initializeCalibration({
+          verbose: false,
+          minDataPoints: 50,
+          createBackup: true,
+        });
+
+        if (calibrationResult.success) {
+          log(
+            `  ✓ Calibration updated: ${calibrationResult.dataPointCount} data points`,
+          );
+          if (calibrationResult.metrics) {
+            log(
+              `    ECE: ${(calibrationResult.metrics.expectedCalibrationError * 100).toFixed(2)}%`,
+            );
+            log(`    Brier Score: ${calibrationResult.metrics.brierScore.toFixed(4)}`);
+          }
+        } else {
+          log(`  ⚠ Calibration skipped: ${calibrationResult.message}`);
+        }
+        log("");
+      } catch (e) {
+        // Calibration is optional - don't fail test run
+        log(`  ⚠ Auto-calibration unavailable: ${e.message}\n`);
+      }
+    }
+
     // Output JSON for CI/CD if requested
     if (options.jsonOnly) {
       const output = {

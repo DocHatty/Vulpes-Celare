@@ -580,7 +580,39 @@ export class WeightedPHIScorer {
   getWeights(): ScoringWeights {
     return { ...this.weights };
   }
+
+  /**
+   * Export weights to JSON
+   */
+  exportWeights(): string {
+    return JSON.stringify(this.weights, null, 2);
+  }
+
+  /**
+   * Load weights from JSON file (static factory)
+   */
+  static loadFromFile(filePath: string): WeightedPHIScorer {
+    try {
+      const fs = require('fs');
+      const data = fs.readFileSync(filePath, 'utf-8');
+      const weights = JSON.parse(data) as Partial<ScoringWeights>;
+      return new WeightedPHIScorer(weights);
+    } catch (error) {
+      console.warn(`[WeightedPHIScorer] Failed to load weights from ${filePath}, using defaults`);
+      return new WeightedPHIScorer();
+    }
+  }
+
+  /**
+   * Auto-load optimized weights if available
+   * Looks for weights file at: data/calibration/weights.json
+   */
+  static autoLoad(): WeightedPHIScorer {
+    const path = require('path');
+    const weightsPath = path.join(__dirname, '../../data/calibration/weights.json');
+    return WeightedPHIScorer.loadFromFile(weightsPath);
+  }
 }
 
-// Export singleton for convenience
-export const weightedScorer = new WeightedPHIScorer();
+// Export singleton for convenience (auto-loads optimized weights if available)
+export const weightedScorer = WeightedPHIScorer.autoLoad();

@@ -31,6 +31,11 @@ import {
   ImageRedactionResult,
   VisualPolicy,
 } from "./core/images";
+import {
+  SupervisedStreamingRedactor,
+  SupervisedStreamingConfig,
+  createSupervisedStreamingRedactor,
+} from "./SupervisedStreamingRedactor";
 
 // ============================================================================
 // FILTER IMPORTS - Organized by Category
@@ -75,11 +80,19 @@ import { VehicleIdentifierFilterSpan } from "./filters/VehicleIdentifierFilterSp
 import { BiometricContextFilterSpan } from "./filters/BiometricContextFilterSpan";
 import { UniqueIdentifierFilterSpan } from "./filters/UniqueIdentifierFilterSpan";
 
-// Context-Aware Filters DISABLED - causing too many false positives
+// Context-Aware Filters - OPTIONAL, enabled via VULPES_CONTEXT_FILTERS=1
 // The ContextualConfidenceModifier in the pipeline provides the WIN-WIN effect
-// import { ContextAwareNameFilter } from "./filters/ContextAwareNameFilter";
-// import { RelativeDateFilterSpan } from "./filters/RelativeDateFilterSpan";
-// import { ContextAwareAddressFilter } from "./filters/ContextAwareAddressFilter";
+// These filters add additional context-based detection but may increase false positives
+import { ContextAwareNameFilter } from "./filters/ContextAwareNameFilter";
+import { RelativeDateFilterSpan } from "./filters/RelativeDateFilterSpan";
+import { ContextAwareAddressFilter } from "./filters/ContextAwareAddressFilter";
+
+/**
+ * Check if context-aware filters are enabled via environment variable
+ */
+function isContextFiltersEnabled(): boolean {
+  return process.env.VULPES_CONTEXT_FILTERS === "1";
+}
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -274,6 +287,38 @@ export class VulpesCelare {
   }
 
   /**
+   * Create a fault-tolerant streaming redactor with Elixir-style supervision.
+   *
+   * Features:
+   * - Circuit breaker pattern for failure isolation
+   * - Backpressure queue for flow control
+   * - Automatic recovery from transient failures
+   * - Health monitoring and metrics
+   *
+   * Ideal for:
+   * - Real-time dictation systems
+   * - High-volume streaming APIs
+   * - Production environments requiring fault tolerance
+   *
+   * @param config - Optional supervision configuration
+   * @returns SupervisedStreamingRedactor instance
+   *
+   * @example
+   * ```typescript
+   * const redactor = VulpesCelare.createSupervisedStreamingRedactor();
+   * redactor.on('redacted', (chunk) => console.log(chunk.text));
+   * redactor.on('error', (err) => console.error(err));
+   * await redactor.start();
+   * redactor.write('Patient John Smith...');
+   * ```
+   */
+  static createSupervisedStreamingRedactor(
+    config?: Partial<SupervisedStreamingConfig>,
+  ): SupervisedStreamingRedactor {
+    return createSupervisedStreamingRedactor(config);
+  }
+
+  /**
    * Redact PHI from an image buffer.
    * Detects faces, extracts text via OCR, and applies black-box redaction.
    *
@@ -362,24 +407,35 @@ export class VulpesCelare {
     return ParallelRedactionEngine.getLastExecutionReport();
   }
   private buildFilters(config: VulpesCelareConfig): SpanBasedFilter[] {
+    const contextFiltersEnabled = isContextFiltersEnabled();
     const filterMap: Record<PHIType, () => SpanBasedFilter[]> = {
-      name: () => [
-        new SmartNameFilterSpan(),
-        new FormattedNameFilterSpan(),
-        new TitledNameFilterSpan(),
-        new FamilyNameFilterSpan(),
-        // ContextAwareNameFilter DISABLED - causing false positives
-      ],
+      name: () => {
+        const filters: SpanBasedFilter[] = [
+          new SmartNameFilterSpan(),
+          new FormattedNameFilterSpan(),
+          new TitledNameFilterSpan(),
+          new FamilyNameFilterSpan(),
+        ];
+        // ContextAwareNameFilter - optional, enabled via VULPES_CONTEXT_FILTERS=1
+        if (contextFiltersEnabled) {
+          filters.push(new ContextAwareNameFilter());
+        }
+        return filters;
+      },
       ssn: () => [new SSNFilterSpan()],
       passport: () => [new PassportNumberFilterSpan()],
       license: () => [new LicenseNumberFilterSpan()],
       phone: () => [new PhoneFilterSpan()],
       fax: () => [new FaxNumberFilterSpan()],
       email: () => [new EmailFilterSpan()],
-      address: () => [
-        new AddressFilterSpan(),
-        // ContextAwareAddressFilter DISABLED - causing false positives
-      ],
+      address: () => {
+        const filters: SpanBasedFilter[] = [new AddressFilterSpan()];
+        // ContextAwareAddressFilter - optional, enabled via VULPES_CONTEXT_FILTERS=1
+        if (contextFiltersEnabled) {
+          filters.push(new ContextAwareAddressFilter());
+        }
+        return filters;
+      },
       zip: () => [new ZipCodeFilterSpan()],
       mrn: () => [new MRNFilterSpan()],
       npi: () => [new NPIFilterSpan()],
@@ -387,10 +443,14 @@ export class VulpesCelare {
       health_plan: () => [new HealthPlanNumberFilterSpan()],
       // hospital filter removed - hospital names are NOT PHI under HIPAA Safe Harbor
       age: () => [new AgeFilterSpan()],
-      date: () => [
-        new DateFilterSpan(),
-        // RelativeDateFilterSpan DISABLED - causing false positives
-      ],
+      date: () => {
+        const filters: SpanBasedFilter[] = [new DateFilterSpan()];
+        // RelativeDateFilterSpan - optional, enabled via VULPES_CONTEXT_FILTERS=1
+        if (contextFiltersEnabled) {
+          filters.push(new RelativeDateFilterSpan());
+        }
+        return filters;
+      },
       credit_card: () => [new CreditCardFilterSpan()],
       account: () => [new AccountNumberFilterSpan()],
       ip: () => [new IPAddressFilterSpan()],

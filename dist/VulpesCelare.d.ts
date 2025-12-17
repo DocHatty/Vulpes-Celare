@@ -23,6 +23,7 @@ import { RedactionExecutionReport } from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
 import { RedactionContext } from "./context/RedactionContext";
 import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
+import { SupervisedStreamingRedactor, SupervisedStreamingConfig } from "./SupervisedStreamingRedactor";
 export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "npi" | "dea" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "unique_id" | "zip" | "fax" | "age";
 export type ReplacementStyle = "brackets" | "asterisks" | "empty";
 export interface VulpesCelareConfig {
@@ -84,6 +85,33 @@ export declare class VulpesCelare {
      * @internal
      */
     static redactWithPolicy(text: string, filters: SpanBasedFilter[], policy: any, context: RedactionContext): Promise<string>;
+    /**
+     * Create a fault-tolerant streaming redactor with Elixir-style supervision.
+     *
+     * Features:
+     * - Circuit breaker pattern for failure isolation
+     * - Backpressure queue for flow control
+     * - Automatic recovery from transient failures
+     * - Health monitoring and metrics
+     *
+     * Ideal for:
+     * - Real-time dictation systems
+     * - High-volume streaming APIs
+     * - Production environments requiring fault tolerance
+     *
+     * @param config - Optional supervision configuration
+     * @returns SupervisedStreamingRedactor instance
+     *
+     * @example
+     * ```typescript
+     * const redactor = VulpesCelare.createSupervisedStreamingRedactor();
+     * redactor.on('redacted', (chunk) => console.log(chunk.text));
+     * redactor.on('error', (err) => console.error(err));
+     * await redactor.start();
+     * redactor.write('Patient John Smith...');
+     * ```
+     */
+    static createSupervisedStreamingRedactor(config?: Partial<SupervisedStreamingConfig>): SupervisedStreamingRedactor;
     /**
      * Redact PHI from an image buffer.
      * Detects faces, extracts text via OCR, and applies black-box redaction.

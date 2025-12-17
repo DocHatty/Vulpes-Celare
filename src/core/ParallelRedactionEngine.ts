@@ -24,6 +24,7 @@ import {
 } from "./filters/PostFilterService";
 import { SpanEnhancer } from "./SpanEnhancer";
 import { CrossTypeReasoner, crossTypeReasoner } from "./CrossTypeReasoner";
+import { DatalogReasoner, datalogReasoner } from "./DatalogReasoner";
 import {
   ConfidenceCalibrator,
   confidenceCalibrator,
@@ -41,6 +42,18 @@ import {
   contextualConfidenceModifier,
   isContextModifierEnabled,
 } from "./ContextualConfidenceModifier";
+import {
+  isDFAScanningEnabled,
+  scanWithDFA,
+  ScanMatch,
+} from "../dfa/MultiPatternScanner";
+
+/**
+ * Check if Cortex ML enhancement is enabled via environment variable
+ */
+function isCortexEnabled(): boolean {
+  return process.env.VULPES_USE_CORTEX === "1";
+}
 
 /**
  * Filter execution result with detailed diagnostics
@@ -180,6 +193,24 @@ export class ParallelRedactionEngine {
       return text;
     }
 
+    // STEP 0.5: DFA PRE-SCAN (optional, enabled via VULPES_DFA_SCAN=1)
+    // Fast multi-pattern scanning to identify candidate regions before filter execution
+    let dfaSpans: Span[] = [];
+    if (isDFAScanningEnabled()) {
+      const dfaStart = Date.now();
+      const dfaResult = scanWithDFA(text);
+      const dfaTimeMs = Date.now() - dfaStart;
+
+      // Convert DFA matches to Spans
+      dfaSpans = this.dfaMatchesToSpans(dfaResult.matches, text);
+
+      RadiologyLogger.pipelineStage(
+        "DFA-PRESCAN",
+        `DFA pre-scan: ${dfaResult.stats.matchesFound} matches in ${dfaTimeMs}ms (${dfaResult.stats.patternsChecked} patterns)`,
+        dfaSpans.length,
+      );
+    }
+
     // STEP 1: Execute all filters in parallel using Worker Threads
     // This offloads CPU-intensive operations to separate threads
     const workerPool = FilterWorkerPool.getInstance();
@@ -243,6 +274,16 @@ export class ParallelRedactionEngine {
     );
 
     let allSpans = executionResults.flatMap((r) => r.spans);
+
+    // Merge DFA pre-scan spans with filter-detected spans
+    // DFA spans have lower priority so filter spans will win on overlap
+    if (dfaSpans.length > 0) {
+      allSpans = [...allSpans, ...dfaSpans];
+      RadiologyLogger.info(
+        "REDACTION",
+        `Merged ${dfaSpans.length} DFA spans with ${allSpans.length - dfaSpans.length} filter spans`,
+      );
+    }
 
     RadiologyLogger.info(
       "REDACTION",
@@ -438,15 +479,16 @@ export class ParallelRedactionEngine {
     );
 
     // STEP 2.8: CROSS-TYPE REASONING - Apply constraint solving across PHI types
+    // Uses DatalogReasoner by default (with CrossTypeReasoner fallback)
     // Handles mutual exclusion (DATE vs AGE), mutual support (NAME + MRN), document consistency
-    const beforeCrossType = disambiguatedSpans.length;
-    const crossTypeResults = crossTypeReasoner.reason(disambiguatedSpans, text);
+    const crossTypeResults = datalogReasoner.reason(disambiguatedSpans, text);
     const crossTypeAdjusted = crossTypeResults.filter(
       (r) => Math.abs(r.adjustedConfidence - r.originalConfidence) > 0.01,
     ).length;
+    const datalogStats = datalogReasoner.getStatistics();
     RadiologyLogger.pipelineStage(
       "CROSS-TYPE",
-      `Cross-type reasoning: ${crossTypeAdjusted} spans adjusted, ${crossTypeReasoner.getStatistics().totalConstraints} constraints applied`,
+      `Cross-type reasoning: ${crossTypeAdjusted} spans adjusted, ${datalogStats.totalRules} rules (Datalog: ${datalogStats.isDatalogEnabled ? "ON" : "OFF"})`,
       disambiguatedSpans.length,
     );
 
@@ -492,6 +534,43 @@ export class ParallelRedactionEngine {
         "Calibrator not fitted - using raw confidence scores",
         disambiguatedSpans.length,
       );
+    }
+
+    // STEP 2.95: CORTEX ML ENHANCEMENT (optional, enabled via VULPES_USE_CORTEX=1)
+    // Uses Python ML models for advanced entity recognition
+    if (isCortexEnabled()) {
+      try {
+        // Dynamic import to avoid loading Cortex when not needed
+        const { CortexPythonBridge } = await import(
+          "./cortex/python/CortexPythonBridge"
+        );
+        const cortex = new CortexPythonBridge();
+
+        if (await cortex.checkPythonAvailable()) {
+          RadiologyLogger.pipelineStage(
+            "CORTEX",
+            "Cortex ML enhancement available but not yet integrated into pipeline",
+            disambiguatedSpans.length,
+          );
+          // Future: Send text to Cortex for ML-based enhancement
+          // const cortexResult = await cortex.executeTask({
+          //   task: 'CUSTOM',
+          //   input: { text, spans: disambiguatedSpans.map(s => s.toJSON()) }
+          // });
+        } else {
+          RadiologyLogger.pipelineStage(
+            "CORTEX",
+            "Cortex enabled but Python not available - skipping",
+            disambiguatedSpans.length,
+          );
+        }
+      } catch (error) {
+        RadiologyLogger.pipelineStage(
+          "CORTEX",
+          `Cortex enhancement failed: ${error}`,
+          disambiguatedSpans.length,
+        );
+      }
     }
 
     // STEP 3: Resolve overlaps and deduplicate
@@ -1242,6 +1321,36 @@ export class ParallelRedactionEngine {
       }
 
       return true;
+    });
+  }
+
+  /**
+   * Convert DFA scan matches to Span objects
+   * DFA matches are fast pre-scan results that get merged with filter outputs
+   */
+  private static dfaMatchesToSpans(matches: ScanMatch[], text: string): Span[] {
+    return matches.map((match) => {
+      const contextStart = Math.max(0, match.start - 50);
+      const contextEnd = Math.min(text.length, match.end + 50);
+
+      return new Span({
+        text: match.text,
+        originalValue: match.text,
+        characterStart: match.start,
+        characterEnd: match.end,
+        filterType: match.filterType,
+        confidence: match.confidence,
+        priority: 50, // Lower priority than filter-detected spans (filters have more context)
+        context: text.substring(contextStart, contextEnd),
+        window: [],
+        replacement: null,
+        salt: null,
+        pattern: `DFA:${match.patternId}`,
+        applied: false,
+        ignored: false,
+        ambiguousWith: [],
+        disambiguationScore: null,
+      });
     });
   }
 }

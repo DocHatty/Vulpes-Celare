@@ -485,6 +485,28 @@ export {
 } from "./config/EnvironmentConfig";
 
 // ============================================================================
+// FEATURE TOGGLES (Centralized Feature Flag Management)
+// ============================================================================
+
+export { FeatureToggles } from "./config/FeatureToggles";
+
+// ============================================================================
+// UNIFIED FILTER ENGINE (Single Rust NAPI call for all patterns)
+// ============================================================================
+
+export {
+  VulpesFilterEngine,
+  UnifiedDetection,
+  UnifiedScanResult,
+  isUnifiedScannerAvailable,
+  isUnifiedScannerEnabled,
+  scanAllWithRust,
+  detectionsToSpans,
+  getRustSupportedTypes,
+  getTypeScriptOnlyTypes,
+} from "./utils/VulpesFilterEngine";
+
+// ============================================================================
 // VERSION INFO
 // ============================================================================
 

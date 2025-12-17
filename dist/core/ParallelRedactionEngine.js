@@ -7,6 +7,39 @@
  *
  * @module redaction/core
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParallelRedactionEngine = void 0;
 const Span_1 = require("../models/Span");
@@ -20,7 +53,7 @@ const DocumentVocabulary_1 = require("../vocabulary/DocumentVocabulary");
 const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
 const PostFilterService_1 = require("./filters/PostFilterService");
 const SpanEnhancer_1 = require("./SpanEnhancer");
-const CrossTypeReasoner_1 = require("./CrossTypeReasoner");
+const DatalogReasoner_1 = require("./DatalogReasoner");
 const ConfidenceCalibrator_1 = require("./ConfidenceCalibrator");
 const NameFilterConstants_1 = require("../filters/constants/NameFilterConstants");
 const RustNameScanner_1 = require("../utils/RustNameScanner");
@@ -28,6 +61,13 @@ const RustApplyKernel_1 = require("../utils/RustApplyKernel");
 const RustAccelConfig_1 = require("../config/RustAccelConfig");
 const FilterWorkerPool_1 = require("./FilterWorkerPool");
 const ContextualConfidenceModifier_1 = require("./ContextualConfidenceModifier");
+const MultiPatternScanner_1 = require("../dfa/MultiPatternScanner");
+/**
+ * Check if Cortex ML enhancement is enabled via environment variable
+ */
+function isCortexEnabled() {
+    return process.env.VULPES_USE_CORTEX === "1";
+}
 /**
  * Parallel Redaction Engine
  * Orchestrates parallel filter execution and span merging
@@ -85,6 +125,17 @@ class ParallelRedactionEngine {
             RadiologyLogger_1.RadiologyLogger.info("REDACTION", "Text too short for redaction, skipping");
             return text;
         }
+        // STEP 0.5: DFA PRE-SCAN (optional, enabled via VULPES_DFA_SCAN=1)
+        // Fast multi-pattern scanning to identify candidate regions before filter execution
+        let dfaSpans = [];
+        if ((0, MultiPatternScanner_1.isDFAScanningEnabled)()) {
+            const dfaStart = Date.now();
+            const dfaResult = (0, MultiPatternScanner_1.scanWithDFA)(text);
+            const dfaTimeMs = Date.now() - dfaStart;
+            // Convert DFA matches to Spans
+            dfaSpans = this.dfaMatchesToSpans(dfaResult.matches, text);
+            RadiologyLogger_1.RadiologyLogger.pipelineStage("DFA-PRESCAN", `DFA pre-scan: ${dfaResult.stats.matchesFound} matches in ${dfaTimeMs}ms (${dfaResult.stats.patternsChecked} patterns)`, dfaSpans.length);
+        }
         // STEP 1: Execute all filters in parallel using Worker Threads
         // This offloads CPU-intensive operations to separate threads
         const workerPool = FilterWorkerPool_1.FilterWorkerPool.getInstance();
@@ -134,6 +185,12 @@ class ParallelRedactionEngine {
             }
         }));
         let allSpans = executionResults.flatMap((r) => r.spans);
+        // Merge DFA pre-scan spans with filter-detected spans
+        // DFA spans have lower priority so filter spans will win on overlap
+        if (dfaSpans.length > 0) {
+            allSpans = [...allSpans, ...dfaSpans];
+            RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Merged ${dfaSpans.length} DFA spans with ${allSpans.length - dfaSpans.length} filter spans`);
+        }
         RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Total spans detected: ${allSpans.length} (before filtering)`);
         // STEP 1.5: Field Context Detection (PRE-PASS)
         // Detect field labels and their expected value types
@@ -247,11 +304,12 @@ class ParallelRedactionEngine {
         const disambiguatedSpans = this.disambiguationService.disambiguate(allSpans);
         RadiologyLogger_1.RadiologyLogger.pipelineStage("DISAMBIGUATION", `Resolved ambiguous spans: ${beforeDisambiguation} -> ${disambiguatedSpans.length}`, disambiguatedSpans.length);
         // STEP 2.8: CROSS-TYPE REASONING - Apply constraint solving across PHI types
+        // Uses DatalogReasoner by default (with CrossTypeReasoner fallback)
         // Handles mutual exclusion (DATE vs AGE), mutual support (NAME + MRN), document consistency
-        const beforeCrossType = disambiguatedSpans.length;
-        const crossTypeResults = CrossTypeReasoner_1.crossTypeReasoner.reason(disambiguatedSpans, text);
+        const crossTypeResults = DatalogReasoner_1.datalogReasoner.reason(disambiguatedSpans, text);
         const crossTypeAdjusted = crossTypeResults.filter((r) => Math.abs(r.adjustedConfidence - r.originalConfidence) > 0.01).length;
-        RadiologyLogger_1.RadiologyLogger.pipelineStage("CROSS-TYPE", `Cross-type reasoning: ${crossTypeAdjusted} spans adjusted, ${CrossTypeReasoner_1.crossTypeReasoner.getStatistics().totalConstraints} constraints applied`, disambiguatedSpans.length);
+        const datalogStats = DatalogReasoner_1.datalogReasoner.getStatistics();
+        RadiologyLogger_1.RadiologyLogger.pipelineStage("CROSS-TYPE", `Cross-type reasoning: ${crossTypeAdjusted} spans adjusted, ${datalogStats.totalRules} rules (Datalog: ${datalogStats.isDatalogEnabled ? "ON" : "OFF"})`, disambiguatedSpans.length);
         // STEP 2.85: CLINICAL CONTEXT MODIFICATION - Universal context-based confidence adjustment
         // WIN-WIN: Boosts confidence in clinical context (sensitivity++), penalizes without (specificity++)
         if ((0, ContextualConfidenceModifier_1.isContextModifierEnabled)()) {
@@ -271,6 +329,29 @@ class ParallelRedactionEngine {
         }
         else {
             RadiologyLogger_1.RadiologyLogger.pipelineStage("CALIBRATION", "Calibrator not fitted - using raw confidence scores", disambiguatedSpans.length);
+        }
+        // STEP 2.95: CORTEX ML ENHANCEMENT (optional, enabled via VULPES_USE_CORTEX=1)
+        // Uses Python ML models for advanced entity recognition
+        if (isCortexEnabled()) {
+            try {
+                // Dynamic import to avoid loading Cortex when not needed
+                const { CortexPythonBridge } = await Promise.resolve().then(() => __importStar(require("./cortex/python/CortexPythonBridge")));
+                const cortex = new CortexPythonBridge();
+                if (await cortex.checkPythonAvailable()) {
+                    RadiologyLogger_1.RadiologyLogger.pipelineStage("CORTEX", "Cortex ML enhancement available but not yet integrated into pipeline", disambiguatedSpans.length);
+                    // Future: Send text to Cortex for ML-based enhancement
+                    // const cortexResult = await cortex.executeTask({
+                    //   task: 'CUSTOM',
+                    //   input: { text, spans: disambiguatedSpans.map(s => s.toJSON()) }
+                    // });
+                }
+                else {
+                    RadiologyLogger_1.RadiologyLogger.pipelineStage("CORTEX", "Cortex enabled but Python not available - skipping", disambiguatedSpans.length);
+                }
+            }
+            catch (error) {
+                RadiologyLogger_1.RadiologyLogger.pipelineStage("CORTEX", `Cortex enhancement failed: ${error}`, disambiguatedSpans.length);
+            }
         }
         // STEP 3: Resolve overlaps and deduplicate
         const mergedSpans = Span_1.SpanUtils.dropOverlappingSpans(disambiguatedSpans);
@@ -846,6 +927,34 @@ class ParallelRedactionEngine {
                 }
             }
             return true;
+        });
+    }
+    /**
+     * Convert DFA scan matches to Span objects
+     * DFA matches are fast pre-scan results that get merged with filter outputs
+     */
+    static dfaMatchesToSpans(matches, text) {
+        return matches.map((match) => {
+            const contextStart = Math.max(0, match.start - 50);
+            const contextEnd = Math.min(text.length, match.end + 50);
+            return new Span_1.Span({
+                text: match.text,
+                originalValue: match.text,
+                characterStart: match.start,
+                characterEnd: match.end,
+                filterType: match.filterType,
+                confidence: match.confidence,
+                priority: 50, // Lower priority than filter-detected spans (filters have more context)
+                context: text.substring(contextStart, contextEnd),
+                window: [],
+                replacement: null,
+                salt: null,
+                pattern: `DFA:${match.patternId}`,
+                applied: false,
+                ignored: false,
+                ambiguousWith: [],
+                disambiguationScore: null,
+            });
         });
     }
 }

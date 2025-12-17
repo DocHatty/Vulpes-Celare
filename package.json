@@ -15,6 +15,8 @@
     "build": "npm run clean && tsc && node scripts/copy-assets.js",
     "build:watch": "tsc --watch",
     "native:build": "node scripts/build-native.js",
+    "native:build-gpu": "node scripts/build-gpu.js",
+    "native:build-gpu:status": "node scripts/build-gpu.js --status",
     "native:ort:download": "node scripts/download-ort.js",
     "native:install": "node scripts/install-native.js",
     "postinstall": "node scripts/install-native.js",
@@ -37,7 +39,10 @@
     "clean": "node scripts/clean-dist.js",
     "rebuild": "npm run build",
     "install-global": "node scripts/install-global.js",
-    "vulpes": "node dist/cli/launcher.js"
+    "vulpes": "node dist/cli/launcher.js",
+    "optimize-weights": "node scripts/optimize-weights.js",
+    "optimize-weights:status": "node scripts/optimize-weights.js --status",
+    "optimize-weights:reset": "node scripts/optimize-weights.js --reset"
   },
   "keywords": [
     "hipaa",
