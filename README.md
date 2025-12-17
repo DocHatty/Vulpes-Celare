@@ -1,7 +1,7 @@
 # VULPES CELARE
 
 <p align="center">
-<b>Source-Available</b> · Evaluation License · <a href="#license--commercial-use">Commercial licensing available</a>
+<b>Source-Available</b> · Evaluation License · <a href="#license--commercial-use">Commercial discussions welcomed</a>
 </p>
 
 <p align="center">
@@ -314,13 +314,15 @@ Vulpes Celare is **source-available** under an [Evaluation License](LICENSE-EVAL
 
 ### Commercial & Strategic Partnerships
 
-Commercial licensing, enterprise deployment, acquisition, and strategic partnerships are explicitly welcomed.
+Commercial licensing, enterprise deployment, acquisition, and strategic partnerships are welcomed. Commercial terms are subject to confirmation of rights and any applicable institutional IP processes.
 
 Licensing structures may include standalone commercial licenses, dual-license models, OEM/embedded agreements, or strategic IP arrangements. Initial discussions are lightweight and exploratory.
 
 Where applicable, licensing terms may be coordinated with standard institutional IP processes; this is handled collaboratively during the commercial discussion.
 
-If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) (public or private) or email [andrew@vulpescelare.com](mailto:andrew@vulpescelare.com) to start a licensing conversation.
+Commercial arrangements are subject to confirmation of IP rights and any applicable institutional review; this is handled collaboratively during discussions.
+
+If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) (public or private) or email [andrew@vulpescelare.com](mailto:andrew@vulpescelare.com) to discuss evaluation, pilots, or potential commercial terms (subject to rights clearance).
 
 ## Contributing
 
