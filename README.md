@@ -318,8 +318,6 @@ Commercial licensing, enterprise deployment, acquisition, and strategic partners
 
 Licensing structures may include standalone commercial licenses, dual-license models, OEM/embedded agreements, or strategic IP arrangements. Initial discussions are lightweight and exploratory.
 
-Where applicable, licensing terms may be coordinated with standard institutional IP processes; this is handled collaboratively during the commercial discussion.
-
 Commercial arrangements are subject to confirmation of IP rights and any applicable institutional review; this is handled collaboratively during discussions.
 
 If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) (public or private) or email [andrew@vulpescelare.com](mailto:andrew@vulpescelare.com) to discuss evaluation, pilots, or potential commercial terms (subject to rights clearance).
