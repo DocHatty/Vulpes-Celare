@@ -28,7 +28,7 @@ auditable de-identification pipeline suitable for healthcare research and air-ga
 | Processing | <10ms | — |
 | HIPAA Coverage | 18/18 | — |
 
-*Validated on 7,234 documents, 89,456 PHI elements. See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for methodology.*
+*Continuall validated and updated, thus far on 7,234 documents, 89,456 PHI elements. See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for methodology.*
 
 ## Validation Approach
 
