@@ -269,6 +269,55 @@ Eleven Rust accelerators handle text processing: phonetic matching, tokenization
 - **Supervision & Circuit Breakers** - Erlang-style fault tolerance for production deployments
 - **MCP Server** - Model Context Protocol integration for IDE and agent tooling
 
+### Cryptographic & Blockchain Auditing
+
+Vulpes Celare includes comprehensive cryptographic provenance and blockchain-based auditing capabilities:
+
+#### Trust Bundles (Tamper-Evident Exports)
+
+`.red` files are cryptographically signed ZIP archives containing:
+- Redacted document with SHA-256 hash verification
+- Manifest and certificate with cryptographic fingerprints
+- Optional Merkle proof for chain-of-custody verification
+
+```ts
+import { VulpesCelare, TrustBundleExporter } from "vulpes-celare";
+
+const result = await VulpesCelare.redactWithDetails(original);
+const bundle = await TrustBundleExporter.generate(original, result.text, result, {
+  policyName: "maximum",
+  documentId: "doc-001",
+  actorId: "system"
+});
+
+await TrustBundleExporter.export(bundle, "trust-bundle.red");
+
+// Verify integrity
+const verification = await TrustBundleExporter.verify("trust-bundle.red");
+```
+
+See [docs/TRUST-BUNDLE.md](docs/TRUST-BUNDLE.md) for complete specification.
+
+#### Blockchain Audit Log (Merkle Chain)
+
+The Vulpes Cortex system implements a tamper-evident blockchain using linear hash chains:
+- **Append-Only**: Events are cryptographically linked to prevent retroactive modification
+- **Merkle Root**: SHA-256 Merkle trees provide cryptographic proof of audit trail integrity
+- **Provenance Tracking**: Ed25519 digital signatures for redaction job verification
+
+Rust-accelerated cryptographic primitives (SHA-256, HMAC-SHA256, Merkle root calculation) provide production-grade performance. See [docs/provenance-spec.md](docs/provenance-spec.md) for implementation details.
+
+#### Verification Portal
+
+Web-based verification interface for non-technical auditors:
+```bash
+cd verification-portal
+npm install && npm start
+# Open http://localhost:3000
+```
+
+Upload `.red` files for instant cryptographic verification. See [verification-portal/README.md](verification-portal/README.md).
+
 ### ONNX Runtime
 
 **Windows**: Bundled at `native/onnxruntime.dll`. Override with `VULPES_ORT_PATH` or `ORT_DYLIB_PATH`.
