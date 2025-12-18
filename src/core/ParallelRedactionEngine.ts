@@ -44,6 +44,7 @@ import {
   ScanMatch,
 } from "../dfa/MultiPatternScanner";
 import { pipelineTracer } from "../diagnostics/PipelineTracer";
+import { nameDetectionCoordinator } from "../filters/name-patterns/NameDetectionCoordinator";
 
 /**
  * Check if Cortex ML enhancement is enabled via environment variable
@@ -235,6 +236,10 @@ export class ParallelRedactionEngine {
 
     // Start pipeline trace (enabled via VULPES_TRACE=1)
     pipelineTracer.startTrace(text);
+
+    // STEP 0: Initialize name detection coordinator (caches Rust results)
+    // This eliminates duplicate Rust scanner calls across name filters
+    nameDetectionCoordinator.beginDocument(text);
 
     // OPTIMIZATION: Pre-filter disabled filters before execution
     const enabledFilters = filters.filter((filter) => {
@@ -867,6 +872,9 @@ export class ParallelRedactionEngine {
 
     // End pipeline trace (if enabled)
     pipelineTracer.endTrace(validSpans, redactedText);
+
+    // End name detection coordinator (clears cache)
+    nameDetectionCoordinator.endDocument();
 
     // Log comprehensive summary
     RadiologyLogger.redactionSummary({

@@ -17,8 +17,8 @@ const NameFilterConstants_1 = require("./constants/NameFilterConstants");
 const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
 const UnifiedMedicalWhitelist_1 = require("../utils/UnifiedMedicalWhitelist");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
-const RustNameScanner_1 = require("../utils/RustNameScanner");
 const RustAccelConfig_1 = require("../config/RustAccelConfig");
+const NameDetectionCoordinator_1 = require("./name-patterns/NameDetectionCoordinator");
 class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getType() {
         return "NAME";
@@ -555,10 +555,10 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     // ═══════════════════════════════════════════════════════════════════════════
     /**
      * Rust-accelerated Last, First detection
-     * Delegates to VulpesNameScanner.detectLastFirst() for performance
+     * Uses coordinator for cached results to avoid duplicate FFI calls
      */
     detectRustLastFirstNames(text, spans) {
-        const detections = RustNameScanner_1.RustNameScanner.detectLastFirst(text);
+        const detections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustLastFirst();
         if (!detections.length)
             return;
         for (const d of detections) {
@@ -604,10 +604,10 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     /**
      * Rust-accelerated First Last detection
-     * Delegates to VulpesNameScanner.detectFirstLast() for performance
+     * Uses coordinator for cached results to avoid duplicate FFI calls
      */
     detectRustFirstLastNames(text, spans) {
-        const detections = RustNameScanner_1.RustNameScanner.detectFirstLast(text);
+        const detections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustFirstLast();
         if (!detections.length)
             return;
         for (const d of detections) {

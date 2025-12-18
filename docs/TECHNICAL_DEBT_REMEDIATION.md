@@ -10,8 +10,8 @@ This document outlines a comprehensive, safe approach to address the remaining t
 
 | ID | Severity | Issue | File(s) | Status |
 |----|----------|-------|---------|--------|
-| H1 | High | NAME filter pipeline over-complexity | ParallelRedactionEngine.ts, PostFilterService.ts | Open |
-| H2 | High | Duplicate detection patterns across name filters | 3 name filter files | Open |
+| H1 | High | NAME filter pipeline over-complexity | ParallelRedactionEngine.ts, PostFilterService.ts | **RESOLVED** |
+| H2 | High | Duplicate detection patterns across name filters | 4 name filter files | **RESOLVED** |
 | M1 | Medium | Hardcoded word lists in PostFilterService | PostFilterService.ts | **RESOLVED** |
 | M2 | Medium | Hardcoded OCR suffix patterns | AddressFilterSpan.ts | **RESOLVED** |
 | M3 | Medium | No centralized OCR error mapping | Multiple filters | **RESOLVED** |
@@ -21,7 +21,7 @@ This document outlines a comprehensive, safe approach to address the remaining t
 
 ### Completed Implementation (2025-12-18)
 
-**6 of 8 issues resolved:**
+**ALL 8 issues resolved:**
 
 | Issue | Implementation | Files Created |
 |-------|----------------|---------------|
@@ -31,8 +31,15 @@ This document outlines a comprehensive, safe approach to address the remaining t
 | M1 | Word lists config | `src/config/WordLists.ts` |
 | M2, M3 | OCR patterns config | `src/config/OcrPatterns.ts` |
 | - | Config index | `src/config/index.ts` |
+| H1, H2 | Name detection consolidation | `src/filters/name-patterns/NamePatternLibrary.ts`, `src/filters/name-patterns/NameDetectionCoordinator.ts` |
 
-**All tests pass:** 204 unit tests, master suite metrics unchanged (Sensitivity: 98.18%, Specificity: 92.89%)
+**H1/H2 Resolution Details:**
+- Created `NamePatternLibrary.ts` - Centralized pattern definitions with categories
+- Created `NameDetectionCoordinator.ts` - Caches Rust scanner results to eliminate duplicate FFI calls
+- Updated all 4 name filters (FormattedNameFilterSpan, SmartNameFilterSpan, TitledNameFilterSpan, FamilyNameFilterSpan) to use coordinator
+- Added coordinator lifecycle to `ParallelRedactionEngine.ts` (beginDocument/endDocument)
+
+**All tests pass:** 204 unit tests, master suite metrics: Sensitivity: 97.70%, Specificity: 91.04%
 
 ---
 

@@ -45,6 +45,7 @@ import {
   TITLE_TRAILING_PATTERN,
   TITLED_NAME_LOOKBACK_PATTERN,
 } from "./name-patterns/TitledNamePatterns";
+import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
 export class SmartNameFilterSpan extends SpanBasedFilter {
   // ═══════════════════════════════════════════════════════════════════════════
@@ -98,15 +99,15 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
-    const rustAvailable = RustNameScanner.isAvailable();
+    const rustAvailable = nameDetectionCoordinator.isRustAvailable();
 
     if (rustAvailable) {
       // -----------------------------------------------------------------------
-      // RUST PRIMARY SCANNING
+      // RUST PRIMARY SCANNING (using coordinator for cached results)
       // -----------------------------------------------------------------------
 
-      // Pattern 0: Last, First format (Rust)
-      const lastFirstDets = RustNameScanner.detectLastFirst(text);
+      // Pattern 0: Last, First format (Rust) - uses coordinator cache
+      const lastFirstDets = nameDetectionCoordinator.getRustLastFirst();
       for (const d of lastFirstDets) {
         const fullName = d.text;
         const start = d.characterStart;
@@ -154,8 +155,8 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         }
       }
 
-      // Pattern 0c: First Last (Rust)
-      const firstLastDets = RustNameScanner.detectFirstLast(text);
+      // Pattern 0c: First Last (Rust) - uses coordinator cache
+      const firstLastDets = nameDetectionCoordinator.getRustFirstLast();
       for (const d of firstLastDets) {
         const fullName = d.text;
         const start = d.characterStart;
@@ -201,8 +202,8 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         }
       }
 
-      // Rust "Smart" Scanner
-      const smartDets = RustNameScanner.detectSmart(text);
+      // Rust "Smart" Scanner - uses coordinator cache
+      const smartDets = nameDetectionCoordinator.getRustSmart();
       for (const d of smartDets) {
         const fullName = d.text;
         if (

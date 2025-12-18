@@ -25,8 +25,8 @@ This file tracks structural issues, technical debt, and architectural concerns d
 
 | ID | Issue | File(s) | Discovered | Status | Notes |
 |----|-------|---------|------------|--------|-------|
-| H1 | NAME filter pipeline over-complexity | ParallelRedactionEngine.ts, PostFilterService.ts | 2024-12-16 | Open | Spans detected at 98% confidence get filtered by 5+ downstream stages. Hard to debug why valid names disappear. |
-| H2 | Duplicate detection patterns | FormattedNameFilterSpan.ts, SmartNameFilterSpan.ts, TitledNameFilterSpan.ts | 2024-12-16 | Open | Same name detected by multiple filters with overlapping logic. Wastes cycles, creates merge conflicts. |
+| H1 | NAME filter pipeline over-complexity | ParallelRedactionEngine.ts, name-patterns/ | 2024-12-16 | Resolved | Created NameDetectionCoordinator to cache Rust results and eliminate duplicate FFI calls. |
+| H2 | Duplicate detection patterns | 4 name filter files + name-patterns/ | 2024-12-16 | Resolved | Created NamePatternLibrary for centralized pattern definitions. All filters now use coordinator. |
 
 ### Medium (Technical debt)
 
@@ -61,6 +61,8 @@ This file tracks structural issues, technical debt, and architectural concerns d
 | M4 | Priority/confidence thresholds scattered | Created src/config/Thresholds.ts | 2025-12-18 |
 | L1 | No pipeline stage visualization | Added SpanJourneyTracker | 2025-12-18 |
 | L2 | Test context object creation verbose | Created tests/utils/test-helpers.ts | 2025-12-18 |
+| H1 | NAME filter pipeline over-complexity | Created NameDetectionCoordinator | 2025-12-18 |
+| H2 | Duplicate detection patterns | Created NamePatternLibrary + coordinator | 2025-12-18 |
 
 ---
 

@@ -13,7 +13,7 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const UnifiedMedicalWhitelist_1 = require("../utils/UnifiedMedicalWhitelist");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
-const RustNameScanner_1 = require("../utils/RustNameScanner");
+const NameDetectionCoordinator_1 = require("./name-patterns/NameDetectionCoordinator");
 class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     /**
      * Common formal name prefixes
@@ -60,7 +60,8 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     detect(text, config, context) {
         const spans = [];
         // Try Rust acceleration first - detectSmart includes titled names
-        const rustDetections = RustNameScanner_1.RustNameScanner.detectSmart(text);
+        // Uses coordinator for cached results to avoid duplicate FFI calls
+        const rustDetections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustSmart();
         if (rustDetections.length > 0) {
             // Filter for titled name patterns only
             const titledPatterns = rustDetections.filter((d) => d.pattern.includes("Titled") ||

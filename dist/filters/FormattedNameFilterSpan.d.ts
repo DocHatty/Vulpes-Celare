@@ -53,12 +53,12 @@ export declare class FormattedNameFilterSpan extends SpanBasedFilter {
     private isWhitelisted;
     /**
      * Rust-accelerated Last, First detection
-     * Delegates to VulpesNameScanner.detectLastFirst() for performance
+     * Uses coordinator for cached results to avoid duplicate FFI calls
      */
     private detectRustLastFirstNames;
     /**
      * Rust-accelerated First Last detection
-     * Delegates to VulpesNameScanner.detectFirstLast() for performance
+     * Uses coordinator for cached results to avoid duplicate FFI calls
      */
     private detectRustFirstLastNames;
 }

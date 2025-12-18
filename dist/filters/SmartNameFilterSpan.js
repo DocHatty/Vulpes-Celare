@@ -18,10 +18,10 @@ const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
 const UnifiedMedicalWhitelist_1 = require("../utils/UnifiedMedicalWhitelist");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
 const OcrChaosDetector_1 = require("../utils/OcrChaosDetector");
-const RustNameScanner_1 = require("../utils/RustNameScanner");
 const RadiologyLogger_1 = require("../utils/RadiologyLogger"); // Added Import
 const OcrTolerancePatterns_1 = require("./name-patterns/OcrTolerancePatterns");
 const TitledNamePatterns_1 = require("./name-patterns/TitledNamePatterns");
+const NameDetectionCoordinator_1 = require("./name-patterns/NameDetectionCoordinator");
 class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     // ═══════════════════════════════════════════════════════════════════════════
     // STATIC CACHED REGEX PATTERNS - Compiled once at class load, not per-call
@@ -48,13 +48,13 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     }
     detect(text, config, context) {
         const spans = [];
-        const rustAvailable = RustNameScanner_1.RustNameScanner.isAvailable();
+        const rustAvailable = NameDetectionCoordinator_1.nameDetectionCoordinator.isRustAvailable();
         if (rustAvailable) {
             // -----------------------------------------------------------------------
-            // RUST PRIMARY SCANNING
+            // RUST PRIMARY SCANNING (using coordinator for cached results)
             // -----------------------------------------------------------------------
-            // Pattern 0: Last, First format (Rust)
-            const lastFirstDets = RustNameScanner_1.RustNameScanner.detectLastFirst(text);
+            // Pattern 0: Last, First format (Rust) - uses coordinator cache
+            const lastFirstDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustLastFirst();
             for (const d of lastFirstDets) {
                 const fullName = d.text;
                 const start = d.characterStart;
@@ -91,8 +91,8 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                     }));
                 }
             }
-            // Pattern 0c: First Last (Rust)
-            const firstLastDets = RustNameScanner_1.RustNameScanner.detectFirstLast(text);
+            // Pattern 0c: First Last (Rust) - uses coordinator cache
+            const firstLastDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustFirstLast();
             for (const d of firstLastDets) {
                 const fullName = d.text;
                 const start = d.characterStart;
@@ -123,8 +123,8 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                     }));
                 }
             }
-            // Rust "Smart" Scanner
-            const smartDets = RustNameScanner_1.RustNameScanner.detectSmart(text);
+            // Rust "Smart" Scanner - uses coordinator cache
+            const smartDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustSmart();
             for (const d of smartDets) {
                 const fullName = d.text;
                 if (!this.isWhitelisted(fullName, text) &&

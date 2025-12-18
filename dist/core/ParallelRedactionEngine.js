@@ -62,6 +62,7 @@ const FilterWorkerPool_1 = require("./FilterWorkerPool");
 const ContextualConfidenceModifier_1 = require("./ContextualConfidenceModifier");
 const MultiPatternScanner_1 = require("../dfa/MultiPatternScanner");
 const PipelineTracer_1 = require("../diagnostics/PipelineTracer");
+const NameDetectionCoordinator_1 = require("../filters/name-patterns/NameDetectionCoordinator");
 /**
  * Check if Cortex ML enhancement is enabled via environment variable
  */
@@ -150,6 +151,9 @@ class ParallelRedactionEngine {
         const filterResults = [];
         // Start pipeline trace (enabled via VULPES_TRACE=1)
         PipelineTracer_1.pipelineTracer.startTrace(text);
+        // STEP 0: Initialize name detection coordinator (caches Rust results)
+        // This eliminates duplicate Rust scanner calls across name filters
+        NameDetectionCoordinator_1.nameDetectionCoordinator.beginDocument(text);
         // OPTIMIZATION: Pre-filter disabled filters before execution
         const enabledFilters = filters.filter((filter) => {
             const filterType = filter.getType();
@@ -596,6 +600,8 @@ class ParallelRedactionEngine {
         };
         // End pipeline trace (if enabled)
         PipelineTracer_1.pipelineTracer.endTrace(validSpans, redactedText);
+        // End name detection coordinator (clears cache)
+        NameDetectionCoordinator_1.nameDetectionCoordinator.endDocument();
         // Log comprehensive summary
         RadiologyLogger_1.RadiologyLogger.redactionSummary({
             inputLength: text.length,

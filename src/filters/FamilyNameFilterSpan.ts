@@ -16,6 +16,7 @@ import {
   PROVIDER_TITLE_PREFIXES,
 } from "../utils/NameDetectionUtils";
 import { RustNameScanner } from "../utils/RustNameScanner";
+import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
 export class FamilyNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -28,7 +29,8 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
 
   detect(text: string, config: any, context: RedactionContext): Span[] {
     // Try Rust acceleration first - detectSmart includes family member patterns
-    const rustDetections = RustNameScanner.detectSmart(text);
+    // Uses coordinator for cached results to avoid duplicate FFI calls
+    const rustDetections = nameDetectionCoordinator.getRustSmart();
     if (rustDetections.length > 0) {
       // Filter for family-related patterns
       const familyPatterns = rustDetections.filter(

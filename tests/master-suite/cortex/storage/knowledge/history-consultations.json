@@ -1635,11 +1635,23 @@
       "timestamp": "2025-12-18T20:32:28.991Z",
       "decisionType": "WHAT_TO_IMPROVE",
       "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766091756589",
+      "timestamp": "2025-12-18T21:02:36.589Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766091858817",
+      "timestamp": "2025-12-18T21:04:18.817Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
     }
   ],
   "stats": {
-    "total": 273,
+    "total": 275,
     "foundRelevantHistory": 1,
-    "noHistoryFound": 272
+    "noHistoryFound": 274
   }
 }

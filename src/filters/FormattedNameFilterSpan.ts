@@ -25,6 +25,7 @@ import {
 } from "../utils/NameDetectionUtils";
 import { RustNameScanner } from "../utils/RustNameScanner";
 import { RustAccelConfig } from "../config/RustAccelConfig";
+import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
 export class FormattedNameFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -681,10 +682,10 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Rust-accelerated Last, First detection
-   * Delegates to VulpesNameScanner.detectLastFirst() for performance
+   * Uses coordinator for cached results to avoid duplicate FFI calls
    */
   private detectRustLastFirstNames(text: string, spans: Span[]): void {
-    const detections = RustNameScanner.detectLastFirst(text);
+    const detections = nameDetectionCoordinator.getRustLastFirst();
     if (!detections.length) return;
 
     for (const d of detections) {
@@ -739,10 +740,10 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
 
   /**
    * Rust-accelerated First Last detection
-   * Delegates to VulpesNameScanner.detectFirstLast() for performance
+   * Uses coordinator for cached results to avoid duplicate FFI calls
    */
   private detectRustFirstLastNames(text: string, spans: Span[]): void {
-    const detections = RustNameScanner.detectFirstLast(text);
+    const detections = nameDetectionCoordinator.getRustFirstLast();
     if (!detections.length) return;
 
     for (const d of detections) {

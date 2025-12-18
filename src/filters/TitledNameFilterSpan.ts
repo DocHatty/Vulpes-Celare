@@ -19,6 +19,7 @@ import {
   PROVIDER_TITLE_PREFIXES,
 } from "../utils/NameDetectionUtils";
 import { RustNameScanner } from "../utils/RustNameScanner";
+import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
 export class TitledNameFilterSpan extends SpanBasedFilter {
   /**
@@ -72,7 +73,8 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
     const spans: Span[] = [];
 
     // Try Rust acceleration first - detectSmart includes titled names
-    const rustDetections = RustNameScanner.detectSmart(text);
+    // Uses coordinator for cached results to avoid duplicate FFI calls
+    const rustDetections = nameDetectionCoordinator.getRustSmart();
     if (rustDetections.length > 0) {
       // Filter for titled name patterns only
       const titledPatterns = rustDetections.filter(
