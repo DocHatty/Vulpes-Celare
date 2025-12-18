@@ -12168,6 +12168,46 @@
         "t_valid_from": "2025-12-18T21:04:18.806Z",
         "t_valid_until": null
       }
+    },
+    "run_1766093060657_e6nh6eb2u": {
+      "id": "run_1766093060657_e6nh6eb2u",
+      "timestamp": "2025-12-18T21:24:20.657Z",
+      "documentCount": 0,
+      "metrics": {
+        "sensitivity": 98.0014,
+        "specificity": 89.5385,
+        "precision": 97.6648,
+        "f1Score": 97.8328,
+        "mcc": 0.8807
+      },
+      "confusionMatrix": {
+        "tp": 1422,
+        "tn": 291,
+        "fp": 34,
+        "fn": 29,
+        "total": 1776,
+        "actualPositive": 1451,
+        "actualNegative": 325
+      },
+      "interpretation": {
+        "overallGrade": "GOOD",
+        "issues": [],
+        "strengths": [
+          {
+            "metric": "f1Score",
+            "message": "Strong F1 Score 97.8%."
+          }
+        ],
+        "recommendations": [],
+        "summary": "System is performing well. Minor improvements possible."
+      },
+      "_type": "TestRun",
+      "_temporal": {
+        "t_recorded": "2025-12-18T21:24:20.657Z",
+        "t_occurred": "2025-12-18T21:24:20.657Z",
+        "t_valid_from": "2025-12-18T21:24:20.657Z",
+        "t_valid_until": null
+      }
     }
   },
   "Intervention": {

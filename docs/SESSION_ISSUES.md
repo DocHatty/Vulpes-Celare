@@ -63,6 +63,9 @@ This file tracks structural issues, technical debt, and architectural concerns d
 | L2 | Test context object creation verbose | Created tests/utils/test-helpers.ts | 2025-12-18 |
 | H1 | NAME filter pipeline over-complexity | Created NameDetectionCoordinator | 2025-12-18 |
 | H2 | Duplicate detection patterns | Created NamePatternLibrary + coordinator | 2025-12-18 |
+| - | No live LLM guidance in test output | Created Elite LLM Guidance System | 2025-12-18 |
+| - | No model-specific calibration | Created ModelCalibrator | 2025-12-18 |
+| - | No historical context in output | Created HistoryContextBuilder | 2025-12-18 |
 
 ---
 

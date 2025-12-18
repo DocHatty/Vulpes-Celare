@@ -132,6 +132,15 @@ try {
   // SmartSummary not available - will skip smart summary
 }
 
+// Try to load Elite LLM Guidance System
+let injectGuidance = null;
+try {
+  const llmGuidance = require("./cortex/llm-guidance");
+  injectGuidance = llmGuidance.injectGuidance;
+} catch (e) {
+  // LLM Guidance not available - will skip guidance injection
+}
+
 // ============================================================================
 // AUTOMATIC DUAL-OUTPUT LOGGING (Gold Standard 2025)
 // ============================================================================
@@ -940,6 +949,30 @@ async function main() {
         } catch (e) {
           // Gracefully skip if SmartSummary fails
           console.warn(`  SmartSummary generation failed: ${e.message}`);
+        }
+      }
+
+      // Elite LLM Guidance System (2025 Gold Standard)
+      if (injectGuidance) {
+        try {
+          const guidanceResults = {
+            metrics: assessment.results.metrics,
+            failures: assessment.results.failures || [],
+            topFailure: assessment.results.topFailure || null,
+            documents: options.documentCount,
+            processingTime: assessment.results.processingTime,
+          };
+
+          log("\n" + fmt.divider());
+          log(fmt.headerBox("ELITE LLM GUIDANCE SYSTEM"));
+          log(fmt.divider() + "\n");
+          log(injectGuidance(guidanceResults, {
+            verbosity: process.env.VULPES_LLM_VERBOSITY || 2,
+          }));
+          log("\n");
+        } catch (e) {
+          // Gracefully skip if LLM Guidance fails
+          console.warn(`  LLM Guidance generation failed: ${e.message}`);
         }
       }
     }
