@@ -284,8 +284,10 @@ The `.red` format provides tamper-evident redaction artifacts for regulatory com
 ```ts
 import { VulpesCelare, TrustBundleExporter } from "vulpes-celare";
 
-const result = await VulpesCelare.redactWithDetails(original);
-const bundle = await TrustBundleExporter.generate(original, result.text, result, {
+const engine = new VulpesCelare();
+const result = await engine.process(clinicalNote);
+
+const bundle = await TrustBundleExporter.generate(clinicalNote, result.text, result, {
   policyName: "maximum",
   documentId: "doc-001",
   actorId: "system"
