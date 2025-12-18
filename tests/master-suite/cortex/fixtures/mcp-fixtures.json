@@ -1,0 +1,13 @@
+{
+  "latestMetrics": {
+    "sensitivity": 0.991,
+    "specificity": 0.972,
+    "precision": 0.965,
+    "f1Score": 0.978,
+    "mcc": 0.94,
+    "documentCount": 200,
+    "timestamp": "2025-01-01T00:00:00Z",
+    "profile": "HIPAA_STRICT",
+    "runId": "fixture-run"
+  }
+}

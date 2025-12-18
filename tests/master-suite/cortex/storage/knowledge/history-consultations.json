@@ -1,0 +1,1645 @@
+{
+  "consultations": [
+    {
+      "id": "CONSULT-1764914827713",
+      "timestamp": "2025-12-05T06:07:07.713Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764914970240",
+      "timestamp": "2025-12-05T06:09:30.240Z",
+      "decisionType": "GENERAL",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915508691",
+      "timestamp": "2025-12-05T06:18:28.691Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915789588",
+      "timestamp": "2025-12-05T06:23:09.588Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915820307",
+      "timestamp": "2025-12-05T06:23:40.307Z",
+      "decisionType": "GENERAL",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915820309",
+      "timestamp": "2025-12-05T06:23:40.309Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764915820330",
+      "timestamp": "2025-12-05T06:23:40.330Z",
+      "decisionType": "DICTIONARY_UPDATE",
+      "foundHistory": true
+    },
+    {
+      "id": "CONSULT-1764916341605",
+      "timestamp": "2025-12-05T06:32:21.605Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764916430106",
+      "timestamp": "2025-12-05T06:33:50.106Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764924714269",
+      "timestamp": "2025-12-05T08:51:54.269Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764924965948",
+      "timestamp": "2025-12-05T08:56:05.948Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925265573",
+      "timestamp": "2025-12-05T09:01:05.573Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925311159",
+      "timestamp": "2025-12-05T09:01:51.159Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925355386",
+      "timestamp": "2025-12-05T09:02:35.386Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925380077",
+      "timestamp": "2025-12-05T09:03:00.077Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925574674",
+      "timestamp": "2025-12-05T09:06:14.674Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925669072",
+      "timestamp": "2025-12-05T09:07:49.072Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925705773",
+      "timestamp": "2025-12-05T09:08:25.773Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764925895655",
+      "timestamp": "2025-12-05T09:11:35.655Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764926474520",
+      "timestamp": "2025-12-05T09:21:14.521Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764926654413",
+      "timestamp": "2025-12-05T09:24:14.413Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764926803166",
+      "timestamp": "2025-12-05T09:26:43.166Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764927001232",
+      "timestamp": "2025-12-05T09:30:01.232Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764928839896",
+      "timestamp": "2025-12-05T10:00:39.896Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764929804592",
+      "timestamp": "2025-12-05T10:16:44.592Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764929830406",
+      "timestamp": "2025-12-05T10:17:10.406Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764929863080",
+      "timestamp": "2025-12-05T10:17:43.080Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764930036772",
+      "timestamp": "2025-12-05T10:20:36.772Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764930287127",
+      "timestamp": "2025-12-05T10:24:47.127Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764931970836",
+      "timestamp": "2025-12-05T10:52:50.836Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932141166",
+      "timestamp": "2025-12-05T10:55:41.166Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932458042",
+      "timestamp": "2025-12-05T11:00:58.042Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932690114",
+      "timestamp": "2025-12-05T11:04:50.114Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932797221",
+      "timestamp": "2025-12-05T11:06:37.221Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932832179",
+      "timestamp": "2025-12-05T11:07:12.179Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932905228",
+      "timestamp": "2025-12-05T11:08:25.228Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932931585",
+      "timestamp": "2025-12-05T11:08:51.585Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764932986717",
+      "timestamp": "2025-12-05T11:09:46.717Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933070847",
+      "timestamp": "2025-12-05T11:11:10.847Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933121062",
+      "timestamp": "2025-12-05T11:12:01.062Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933343002",
+      "timestamp": "2025-12-05T11:15:43.002Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933491338",
+      "timestamp": "2025-12-05T11:18:11.338Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933702662",
+      "timestamp": "2025-12-05T11:21:42.662Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764933935333",
+      "timestamp": "2025-12-05T11:25:35.333Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934034993",
+      "timestamp": "2025-12-05T11:27:14.993Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934109368",
+      "timestamp": "2025-12-05T11:28:29.368Z",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934580247",
+      "timestamp": "2025-12-05T11:36:20.247Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764934999278",
+      "timestamp": "2025-12-05T11:43:19.278Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764935200715",
+      "timestamp": "2025-12-05T11:46:40.715Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764935326846",
+      "timestamp": "2025-12-05T11:48:46.846Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764936151771",
+      "timestamp": "2025-12-05T12:02:31.771Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764959618128",
+      "timestamp": "2025-12-05T18:33:38.128Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764960247788",
+      "timestamp": "2025-12-05T18:44:07.788Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764968669667",
+      "timestamp": "2025-12-05T21:04:29.667Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764969413315",
+      "timestamp": "2025-12-05T21:16:53.315Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764969563837",
+      "timestamp": "2025-12-05T21:19:23.837Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764969710679",
+      "timestamp": "2025-12-05T21:21:50.679Z",
+      "decisionType": "GENERAL",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764970163320",
+      "timestamp": "2025-12-05T21:29:23.320Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1764974426858",
+      "timestamp": "2025-12-05T22:40:26.858Z",
+      "decisionType": "HOW_TO_FIX",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765171211510",
+      "timestamp": "2025-12-08T05:20:11.510Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765171514763",
+      "timestamp": "2025-12-08T05:25:14.763Z",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765171821714",
+      "timestamp": "2025-12-08T05:30:21.714Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765171998508",
+      "timestamp": "2025-12-08T05:33:18.508Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765172179513",
+      "timestamp": "2025-12-08T05:36:19.513Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765173467940",
+      "timestamp": "2025-12-08T05:57:47.940Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765173610724",
+      "timestamp": "2025-12-08T06:00:10.724Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765173803050",
+      "timestamp": "2025-12-08T06:03:23.050Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765173903656",
+      "timestamp": "2025-12-08T06:05:03.656Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765174706017",
+      "timestamp": "2025-12-08T06:18:26.017Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765194801939",
+      "timestamp": "2025-12-08T11:53:21.939Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765195094875",
+      "timestamp": "2025-12-08T11:58:14.875Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765195524688",
+      "timestamp": "2025-12-08T12:05:24.688Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765196795847",
+      "timestamp": "2025-12-08T12:26:35.847Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765197169552",
+      "timestamp": "2025-12-08T12:32:49.552Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765197319562",
+      "timestamp": "2025-12-08T12:35:19.562Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765197479873",
+      "timestamp": "2025-12-08T12:37:59.873Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765199484111",
+      "timestamp": "2025-12-08T13:11:24.111Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765199940982",
+      "timestamp": "2025-12-08T13:19:00.982Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765200127313",
+      "timestamp": "2025-12-08T13:22:07.313Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765200394377",
+      "timestamp": "2025-12-08T13:26:34.377Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765201945241",
+      "timestamp": "2025-12-08T13:52:25.241Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765202782365",
+      "timestamp": "2025-12-08T14:06:22.365Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765204165390",
+      "timestamp": "2025-12-08T14:29:25.390Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765204302202",
+      "timestamp": "2025-12-08T14:31:42.202Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765214037437",
+      "timestamp": "2025-12-08T17:13:57.437Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765217223686",
+      "timestamp": "2025-12-08T18:07:03.686Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765217580421",
+      "timestamp": "2025-12-08T18:13:00.421Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218417860",
+      "timestamp": "2025-12-08T18:26:57.860Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218461037",
+      "timestamp": "2025-12-08T18:27:41.037Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218502704",
+      "timestamp": "2025-12-08T18:28:22.704Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765218546262",
+      "timestamp": "2025-12-08T18:29:06.262Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219682543",
+      "timestamp": "2025-12-08T18:48:02.543Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219723093",
+      "timestamp": "2025-12-08T18:48:43.093Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219893688",
+      "timestamp": "2025-12-08T18:51:33.688Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219937596",
+      "timestamp": "2025-12-08T18:52:17.596Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765219977523",
+      "timestamp": "2025-12-08T18:52:57.523Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220017121",
+      "timestamp": "2025-12-08T18:53:37.121Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220889202",
+      "timestamp": "2025-12-08T19:08:09.202Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220931560",
+      "timestamp": "2025-12-08T19:08:51.560Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765220984290",
+      "timestamp": "2025-12-08T19:09:44.290Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765226818081",
+      "timestamp": "2025-12-08T20:46:58.081Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765635631410",
+      "timestamp": "2025-12-13T14:20:31.410Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765635682070",
+      "timestamp": "2025-12-13T14:21:22.070Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636066502",
+      "timestamp": "2025-12-13T14:27:46.502Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636165651",
+      "timestamp": "2025-12-13T14:29:25.651Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636242911",
+      "timestamp": "2025-12-13T14:30:42.911Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636303232",
+      "timestamp": "2025-12-13T14:31:43.232Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636350125",
+      "timestamp": "2025-12-13T14:32:30.125Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636396688",
+      "timestamp": "2025-12-13T14:33:16.688Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636447626",
+      "timestamp": "2025-12-13T14:34:07.626Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636681104",
+      "timestamp": "2025-12-13T14:38:01.104Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636728964",
+      "timestamp": "2025-12-13T14:38:48.964Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636784769",
+      "timestamp": "2025-12-13T14:39:44.769Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765636983739",
+      "timestamp": "2025-12-13T14:43:03.739Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765637062983",
+      "timestamp": "2025-12-13T14:44:22.983Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765637187010",
+      "timestamp": "2025-12-13T14:46:27.010Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765637232082",
+      "timestamp": "2025-12-13T14:47:12.082Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765638728402",
+      "timestamp": "2025-12-13T15:12:08.402Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765639692326",
+      "timestamp": "2025-12-13T15:28:12.326Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765640439797",
+      "timestamp": "2025-12-13T15:40:39.797Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765640482082",
+      "timestamp": "2025-12-13T15:41:22.082Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765656346660",
+      "timestamp": "2025-12-13T20:05:46.660Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765657290356",
+      "timestamp": "2025-12-13T20:21:30.356Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765658433082",
+      "timestamp": "2025-12-13T20:40:33.082Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765733355126",
+      "timestamp": "2025-12-14T17:29:15.126Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765733608216",
+      "timestamp": "2025-12-14T17:33:28.216Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765878172683",
+      "timestamp": "2025-12-16T09:42:52.683Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765878215343",
+      "timestamp": "2025-12-16T09:43:35.343Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765878240584",
+      "timestamp": "2025-12-16T09:44:00.584Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765878649145",
+      "timestamp": "2025-12-16T09:50:49.145Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765878910471",
+      "timestamp": "2025-12-16T09:55:10.471Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765879916581",
+      "timestamp": "2025-12-16T10:11:56.581Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765879988694",
+      "timestamp": "2025-12-16T10:13:08.694Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765880107018",
+      "timestamp": "2025-12-16T10:15:07.018Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765880203732",
+      "timestamp": "2025-12-16T10:16:43.732Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765880909286",
+      "timestamp": "2025-12-16T10:28:29.286Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765881507888",
+      "timestamp": "2025-12-16T10:38:27.888Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765882027777",
+      "timestamp": "2025-12-16T10:47:07.777Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899299396",
+      "timestamp": "2025-12-16T15:34:59.396Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899481088",
+      "timestamp": "2025-12-16T15:38:01.088Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899535798",
+      "timestamp": "2025-12-16T15:38:55.798Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899588125",
+      "timestamp": "2025-12-16T15:39:48.125Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899642352",
+      "timestamp": "2025-12-16T15:40:42.352Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899712664",
+      "timestamp": "2025-12-16T15:41:52.664Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765899767217",
+      "timestamp": "2025-12-16T15:42:47.217Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765901372470",
+      "timestamp": "2025-12-16T16:09:32.470Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765902402893",
+      "timestamp": "2025-12-16T16:26:42.893Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765902516342",
+      "timestamp": "2025-12-16T16:28:36.342Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765904700890",
+      "timestamp": "2025-12-16T17:05:00.890Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765905092878",
+      "timestamp": "2025-12-16T17:11:32.878Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765905436255",
+      "timestamp": "2025-12-16T17:17:16.255Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765906010080",
+      "timestamp": "2025-12-16T17:26:50.080Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765906070856",
+      "timestamp": "2025-12-16T17:27:50.856Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765916187871",
+      "timestamp": "2025-12-16T20:16:27.871Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765925282077",
+      "timestamp": "2025-12-16T22:48:02.077Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935070534",
+      "timestamp": "2025-12-17T01:31:10.534Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935145807",
+      "timestamp": "2025-12-17T01:32:25.807Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935517898",
+      "timestamp": "2025-12-17T01:38:37.898Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935621638",
+      "timestamp": "2025-12-17T01:40:21.638Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935682892",
+      "timestamp": "2025-12-17T01:41:22.892Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765935880829",
+      "timestamp": "2025-12-17T01:44:40.829Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936113245",
+      "timestamp": "2025-12-17T01:48:33.245Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936432560",
+      "timestamp": "2025-12-17T01:53:52.560Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936690954",
+      "timestamp": "2025-12-17T01:58:10.954Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765936750351",
+      "timestamp": "2025-12-17T01:59:10.351Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765937138408",
+      "timestamp": "2025-12-17T02:05:38.408Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765937290101",
+      "timestamp": "2025-12-17T02:08:10.101Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765938341204",
+      "timestamp": "2025-12-17T02:25:41.204Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765938618860",
+      "timestamp": "2025-12-17T02:30:18.860Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765938807007",
+      "timestamp": "2025-12-17T02:33:27.007Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765938909145",
+      "timestamp": "2025-12-17T02:35:09.145Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765938969327",
+      "timestamp": "2025-12-17T02:36:09.327Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939123568",
+      "timestamp": "2025-12-17T02:38:43.568Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939181149",
+      "timestamp": "2025-12-17T02:39:41.149Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939233947",
+      "timestamp": "2025-12-17T02:40:33.947Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939335479",
+      "timestamp": "2025-12-17T02:42:15.479Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939387513",
+      "timestamp": "2025-12-17T02:43:07.513Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939443568",
+      "timestamp": "2025-12-17T02:44:03.568Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939502394",
+      "timestamp": "2025-12-17T02:45:02.394Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765939613419",
+      "timestamp": "2025-12-17T02:46:53.419Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765940188230",
+      "timestamp": "2025-12-17T02:56:28.230Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765940286948",
+      "timestamp": "2025-12-17T02:58:06.948Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765940615288",
+      "timestamp": "2025-12-17T03:03:35.288Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765941596647",
+      "timestamp": "2025-12-17T03:19:56.647Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765941758433",
+      "timestamp": "2025-12-17T03:22:38.433Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765941826256",
+      "timestamp": "2025-12-17T03:23:46.256Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765941900140",
+      "timestamp": "2025-12-17T03:25:00.140Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765943921857",
+      "timestamp": "2025-12-17T03:58:41.857Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765965598990",
+      "timestamp": "2025-12-17T09:59:58.990Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765966567471",
+      "timestamp": "2025-12-17T10:16:07.471Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765966920604",
+      "timestamp": "2025-12-17T10:22:00.604Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765969554090",
+      "timestamp": "2025-12-17T11:05:54.090Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765969618456",
+      "timestamp": "2025-12-17T11:06:58.456Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765969681717",
+      "timestamp": "2025-12-17T11:08:01.717Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765970115064",
+      "timestamp": "2025-12-17T11:15:15.064Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765970285699",
+      "timestamp": "2025-12-17T11:18:05.699Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765970922666",
+      "timestamp": "2025-12-17T11:28:42.666Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765971748427",
+      "timestamp": "2025-12-17T11:42:28.427Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765971813642",
+      "timestamp": "2025-12-17T11:43:33.642Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765972538531",
+      "timestamp": "2025-12-17T11:55:38.531Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765972601457",
+      "timestamp": "2025-12-17T11:56:41.457Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765973149938",
+      "timestamp": "2025-12-17T12:05:49.938Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765973762882",
+      "timestamp": "2025-12-17T12:16:02.882Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765974285716",
+      "timestamp": "2025-12-17T12:24:45.716Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765975872415",
+      "timestamp": "2025-12-17T12:51:12.415Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765975926285",
+      "timestamp": "2025-12-17T12:52:06.285Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765975982791",
+      "timestamp": "2025-12-17T12:53:02.791Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765976380289",
+      "timestamp": "2025-12-17T12:59:40.289Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765976431771",
+      "timestamp": "2025-12-17T13:00:31.771Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765979396037",
+      "timestamp": "2025-12-17T13:49:56.037Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765979454302",
+      "timestamp": "2025-12-17T13:50:54.302Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765980892651",
+      "timestamp": "2025-12-17T14:14:52.651Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765981935627",
+      "timestamp": "2025-12-17T14:32:15.627Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765982083587",
+      "timestamp": "2025-12-17T14:34:43.587Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765982371603",
+      "timestamp": "2025-12-17T14:39:31.603Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765982755710",
+      "timestamp": "2025-12-17T14:45:55.710Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765982849029",
+      "timestamp": "2025-12-17T14:47:29.029Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765982880038",
+      "timestamp": "2025-12-17T14:48:00.038Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765982949670",
+      "timestamp": "2025-12-17T14:49:09.670Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765983522658",
+      "timestamp": "2025-12-17T14:58:42.658Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765983545155",
+      "timestamp": "2025-12-17T14:59:05.155Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765984129972",
+      "timestamp": "2025-12-17T15:08:49.972Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765984263487",
+      "timestamp": "2025-12-17T15:11:03.487Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765984629316",
+      "timestamp": "2025-12-17T15:17:09.316Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1765984845132",
+      "timestamp": "2025-12-17T15:20:45.132Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766016723655",
+      "timestamp": "2025-12-18T00:12:03.655Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766016759189",
+      "timestamp": "2025-12-18T00:12:39.189Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766017233515",
+      "timestamp": "2025-12-18T00:20:33.515Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766017270419",
+      "timestamp": "2025-12-18T00:21:10.419Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766019385693",
+      "timestamp": "2025-12-18T00:56:25.693Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766019749591",
+      "timestamp": "2025-12-18T01:02:29.591Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766019837308",
+      "timestamp": "2025-12-18T01:03:57.308Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766019863620",
+      "timestamp": "2025-12-18T01:04:23.620Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766019972116",
+      "timestamp": "2025-12-18T01:06:12.116Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766020134435",
+      "timestamp": "2025-12-18T01:08:54.435Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766020567111",
+      "timestamp": "2025-12-18T01:16:07.111Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766020603600",
+      "timestamp": "2025-12-18T01:16:43.600Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766020710400",
+      "timestamp": "2025-12-18T01:18:30.400Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766020784268",
+      "timestamp": "2025-12-18T01:19:44.268Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766021964549",
+      "timestamp": "2025-12-18T01:39:24.549Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766022075148",
+      "timestamp": "2025-12-18T01:41:15.148Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766022599937",
+      "timestamp": "2025-12-18T01:49:59.937Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766022814202",
+      "timestamp": "2025-12-18T01:53:34.202Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766023545272",
+      "timestamp": "2025-12-18T02:05:45.272Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766025563109",
+      "timestamp": "2025-12-18T02:39:23.109Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766026066948",
+      "timestamp": "2025-12-18T02:47:46.948Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766026324524",
+      "timestamp": "2025-12-18T02:52:04.524Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766026360447",
+      "timestamp": "2025-12-18T02:52:40.447Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766026491256",
+      "timestamp": "2025-12-18T02:54:51.256Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766026555057",
+      "timestamp": "2025-12-18T02:55:55.057Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766026621253",
+      "timestamp": "2025-12-18T02:57:01.253Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766049843989",
+      "timestamp": "2025-12-18T09:24:03.989Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766050470560",
+      "timestamp": "2025-12-18T09:34:30.560Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766054296442",
+      "timestamp": "2025-12-18T10:38:16.442Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766058635697",
+      "timestamp": "2025-12-18T11:50:35.697Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766058845407",
+      "timestamp": "2025-12-18T11:54:05.407Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766058954689",
+      "timestamp": "2025-12-18T11:55:54.689Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766058977682",
+      "timestamp": "2025-12-18T11:56:17.682Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766059000646",
+      "timestamp": "2025-12-18T11:56:40.646Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766059319571",
+      "timestamp": "2025-12-18T12:01:59.571Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766059524130",
+      "timestamp": "2025-12-18T12:05:24.130Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766059546968",
+      "timestamp": "2025-12-18T12:05:46.968Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766059654489",
+      "timestamp": "2025-12-18T12:07:34.489Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766060198715",
+      "timestamp": "2025-12-18T12:16:38.715Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766060217637",
+      "timestamp": "2025-12-18T12:16:57.637Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766060607124",
+      "timestamp": "2025-12-18T12:23:27.124Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766061436924",
+      "timestamp": "2025-12-18T12:37:16.924Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766061805286",
+      "timestamp": "2025-12-18T12:43:25.286Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766065535953",
+      "timestamp": "2025-12-18T13:45:35.953Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766065561389",
+      "timestamp": "2025-12-18T13:46:01.389Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766077459461",
+      "timestamp": "2025-12-18T17:04:19.461Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766087786724",
+      "timestamp": "2025-12-18T19:56:26.724Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    },
+    {
+      "id": "CONSULT-1766089948991",
+      "timestamp": "2025-12-18T20:32:28.991Z",
+      "decisionType": "WHAT_TO_IMPROVE",
+      "foundHistory": false
+    }
+  ],
+  "stats": {
+    "total": 273,
+    "foundRelevantHistory": 1,
+    "noHistoryFound": 272
+  }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"OcrTolerancePatterns.d.ts","sourceRoot":"","sources":["../../../src/filters/name-patterns/OcrTolerancePatterns.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,cAAc,GAAG;IAC3B,KAAK,EAAE,MAAM,CAAC;IACd,UAAU,EAAE,MAAM,CAAC;IACnB,IAAI,EAAE,MAAM,CAAC;CACd,CAAC;AAEF,wBAAgB,0BAA0B,IAAI,cAAc,EAAE,CAgD7D;AAED,wBAAgB,4BAA4B,IAAI,cAAc,EAAE,CAkC/D"}

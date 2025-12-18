@@ -1,0 +1,42 @@
+{
+  "name": "vulpes-cortex",
+  "version": "1.0.0",
+  "description": "Vulpes Cortex - Self-Learning PHI Detection Test Intelligence System",
+  "main": "index.js",
+  "bin": {
+    "vulpes-cortex": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js --server",
+    "server": "node index.js --server",
+    "status": "node index.js --status",
+    "db:migrate": "node db/migrate.js",
+    "db:migrate:dry": "node db/migrate.js --dry-run",
+    "db:stats": "node db/migrate.js --stats",
+    "api": "node api/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "better-sqlite3": "^12.5.0",
+    "express": "^5.2.1",
+    "ws": "^8.18.3"
+  },
+  "keywords": [
+    "phi",
+    "redaction",
+    "testing",
+    "mcp",
+    "model-context-protocol",
+    "self-learning",
+    "hipaa"
+  ],
+  "author": "Vulpes Celare Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DocHatty/Vulpes-Celare"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

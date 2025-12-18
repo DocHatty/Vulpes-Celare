@@ -1,0 +1,55 @@
+{
+  "name": "research-relaxed",
+  "description": "Relaxed policy for research use cases - preserves dates, ages, and organizational context while removing direct identifiers",
+  "rationale": "Designed for IRB-approved research where temporal patterns and organizational context are scientifically necessary. Complies with HIPAA Limited Dataset provisions when used with Data Use Agreement.",
+  "filters": {
+    "names": {
+      "enabled": true,
+      "confidenceThreshold": 0.4
+    },
+    "dates": {
+      "enabled": false,
+      "comment": "Dates preserved for temporal analysis"
+    },
+    "phones": {
+      "enabled": true
+    },
+    "emails": {
+      "enabled": true
+    },
+    "ssn": {
+      "enabled": true
+    },
+    "mrn": {
+      "enabled": true
+    },
+    "addresses": {
+      "enabled": true
+    },
+    "locations": {
+      "enabled": false,
+      "comment": "Geographic data preserved for epidemiological research"
+    },
+    "organizations": {
+      "enabled": false,
+      "comment": "Hospital names preserved for multi-site studies"
+    },
+    "professions": {
+      "enabled": false,
+      "comment": "Provider roles preserved for workflow research"
+    },
+    "ids": {
+      "enabled": true
+    },
+    "ages": {
+      "enabled": false,
+      "comment": "All ages preserved per research protocol"
+    }
+  },
+  "globalThreshold": 0.5,
+  "compliance": {
+    "method": "HIPAA Limited Dataset",
+    "requires": ["Data Use Agreement", "IRB Approval"],
+    "documentation": "https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#limiteddataset"
+  }
+}

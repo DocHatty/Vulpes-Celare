@@ -1,0 +1,21 @@
+[
+  {
+    "id": "doc1",
+    "content": "Patient John Smith, SSN 123-45-6789",
+    "annotations": {
+      "phi": [
+        "John Smith",
+        "123-45-6789"
+      ]
+    }
+  },
+  {
+    "id": "doc2",
+    "content": "Dr. Jane Doe prescribed medication",
+    "annotations": {
+      "phi": [
+        "Jane Doe"
+      ]
+    }
+  }
+]

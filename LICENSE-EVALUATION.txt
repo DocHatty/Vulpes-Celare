@@ -1,0 +1,143 @@
+                            VULPES CELARE
+                         Evaluation License
+                      Version 1.1, December 2025
+
+    Copyright (c) 2025 Vulpes Celare Contributors
+                    All Rights Reserved
+
+
+========================================================================
+                        SOURCE-AVAILABLE SOFTWARE
+           Commercial licensing and partnerships are welcome.
+========================================================================
+
+
+TERMS AND CONDITIONS
+
+
+1. DEFINITIONS
+
+   "Software" means the Vulpes Celare source code, documentation,
+   binaries, and all associated files in this repository.
+
+   "You" means the individual or entity exercising rights under
+   this License.
+
+   "Clinical Use" means any use involving real patient data, live
+   healthcare workflows, or deployment in medical settings.
+
+   "Commercial Use" means any use intended for or directed toward
+   commercial advantage or monetary compensation.
+
+
+2. GRANT OF LIMITED RIGHTS
+
+   Subject to the terms of this License, the copyright holders grant
+   You a limited, non-exclusive, non-transferable, revocable right to:
+
+     (a) View, read, and study the source code;
+     (b) Run the Software locally for evaluation and testing;
+     (c) Benchmark and assess performance characteristics;
+     (d) Conduct security reviews and code audits;
+     (e) Use the Software for non-commercial academic research;
+     (f) Use the Software for personal learning and education;
+     (g) Create internal proof-of-concept demonstrations;
+     (h) Cite the Software in academic publications.
+
+
+3. USES REQUIRING A COMMERCIAL LICENSE
+
+   The following uses require a separate commercial license agreement:
+
+     (a) Use in any clinical or healthcare setting;
+     (b) Processing of real patient data;
+     (c) Deployment in any production environment;
+     (d) Any Commercial Use;
+     (e) Redistribution of the Software, in whole or in part;
+     (f) Creation of derivative works for distribution;
+     (g) Incorporation of the Software into other products;
+     (h) Offering the Software as a hosted or managed service.
+
+   These uses are available under a separate commercial agreement.
+   See the "Commercial Licensing" section below.
+
+
+4. ATTRIBUTION
+
+   You may not remove or alter any license notices or attributions
+   contained in the Software.
+
+
+5. CLINICAL DISCLAIMER
+
+   THIS SOFTWARE HAS NOT BEEN VALIDATED FOR CLINICAL USE.
+
+   This Software has not been cleared, approved, or certified by any
+   regulatory body including, but not limited to, the U.S. Food and
+   Drug Administration (FDA), European Medicines Agency (EMA), or any
+   CE marking authority.
+
+   Use of this Software in clinical settings without appropriate
+   licensing, validation, and regulatory clearance may result in
+   patient harm. You assume all risk and liability for any such use.
+
+
+6. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
+   NONINFRINGEMENT.
+
+   IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+   DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+   TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH
+   THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+7. TERMINATION
+
+   This License is effective until terminated. Your rights under this
+   License will terminate automatically without notice if You fail to
+   comply with any of its terms. Upon termination, You must destroy
+   all copies of the Software in Your possession.
+
+
+8. GOVERNING LAW
+
+   This License shall be governed by and construed in accordance with
+   the laws of the jurisdiction in which the primary copyright holder
+   resides, without regard to conflict of law principles.
+
+
+========================================================================
+                         COMMERCIAL LICENSING
+========================================================================
+
+Commercial licensing, enterprise deployment, acquisition, and strategic
+partnerships are explicitly welcomed.
+
+Available licensing structures include:
+
+    - Standalone commercial licenses
+    - Dual-license models
+    - OEM and embedded agreements
+    - Enterprise site licenses
+    - Strategic IP arrangements
+
+Initial discussions are lightweight and exploratory. Licensing terms
+are handled collaboratively as part of standard commercial discussions.
+
+Where applicable, licensing terms may be coordinated with standard
+institutional IP processes; this is handled collaboratively during
+the commercial discussion.
+
+For inquiries:
+
+    Email:    andrew@vulpescelare.com
+    GitHub:   https://github.com/DocHatty/Vulpes-Celare/issues
+              (public or private issues welcome)
+
+Email or open an issue to discuss evaluation, pilots, or potential commercial terms (subject to rights clearance).
+
+========================================================================

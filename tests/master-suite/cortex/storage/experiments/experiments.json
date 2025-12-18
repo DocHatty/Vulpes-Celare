@@ -1,0 +1,677 @@
+{
+  "experiments": [
+    {
+      "id": "EXP-1764915310408-aqcfte658",
+      "name": "Test Name Filter Improvement",
+      "type": "BEFORE_AFTER",
+      "hypothesisId": null,
+      "config": {
+        "documentIds": null,
+        "rollbackOnRegression": true
+      },
+      "treatment": {
+        "runs": [],
+        "aggregatedMetrics": null,
+        "timestamp": null
+      },
+      "status": "CREATED",
+      "baseline": {
+        "runs": [],
+        "aggregatedMetrics": null,
+        "timestamp": null
+      },
+      "analysis": null,
+      "conclusion": null,
+      "timeline": {
+        "created": "2025-12-05T06:15:10.408Z",
+        "baselineStarted": null,
+        "baselineCompleted": null,
+        "treatmentStarted": null,
+        "treatmentCompleted": null,
+        "analyzed": null,
+        "completed": null
+      },
+      "errors": []
+    },
+    {
+      "id": "EXP-1764916695436-4u4qssocv",
+      "name": "OCR-Tolerant Pattern Matching",
+      "type": "BEFORE_AFTER",
+      "hypothesisId": null,
+      "config": {
+        "documentIds": null,
+        "runs": 1,
+        "rollbackOnRegression": true
+      },
+      "treatment": {
+        "runs": [
+          {
+            "runNumber": 1,
+            "timestamp": "2025-12-05T06:39:33.875Z",
+            "metrics": {
+              "sensitivity": 0.967643,
+              "specificity": 0.9428570000000001,
+              "precision": 0.988771,
+              "f1Score": 0.9780929999999999,
+              "falseNegatives": 106,
+              "falsePositives": 36
+            },
+            "details": {
+              "documentCount": 100,
+              "profile": "DEVELOPMENT"
+            }
+          }
+        ],
+        "aggregatedMetrics": {
+          "sensitivity": {
+            "mean": 0.967643,
+            "stdDev": 0,
+            "min": 0.967643,
+            "max": 0.967643,
+            "samples": 1
+          },
+          "specificity": {
+            "mean": 0.9428570000000001,
+            "stdDev": 0,
+            "min": 0.9428570000000001,
+            "max": 0.9428570000000001,
+            "samples": 1
+          },
+          "precision": {
+            "mean": 0.988771,
+            "stdDev": 0,
+            "min": 0.988771,
+            "max": 0.988771,
+            "samples": 1
+          },
+          "f1Score": {
+            "mean": 0.9780929999999999,
+            "stdDev": 0,
+            "min": 0.9780929999999999,
+            "max": 0.9780929999999999,
+            "samples": 1
+          },
+          "falseNegatives": {
+            "mean": 106,
+            "stdDev": 0,
+            "min": 106,
+            "max": 106,
+            "samples": 1
+          },
+          "falsePositives": {
+            "mean": 36,
+            "stdDev": 0,
+            "min": 36,
+            "max": 36,
+            "samples": 1
+          }
+        },
+        "timestamp": "2025-12-05T06:39:33.875Z"
+      },
+      "status": "COMPLETE",
+      "baseline": {
+        "runs": [
+          {
+            "runNumber": 1,
+            "timestamp": "2025-12-05T06:38:55.412Z",
+            "metrics": {
+              "sensitivity": 0.9626250000000001,
+              "specificity": 0.9393940000000001,
+              "precision": 0.988147,
+              "f1Score": 0.9752190000000001,
+              "falseNegatives": 123,
+              "falsePositives": 38
+            },
+            "details": {
+              "documentCount": 100,
+              "profile": "DEVELOPMENT"
+            }
+          }
+        ],
+        "aggregatedMetrics": {
+          "sensitivity": {
+            "mean": 0.9626250000000001,
+            "stdDev": 0,
+            "min": 0.9626250000000001,
+            "max": 0.9626250000000001,
+            "samples": 1
+          },
+          "specificity": {
+            "mean": 0.9393940000000001,
+            "stdDev": 0,
+            "min": 0.9393940000000001,
+            "max": 0.9393940000000001,
+            "samples": 1
+          },
+          "precision": {
+            "mean": 0.988147,
+            "stdDev": 0,
+            "min": 0.988147,
+            "max": 0.988147,
+            "samples": 1
+          },
+          "f1Score": {
+            "mean": 0.9752190000000001,
+            "stdDev": 0,
+            "min": 0.9752190000000001,
+            "max": 0.9752190000000001,
+            "samples": 1
+          },
+          "falseNegatives": {
+            "mean": 123,
+            "stdDev": 0,
+            "min": 123,
+            "max": 123,
+            "samples": 1
+          },
+          "falsePositives": {
+            "mean": 38,
+            "stdDev": 0,
+            "min": 38,
+            "max": 38,
+            "samples": 1
+          }
+        },
+        "timestamp": "2025-12-05T06:38:55.412Z"
+      },
+      "analysis": {
+        "timestamp": "2025-12-05T06:39:33.877Z",
+        "metricsComparison": {
+          "sensitivity": {
+            "baseline": 0.9626250000000001,
+            "treatment": 0.967643,
+            "delta": 0.005017999999999967,
+            "percentChange": 0.5212829502661958,
+            "significant": false,
+            "direction": "IMPROVED"
+          },
+          "specificity": {
+            "baseline": 0.9393940000000001,
+            "treatment": 0.9428570000000001,
+            "delta": 0.003462999999999994,
+            "percentChange": 0.36864191170052113,
+            "significant": false,
+            "direction": "IMPROVED"
+          },
+          "f1Score": {
+            "baseline": 0.9752190000000001,
+            "treatment": 0.9780929999999999,
+            "delta": 0.002873999999999821,
+            "percentChange": 0.29470303593344893,
+            "significant": false,
+            "direction": "IMPROVED"
+          },
+          "precision": {
+            "baseline": 0.988147,
+            "treatment": 0.988771,
+            "delta": 0.0006239999999999579,
+            "percentChange": 0.06314849916054574,
+            "significant": false,
+            "direction": "IMPROVED"
+          }
+        },
+        "improvements": [],
+        "regressions": [],
+        "significant": false,
+        "overallEffect": "NEUTRAL"
+      },
+      "conclusion": {
+        "timestamp": "2025-12-05T06:39:33.885Z",
+        "accepted": false,
+        "reason": "No significant change detected",
+        "recommendation": "Treatment had no measurable effect - consider different approach",
+        "autoRollback": false
+      },
+      "timeline": {
+        "created": "2025-12-05T06:38:15.436Z",
+        "baselineStarted": "2025-12-05T06:38:15.438Z",
+        "baselineCompleted": "2025-12-05T06:38:55.412Z",
+        "treatmentStarted": "2025-12-05T06:38:55.413Z",
+        "treatmentCompleted": "2025-12-05T06:39:33.875Z",
+        "analyzed": "2025-12-05T06:39:33.877Z",
+        "completed": "2025-12-05T06:39:33.891Z"
+      },
+      "errors": []
+    },
+    {
+      "id": "EXP-1764917167616-4vzjjw8t3",
+      "name": "OCR-Tolerant Pattern Matching",
+      "type": "BEFORE_AFTER",
+      "hypothesisId": null,
+      "config": {
+        "documentIds": null,
+        "runs": 1,
+        "rollbackOnRegression": true
+      },
+      "treatment": {
+        "runs": [
+          {
+            "runNumber": 1,
+            "timestamp": "2025-12-05T06:47:36.150Z",
+            "metrics": {
+              "sensitivity": 0.959066,
+              "specificity": 0.923323,
+              "precision": 0.985051,
+              "f1Score": 0.971885,
+              "falseNegatives": 135,
+              "falsePositives": 48
+            },
+            "details": {
+              "documentCount": 100,
+              "profile": "DEVELOPMENT"
+            }
+          }
+        ],
+        "aggregatedMetrics": {
+          "sensitivity": {
+            "mean": 0.959066,
+            "stdDev": 0,
+            "min": 0.959066,
+            "max": 0.959066,
+            "samples": 1
+          },
+          "specificity": {
+            "mean": 0.923323,
+            "stdDev": 0,
+            "min": 0.923323,
+            "max": 0.923323,
+            "samples": 1
+          },
+          "precision": {
+            "mean": 0.985051,
+            "stdDev": 0,
+            "min": 0.985051,
+            "max": 0.985051,
+            "samples": 1
+          },
+          "f1Score": {
+            "mean": 0.971885,
+            "stdDev": 0,
+            "min": 0.971885,
+            "max": 0.971885,
+            "samples": 1
+          },
+          "falseNegatives": {
+            "mean": 135,
+            "stdDev": 0,
+            "min": 135,
+            "max": 135,
+            "samples": 1
+          },
+          "falsePositives": {
+            "mean": 48,
+            "stdDev": 0,
+            "min": 48,
+            "max": 48,
+            "samples": 1
+          }
+        },
+        "timestamp": "2025-12-05T06:47:36.150Z"
+      },
+      "status": "COMPLETE",
+      "baseline": {
+        "runs": [
+          {
+            "runNumber": 1,
+            "timestamp": "2025-12-05T06:46:52.324Z",
+            "metrics": {
+              "sensitivity": 0.962907,
+              "specificity": 0.9294870000000001,
+              "precision": 0.986297,
+              "f1Score": 0.974462,
+              "falseNegatives": 122,
+              "falsePositives": 44
+            },
+            "details": {
+              "documentCount": 100,
+              "profile": "DEVELOPMENT"
+            }
+          }
+        ],
+        "aggregatedMetrics": {
+          "sensitivity": {
+            "mean": 0.962907,
+            "stdDev": 0,
+            "min": 0.962907,
+            "max": 0.962907,
+            "samples": 1
+          },
+          "specificity": {
+            "mean": 0.9294870000000001,
+            "stdDev": 0,
+            "min": 0.9294870000000001,
+            "max": 0.9294870000000001,
+            "samples": 1
+          },
+          "precision": {
+            "mean": 0.986297,
+            "stdDev": 0,
+            "min": 0.986297,
+            "max": 0.986297,
+            "samples": 1
+          },
+          "f1Score": {
+            "mean": 0.974462,
+            "stdDev": 0,
+            "min": 0.974462,
+            "max": 0.974462,
+            "samples": 1
+          },
+          "falseNegatives": {
+            "mean": 122,
+            "stdDev": 0,
+            "min": 122,
+            "max": 122,
+            "samples": 1
+          },
+          "falsePositives": {
+            "mean": 44,
+            "stdDev": 0,
+            "min": 44,
+            "max": 44,
+            "samples": 1
+          }
+        },
+        "timestamp": "2025-12-05T06:46:52.325Z"
+      },
+      "analysis": {
+        "timestamp": "2025-12-05T06:47:36.159Z",
+        "metricsComparison": {
+          "sensitivity": {
+            "baseline": 0.962907,
+            "treatment": 0.959066,
+            "delta": -0.0038409999999999833,
+            "percentChange": -0.39889625893258474,
+            "significant": false,
+            "direction": "REGRESSED"
+          },
+          "specificity": {
+            "baseline": 0.9294870000000001,
+            "treatment": 0.923323,
+            "delta": -0.006164000000000058,
+            "percentChange": -0.6631615073691249,
+            "significant": false,
+            "direction": "REGRESSED"
+          },
+          "f1Score": {
+            "baseline": 0.974462,
+            "treatment": 0.971885,
+            "delta": -0.0025770000000000515,
+            "percentChange": -0.2644536164570862,
+            "significant": false,
+            "direction": "REGRESSED"
+          },
+          "precision": {
+            "baseline": 0.986297,
+            "treatment": 0.985051,
+            "delta": -0.0012459999999999694,
+            "percentChange": -0.12633111527257707,
+            "significant": false,
+            "direction": "REGRESSED"
+          }
+        },
+        "improvements": [],
+        "regressions": [],
+        "significant": false,
+        "overallEffect": "NEUTRAL"
+      },
+      "conclusion": {
+        "timestamp": "2025-12-05T06:47:36.160Z",
+        "accepted": false,
+        "reason": "No significant change detected",
+        "recommendation": "Treatment had no measurable effect - consider different approach",
+        "autoRollback": false
+      },
+      "timeline": {
+        "created": "2025-12-05T06:46:07.616Z",
+        "baselineStarted": "2025-12-05T06:46:07.618Z",
+        "baselineCompleted": "2025-12-05T06:46:52.325Z",
+        "treatmentStarted": "2025-12-05T06:46:52.326Z",
+        "treatmentCompleted": "2025-12-05T06:47:36.150Z",
+        "analyzed": "2025-12-05T06:47:36.159Z",
+        "completed": "2025-12-05T06:47:36.167Z"
+      },
+      "errors": []
+    },
+    {
+      "id": "EXP-1764918102781-bpj13d92j",
+      "name": "OCR-Tolerant Pattern Matching",
+      "type": "BEFORE_AFTER",
+      "hypothesisId": null,
+      "config": {
+        "documentIds": null,
+        "runs": 1,
+        "rollbackOnRegression": true
+      },
+      "treatment": {
+        "runs": [
+          {
+            "runNumber": 1,
+            "timestamp": "2025-12-05T07:03:07.147Z",
+            "metrics": {
+              "sensitivity": 0.965664,
+              "specificity": 0.9191759999999999,
+              "precision": 0.9842059999999999,
+              "f1Score": 0.974847,
+              "falseNegatives": 113,
+              "falsePositives": 51
+            },
+            "details": {
+              "documentCount": 100,
+              "profile": "DEVELOPMENT"
+            }
+          }
+        ],
+        "aggregatedMetrics": {
+          "sensitivity": {
+            "mean": 0.965664,
+            "stdDev": 0,
+            "min": 0.965664,
+            "max": 0.965664,
+            "samples": 1
+          },
+          "specificity": {
+            "mean": 0.9191759999999999,
+            "stdDev": 0,
+            "min": 0.9191759999999999,
+            "max": 0.9191759999999999,
+            "samples": 1
+          },
+          "precision": {
+            "mean": 0.9842059999999999,
+            "stdDev": 0,
+            "min": 0.9842059999999999,
+            "max": 0.9842059999999999,
+            "samples": 1
+          },
+          "f1Score": {
+            "mean": 0.974847,
+            "stdDev": 0,
+            "min": 0.974847,
+            "max": 0.974847,
+            "samples": 1
+          },
+          "falseNegatives": {
+            "mean": 113,
+            "stdDev": 0,
+            "min": 113,
+            "max": 113,
+            "samples": 1
+          },
+          "falsePositives": {
+            "mean": 51,
+            "stdDev": 0,
+            "min": 51,
+            "max": 51,
+            "samples": 1
+          }
+        },
+        "timestamp": "2025-12-05T07:03:07.148Z"
+      },
+      "status": "COMPLETE",
+      "baseline": {
+        "runs": [
+          {
+            "runNumber": 1,
+            "timestamp": "2025-12-05T07:02:25.505Z",
+            "metrics": {
+              "sensitivity": 0.965056,
+              "specificity": 0.916006,
+              "precision": 0.983586,
+              "f1Score": 0.974233,
+              "falseNegatives": 115,
+              "falsePositives": 53
+            },
+            "details": {
+              "documentCount": 100,
+              "profile": "DEVELOPMENT"
+            }
+          }
+        ],
+        "aggregatedMetrics": {
+          "sensitivity": {
+            "mean": 0.965056,
+            "stdDev": 0,
+            "min": 0.965056,
+            "max": 0.965056,
+            "samples": 1
+          },
+          "specificity": {
+            "mean": 0.916006,
+            "stdDev": 0,
+            "min": 0.916006,
+            "max": 0.916006,
+            "samples": 1
+          },
+          "precision": {
+            "mean": 0.983586,
+            "stdDev": 0,
+            "min": 0.983586,
+            "max": 0.983586,
+            "samples": 1
+          },
+          "f1Score": {
+            "mean": 0.974233,
+            "stdDev": 0,
+            "min": 0.974233,
+            "max": 0.974233,
+            "samples": 1
+          },
+          "falseNegatives": {
+            "mean": 115,
+            "stdDev": 0,
+            "min": 115,
+            "max": 115,
+            "samples": 1
+          },
+          "falsePositives": {
+            "mean": 53,
+            "stdDev": 0,
+            "min": 53,
+            "max": 53,
+            "samples": 1
+          }
+        },
+        "timestamp": "2025-12-05T07:02:25.505Z"
+      },
+      "analysis": {
+        "timestamp": "2025-12-05T07:03:07.149Z",
+        "metricsComparison": {
+          "sensitivity": {
+            "baseline": 0.965056,
+            "treatment": 0.965664,
+            "delta": 0.0006079999999999419,
+            "percentChange": 0.06300152530008019,
+            "significant": false,
+            "direction": "IMPROVED"
+          },
+          "specificity": {
+            "baseline": 0.916006,
+            "treatment": 0.9191759999999999,
+            "delta": 0.003169999999999895,
+            "percentChange": 0.34606760217726684,
+            "significant": false,
+            "direction": "IMPROVED"
+          },
+          "f1Score": {
+            "baseline": 0.974233,
+            "treatment": 0.974847,
+            "delta": 0.0006140000000000034,
+            "percentChange": 0.06302393780543293,
+            "significant": false,
+            "direction": "IMPROVED"
+          },
+          "precision": {
+            "baseline": 0.983586,
+            "treatment": 0.9842059999999999,
+            "delta": 0.0006199999999999539,
+            "percentChange": 0.06303465075752948,
+            "significant": false,
+            "direction": "IMPROVED"
+          }
+        },
+        "improvements": [],
+        "regressions": [],
+        "significant": false,
+        "overallEffect": "NEUTRAL"
+      },
+      "conclusion": {
+        "timestamp": "2025-12-05T07:03:07.157Z",
+        "accepted": false,
+        "reason": "No significant change detected",
+        "recommendation": "Treatment had no measurable effect - consider different approach",
+        "autoRollback": false
+      },
+      "timeline": {
+        "created": "2025-12-05T07:01:42.781Z",
+        "baselineStarted": "2025-12-05T07:01:42.783Z",
+        "baselineCompleted": "2025-12-05T07:02:25.505Z",
+        "treatmentStarted": "2025-12-05T07:02:25.506Z",
+        "treatmentCompleted": "2025-12-05T07:03:07.148Z",
+        "analyzed": "2025-12-05T07:03:07.149Z",
+        "completed": "2025-12-05T07:03:07.164Z"
+      },
+      "errors": []
+    },
+    {
+      "id": "EXP-1765036818197-pg2zadtb0",
+      "name": "OCR-Tolerant Pattern Matching",
+      "type": "BEFORE_AFTER",
+      "hypothesisId": null,
+      "config": {
+        "documentIds": null,
+        "runs": 1,
+        "rollbackOnRegression": true
+      },
+      "treatment": {
+        "runs": [],
+        "aggregatedMetrics": null,
+        "timestamp": null
+      },
+      "status": "BASELINE_RUNNING",
+      "baseline": {
+        "runs": [],
+        "aggregatedMetrics": null,
+        "timestamp": null
+      },
+      "analysis": null,
+      "conclusion": null,
+      "timeline": {
+        "created": "2025-12-06T16:00:18.197Z",
+        "baselineStarted": "2025-12-06T16:00:18.198Z",
+        "baselineCompleted": null,
+        "treatmentStarted": null,
+        "treatmentCompleted": null,
+        "analyzed": null,
+        "completed": null
+      },
+      "errors": []
+    }
+  ],
+  "stats": {
+    "total": 5,
+    "completed": 3,
+    "successful": 0,
+    "failed": 0
+  }
+}

@@ -1,0 +1,81 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output (dist/ is included for plug-and-play usage)
+# dist/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Vulpes CLI config (contains API keys and local database)
+.vulpes/
+~/.vulpes/
+**/vulpes-config.json
+
+# Test artifacts
+coverage/
+.nyc_output/
+tests/results/
+tests/master-suite/cortex/storage/
+test_*.png
+
+# Temporary
+tmp/
+temp/
+*.tmp
+nul
+
+# Debug and test output
+bridge_debug.log
+*.debug.log
+*-test.log
+*-output.log
+test-output*.log
+aggregate-*.log
+
+# Extracted content
+*_extracted*.txt
+
+# Models cache (download fresh)
+models/hf_cache/
+
+# Rust build artifacts (must not be committed)
+src/rust/target/
+src/rust/target_release/
+
+# AI tooling (internal use only)
+.claude/
+.agent/
+AGENTS.md
+CLAUDE.md
+
+# Internal strategy documents (not for public repo)
+docs/POSITIONING_STRATEGY_PROPOSAL.md
+docs/COMPETITIVE_ANALYSIS_DEC_2025.md
+docs/*_INTERNAL.md
+docs/*_STRATEGY*.md
+docs/MASTER_*_PLAN*.md
+docs/UNIFIED_*_PLAN*.md
+INTERNAL_*.md
+*_CONFIDENTIAL.md

@@ -1,0 +1,242 @@
+/**
+ * ============================================================================
+ * VULPES CELARE
+ * ============================================================================
+ *
+ * Hatkoff Redaction Engine
+ *
+ * A HIPAA Safe Harbor PHI redaction engine.
+ *
+ * Current validation is synthetic-only; see `docs/BENCHMARKS.md` for the latest
+ * evaluation posture and results.
+ *
+ * This is the MAIN ORCHESTRATOR - your primary integration point.
+ *
+ * QUICK START:
+ *   const safe = await VulpesCelare.redact(medicalDocument);
+ *
+ * @module VulpesCelare
+ * @version 1.0.0
+ * @author Hatkoff
+ */
+import { RedactionExecutionReport } from "./core/ParallelRedactionEngine";
+import { SpanBasedFilter } from "./core/SpanBasedFilter";
+import { Span } from "./models/Span";
+import { RedactionContext } from "./context/RedactionContext";
+import { ImageRedactor, ImageRedactionResult, VisualPolicy } from "./core/images";
+import { SupervisedStreamingRedactor, SupervisedStreamingConfig } from "./SupervisedStreamingRedactor";
+import { TrustBundle, TrustBundleOptions, VerificationResult } from "./provenance/TrustBundleExporter";
+export type PHIType = "name" | "ssn" | "phone" | "email" | "address" | "date" | "mrn" | "ip" | "url" | "credit_card" | "account" | "health_plan" | "license" | "passport" | "vehicle" | "device" | "biometric" | "zip" | "fax" | "age";
+export type ReplacementStyle = "brackets" | "asterisks" | "empty";
+export interface VulpesCelareConfig {
+    enabledTypes?: PHIType[];
+    disabledTypes?: PHIType[];
+    replacementStyle?: ReplacementStyle;
+    customReplacements?: Partial<Record<PHIType, string>>;
+    customFilters?: SpanBasedFilter[];
+}
+export interface RedactionResult {
+    text: string;
+    redactionCount: number;
+    breakdown: Record<string, number>;
+    executionTimeMs: number;
+    report?: RedactionExecutionReport;
+    /**
+     * The spans that were applied during redaction.
+     * Use with ExplanationGenerator for audit trails.
+     */
+    spans?: Span[];
+}
+/**
+ * Extended redaction result that includes cryptographic provenance
+ */
+export interface RedactionResultWithProvenance extends RedactionResult {
+    /**
+     * Trust Bundle containing cryptographic proof of redaction
+     * Can be exported to a .red file for audit purposes
+     */
+    trustBundle: TrustBundle;
+}
+/**
+ * Options for provenance-enabled redaction
+ */
+export interface ProvenanceOptions extends TrustBundleOptions {
+    /**
+     * If provided, automatically export Trust Bundle to this path
+     */
+    exportPath?: string;
+}
+export interface FilterProvider {
+    getFilters(config: VulpesCelareConfig): SpanBasedFilter[];
+}
+export interface PolicyProvider {
+    getPolicy(config: VulpesCelareConfig): any;
+}
+export declare class VulpesCelare {
+    private filters;
+    private policy;
+    private config;
+    static readonly ALL_PHI_TYPES: PHIType[];
+    static readonly OPTIONAL_PHI_TYPES: PHIType[];
+    static readonly VERSION = "1.0.0";
+    static readonly NAME = "Vulpes Celare";
+    static readonly VARIANT = "Hatkoff Redaction Engine";
+    constructor(config?: VulpesCelareConfig, dependencies?: {
+        filterProvider?: FilterProvider;
+        policyProvider?: PolicyProvider;
+    });
+    static redact(text: string): Promise<string>;
+    static redactWithDetails(text: string, config?: VulpesCelareConfig): Promise<RedactionResult>;
+    /**
+     * Redact PHI with full cryptographic provenance.
+     *
+     * This method generates a Trust Bundle that provides:
+     * - SHA-256 hash of original document (without storing original)
+     * - SHA-256 hash of redacted document
+     * - Merkle proof for tamper detection
+     * - Certificate with attestations
+     * - Policy configuration used
+     *
+     * The Trust Bundle can be exported to a .red file for auditing.
+     *
+     * @param text - Original text to redact
+     * @param options - Provenance and bundle options
+     * @returns Redaction result with embedded Trust Bundle
+     *
+     * @example
+     * ```typescript
+     * // Redact with provenance
+     * const result = await VulpesCelare.redactWithProvenance(clinicalNote, {
+     *   policyName: 'hipaa-strict',
+     *   documentId: 'doc-12345',
+     *   actorId: 'system',
+     *   exportPath: './audit/patient-note.red'
+     * });
+     *
+     * console.log(result.text); // Redacted text
+     * console.log(result.trustBundle.certificate.cryptographicProofs);
+     * ```
+     */
+    static redactWithProvenance(text: string, options?: ProvenanceOptions): Promise<RedactionResultWithProvenance>;
+    /**
+     * Verify a Trust Bundle (.red file) for audit purposes.
+     *
+     * Checks:
+     * - All required files exist
+     * - Hash integrity (document hasn't been modified)
+     * - Merkle proof consistency
+     * - Certificate validity
+     *
+     * @param bundlePath - Path to .red file
+     * @returns Verification result with detailed checks
+     *
+     * @example
+     * ```typescript
+     * const verification = await VulpesCelare.verifyTrustBundle('./audit/note.red');
+     * if (verification.valid) {
+     *   console.log('✔ Bundle verified - document integrity confirmed');
+     * } else {
+     *   console.error('✖ Verification failed:', verification.errors);
+     * }
+     * ```
+     */
+    static verifyTrustBundle(bundlePath: string): Promise<VerificationResult>;
+    /**
+     * Export a Trust Bundle to a .red file.
+     *
+     * @param bundle - Trust Bundle to export
+     * @param outputPath - Output path (will add .red extension if missing)
+     * @returns Path to created file
+     */
+    static exportTrustBundle(bundle: TrustBundle, outputPath: string): Promise<string>;
+    /**
+     * Process multiple documents in parallel using WebGPU batch processing.
+     * Falls back to CPU parallel processing if WebGPU is unavailable.
+     *
+     * Optimal for processing 10+ documents simultaneously.
+     *
+     * @param documents - Array of text documents to redact
+     * @param config - Optional redaction configuration
+     * @returns Array of redaction results with batch statistics
+     */
+    static processBatchGPU(documents: string[], config?: VulpesCelareConfig): Promise<{
+        results: RedactionResult[];
+        stats: {
+            totalDocuments: number;
+            totalTimeMs: number;
+            throughputDocsPerSec: number;
+            method: "webgpu" | "cpu-parallel" | "cpu-sequential";
+        };
+    }>;
+    /**
+     * Low-level orchestrator entrypoint used by legacy `RedactionEngine`.
+     *
+     * @internal
+     */
+    static redactWithPolicy(text: string, filters: SpanBasedFilter[], policy: any, context: RedactionContext): Promise<string>;
+    /**
+     * Create a fault-tolerant streaming redactor with Elixir-style supervision.
+     *
+     * Features:
+     * - Circuit breaker pattern for failure isolation
+     * - Backpressure queue for flow control
+     * - Automatic recovery from transient failures
+     * - Health monitoring and metrics
+     *
+     * Ideal for:
+     * - Real-time dictation systems
+     * - High-volume streaming APIs
+     * - Production environments requiring fault tolerance
+     *
+     * @param config - Optional supervision configuration
+     * @returns SupervisedStreamingRedactor instance
+     *
+     * @example
+     * ```typescript
+     * const redactor = VulpesCelare.createSupervisedStreamingRedactor();
+     * redactor.on('redacted', (chunk) => console.log(chunk.text));
+     * redactor.on('error', (err) => console.error(err));
+     * await redactor.start();
+     * redactor.write('Patient John Smith...');
+     * ```
+     */
+    static createSupervisedStreamingRedactor(config?: Partial<SupervisedStreamingConfig>): SupervisedStreamingRedactor;
+    /**
+     * Redact PHI from an image buffer.
+     * Detects faces, extracts text via OCR, and applies black-box redaction.
+     *
+     * @param imageBuffer - PNG/JPEG image buffer
+     * @param options - Optional configuration
+     * @returns Redacted image buffer and metadata
+     */
+    static redactImage(imageBuffer: Buffer, options?: {
+        policy?: Partial<VisualPolicy>;
+        knownIdentifiers?: string[];
+    }): Promise<ImageRedactionResult>;
+    /**
+     * Create an ImageRedactor instance with optional VulpesCelare text integration.
+     * The returned redactor can be reused for multiple images.
+     */
+    static createImageRedactor(policy?: Partial<VisualPolicy>): Promise<ImageRedactor>;
+    process(text: string): Promise<RedactionResult>;
+    processBatch(texts: string[]): Promise<RedactionResult[]>;
+    getConfig(): VulpesCelareConfig;
+    getActiveFilters(): string[];
+    getLastReport(): RedactionExecutionReport | null;
+    private buildFilters;
+    private buildPolicy;
+}
+export { StreamingRedactor, WebSocketRedactionHandler, } from "./StreamingRedactor";
+export type { StreamingRedactorConfig, StreamingChunk, } from "./StreamingRedactor";
+export { PolicyCompiler, PolicyTemplates } from "./PolicyDSL";
+export type { PolicyRule, PolicyDefinition, CompiledPolicy } from "./PolicyDSL";
+export { ImageRedactor, ImageRedactionResult, RedactionRegion, VisualPolicy, } from "./core/images";
+export { OCRService, OCRResult } from "./core/images";
+export type { VisualDetection } from "./core/images";
+export { VisualDetector } from "./core/images";
+export { DicomStreamTransformer, HIPAA_DICOM_TAGS, anonymizeDicomBuffer, } from "./core/dicom";
+export type { DicomAnonymizationRule, DicomTransformerConfig, } from "./core/dicom";
+export { CortexPythonBridge } from "./core/cortex/python/CortexPythonBridge";
+export type { CortexTask, CortexTaskRequest, CortexTaskResponse, } from "./core/cortex/python/CortexPythonBridge";
+export default VulpesCelare;
+//# sourceMappingURL=VulpesCelare.d.ts.map

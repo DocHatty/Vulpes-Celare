@@ -1,0 +1,28 @@
+{
+  "lastFirstFormat": 0.95,
+  "titledName": 0.92,
+  "patientLabel": 0.9,
+  "labeledName": 0.91,
+  "familyRelation": 0.9,
+  "generalFullName": 0.7,
+  "highPrecisionPattern": 0.95,
+  "nerBaseWeight": 0.6,
+  "nerConfidenceMultiplier": 0.35,
+  "nerHighConfidenceBonus": 0.15,
+  "titleContextBonus": 0.25,
+  "familyContextBonus": 0.3,
+  "phiLabelBonus": 0.2,
+  "clinicalRoleBonus": 0.25,
+  "diseaseEponymPenalty": -0.85,
+  "diseaseNamePenalty": -0.8,
+  "medicationPenalty": -0.75,
+  "procedurePenalty": -0.7,
+  "anatomicalPenalty": -0.65,
+  "sectionHeaderPenalty": -0.9,
+  "organizationPenalty": -0.6,
+  "_metadata": {
+    "generatedAt": "2025-12-18T09:28:59.728Z",
+    "version": "1.0.0",
+    "tool": "optimize-weights.js"
+  }
+}

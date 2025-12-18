@@ -1,0 +1,12 @@
+#
+# MCP configuration for the Vulpes MCP server.
+# Copy this to ~/.codex/config.toml (or merge with existing).
+#
+# INSTALL: npm install -g vulpes-celare
+# This makes 'vulpes-mcp' available globally, no path needed.
+#
+[mcp_servers.vulpes]
+command = "vulpes-mcp"
+args = []
+startup_timeout_sec = 120
+tool_timeout_sec = 60

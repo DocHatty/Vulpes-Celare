@@ -1,0 +1,44 @@
+{
+    "name": "maximum",
+    "description": "Maximum redaction policy for HIPAA compliance",
+    "filters": {
+        "names": {
+            "enabled": true,
+            "confidenceThreshold": 0.4
+        },
+        "dates": {
+            "enabled": true
+        },
+        "phones": {
+            "enabled": true
+        },
+        "emails": {
+            "enabled": true
+        },
+        "ssn": {
+            "enabled": true
+        },
+        "mrn": {
+            "enabled": true
+        },
+        "addresses": {
+            "enabled": true
+        },
+        "locations": {
+            "enabled": true
+        },
+        "organizations": {
+            "enabled": true
+        },
+        "professions": {
+            "enabled": true
+        },
+        "ids": {
+            "enabled": true
+        },
+        "ages": {
+            "enabled": true
+        }
+    },
+    "globalThreshold": 0.5
+}

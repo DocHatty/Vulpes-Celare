@@ -1,0 +1,20 @@
+{
+  "rollbacks": [],
+  "pending": [],
+  "backups": [
+    {
+      "id": "BACKUP-1764969821705",
+      "timestamp": "2025-12-05T21:23:41.705Z",
+      "type": "GENERAL",
+      "fileCount": 0,
+      "hash": "d75171398898"
+    }
+  ],
+  "stats": {
+    "total": 0,
+    "successful": 0,
+    "failed": 0,
+    "automatic": 0,
+    "manual": 0
+  }
+}
