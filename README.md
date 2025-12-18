@@ -269,17 +269,17 @@ Eleven Rust accelerators handle text processing: phonetic matching, tokenization
 - **Supervision & Circuit Breakers** - Erlang-style fault tolerance for production deployments
 - **MCP Server** - Model Context Protocol integration for IDE and agent tooling
 
-### Cryptographic Provenance & Blockchain Auditing
+### Cryptographic Provenance & Auditing
 
-**Immutable audit trails meet healthcare compliance.** Vulpes Celare pioneers a production-ready blockchain architecture for medical data redaction—delivering cryptographically verifiable provenance without external dependencies or cloud services.
+**Tamper-evident document exports with cryptographic integrity verification.** Vulpes Celare provides production-ready Trust Bundles that deliver cryptographically verifiable provenance without external dependencies or cloud services.
 
 #### Trust Bundles (Cryptographically Sealed Exports)
 
-Revolutionary `.red` format—tamper-proof redaction artifacts with zero-knowledge verification:
-- **Cryptographic Fingerprinting**: SHA-256 hashes seal every document transformation
-- **Digital Signatures**: Ed25519 signatures authenticate redaction operations
-- **Merkle Proof Chain**: Mathematical proof of document integrity across operations
-- **Air-Gapped Verification**: Complete audit trail validation without network access
+The `.red` format provides tamper-evident redaction artifacts for regulatory compliance:
+- **Cryptographic Fingerprinting**: SHA-256 hashes verify document integrity
+- **Chain-of-Custody**: Manifests track redaction operations with timestamps
+- **Merkle Proof Support**: Optional Merkle tree verification for multi-document batches
+- **Air-Gapped Verification**: Complete validation without network access
 
 ```ts
 import { VulpesCelare, TrustBundleExporter } from "vulpes-celare";
@@ -293,38 +293,24 @@ const bundle = await TrustBundleExporter.generate(original, result.text, result,
 
 await TrustBundleExporter.export(bundle, "trust-bundle.red");
 
-// Instant cryptographic verification
+// Cryptographic verification
 const verification = await TrustBundleExporter.verify("trust-bundle.red");
 ```
 
 See [docs/TRUST-BUNDLE.md](docs/TRUST-BUNDLE.md) for complete specification.
 
-#### Immutable Blockchain Audit Log
+#### Rust-Accelerated Cryptography
 
-**Vulpes Cortex**: Enterprise-grade tamper-evident ledger built on linear hash chain architecture:
-- **Cryptographically Linked**: Every audit event forms an unbreakable chain—modification of any historical record invalidates all subsequent blocks
-- **Merkle Tree Verification**: SHA-256 Merkle roots provide mathematical proof of entire audit history integrity
-- **Digital Non-Repudiation**: Ed25519 signatures ensure cryptographic proof of who performed each redaction
-- **Rust-Accelerated Performance**: Native cryptographic primitives deliver <1ms append operations at scale
+Native cryptographic primitives provide production-grade performance:
+- **SHA-256 Hashing**: Document fingerprinting and integrity verification
+- **HMAC-SHA256**: Keyed hashing for DICOM anonymization tokens
+- **Merkle Root Calculation**: Multi-file batch verification support
 
-This isn't just logging—it's a **healthcare-native blockchain** designed for regulatory compliance and forensic-grade audit trails.
+These operations use the native Rust addon when available, with automatic Node.js `crypto` fallback. See [docs/RUST-NATIVE.md](docs/RUST-NATIVE.md).
 
-```ts
-// Every redaction operation is cryptographically logged
-const auditEntry = merkleLog.append("REDACTION", actorId, {
-  documentId: "patient-123",
-  fieldsRedacted: ["SSN", "NAME"]
-});
+#### Verification Portal
 
-// Instant verification of audit trail integrity
-const verification = merkleLog.verify(auditEntry.id);
-```
-
-See [docs/provenance-spec.md](docs/provenance-spec.md) for cryptographic implementation details.
-
-#### One-Click Verification Portal
-
-**Bring Trust to Non-Technical Stakeholders**: Web-based cryptographic verification for compliance officers, auditors, and legal teams:
+Web-based verification interface for non-technical auditors:
 
 ```bash
 cd verification-portal
@@ -332,7 +318,7 @@ npm install && npm start
 # Open http://localhost:3000
 ```
 
-Drag-and-drop `.red` files for instant mathematical proof of document integrity. No cryptography expertise required. See [verification-portal/README.md](verification-portal/README.md).
+Drag-and-drop `.red` files for instant cryptographic verification. No cryptography expertise required. See [verification-portal/README.md](verification-portal/README.md).
 
 ### ONNX Runtime
 
