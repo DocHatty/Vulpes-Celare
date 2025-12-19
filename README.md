@@ -23,7 +23,7 @@ auditable de-identification pipeline suitable for healthcare research and air-ga
 
 ## The Problem
 
-Healthcare organizations want to use LLMs for clinical workflows (summarization, decision support, documentation assistance) but **PHI cannot leave the network**. Existing solutions force a choice:
+Healthcare providers, researchers, and students want to use LLMs for clinical workflows (summarization, decision support, documentation assistance) but **PHI cannot leave the network**. Existing solutions force a choice:
 
 | Approach | Trade-off |
 |:--|:--|
