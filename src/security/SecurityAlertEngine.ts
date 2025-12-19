@@ -23,6 +23,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
 import { vulpesLogger as log } from "../utils/VulpesLogger";
+import { out as output } from "../utils/VulpesOutput";
 
 // ============================================================================
 // TYPES
@@ -723,26 +724,28 @@ export class SecurityAlertEngine extends EventEmitter {
    * Send alert to console
    */
   private sendConsoleAlert(alert: SecurityAlert, _config: ConsoleConfig): void {
-    const severityIcon: Record<AlertSeverity, string> = {
-      critical: "🚨",
-      high: "⚠️",
-      medium: "📢",
-      low: "ℹ️",
-      info: "📝",
-    };
+    // Use VulpesOutput for consistent formatting
+    output.divider();
 
-    console.log("\n" + "=".repeat(60));
-    console.log(`${severityIcon[alert.severity]} SECURITY ALERT: ${alert.title}`);
-    console.log("=".repeat(60));
-    console.log(`Severity: ${alert.severity.toUpperCase()}`);
-    console.log(`Type: ${alert.type}`);
-    console.log(`Time: ${alert.timestamp}`);
-    console.log(`Description: ${alert.description}`);
-    console.log("\nRecommendations:");
+    if (alert.severity === "critical" || alert.severity === "high") {
+      output.error(`SECURITY ALERT: ${alert.title}`);
+    } else if (alert.severity === "medium") {
+      output.warning(`SECURITY ALERT: ${alert.title}`);
+    } else {
+      output.info(`SECURITY ALERT: ${alert.title}`);
+    }
+
+    output.keyValue("Severity", alert.severity.toUpperCase());
+    output.keyValue("Type", alert.type);
+    output.keyValue("Time", alert.timestamp);
+    output.keyValue("Description", alert.description);
+
+    output.subheading("Recommendations");
     alert.recommendations.forEach((rec, i) => {
-      console.log(`  ${i + 1}. ${rec}`);
+      output.numbered(i + 1, rec);
     });
-    console.log("=".repeat(60) + "\n");
+
+    output.divider();
   }
 
   /**

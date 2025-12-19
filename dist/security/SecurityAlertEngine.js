@@ -59,6 +59,7 @@ const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const https = __importStar(require("https"));
 const VulpesLogger_1 = require("../utils/VulpesLogger");
+const VulpesOutput_1 = require("../utils/VulpesOutput");
 // ============================================================================
 // DEFAULT CONFIGURATION
 // ============================================================================
@@ -544,25 +545,26 @@ class SecurityAlertEngine extends events_1.EventEmitter {
      * Send alert to console
      */
     sendConsoleAlert(alert, _config) {
-        const severityIcon = {
-            critical: "🚨",
-            high: "⚠️",
-            medium: "📢",
-            low: "ℹ️",
-            info: "📝",
-        };
-        console.log("\n" + "=".repeat(60));
-        console.log(`${severityIcon[alert.severity]} SECURITY ALERT: ${alert.title}`);
-        console.log("=".repeat(60));
-        console.log(`Severity: ${alert.severity.toUpperCase()}`);
-        console.log(`Type: ${alert.type}`);
-        console.log(`Time: ${alert.timestamp}`);
-        console.log(`Description: ${alert.description}`);
-        console.log("\nRecommendations:");
+        // Use VulpesOutput for consistent formatting
+        VulpesOutput_1.out.divider();
+        if (alert.severity === "critical" || alert.severity === "high") {
+            VulpesOutput_1.out.error(`SECURITY ALERT: ${alert.title}`);
+        }
+        else if (alert.severity === "medium") {
+            VulpesOutput_1.out.warning(`SECURITY ALERT: ${alert.title}`);
+        }
+        else {
+            VulpesOutput_1.out.info(`SECURITY ALERT: ${alert.title}`);
+        }
+        VulpesOutput_1.out.keyValue("Severity", alert.severity.toUpperCase());
+        VulpesOutput_1.out.keyValue("Type", alert.type);
+        VulpesOutput_1.out.keyValue("Time", alert.timestamp);
+        VulpesOutput_1.out.keyValue("Description", alert.description);
+        VulpesOutput_1.out.subheading("Recommendations");
         alert.recommendations.forEach((rec, i) => {
-            console.log(`  ${i + 1}. ${rec}`);
+            VulpesOutput_1.out.numbered(i + 1, rec);
         });
-        console.log("=".repeat(60) + "\n");
+        VulpesOutput_1.out.divider();
     }
     /**
      * Send alert to file

@@ -181,7 +181,8 @@ class ConsoleExporter {
             const duration = span.endTime
                 ? `${span.endTime - span.startTime}ms`
                 : "ongoing";
-            console.log(`[TRACE] ${span.name} (${span.spanId}) - ${duration} - ${span.status}`);
+            // Use process.stderr for trace output to avoid polluting stdout
+            process.stderr.write(`[TRACE] ${span.name} (${span.spanId}) - ${duration} - ${span.status}\n`);
         }
     }
     async shutdown() {
@@ -226,11 +227,11 @@ class OTLPExporter {
                 body: JSON.stringify(payload),
             });
             if (!response.ok) {
-                console.error(`[VulpesTracer] OTLP export failed: ${response.status} ${response.statusText}`);
+                process.stderr.write(`[VulpesTracer] OTLP export failed: ${response.status} ${response.statusText}\n`);
             }
         }
         catch (error) {
-            console.error("[VulpesTracer] OTLP export error:", error);
+            process.stderr.write(`[VulpesTracer] OTLP export error: ${error}\n`);
         }
     }
     buildOTLPPayload(spans) {

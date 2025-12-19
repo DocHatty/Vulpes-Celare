@@ -25,7 +25,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReplacementContextService = exports.ConfidenceModifierService = exports.WindowService = exports.FilterRegistry = exports.RELATIVE_DATE_PATTERNS = exports.contextDetector = exports.ClinicalContextDetector = exports.ContextAwareAddressFilter = exports.RelativeDateFilterSpan = exports.ContextAwareNameFilter = exports.BiometricContextFilterSpan = exports.VehicleIdentifierFilterSpan = exports.DeviceIdentifierFilterSpan = exports.URLFilterSpan = exports.IPAddressFilterSpan = exports.AccountNumberFilterSpan = exports.CreditCardFilterSpan = exports.DateFilterSpan = exports.AgeFilterSpan = exports.HealthPlanNumberFilterSpan = exports.MRNFilterSpan = exports.ZipCodeFilterSpan = exports.AddressFilterSpan = exports.EmailFilterSpan = exports.FaxNumberFilterSpan = exports.PhoneFilterSpan = exports.LicenseNumberFilterSpan = exports.PassportNumberFilterSpan = exports.SSNFilterSpan = exports.FamilyNameFilterSpan = exports.TitledNameFilterSpan = exports.FormattedNameFilterSpan = exports.SmartNameFilterSpan = exports.getWhitelistPenalty = exports.isNonPHI = exports.isMedicalTerm = exports.shouldWhitelist = exports.RedactionContext = exports.FilterType = exports.SpanUtils = exports.Span = exports.PostFilterService = exports.FieldContextDetector = exports.FilterAdapter = exports.SpanFactory = exports.FilterPriority = exports.SpanBasedFilter = exports.ParallelRedactionEngine = exports.default = exports.VulpesCelare = void 0;
 exports.RESOURCE_TYPE = exports.FHIR_VERSION = exports.FHIRAuditEventExporter = exports.verifyBlockchainAnchor = exports.anchorToBlockchain = exports.OTS_CALENDAR_SERVERS = exports.BlockchainAnchor = exports.TRUST_BUNDLE_EXTENSION = exports.TRUST_BUNDLE_VERSION = exports.TrustBundleExporter = exports.PolicyTemplates = exports.PolicyCompiler = exports.createSupervisedStreamingRedactor = exports.SupervisedStreamingRedactor = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.PolicyLoader = exports.TokenManager = exports.StatisticsTracker = exports.FilterHealthCheck = exports.FAMILY_RELATIONSHIP_KEYWORDS = exports.NON_PERSON_STRUCTURE_TERMS = exports.PROVIDER_CREDENTIALS = exports.PROVIDER_TITLE_PREFIXES = exports.NameDetectionUtils = exports.ValidationUtils = exports.InterPHIDisambiguator = exports.EnsembleVoter = exports.spanEnhancer = exports.SpanEnhancer = exports.weightedScorer = exports.WeightedPHIScorer = exports.isContextModifierEnabled = exports.contextualConfidenceModifier = exports.ContextualConfidenceModifier = exports.calibrationPersistence = exports.CalibrationPersistence = exports.calibrationDataExtractor = exports.CalibrationDataExtractor = exports.getCalibratedConfidence = exports.initializeCalibration = exports.autoCalibrator = exports.AutoCalibrator = exports.confidenceCalibrator = exports.ConfidenceCalibrator = exports.crossTypeReasoner = exports.CrossTypeReasoner = exports.mlWeightOptimizer = exports.MLWeightOptimizer = exports.ProvenanceService = void 0;
 exports.isZigDFAAccelEnabled = exports.isDFAScanEnabled = exports.isDatalogReasonerEnabled = exports.isSQLiteDictionaryEnabled = exports.isBloomFilterEnabled = exports.isSQLiteDictionaryAvailable = exports.getSQLiteDictionaryMatcher = exports.SQLiteDictionaryMatcher = exports.BloomFilterStore = exports.FastFuzzyMatcher = exports.datalogReasoner = exports.DatalogReasoner = exports.BackpressureQueue = exports.CircuitOpenError = exports.CircuitBreaker = exports.Supervisor = exports.shouldUseBatchProcessing = exports.processBatch = exports.getBatchProcessor = exports.WebGPUBatchProcessor = exports.scanWithDFA = exports.isRustAccelerationAvailable = exports.isDFAScanningEnabled = exports.getMultiPatternScanner = exports.ZigDFAScanner = exports.RustDFAScanner = exports.MultiPatternScanner = exports.getPatternStats = exports.ZIPCODE_PATTERNS = exports.IP_PATTERNS = exports.CREDIT_CARD_PATTERNS = exports.MRN_PATTERNS = exports.DATE_PATTERNS = exports.EMAIL_PATTERNS = exports.PHONE_PATTERNS = exports.SSN_PATTERNS = exports.ALL_PATTERNS = exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.LogLevel = exports.withTimeout = exports.withRetry = exports.withErrorBoundary = exports.getLogger = exports.ImageServiceLogger = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = void 0;
-exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.createDifferentialPrivacy = exports.PrivacyAccountant = exports.DPHistogram = exports.PRIVACY_PRESETS = exports.DifferentialPrivacy = exports.VulpesAnthropic = exports.VulpesOpenAI = exports.BaseLLMWrapper = exports.ExplanationGenerator = exports.getTypeScriptOnlyTypes = exports.getRustSupportedTypes = exports.detectionsToSpans = exports.scanAllWithRust = exports.isUnifiedScannerEnabled = exports.isUnifiedScannerAvailable = exports.VulpesFilterEngine = exports.FeatureToggles = exports.logConfiguration = exports.getConfigurationSummary = exports.isStreamDetectionsEnabled = exports.isStreamKernelEnabled = exports.getPhoneticThreshold = exports.isPhoneticEnabled = exports.isFuzzyAccelEnabled = exports.isCircuitBreakerEnabled = exports.isSupervisionEnabled = exports.getGPUFallbackThreshold = exports.isGPUBatchEnabled = exports.getZigDFAMode = void 0;
+exports.VulpesEnvironment = exports.ERROR_CODES = exports.createIntegrationError = exports.createPipelineError = exports.createDetectionError = exports.createComplianceError = exports.createSecurityError = exports.createFileError = exports.createValidationError = exports.createConfigError = exports.ErrorAggregator = exports.VulpesError = exports.retentionPolicyEngine = exports.RetentionPolicyEngine = exports.recordSecurityOperation = exports.securityAlertEngine = exports.SecurityAlertEngine = exports.configureTracer = exports.MetricsCollector = exports.vulpesTracer = exports.VulpesTracer = exports.createDifferentialPrivacy = exports.PrivacyAccountant = exports.DPHistogram = exports.PRIVACY_PRESETS = exports.DifferentialPrivacy = exports.VulpesAnthropic = exports.VulpesOpenAI = exports.BaseLLMWrapper = exports.ExplanationGenerator = exports.getTypeScriptOnlyTypes = exports.getRustSupportedTypes = exports.detectionsToSpans = exports.scanAllWithRust = exports.isUnifiedScannerEnabled = exports.isUnifiedScannerAvailable = exports.VulpesFilterEngine = exports.FeatureToggles = exports.logConfiguration = exports.getConfigurationSummary = exports.isStreamDetectionsEnabled = exports.isStreamKernelEnabled = exports.getPhoneticThreshold = exports.isPhoneticEnabled = exports.isFuzzyAccelEnabled = exports.isCircuitBreakerEnabled = exports.isSupervisionEnabled = exports.getGPUFallbackThreshold = exports.isGPUBatchEnabled = exports.getZigDFAMode = void 0;
+exports.VARIANT = exports.ENGINE_NAME = exports.VERSION = exports.pluginManager = exports.PluginManager = exports.Table = exports.Spinner = exports.ProgressBar = exports.Spacer = exports.Newline = exports.Static = exports.Text = exports.Box = exports.h = exports.renderToOutput = exports.render = exports.InkComponents = exports.vulpesAIDebugger = exports.VulpesAIDebugger = exports.getEnvironmentInfo = exports.getCIProvider = exports.shouldUseColor = exports.isInteractive = exports.isTTY = exports.isCI = exports.vulpesEnvironment = void 0;
 // ============================================================================
 // MAIN ORCHESTRATOR - Start Here!
 // ============================================================================
@@ -402,6 +403,82 @@ Object.defineProperty(exports, "PRIVACY_PRESETS", { enumerable: true, get: funct
 Object.defineProperty(exports, "DPHistogram", { enumerable: true, get: function () { return privacy_1.DPHistogram; } });
 Object.defineProperty(exports, "PrivacyAccountant", { enumerable: true, get: function () { return privacy_1.PrivacyAccountant; } });
 Object.defineProperty(exports, "createDifferentialPrivacy", { enumerable: true, get: function () { return privacy_1.createDifferentialPrivacy; } });
+// ============================================================================
+// OBSERVABILITY (OpenTelemetry-Compatible Tracing)
+// ============================================================================
+var VulpesTracer_1 = require("./observability/VulpesTracer");
+Object.defineProperty(exports, "VulpesTracer", { enumerable: true, get: function () { return VulpesTracer_1.VulpesTracer; } });
+Object.defineProperty(exports, "vulpesTracer", { enumerable: true, get: function () { return VulpesTracer_1.vulpesTracer; } });
+Object.defineProperty(exports, "MetricsCollector", { enumerable: true, get: function () { return VulpesTracer_1.MetricsCollector; } });
+Object.defineProperty(exports, "configureTracer", { enumerable: true, get: function () { return VulpesTracer_1.configureTracer; } });
+// ============================================================================
+// SECURITY ALERTING (HIPAA Real-Time Monitoring)
+// ============================================================================
+var SecurityAlertEngine_1 = require("./security/SecurityAlertEngine");
+Object.defineProperty(exports, "SecurityAlertEngine", { enumerable: true, get: function () { return SecurityAlertEngine_1.SecurityAlertEngine; } });
+Object.defineProperty(exports, "securityAlertEngine", { enumerable: true, get: function () { return SecurityAlertEngine_1.securityAlertEngine; } });
+Object.defineProperty(exports, "recordSecurityOperation", { enumerable: true, get: function () { return SecurityAlertEngine_1.recordSecurityOperation; } });
+// ============================================================================
+// COMPLIANCE (HIPAA Retention & Legal Holds)
+// ============================================================================
+var RetentionPolicyEngine_1 = require("./compliance/RetentionPolicyEngine");
+Object.defineProperty(exports, "RetentionPolicyEngine", { enumerable: true, get: function () { return RetentionPolicyEngine_1.RetentionPolicyEngine; } });
+Object.defineProperty(exports, "retentionPolicyEngine", { enumerable: true, get: function () { return RetentionPolicyEngine_1.retentionPolicyEngine; } });
+// ============================================================================
+// STRUCTURED ERRORS (Developer-Friendly Error System)
+// ============================================================================
+var VulpesError_1 = require("./errors/VulpesError");
+Object.defineProperty(exports, "VulpesError", { enumerable: true, get: function () { return VulpesError_1.VulpesError; } });
+Object.defineProperty(exports, "ErrorAggregator", { enumerable: true, get: function () { return VulpesError_1.ErrorAggregator; } });
+Object.defineProperty(exports, "createConfigError", { enumerable: true, get: function () { return VulpesError_1.createConfigError; } });
+Object.defineProperty(exports, "createValidationError", { enumerable: true, get: function () { return VulpesError_1.createValidationError; } });
+Object.defineProperty(exports, "createFileError", { enumerable: true, get: function () { return VulpesError_1.createFileError; } });
+Object.defineProperty(exports, "createSecurityError", { enumerable: true, get: function () { return VulpesError_1.createSecurityError; } });
+Object.defineProperty(exports, "createComplianceError", { enumerable: true, get: function () { return VulpesError_1.createComplianceError; } });
+Object.defineProperty(exports, "createDetectionError", { enumerable: true, get: function () { return VulpesError_1.createDetectionError; } });
+Object.defineProperty(exports, "createPipelineError", { enumerable: true, get: function () { return VulpesError_1.createPipelineError; } });
+Object.defineProperty(exports, "createIntegrationError", { enumerable: true, get: function () { return VulpesError_1.createIntegrationError; } });
+Object.defineProperty(exports, "ERROR_CODES", { enumerable: true, get: function () { return VulpesError_1.ERROR_CODES; } });
+// ============================================================================
+// ENVIRONMENT DETECTION (CI/Terminal/Shell Detection)
+// ============================================================================
+var VulpesEnvironment_1 = require("./utils/VulpesEnvironment");
+Object.defineProperty(exports, "VulpesEnvironment", { enumerable: true, get: function () { return VulpesEnvironment_1.VulpesEnvironment; } });
+Object.defineProperty(exports, "vulpesEnvironment", { enumerable: true, get: function () { return VulpesEnvironment_1.vulpesEnvironment; } });
+Object.defineProperty(exports, "isCI", { enumerable: true, get: function () { return VulpesEnvironment_1.isCI; } });
+Object.defineProperty(exports, "isTTY", { enumerable: true, get: function () { return VulpesEnvironment_1.isTTY; } });
+Object.defineProperty(exports, "isInteractive", { enumerable: true, get: function () { return VulpesEnvironment_1.isInteractive; } });
+Object.defineProperty(exports, "shouldUseColor", { enumerable: true, get: function () { return VulpesEnvironment_1.shouldUseColor; } });
+Object.defineProperty(exports, "getCIProvider", { enumerable: true, get: function () { return VulpesEnvironment_1.getCIProvider; } });
+Object.defineProperty(exports, "getEnvironmentInfo", { enumerable: true, get: function () { return VulpesEnvironment_1.getEnvironmentInfo; } });
+// ============================================================================
+// AI DEBUGGING (Intelligent Failure Analysis)
+// ============================================================================
+var VulpesAIDebugger_1 = require("./ai/VulpesAIDebugger");
+Object.defineProperty(exports, "VulpesAIDebugger", { enumerable: true, get: function () { return VulpesAIDebugger_1.VulpesAIDebugger; } });
+Object.defineProperty(exports, "vulpesAIDebugger", { enumerable: true, get: function () { return VulpesAIDebugger_1.vulpesAIDebugger; } });
+// ============================================================================
+// UI COMPONENTS (Ink-Compatible Terminal UI)
+// ============================================================================
+var ui_1 = require("./ui");
+Object.defineProperty(exports, "InkComponents", { enumerable: true, get: function () { return ui_1.InkComponents; } });
+Object.defineProperty(exports, "render", { enumerable: true, get: function () { return ui_1.render; } });
+Object.defineProperty(exports, "renderToOutput", { enumerable: true, get: function () { return ui_1.renderToOutput; } });
+Object.defineProperty(exports, "h", { enumerable: true, get: function () { return ui_1.h; } });
+Object.defineProperty(exports, "Box", { enumerable: true, get: function () { return ui_1.Box; } });
+Object.defineProperty(exports, "Text", { enumerable: true, get: function () { return ui_1.Text; } });
+Object.defineProperty(exports, "Static", { enumerable: true, get: function () { return ui_1.Static; } });
+Object.defineProperty(exports, "Newline", { enumerable: true, get: function () { return ui_1.Newline; } });
+Object.defineProperty(exports, "Spacer", { enumerable: true, get: function () { return ui_1.Spacer; } });
+Object.defineProperty(exports, "ProgressBar", { enumerable: true, get: function () { return ui_1.ProgressBar; } });
+Object.defineProperty(exports, "Spinner", { enumerable: true, get: function () { return ui_1.Spinner; } });
+Object.defineProperty(exports, "Table", { enumerable: true, get: function () { return ui_1.Table; } });
+// ============================================================================
+// PLUGIN SYSTEM (Extensible Architecture)
+// ============================================================================
+var plugins_1 = require("./plugins");
+Object.defineProperty(exports, "PluginManager", { enumerable: true, get: function () { return plugins_1.PluginManager; } });
+Object.defineProperty(exports, "pluginManager", { enumerable: true, get: function () { return plugins_1.pluginManager; } });
 // ============================================================================
 // VERSION INFO
 // ============================================================================

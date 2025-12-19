@@ -605,6 +605,181 @@ export {
 } from "./privacy";
 
 // ============================================================================
+// OBSERVABILITY (OpenTelemetry-Compatible Tracing)
+// ============================================================================
+
+export {
+  VulpesTracer,
+  vulpesTracer,
+  MetricsCollector,
+  configureTracer,
+  type Span as TracerSpan,
+  type SpanContext as TracerSpanContext,
+  type SpanEvent as TracerSpanEvent,
+  type SpanStatus as TracerSpanStatus,
+  type SpanAttributes as TracerSpanAttributes,
+  type TracerConfig,
+  type ExporterType,
+  type ExporterConfig,
+  type TraceContext,
+  type Metric,
+  type MetricValue,
+} from "./observability/VulpesTracer";
+
+// ============================================================================
+// SECURITY ALERTING (HIPAA Real-Time Monitoring)
+// ============================================================================
+
+export {
+  SecurityAlertEngine,
+  securityAlertEngine,
+  recordSecurityOperation,
+  type SecurityAlert,
+  type AlertRule,
+  type AlertChannel,
+  type AlertSeverity,
+  type AlertType,
+  type AlertCondition,
+  type AlertDetails,
+  type AlertSource,
+  type SecurityMetrics,
+  type SecurityAlertEngineConfig,
+  type SlackConfig,
+  type WebhookConfig,
+  type EmailConfig,
+  type FileConfig,
+  type ConsoleConfig,
+} from "./security/SecurityAlertEngine";
+
+// ============================================================================
+// COMPLIANCE (HIPAA Retention & Legal Holds)
+// ============================================================================
+
+export {
+  RetentionPolicyEngine,
+  retentionPolicyEngine,
+  type RetentionPolicy,
+  type LegalHold,
+  type LegalHoldScope,
+  type DestructionCertificate,
+  type RetentionRecord,
+  type ArchiveResult,
+  type PurgeResult,
+  type RetentionPolicyEngineConfig,
+  type DataType,
+  type DestructionMethod,
+} from "./compliance/RetentionPolicyEngine";
+
+// ============================================================================
+// STRUCTURED ERRORS (Developer-Friendly Error System)
+// ============================================================================
+
+export {
+  VulpesError,
+  ErrorAggregator,
+  createConfigError,
+  createValidationError,
+  createFileError,
+  createSecurityError,
+  createComplianceError,
+  createDetectionError,
+  createPipelineError,
+  createIntegrationError,
+  ERROR_CODES,
+  type VulpesErrorOptions,
+  type ErrorCategory,
+  type ErrorSeverity,
+  type ErrorContext,
+  type ErrorCode,
+} from "./errors/VulpesError";
+
+// ============================================================================
+// ENVIRONMENT DETECTION (CI/Terminal/Shell Detection)
+// ============================================================================
+
+export {
+  VulpesEnvironment,
+  vulpesEnvironment,
+  isCI,
+  isTTY,
+  isInteractive,
+  shouldUseColor,
+  getCIProvider,
+  getEnvironmentInfo,
+  type CIProvider,
+  type ColorSupport,
+  type ShellType,
+  type TerminalEmulator,
+  type EnvironmentInfo,
+} from "./utils/VulpesEnvironment";
+
+// ============================================================================
+// AI DEBUGGING (Intelligent Failure Analysis)
+// ============================================================================
+
+export {
+  VulpesAIDebugger,
+  vulpesAIDebugger,
+  type FailureType,
+  type RootCause,
+  type RootCauseCategory,
+  type FixSuggestion,
+  type PatternSuggestion,
+  type TestFailure,
+  type Analysis,
+  type DebugSession,
+} from "./ai/VulpesAIDebugger";
+
+// ============================================================================
+// UI COMPONENTS (Ink-Compatible Terminal UI)
+// ============================================================================
+
+export {
+  InkComponents,
+  render,
+  renderToOutput,
+  h,
+  Box,
+  Text,
+  Static,
+  Newline,
+  Spacer,
+  ProgressBar,
+  Spinner,
+  Table,
+  type Component,
+  type ComponentProps,
+  type ComponentChild,
+  type BoxProps,
+  type TextProps,
+  type SpinnerProps,
+  type ProgressBarProps,
+  type SelectProps,
+} from "./ui";
+
+// ============================================================================
+// PLUGIN SYSTEM (Extensible Architecture)
+// ============================================================================
+
+export {
+  PluginManager,
+  pluginManager,
+  type Plugin,
+  type PluginManifest,
+  type PluginInstance,
+  type PluginType,
+  type PluginState,
+  type PluginContext,
+  type PluginManagerConfig,
+  type PluginConfigItem,
+  type FilterPlugin,
+  type FilterMatch,
+  type FormatterPlugin,
+  type ChannelPlugin,
+  type HookPlugin,
+} from "./plugins";
+
+// ============================================================================
 // VERSION INFO
 // ============================================================================
 
