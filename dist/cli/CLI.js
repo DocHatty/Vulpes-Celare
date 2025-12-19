@@ -204,7 +204,7 @@ class CLI {
             this.succeedSpinner(`Redacted ${theme_1.theme.bold(result.redactionCount.toString())} PHI instances in ${theme_1.theme.secondary(result.executionTimeMs + "ms")}`);
         }
         // Output based on format
-        const output = this.formatOutput(result, input, options.format, options.showSpans);
+        const output = this.formatOutput(result, input, options.format ?? "text", options.showSpans);
         if (options.output) {
             fs.writeFileSync(options.output, output);
             if (!quiet)
@@ -246,7 +246,7 @@ class CLI {
         const extensions = options.ext
             .split(",")
             .map((e) => e.trim().toLowerCase());
-        const maxDepth = parseInt(options.maxDepth) || 10;
+        const maxDepth = parseInt(options.maxDepth ?? "10") || 10;
         const files = this.findFiles(directory, extensions, maxDepth);
         if (files.length === 0) {
             this.warn(`No files found matching extensions: ${extensions.join(", ")}`);
@@ -272,7 +272,7 @@ class CLI {
         // Process files
         const config = this.parseConfig(options);
         const vulpes = new VulpesCelare_1.VulpesCelare(config);
-        const threads = Math.min(parseInt(options.threads) || 4, files.length);
+        const threads = Math.min(parseInt(options.threads ?? "4") || 4, files.length);
         const results = [];
         let processed = 0;
         let totalRedactions = 0;
@@ -295,7 +295,8 @@ class CLI {
                     return { file, result };
                 }
                 catch (err) {
-                    return { file, result: null, error: err.message };
+                    const message = err instanceof Error ? err.message : String(err);
+                    return { file, result: null, error: message };
                 }
             }));
             for (const r of batchResults) {
@@ -610,7 +611,8 @@ class CLI {
         }
         catch (err) {
             this.failSpinner("Compilation failed");
-            this.error(err.message);
+            const message = err instanceof Error ? err.message : String(err);
+            this.error(message);
             process.exit(1);
         }
     }
@@ -634,7 +636,8 @@ class CLI {
         }
         catch (err) {
             this.failSpinner("Validation failed");
-            this.error(err.message);
+            const message = err instanceof Error ? err.message : String(err);
+            this.error(message);
             process.exit(1);
         }
     }
@@ -749,7 +752,7 @@ class CLI {
             this.divider();
             this.newline();
         }
-        const iterations = parseInt(options.iterations) || 100;
+        const iterations = options.iterations ?? 100;
         // Sample documents by size
         const samples = {
             small: "Patient John Smith (SSN: 123-45-6789) was seen on 01/15/2024. Contact: 555-123-4567.",
@@ -790,7 +793,7 @@ class CLI {
       `)
                 .join("\n\n"),
         };
-        const testDoc = samples[options.size] || samples.medium;
+        const testDoc = samples[options.size ?? "medium"] || samples.medium;
         const vulpes = new VulpesCelare_1.VulpesCelare();
         if (!quiet) {
             this.infoMsg(`Document size: ${theme_1.theme.bold(testDoc.length.toLocaleString())} characters`);
@@ -863,7 +866,7 @@ class CLI {
     static async stream(options) {
         this.printBanner();
         this.infoMsg("Streaming mode active. Type text and press Enter.");
-        this.infoMsg(`Mode: ${theme_1.theme.secondary(options.mode)}`);
+        this.infoMsg(`Mode: ${theme_1.theme.secondary(options.mode ?? "dev")}`);
         this.infoMsg("Press Ctrl+C to exit.");
         this.newline();
         const config = this.parseConfig(options);

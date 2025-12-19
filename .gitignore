@@ -79,3 +79,9 @@ docs/MASTER_*_PLAN*.md
 docs/UNIFIED_*_PLAN*.md
 INTERNAL_*.md
 *_CONFIDENTIAL.md
+
+# Internal development session logs
+AUDIT.txt
+docs/SESSION_ISSUES.md
+docs/STRICT_MODE_AND_CONFIG_EXTERNALIZATION_PLAN.md
+docs/POST-DEV-FIXES.md

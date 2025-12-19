@@ -8,7 +8,7 @@
  *
  * @module cli/types
  */
-import { PHIType, ReplacementStyle } from "../VulpesCelare";
+import { ReplacementStyle } from "../VulpesCelare";
 /**
  * Base options shared across all CLI commands
  */
@@ -28,25 +28,45 @@ export interface RedactOptions extends BaseCliOptions {
     outFile?: string;
     /** Replacement style for PHI */
     style?: ReplacementStyle;
-    /** PHI types to enable */
-    enable?: PHIType[];
-    /** PHI types to disable */
-    disable?: PHIType[];
+    /** PHI types to enable (comma-separated string from CLI) */
+    enable?: string;
+    /** PHI types to disable (comma-separated string from CLI) */
+    disable?: string;
     /** Policy file to use */
     policy?: string;
+    /** Display format for output */
+    format?: "text" | "json" | "diff";
+    /** Show detected spans */
+    showSpans?: boolean;
 }
 /**
  * Options for the batch command
  */
-export interface BatchOptions extends RedactOptions {
-    /** File extension filter */
-    ext?: string;
+export interface BatchOptions extends BaseCliOptions {
+    /** File extension filter (comma-separated) */
+    ext: string;
     /** Enable recursive directory search */
     recursive?: boolean;
     /** Output directory */
-    outDir?: string;
+    output?: string;
     /** Number of parallel workers */
     workers?: number;
+    /** Maximum directory depth */
+    maxDepth?: string;
+    /** Dry run mode - don't write files */
+    dryRun?: boolean;
+    /** Number of threads */
+    threads?: string;
+    /** Show summary at end */
+    summary?: boolean;
+    /** Replacement style */
+    style?: ReplacementStyle;
+    /** PHI types to enable */
+    enable?: string;
+    /** PHI types to disable */
+    disable?: string;
+    /** Policy file */
+    policy?: string;
 }
 /**
  * Options for the interactive command
@@ -62,7 +82,9 @@ export interface InteractiveOptions extends BaseCliOptions {
  */
 export interface AnalyzeOptions extends BaseCliOptions {
     /** Output format */
-    output?: "text" | "json" | "table";
+    output?: "text" | "json" | "table" | "csv";
+    /** Display format */
+    format?: "text" | "json" | "table" | "csv";
     /** Show confidence scores */
     showConfidence?: boolean;
     /** Show filter attribution */
@@ -74,6 +96,8 @@ export interface AnalyzeOptions extends BaseCliOptions {
 export interface InfoOptions extends BaseCliOptions {
     /** Output format */
     output?: "text" | "json";
+    /** JSON output mode */
+    json?: boolean;
 }
 /**
  * Options for the filters command
@@ -81,6 +105,8 @@ export interface InfoOptions extends BaseCliOptions {
 export interface FiltersOptions extends BaseCliOptions {
     /** Output format */
     output?: "text" | "json" | "table";
+    /** Display format */
+    format?: "text" | "json" | "table";
 }
 /**
  * Options for the benchmark command
@@ -92,6 +118,8 @@ export interface BenchmarkOptions extends BaseCliOptions {
     warmup?: boolean;
     /** Profile to use */
     profile?: string;
+    /** Sample text size */
+    size?: string;
 }
 /**
  * Options for the stream command
@@ -103,6 +131,8 @@ export interface StreamOptions extends BaseCliOptions {
     policy?: string;
     /** Enable supervised mode */
     supervised?: boolean;
+    /** Operating mode */
+    mode?: "dev" | "qa" | "production";
 }
 /**
  * Options for the deep-analysis command
@@ -128,6 +158,8 @@ export interface SelfCorrectOptions extends BaseCliOptions {
 export interface PolicyCompileOptions extends BaseCliOptions {
     /** Output file path */
     outFile?: string;
+    /** Output file path (alias) */
+    output?: string;
 }
 /**
  * Options for the native chat command

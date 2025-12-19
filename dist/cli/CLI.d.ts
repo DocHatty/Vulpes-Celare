@@ -10,6 +10,7 @@
  * - Batch processing
  * - Multiple output formats
  */
+import { RedactOptions, BatchOptions, InteractiveOptions, AnalyzeOptions, InfoOptions, FiltersOptions, BenchmarkOptions, StreamOptions, PolicyCompileOptions } from "./types";
 export declare class CLI {
     private static spinner;
     static getBanner(): string;
@@ -28,18 +29,18 @@ export declare class CLI {
     static stopSpinner(): void;
     static progressBar(current: number, total: number, width?: number): string;
     private static parseConfig;
-    static redact(file: string | undefined, options: any): Promise<void>;
-    static batch(directory: string, options: any): Promise<void>;
-    static interactive(options: any): Promise<void>;
-    static analyze(file: string, options: any): Promise<void>;
+    static redact(file: string | undefined, options: RedactOptions): Promise<void>;
+    static batch(directory: string, options: BatchOptions): Promise<void>;
+    static interactive(options: InteractiveOptions): Promise<void>;
+    static analyze(file: string, options: AnalyzeOptions): Promise<void>;
     static policyList(): Promise<void>;
     static policyShow(name: string): Promise<void>;
-    static policyCompile(file: string, options: any): Promise<void>;
+    static policyCompile(file: string, options: PolicyCompileOptions): Promise<void>;
     static policyValidate(file: string): Promise<void>;
-    static info(options: any): Promise<void>;
-    static filters(options: any): Promise<void>;
-    static benchmark(options: any): Promise<void>;
-    static stream(options: any): Promise<void>;
+    static info(options: InfoOptions): Promise<void>;
+    static filters(options: FiltersOptions): Promise<void>;
+    static benchmark(options: BenchmarkOptions): Promise<void>;
+    static stream(options: StreamOptions): Promise<void>;
     private static readStdin;
     private static findFiles;
     private static formatOutput;

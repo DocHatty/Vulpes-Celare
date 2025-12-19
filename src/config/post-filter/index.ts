@@ -12,6 +12,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { PostFilterTermsSchema } from "./schemas";
+import { RadiologyLogger } from "../../utils/RadiologyLogger";
 
 // ============================================================================
 // CONFIG DIRECTORY
@@ -71,7 +72,7 @@ function loadTermsAsSet(filename: string): Set<string> {
   const filePath = path.join(configDir, `${filename}.json`);
 
   if (!fs.existsSync(filePath)) {
-    console.warn(`[PostFilterConfig] Config file not found: ${filePath}`);
+    RadiologyLogger.warn("PostFilterConfig", `Config file not found: ${filePath}`);
     // Return empty set rather than failing - allows graceful degradation
     const emptySet = new Set<string>();
     cache.set(cacheKey, emptySet);
@@ -88,7 +89,7 @@ function loadTermsAsSet(filename: string): Set<string> {
 
     return termSet;
   } catch (error) {
-    console.error(`[PostFilterConfig] Failed to load ${filename}:`, error);
+    RadiologyLogger.error("PostFilterConfig", `Failed to load ${filename}`, error);
     const emptySet = new Set<string>();
     cache.set(cacheKey, emptySet);
     return emptySet;
@@ -110,7 +111,7 @@ export function loadTermsAsArray(filename: string): string[] {
   const filePath = path.join(configDir, `${filename}.json`);
 
   if (!fs.existsSync(filePath)) {
-    console.warn(`[PostFilterConfig] Config file not found: ${filePath}`);
+    RadiologyLogger.warn("PostFilterConfig", `Config file not found: ${filePath}`);
     const emptyArray: string[] = [];
     arrayCache.set(cacheKey, emptyArray);
     return emptyArray;
@@ -126,7 +127,7 @@ export function loadTermsAsArray(filename: string): string[] {
 
     return terms;
   } catch (error) {
-    console.error(`[PostFilterConfig] Failed to load ${filename}:`, error);
+    RadiologyLogger.error("PostFilterConfig", `Failed to load ${filename}`, error);
     const emptyArray: string[] = [];
     arrayCache.set(cacheKey, emptyArray);
     return emptyArray;

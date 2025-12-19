@@ -27,6 +27,17 @@ import {
 } from "../VulpesCelare";
 import { PolicyTemplates, PolicyCompiler } from "../PolicyDSL";
 import { VERSION, ENGINE_NAME, VARIANT } from "../meta";
+import {
+  RedactOptions,
+  BatchOptions,
+  InteractiveOptions,
+  AnalyzeOptions,
+  InfoOptions,
+  FiltersOptions,
+  BenchmarkOptions,
+  StreamOptions,
+  PolicyCompileOptions,
+} from "./types";
 
 // ============================================================================
 // UNIFIED THEME SYSTEM
@@ -148,7 +159,7 @@ export class CLI {
   // CONFIG PARSING
   // ══════════════════════════════════════════════════════════════════════════
 
-  private static parseConfig(options: any): VulpesCelareConfig {
+  private static parseConfig(options: { style?: ReplacementStyle; enable?: string; disable?: string; policy?: string }): VulpesCelareConfig {
     const config: VulpesCelareConfig = {};
 
     if (options.style) {
@@ -174,7 +185,7 @@ export class CLI {
   // REDACT COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async redact(file: string | undefined, options: any): Promise<void> {
+  static async redact(file: string | undefined, options: RedactOptions): Promise<void> {
     const quiet = options.quiet;
 
     if (!quiet) {
@@ -217,7 +228,7 @@ export class CLI {
     const output = this.formatOutput(
       result,
       input,
-      options.format,
+      options.format ?? "text",
       options.showSpans,
     );
 
@@ -245,7 +256,7 @@ export class CLI {
   // BATCH COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async batch(directory: string, options: any): Promise<void> {
+  static async batch(directory: string, options: BatchOptions): Promise<void> {
     const quiet = options.quiet;
 
     if (!quiet) {
@@ -267,7 +278,7 @@ export class CLI {
     const extensions = options.ext
       .split(",")
       .map((e: string) => e.trim().toLowerCase());
-    const maxDepth = parseInt(options.maxDepth) || 10;
+    const maxDepth = parseInt(options.maxDepth ?? "10") || 10;
     const files = this.findFiles(directory, extensions, maxDepth);
 
     if (files.length === 0) {
@@ -300,9 +311,9 @@ export class CLI {
     // Process files
     const config = this.parseConfig(options);
     const vulpes = new VulpesCelare(config);
-    const threads = Math.min(parseInt(options.threads) || 4, files.length);
+    const threads = Math.min(parseInt(options.threads ?? "4") || 4, files.length);
 
-    const results: { file: string; result: RedactionResult; error?: string }[] =
+    const results: { file: string; result: RedactionResult | null; error?: string }[] =
       [];
     let processed = 0;
     let totalRedactions = 0;
@@ -330,8 +341,9 @@ export class CLI {
             fs.writeFileSync(outputPath, result.text);
 
             return { file, result };
-          } catch (err: any) {
-            return { file, result: null as any, error: err.message };
+          } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            return { file, result: null, error: message };
           }
         }),
       );
@@ -428,7 +440,7 @@ export class CLI {
   // INTERACTIVE COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async interactive(options: any): Promise<void> {
+  static async interactive(options: InteractiveOptions): Promise<void> {
     this.printBanner();
 
     const config = this.parseConfig(options);
@@ -568,7 +580,7 @@ export class CLI {
   // ANALYZE COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async analyze(file: string, options: any): Promise<void> {
+  static async analyze(file: string, options: AnalyzeOptions): Promise<void> {
     const quiet = options.quiet;
 
     if (!quiet) {
@@ -724,7 +736,7 @@ export class CLI {
     out.print(JSON.stringify(template, null, 2));
   }
 
-  static async policyCompile(file: string, options: any): Promise<void> {
+  static async policyCompile(file: string, options: PolicyCompileOptions): Promise<void> {
     this.printBanner();
 
     if (!fs.existsSync(file)) {
@@ -744,9 +756,10 @@ export class CLI {
       fs.writeFileSync(output, JSON.stringify(compiled, null, 2));
 
       this.success(`Compiled policy written to ${output}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       this.failSpinner("Compilation failed");
-      this.error(err.message);
+      const message = err instanceof Error ? err.message : String(err);
+      this.error(message);
       process.exit(1);
     }
   }
@@ -772,9 +785,10 @@ export class CLI {
 
       this.succeedSpinner("Policy is valid");
       this.success(`${file} passed validation`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       this.failSpinner("Validation failed");
-      this.error(err.message);
+      const message = err instanceof Error ? err.message : String(err);
+      this.error(message);
       process.exit(1);
     }
   }
@@ -783,7 +797,7 @@ export class CLI {
   // INFO COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async info(options: any): Promise<void> {
+  static async info(options: InfoOptions): Promise<void> {
     const infoData = {
       engine: ENGINE_NAME,
       variant: VARIANT,
@@ -832,7 +846,7 @@ export class CLI {
   // FILTERS COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async filters(options: any): Promise<void> {
+  static async filters(options: FiltersOptions): Promise<void> {
     const vulpes = new VulpesCelare();
     const activeFilters = vulpes.getActiveFilters();
 
@@ -917,7 +931,7 @@ export class CLI {
   // BENCHMARK COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async benchmark(options: any): Promise<void> {
+  static async benchmark(options: BenchmarkOptions): Promise<void> {
     const quiet = options.quiet;
 
     if (!quiet) {
@@ -927,7 +941,7 @@ export class CLI {
       this.newline();
     }
 
-    const iterations = parseInt(options.iterations) || 100;
+    const iterations = options.iterations ?? 100;
 
     // Sample documents by size
     const samples: Record<string, string> = {
@@ -973,7 +987,7 @@ export class CLI {
         .join("\n\n"),
     };
 
-    const testDoc = samples[options.size] || samples.medium;
+    const testDoc = samples[options.size ?? "medium"] || samples.medium;
     const vulpes = new VulpesCelare();
 
     if (!quiet) {
@@ -1073,11 +1087,11 @@ export class CLI {
   // STREAM COMMAND
   // ══════════════════════════════════════════════════════════════════════════
 
-  static async stream(options: any): Promise<void> {
+  static async stream(options: StreamOptions): Promise<void> {
     this.printBanner();
 
     this.infoMsg("Streaming mode active. Type text and press Enter.");
-    this.infoMsg(`Mode: ${theme.secondary(options.mode)}`);
+    this.infoMsg(`Mode: ${theme.secondary(options.mode ?? "dev")}`);
     this.infoMsg("Press Ctrl+C to exit.");
     this.newline();
 

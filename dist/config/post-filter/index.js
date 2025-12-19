@@ -61,6 +61,7 @@ exports.isFieldLabel = isFieldLabel;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const schemas_1 = require("./schemas");
+const RadiologyLogger_1 = require("../../utils/RadiologyLogger");
 // ============================================================================
 // CONFIG DIRECTORY
 // ============================================================================
@@ -109,7 +110,7 @@ function loadTermsAsSet(filename) {
     const configDir = getConfigDir();
     const filePath = path.join(configDir, `${filename}.json`);
     if (!fs.existsSync(filePath)) {
-        console.warn(`[PostFilterConfig] Config file not found: ${filePath}`);
+        RadiologyLogger_1.RadiologyLogger.warn("PostFilterConfig", `Config file not found: ${filePath}`);
         // Return empty set rather than failing - allows graceful degradation
         const emptySet = new Set();
         cache.set(cacheKey, emptySet);
@@ -124,7 +125,7 @@ function loadTermsAsSet(filename) {
         return termSet;
     }
     catch (error) {
-        console.error(`[PostFilterConfig] Failed to load ${filename}:`, error);
+        RadiologyLogger_1.RadiologyLogger.error("PostFilterConfig", `Failed to load ${filename}`, error);
         const emptySet = new Set();
         cache.set(cacheKey, emptySet);
         return emptySet;
@@ -143,7 +144,7 @@ function loadTermsAsArray(filename) {
     const configDir = getConfigDir();
     const filePath = path.join(configDir, `${filename}.json`);
     if (!fs.existsSync(filePath)) {
-        console.warn(`[PostFilterConfig] Config file not found: ${filePath}`);
+        RadiologyLogger_1.RadiologyLogger.warn("PostFilterConfig", `Config file not found: ${filePath}`);
         const emptyArray = [];
         arrayCache.set(cacheKey, emptyArray);
         return emptyArray;
@@ -157,7 +158,7 @@ function loadTermsAsArray(filename) {
         return terms;
     }
     catch (error) {
-        console.error(`[PostFilterConfig] Failed to load ${filename}:`, error);
+        RadiologyLogger_1.RadiologyLogger.error("PostFilterConfig", `Failed to load ${filename}`, error);
         const emptyArray = [];
         arrayCache.set(cacheKey, emptyArray);
         return emptyArray;
