@@ -128,6 +128,8 @@ export declare class VulpesIntegration {
     private installClaudeCodeIntegrationSilent;
     /**
      * Silent MCP registration for Claude Code
+     * IMPORTANT: Writes to .mcp.json, NOT .claude/settings.json
+     * Claude Code ignores .claude/settings.json for MCP configuration!
      */
     private registerClaudeCodeMcpSilent;
     /**

@@ -598,26 +598,30 @@ class VulpesIntegration {
         VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Installed ${Object.keys(exports.CLAUDE_SLASH_COMMANDS).length} slash commands`));
     }
     async registerClaudeMcp() {
-        // Register in PROJECT-LEVEL .claude/settings.json (this is where Claude Code reads MCP config)
-        const projectSettingsPath = path.join(this.config.projectDir, ".claude", "settings.json");
-        let settings = {};
-        if (fs.existsSync(projectSettingsPath)) {
+        // IMPORTANT: Claude Code ONLY reads MCP config from:
+        // 1. .mcp.json (project-level, version-controlled)
+        // 2. ~/.claude.json (global user config)
+        // NOT from .claude/settings.json - that file is IGNORED for MCP!
+        const mcpJsonPath = path.join(this.config.projectDir, ".mcp.json");
+        let mcpConfig = { mcpServers: {} };
+        if (fs.existsSync(mcpJsonPath)) {
             try {
-                settings = JSON.parse(fs.readFileSync(projectSettingsPath, "utf-8"));
+                mcpConfig = JSON.parse(fs.readFileSync(mcpJsonPath, "utf-8"));
+                mcpConfig.mcpServers = mcpConfig.mcpServers || {};
             }
             catch {
-                settings = {};
+                mcpConfig = { mcpServers: {} };
             }
         }
-        // Add MCP server config - use the Cortex server for full learning capabilities
-        settings.mcpServers = settings.mcpServers || {};
-        settings.mcpServers.vulpes = {
+        // Get absolute path to the Cortex MCP server for full learning capabilities
+        const cortexServerPath = path.join(this.config.projectDir, "tests", "master-suite", "cortex", "mcp", "server.js");
+        // Add MCP server config with absolute path
+        mcpConfig.mcpServers.vulpes = {
             command: "node",
-            args: ["tests/master-suite/cortex/mcp/server.js", "--daemon"],
-            cwd: ".",
+            args: [cortexServerPath],
         };
-        fs.writeFileSync(projectSettingsPath, JSON.stringify(settings, null, 2));
-        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Registered Vulpes MCP server in .claude/settings.json`));
+        fs.writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2));
+        VulpesOutput_1.out.print(theme_1.theme.success(`  ${figures_1.default.tick} Registered Vulpes MCP server in .mcp.json`));
     }
     // ══════════════════════════════════════════════════════════════════════════
     // CODEX INTEGRATION
@@ -825,30 +829,29 @@ tool_timeout_sec = 60
     }
     /**
      * Silent MCP registration for Claude Code
+     * IMPORTANT: Writes to .mcp.json, NOT .claude/settings.json
+     * Claude Code ignores .claude/settings.json for MCP configuration!
      */
     async registerClaudeCodeMcpSilent() {
-        // Register in PROJECT-LEVEL .claude/settings.json
-        const projectSettingsPath = path.join(this.config.projectDir, ".claude", "settings.json");
-        let settings = {};
-        if (fs.existsSync(projectSettingsPath)) {
+        const mcpJsonPath = path.join(this.config.projectDir, ".mcp.json");
+        let mcpConfig = { mcpServers: {} };
+        if (fs.existsSync(mcpJsonPath)) {
             try {
-                settings = JSON.parse(fs.readFileSync(projectSettingsPath, "utf-8"));
+                mcpConfig = JSON.parse(fs.readFileSync(mcpJsonPath, "utf-8"));
+                mcpConfig.mcpServers = mcpConfig.mcpServers || {};
             }
             catch {
-                settings = {};
+                mcpConfig = { mcpServers: {} };
             }
         }
-        if (!settings.mcpServers) {
-            settings.mcpServers = {};
-        }
-        if (!settings.mcpServers.vulpes) {
-            // Use Cortex MCP server for full learning capabilities
-            settings.mcpServers.vulpes = {
+        if (!mcpConfig.mcpServers.vulpes) {
+            // Get absolute path to the Cortex MCP server
+            const cortexServerPath = path.join(this.config.projectDir, "tests", "master-suite", "cortex", "mcp", "server.js");
+            mcpConfig.mcpServers.vulpes = {
                 command: "node",
-                args: ["tests/master-suite/cortex/mcp/server.js", "--daemon"],
-                cwd: ".",
+                args: [cortexServerPath],
             };
-            fs.writeFileSync(projectSettingsPath, JSON.stringify(settings, null, 2));
+            fs.writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2));
         }
     }
     /**
