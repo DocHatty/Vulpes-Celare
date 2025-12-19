@@ -39,31 +39,30 @@ export interface IPostFilterStrategy {
  */
 declare class DevicePhoneFalsePositiveFilter implements IPostFilterStrategy {
     readonly name = "DevicePhoneFalsePositive";
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for ALL CAPS section headings
+ * Uses externalized config from config/post-filter/
  */
 declare class SectionHeadingFilter implements IPostFilterStrategy {
     readonly name = "SectionHeading";
-    private static readonly SECTION_HEADINGS;
-    private static readonly SINGLE_WORD_HEADINGS;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for document structure words
+ * Uses externalized config from config/post-filter/
  */
 declare class StructureWordFilter implements IPostFilterStrategy {
     readonly name = "StructureWord";
-    private static readonly STRUCTURE_WORDS;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for short names (less than 5 chars without comma)
  */
 declare class ShortNameFilter implements IPostFilterStrategy {
     readonly name = "ShortName";
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for invalid prefix words
@@ -71,7 +70,7 @@ declare class ShortNameFilter implements IPostFilterStrategy {
 declare class InvalidPrefixFilter implements IPostFilterStrategy {
     readonly name = "InvalidPrefix";
     private static readonly INVALID_STARTS;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for invalid suffix words
@@ -79,15 +78,15 @@ declare class InvalidPrefixFilter implements IPostFilterStrategy {
 declare class InvalidSuffixFilter implements IPostFilterStrategy {
     readonly name = "InvalidSuffix";
     private static readonly INVALID_ENDINGS;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for common medical/clinical phrases
+ * Uses externalized config from config/post-filter/
  */
 declare class MedicalPhraseFilter implements IPostFilterStrategy {
     readonly name = "MedicalPhrase";
-    private static readonly MEDICAL_PHRASES;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for medical condition suffixes
@@ -95,23 +94,23 @@ declare class MedicalPhraseFilter implements IPostFilterStrategy {
 declare class MedicalSuffixFilter implements IPostFilterStrategy {
     readonly name = "MedicalSuffix";
     private static readonly MEDICAL_SUFFIXES;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for geographic terms that aren't names
+ * Uses externalized config from config/post-filter/
  */
 declare class GeographicTermFilter implements IPostFilterStrategy {
     readonly name = "GeographicTerm";
-    private static readonly GEO_TERMS;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * Filter for common field labels
+ * Uses externalized config from config/post-filter/
  */
 declare class FieldLabelFilter implements IPostFilterStrategy {
     readonly name = "FieldLabel";
-    private static readonly FIELD_LABELS;
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
 }
 /**
  * PostFilterService - Orchestrates all post-detection filtering strategies

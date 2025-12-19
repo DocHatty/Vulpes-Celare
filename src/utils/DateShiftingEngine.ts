@@ -7,14 +7,11 @@ export class DateShiftingEngine {
   private shiftDays: number;
   private dateMap: Map<string, number> = new Map();
   private tokenCounter: number = 0;
-  private sessionId: string;
 
   constructor(sessionIdOrShiftDays: string | number = 0) {
     if (typeof sessionIdOrShiftDays === "string") {
-      this.sessionId = sessionIdOrShiftDays;
       this.shiftDays = Math.floor(Math.random() * 365) - 182; // Random shift
     } else {
-      this.sessionId = "default";
       this.shiftDays = sessionIdOrShiftDays;
     }
   }

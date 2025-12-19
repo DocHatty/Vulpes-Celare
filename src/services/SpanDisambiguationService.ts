@@ -120,11 +120,9 @@ const AMBIGUOUS_PATTERNS: Map<string, FilterType[]> = new Map([
  */
 export class SpanDisambiguationService {
     private confidenceThreshold: number;
-    private windowSize: number;
 
-    constructor(confidenceThreshold: number = 0.15, windowSize: number = 5) {
+    constructor(confidenceThreshold: number = 0.15, _windowSize: number = 5) {
         this.confidenceThreshold = confidenceThreshold;
-        this.windowSize = windowSize;
     }
 
     /**

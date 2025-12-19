@@ -35,6 +35,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.nameDetectionCoordinator = exports.NameDetectionCoordinator = void 0;
 const RustNameScanner_1 = require("../../utils/RustNameScanner");
 const RadiologyLogger_1 = require("../../utils/RadiologyLogger");
+const ServiceContainer_1 = require("../../core/ServiceContainer");
 /**
  * Simple string hash for cache invalidation
  */
@@ -49,103 +50,102 @@ function hashString(str) {
 }
 /**
  * Singleton coordinator for unified name detection
+ *
+ * Supports both traditional singleton pattern and dependency injection:
+ * - getInstance() checks the DI container first, falling back to static instance
+ * - For testing, use container.replace() to inject mocks
  */
 class NameDetectionCoordinator {
     static instance = null;
-    cache = null;
-    documentStartTime = 0;
+    cache = new Map();
+    maxCacheEntries = 16;
+    // Constructor is now public to support DI
     constructor() { }
     /**
-     * Get singleton instance
+     * Get singleton instance (DI-aware)
+     *
+     * Resolution order:
+     * 1. Check DI container for registered instance
+     * 2. Fall back to static singleton
+     *
+     * @example
+     * ```typescript
+     * // Normal usage
+     * const coordinator = NameDetectionCoordinator.getInstance();
+     *
+     * // For testing, inject a mock:
+     * container.replace(ServiceIds.NameDetectionCoordinator, () => mockCoordinator);
+     * ```
      */
     static getInstance() {
+        // Check DI container first (enables testing)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.NameDetectionCoordinator);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static singleton
         if (!NameDetectionCoordinator.instance) {
             NameDetectionCoordinator.instance = new NameDetectionCoordinator();
+            // Register in container for consistency
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.NameDetectionCoordinator, NameDetectionCoordinator.instance);
         }
         return NameDetectionCoordinator.instance;
+    }
+    /**
+     * Reset the singleton instance (for testing)
+     */
+    static resetInstance() {
+        NameDetectionCoordinator.instance = null;
+        ServiceContainer_1.container.unregister(ServiceContainer_1.ServiceIds.NameDetectionCoordinator);
     }
     /**
      * Begin processing a new document
      * Call this once at the start of document processing
      */
     beginDocument(text) {
-        const textHash = hashString(text);
-        // Check if we already have valid cache for this exact text
-        if (this.cache && this.cache.textHash === textHash && this.cache.text.length === text.length) {
-            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", "Using cached Rust results from previous call");
-            return;
-        }
-        // Clear old cache and start fresh
-        this.cache = {
-            text,
-            textHash,
-            lastFirst: null,
-            firstLast: null,
-            smart: null,
-            timestamp: Date.now(),
-        };
-        this.documentStartTime = Date.now();
-        RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Beginning document processing (${text.length} chars)`);
+        this.getOrCreateCache(text);
     }
     /**
      * End document processing and clear cache
      */
     endDocument() {
-        if (this.cache) {
-            const duration = Date.now() - this.documentStartTime;
-            const calls = [
-                this.cache.lastFirst !== null,
-                this.cache.firstLast !== null,
-                this.cache.smart !== null,
-            ].filter(Boolean).length;
-            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Document complete: ${calls} Rust methods called in ${duration}ms`);
-        }
-        this.cache = null;
+        this.pruneCache();
     }
     /**
      * Get Rust "Last, First" detection results (cached)
      */
-    getRustLastFirst() {
-        if (!this.cache) {
-            RadiologyLogger_1.RadiologyLogger.warn("NameDetectionCoordinator", "getRustLastFirst called without beginDocument - running uncached");
-            return RustNameScanner_1.RustNameScanner.detectLastFirst("");
-        }
-        if (this.cache.lastFirst === null) {
+    getRustLastFirst(text) {
+        const cache = this.getOrCreateCache(text);
+        if (cache.lastFirst === null) {
             const start = Date.now();
-            this.cache.lastFirst = RustNameScanner_1.RustNameScanner.detectLastFirst(this.cache.text);
-            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Rust detectLastFirst: ${this.cache.lastFirst.length} matches in ${Date.now() - start}ms`);
+            cache.lastFirst = RustNameScanner_1.RustNameScanner.detectLastFirst(cache.text);
+            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Rust detectLastFirst: ${cache.lastFirst.length} matches in ${Date.now() - start}ms`);
         }
-        return this.cache.lastFirst;
+        return cache.lastFirst;
     }
     /**
      * Get Rust "First Last" detection results (cached)
      */
-    getRustFirstLast() {
-        if (!this.cache) {
-            RadiologyLogger_1.RadiologyLogger.warn("NameDetectionCoordinator", "getRustFirstLast called without beginDocument - running uncached");
-            return RustNameScanner_1.RustNameScanner.detectFirstLast("");
-        }
-        if (this.cache.firstLast === null) {
+    getRustFirstLast(text) {
+        const cache = this.getOrCreateCache(text);
+        if (cache.firstLast === null) {
             const start = Date.now();
-            this.cache.firstLast = RustNameScanner_1.RustNameScanner.detectFirstLast(this.cache.text);
-            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Rust detectFirstLast: ${this.cache.firstLast.length} matches in ${Date.now() - start}ms`);
+            cache.firstLast = RustNameScanner_1.RustNameScanner.detectFirstLast(cache.text);
+            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Rust detectFirstLast: ${cache.firstLast.length} matches in ${Date.now() - start}ms`);
         }
-        return this.cache.firstLast;
+        return cache.firstLast;
     }
     /**
      * Get Rust "Smart" detection results (cached)
      */
-    getRustSmart() {
-        if (!this.cache) {
-            RadiologyLogger_1.RadiologyLogger.warn("NameDetectionCoordinator", "getRustSmart called without beginDocument - running uncached");
-            return RustNameScanner_1.RustNameScanner.detectSmart("");
-        }
-        if (this.cache.smart === null) {
+    getRustSmart(text) {
+        const cache = this.getOrCreateCache(text);
+        if (cache.smart === null) {
             const start = Date.now();
-            this.cache.smart = RustNameScanner_1.RustNameScanner.detectSmart(this.cache.text);
-            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Rust detectSmart: ${this.cache.smart.length} matches in ${Date.now() - start}ms`);
+            cache.smart = RustNameScanner_1.RustNameScanner.detectSmart(cache.text);
+            RadiologyLogger_1.RadiologyLogger.debug("NameDetectionCoordinator", `Rust detectSmart: ${cache.smart.length} matches in ${Date.now() - start}ms`);
         }
-        return this.cache.smart;
+        return cache.smart;
     }
     /**
      * Check if Rust scanner is available
@@ -156,18 +156,51 @@ class NameDetectionCoordinator {
     /**
      * Get all Rust results at once (for filters that need multiple)
      */
-    getAllRustResults() {
+    getAllRustResults(text) {
         return {
-            lastFirst: this.getRustLastFirst(),
-            firstLast: this.getRustFirstLast(),
-            smart: this.getRustSmart(),
+            lastFirst: this.getRustLastFirst(text),
+            firstLast: this.getRustFirstLast(text),
+            smart: this.getRustSmart(text),
         };
     }
     /**
      * Clear cache (for testing)
      */
     clearCache() {
-        this.cache = null;
+        this.cache.clear();
+    }
+    getCacheKey(text) {
+        return `${text.length}:${hashString(text)}`;
+    }
+    getOrCreateCache(text) {
+        const key = this.getCacheKey(text);
+        const existing = this.cache.get(key);
+        if (existing && existing.text.length === text.length) {
+            existing.lastAccess = Date.now();
+            return existing;
+        }
+        const entry = {
+            text,
+            textHash: hashString(text),
+            lastFirst: null,
+            firstLast: null,
+            smart: null,
+            timestamp: Date.now(),
+            lastAccess: Date.now(),
+        };
+        this.cache.set(key, entry);
+        this.pruneCache();
+        return entry;
+    }
+    pruneCache() {
+        if (this.cache.size <= this.maxCacheEntries)
+            return;
+        const entries = Array.from(this.cache.entries());
+        entries.sort((a, b) => a[1].lastAccess - b[1].lastAccess);
+        const removeCount = this.cache.size - this.maxCacheEntries;
+        for (let i = 0; i < removeCount; i++) {
+            this.cache.delete(entries[i][0]);
+        }
     }
 }
 exports.NameDetectionCoordinator = NameDetectionCoordinator;

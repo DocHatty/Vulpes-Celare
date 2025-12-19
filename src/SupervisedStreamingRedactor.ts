@@ -78,11 +78,9 @@ class RedactorWorkerProcess implements ChildProcess {
   id: string;
   private redactor: StreamingRedactor;
   private running = false;
-  private config: StreamingRedactorConfig;
 
   constructor(id: string, config: StreamingRedactorConfig) {
     this.id = id;
-    this.config = config;
     this.redactor = new StreamingRedactor(config);
   }
 

@@ -63,7 +63,6 @@ function getNativeTokenizer():
  */
 export class WindowService {
   private static readonly DEFAULT_WINDOW_SIZE = 5;
-  private static readonly WORD_BOUNDARY_PATTERN = /\b/;
   private static readonly TOKEN_PATTERN = /\w+|[^\w\s]/g;
 
   /**
@@ -222,22 +221,6 @@ export class WindowService {
     return windowTokens;
   }
 
-  /**
-   * Tokenize text into words (and optionally punctuation)
-   *
-   * @param text - Text to tokenize
-   * @param includePunctuation - Include punctuation as separate tokens
-   * @returns Array of tokens
-   */
-  private static tokenize(text: string, includePunctuation: boolean): string[] {
-    if (includePunctuation) {
-      // Match words and punctuation separately
-      return Array.from(text.matchAll(this.TOKEN_PATTERN)).map((m) => m[0]);
-    } else {
-      // Match only words
-      return Array.from(text.matchAll(/\w+/g)).map((m) => m[0]);
-    }
-  }
 
   /**
    * Check if window contains specific keywords (case-insensitive)

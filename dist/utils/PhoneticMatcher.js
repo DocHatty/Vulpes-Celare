@@ -43,7 +43,6 @@ class PhoneticMatcher {
     firstNameIndex;
     surnameIndex;
     initialized = false;
-    nativeMatcher = null;
     nativeInstance = null;
     // Configuration
     MAX_LEVENSHTEIN_DISTANCE = 2;
@@ -56,12 +55,10 @@ class PhoneticMatcher {
         try {
             const binding = (0, binding_1.loadNativeBinding)({ configureOrt: false });
             if (binding.VulpesPhoneticMatcher) {
-                this.nativeMatcher = binding.VulpesPhoneticMatcher;
                 this.nativeInstance = new binding.VulpesPhoneticMatcher();
             }
         }
         catch {
-            this.nativeMatcher = null;
             this.nativeInstance = null;
         }
     }

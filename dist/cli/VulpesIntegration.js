@@ -385,11 +385,6 @@ class VulpesIntegration {
             silent: config.silent || false,
         };
     }
-    log(message) {
-        if (!this.config.silent) {
-            VulpesOutput_1.out.print(message);
-        }
-    }
     // ══════════════════════════════════════════════════════════════════════════
     // STATUS CHECK
     // ══════════════════════════════════════════════════════════════════════════
@@ -1129,7 +1124,7 @@ async function handleVulpesify(options) {
     });
     await integration.vulpesify();
 }
-async function handleIntegrationStatus(options) {
+async function handleIntegrationStatus(_options) {
     const integration = new VulpesIntegration({
         projectDir: process.cwd(),
     });

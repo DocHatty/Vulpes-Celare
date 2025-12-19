@@ -123,7 +123,7 @@ export class FilterAdapter extends SpanBasedFilter {
    */
   private findPositionInOriginal(
     originalText: string,
-    tokenizedText: string,
+    _tokenizedText: string,
     tokenPos: number,
     originalValue: string
   ): number {

@@ -17,11 +17,10 @@
  */
 import { Span } from "../models/Span";
 import { SpanBasedFilter } from "../core/SpanBasedFilter";
-import { RedactionContext } from "../context/RedactionContext";
 export declare class ContextAwareNameFilter extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, _context: unknown): Span[];
     /**
      * Detect diverse first names that may not be in dictionaries
      * REQUIRES clinical context to avoid false positives

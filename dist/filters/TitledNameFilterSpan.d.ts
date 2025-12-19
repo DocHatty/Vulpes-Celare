@@ -20,7 +20,7 @@ export declare class TitledNameFilterSpan extends SpanBasedFilter {
     private readonly SUFFIXES;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, _context: RedactionContext): Span[];
     /**
      * Pattern 6: Names after provider role labels
      * Matches: "Referring: Dr. John Smith", "Sonographer: Sarah Mitchell, RDMS"
@@ -29,11 +29,6 @@ export declare class TitledNameFilterSpan extends SpanBasedFilter {
      * Names after role labels like "Attending:", "Surgeon:", etc. are providers
      */
     private detectProviderRoleNames;
-    /**
-     * Check if a titled name is a PROVIDER name (should NOT be redacted)
-     * In medical documents, ALL titled names are providers - patients don't have titles
-     */
-    private isProviderTitledName;
     /**
      * Pattern 1: Title + Name (handles both "Dr. Smith" and "Dr. John Smith")
      * Matches: Dr. Smith, Dr. John Smith, Mr. Robert Jones, etc.
@@ -71,16 +66,6 @@ export declare class TitledNameFilterSpan extends SpanBasedFilter {
      */
     private detectGeneralFullNames;
     /**
-     * Validate that Last, First pattern is a likely person name
-     * Delegates to shared NameDetectionUtils
-     */
-    private validateLastFirst;
-    /**
-     * Check if a capitalized word sequence is likely a person name
-     * Delegates to shared NameDetectionUtils
-     */
-    private isLikelyPersonName;
-    /**
      * Pattern 5: Family relationship names (Daughter: Emma, Wife: Mary, etc.)
      *
      * STREET-SMART: When a name appears after a family relationship label
@@ -97,16 +82,6 @@ export declare class TitledNameFilterSpan extends SpanBasedFilter {
      * "Wilson's disease" exists.
      */
     private isWhitelisted;
-    /**
-     * Check if text starts with a person title (Dr., Mr., Mrs., etc.)
-     * Delegates to shared NameDetectionUtils
-     */
-    private startsWithTitle;
-    /**
-     * Remove the title prefix from text
-     * Delegates to shared NameDetectionUtils
-     */
-    private removeTitle;
     /**
      * Check if text is a non-person structure term.
      * Delegates to shared NameDetectionUtils

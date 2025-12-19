@@ -30,7 +30,8 @@ class CrossTypeReasoner {
     // Reasoning parameters
     static CONSISTENCY_BOOST = 0.15;
     static CONFLICT_PENALTY = 0.25;
-    static MIN_CONFIDENCE_THRESHOLD = 0.3;
+    // MIN_CONFIDENCE_THRESHOLD reserved for future use
+    // private static readonly MIN_CONFIDENCE_THRESHOLD = 0.3;
     static PROXIMITY_WINDOW = 200; // characters
     constructor() {
         this.initializeConstraints();
@@ -340,7 +341,7 @@ class CrossTypeReasoner {
     /**
      * Resolve remaining conflicts using context analysis
      */
-    resolveConflicts(results, fullText) {
+    resolveConflicts(results, _fullText) {
         // Group results by overlapping positions
         const positionGroups = new Map();
         for (const result of results) {
@@ -483,7 +484,7 @@ class CrossTypeReasoner {
     /**
      * Check if a type change is valid based on constraints
      */
-    isTypeChangeValid(span, newType, nearbySpans) {
+    isTypeChangeValid(_span, newType, nearbySpans) {
         // Check exclusive constraints
         for (const constraint of this.constraints) {
             if (constraint.relationship !== "EXCLUSIVE")

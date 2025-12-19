@@ -7,13 +7,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfigLoader = void 0;
 class ConfigLoader {
     static config = {};
-    static load(configPath) {
+    static load(_configPath) {
         return { redaction: { enabled: true, defaultReplacement: "[REDACTED]" } };
     }
     static get(key, defaultValue) {
         return this.config[key] ?? defaultValue;
     }
-    static getInt(section, key, defaultValue = 0) {
+    static getInt(_section, key, defaultValue = 0) {
         // Supports both getInt("key", default) and getInt("section", "key", default)
         if (typeof key === "number" || key === undefined) {
             return typeof key === "number" ? key : defaultValue;

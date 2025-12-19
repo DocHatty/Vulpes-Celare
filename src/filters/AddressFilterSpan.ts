@@ -360,7 +360,7 @@ export class AddressFilterSpan extends SpanBasedFilter {
     return FilterPriority.ADDRESS;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     const accelerated = RustScanKernel.getDetections(context, text, "ADDRESS");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
@@ -538,7 +538,7 @@ export class AddressFilterSpan extends SpanBasedFilter {
       const fullMatch = match[0];
       const streetNumber = match[1];
       const streetName = match[2];
-      const suffix = match[3];
+      // match[3] contains suffix but is unused
 
       // Skip if already detected (check for overlap)
       const start = match.index;

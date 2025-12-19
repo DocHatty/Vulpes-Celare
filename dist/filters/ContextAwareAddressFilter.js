@@ -167,7 +167,7 @@ class ContextAwareAddressFilter extends SpanBasedFilter_1.SpanBasedFilter {
         // Run after main address filter
         return SpanBasedFilter_1.FilterPriority.ADDRESS + 10;
     }
-    detect(text, config, context) {
+    detect(text, _config, _context) {
         const spans = [];
         const seen = new Set();
         // Detect partial addresses

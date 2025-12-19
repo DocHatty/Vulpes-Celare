@@ -149,11 +149,14 @@ class SecurityAlertEngine extends events_1.EventEmitter {
     constructor(config = {}) {
         super();
         this.enabled = config.enabled ?? (process.env.VULPES_SECURITY_ALERTS !== "0");
-        this.channels = config.channels ?? this.loadDefaultChannels();
         this.rules = config.rules ?? DEFAULT_RULES;
         this.businessHours = config.businessHours ?? DEFAULT_BUSINESS_HOURS;
+        // CRITICAL: alertStoragePath MUST be assigned BEFORE loadDefaultChannels()
+        // because loadDefaultChannels() uses this.alertStoragePath for file channel config
         this.alertStoragePath = config.alertStoragePath ??
             path.join(process.cwd(), "logs", "security-alerts");
+        // Now safe to call loadDefaultChannels() which depends on alertStoragePath
+        this.channels = config.channels ?? this.loadDefaultChannels();
         this.metrics = {
             operationsPerMinute: 0,
             operationsPerHour: 0,

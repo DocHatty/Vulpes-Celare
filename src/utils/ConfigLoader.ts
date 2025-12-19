@@ -6,7 +6,7 @@
 export class ConfigLoader {
   private static config: Record<string, any> = {};
 
-  static load(configPath?: string): Record<string, any> {
+  static load(_configPath?: string): Record<string, any> {
     return { redaction: { enabled: true, defaultReplacement: "[REDACTED]" } };
   }
 
@@ -14,7 +14,7 @@ export class ConfigLoader {
     return this.config[key] ?? defaultValue;
   }
 
-  static getInt(section: string, key?: string, defaultValue: number = 0): number {
+  static getInt(_section: string, key?: string, defaultValue: number = 0): number {
     // Supports both getInt("key", default) and getInt("section", "key", default)
     if (typeof key === "number" || key === undefined) {
       return typeof key === "number" ? key : defaultValue;

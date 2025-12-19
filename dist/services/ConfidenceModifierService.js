@@ -77,9 +77,6 @@ class ConfidenceModifierService {
     // OPTIMIZATION: Bloom filter for fast keyword membership
     keywordBloomFilter = null;
     allKeywordsSet = new Set();
-    // OPTIMIZATION: Pre-compiled static regex patterns
-    static TITLE_PATTERN = /\b(Dr|Mr|Mrs|Ms|Miss|Prof|Professor)\.\s*$/i;
-    static SHORT_NAME_PATTERN = /^[A-Z][a-z]{1,3}$/;
     constructor(modifiers = []) {
         this.modifiers = modifiers;
         this.registerDefaultModifiers();

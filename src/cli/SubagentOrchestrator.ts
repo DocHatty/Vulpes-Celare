@@ -78,13 +78,11 @@
 import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
-import chalk from "chalk";
-import { validatePath, safeGrep, safeExecSync } from "../utils/SecurityUtils";
+import { validatePath, safeExecSync } from "../utils/SecurityUtils";
 import figures from "figures";
 import PQueue from "p-queue";
 
 import { VulpesCelare } from "../VulpesCelare";
-import { VERSION, ENGINE_NAME } from "../meta";
 import {
   APIProvider,
   createProviderFromOptions,
@@ -94,7 +92,6 @@ import {
 import { getSystemPrompt } from "./SystemPrompts";
 import {
   recordAgentMemory,
-  getAgentMemory,
   getPreferences,
 } from "./VulpesStore";
 
@@ -1016,19 +1013,17 @@ class Subagent {
   private provider: APIProvider;
   private vulpes: VulpesCelare;
   private workingDir: string;
-  private verbose: boolean;
 
   constructor(
     role: SubagentRole,
     provider: APIProvider,
     workingDir: string,
-    verbose: boolean = false,
+    _verbose: boolean = false,
   ) {
     this.role = role;
     this.provider = provider;
     this.vulpes = new VulpesCelare();
     this.workingDir = workingDir;
-    this.verbose = verbose;
   }
 
   async execute(
@@ -1094,12 +1089,13 @@ class Subagent {
         findings,
         executionTimeMs: Date.now() - startTime,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
       return {
         taskId: task.id,
         role: this.role,
         success: false,
-        error: error.message,
+        error: message,
         executionTimeMs: Date.now() - startTime,
       };
     }
@@ -1285,8 +1281,9 @@ class Subagent {
       const fullPath = validatePath(this.workingDir, filePath);
       if (!fs.existsSync(fullPath)) return `File not found: ${filePath}`;
       return fs.readFileSync(fullPath, "utf-8");
-    } catch (error: any) {
-      return `Security error: ${error.message}`;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return `Security error: ${message}`;
     }
   }
 
@@ -1295,8 +1292,9 @@ class Subagent {
       const fullPath = validatePath(this.workingDir, filePath);
       fs.writeFileSync(fullPath, content, "utf-8");
       return `Written ${content.length} bytes to ${filePath}`;
-    } catch (error: any) {
-      return `Security error: ${error.message}`;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return `Security error: ${message}`;
     }
   }
 
@@ -1437,7 +1435,6 @@ export class SubagentOrchestrator {
   private config: OrchestratorConfig;
   private mainProvider: APIProvider;
   private subagentProvider: APIProvider | null = null;
-  private vulpes: VulpesCelare;
   private taskQueue: PQueue;
 
   constructor(config: OrchestratorConfig, mainProvider: APIProvider) {
@@ -1461,7 +1458,6 @@ export class SubagentOrchestrator {
       ...config,
     };
     this.mainProvider = mainProvider;
-    this.vulpes = new VulpesCelare();
 
     // Initialize p-queue with concurrency control
     this.taskQueue = new PQueue({
@@ -1636,7 +1632,7 @@ export class SubagentOrchestrator {
 
     // Execute if we have a subagent provider
     if (this.subagentProvider || this.config.autoRoute) {
-      const { results, summary } = await this.executeWorkflow(plan);
+      const { results, summary: _summary } = await this.executeWorkflow(plan);
 
       // Synthesize results with main LLM
       const synthesisPrompt = `You are synthesizing results from a Vulpes workflow.

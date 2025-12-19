@@ -70,7 +70,7 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.BIOMETRIC;
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         // Try Rust acceleration first
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "BIOMETRIC");
         if (accelerated && accelerated.length > 0) {

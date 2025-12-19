@@ -16,7 +16,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { RadiologyLogger } from "../utils/RadiologyLogger";
-import { AhoCorasick, createAhoCorasick, AhoCorasickMatch } from "../utils/AhoCorasick";
+import { AhoCorasick, createAhoCorasick } from "../utils/AhoCorasick";
 
 /**
  * Hospital dictionary initialization error

@@ -41,7 +41,7 @@ export declare class FalsePositiveClassifier extends ONNXInference implements IP
      * IPostFilterStrategy implementation - synchronous check
      * For async ML prediction, use classifyAsync instead
      */
-    shouldKeep(span: Span, text: string): boolean;
+    shouldKeep(span: Span, _text: string): boolean;
     /**
      * Classify a single span (async)
      * @returns true to keep, false to remove

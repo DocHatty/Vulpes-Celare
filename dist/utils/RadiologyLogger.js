@@ -35,6 +35,7 @@ class RadiologyLogger {
     static _logLevel = null;
     static _logFormat = null;
     static suppressErrors = false;
+    static logPhiTextEnv = "VULPES_LOG_PHI_TEXT";
     static get enabled() {
         if (this._enabled !== null)
             return this._enabled;
@@ -66,6 +67,9 @@ class RadiologyLogger {
     }
     static set logFormat(value) {
         this._logFormat = value;
+    }
+    static shouldLogPhiText() {
+        return process.env[this.logPhiTextEnv] === "1";
     }
     // Statistics tracking
     static stats = {
@@ -122,7 +126,6 @@ class RadiologyLogger {
     // STRUCTURED JSON OUTPUT HELPER
     // ============================================================================
     static outputLog(level, category, message, data) {
-        const timestamp = new Date().toISOString();
         // Route through VulpesLogger for consistent output
         const context = { component: category, ...data };
         switch (level) {
@@ -211,8 +214,11 @@ class RadiologyLogger {
         // Using ERROR level ensures these are never suppressed
         if (this.enabled && this.logLevel <= LogLevel.ERROR) {
             const confidenceStr = (options.confidence * 100).toFixed(1);
+            const textSnippet = this.shouldLogPhiText()
+                ? `"${this.truncateText(options.text, 50)}"`
+                : "<redacted>";
             // Compact, important log line - what IS being redacted
-            VulpesLogger_1.vulpesLogger.info(`[REDACTED] [${options.filterType}] "${this.truncateText(options.text, 50)}" -> ${options.token} (conf: ${confidenceStr}%)`);
+            VulpesLogger_1.vulpesLogger.info(`[REDACTED] [${options.filterType}] ${textSnippet} -> ${options.token} (conf: ${confidenceStr}%)`);
         }
     }
     /**
@@ -230,15 +236,16 @@ class RadiologyLogger {
         };
         this.filteredHistory.push(log);
         if (this.enabled && this.logLevel <= LogLevel.INFO) {
-            const timestamp = this.getTimestamp();
             const posStr = options.start !== undefined
                 ? ` (pos: ${options.start}-${options.end})`
                 : "";
-            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [PHI-FILTERED] [${options.filterType}] ` +
-                `"${this.truncateText(options.text, 50)}"${posStr}`);
-            VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [PHI-FILTERED]   -> Reason: ${options.reason}`);
+            const textSnippet = this.shouldLogPhiText()
+                ? `"${this.truncateText(options.text, 50)}"`
+                : "<redacted>";
+            VulpesLogger_1.vulpesLogger.info(`[PHI-FILTERED] [${options.filterType}] ${textSnippet}${posStr}`);
+            VulpesLogger_1.vulpesLogger.info(`[PHI-FILTERED]   -> Reason: ${options.reason}`);
             if (options.details) {
-                VulpesLogger_1.vulpesLogger.info(`[${timestamp}] [PHI-FILTERED]   -> Details: ${options.details}`);
+                VulpesLogger_1.vulpesLogger.info(`[PHI-FILTERED]   -> Details: ${options.details}`);
             }
         }
     }

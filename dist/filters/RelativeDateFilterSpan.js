@@ -200,7 +200,7 @@ class RelativeDateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // Run after main date filter
         return SpanBasedFilter_1.FilterPriority.DATE + 10;
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         // Try Rust acceleration first
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "RELATIVE_DATE");
         if (accelerated && accelerated.length > 0) {

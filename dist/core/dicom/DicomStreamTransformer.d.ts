@@ -55,7 +55,7 @@ export declare class DicomStreamTransformer extends Transform {
      */
     setImageRedactor(redactor: any): void;
     private getNativeBinding;
-    _transform(chunk: Buffer, encoding: BufferEncoding, callback: TransformCallback): void;
+    _transform(chunk: Buffer, _encoding: BufferEncoding, callback: TransformCallback): void;
     _flush(callback: TransformCallback): Promise<void>;
     /**
      * Process a complete DICOM file buffer

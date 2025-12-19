@@ -88,6 +88,10 @@ export declare abstract class BaseLLMWrapper {
         totalRedacted: number;
     }>;
     /**
+     * Redact content that may be string or structured blocks (e.g., multimodal arrays).
+     */
+    private redactContent;
+    /**
      * Generate a unique session ID
      */
     protected generateSessionId(): string;

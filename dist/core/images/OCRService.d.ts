@@ -57,7 +57,7 @@ export declare class OCRService {
     /**
      * Extract text and bounding boxes from an image buffer via Rust Native
      */
-    extractText(imageBuffer: Buffer, width?: number, height?: number): Promise<OCRResult[]>;
+    extractText(imageBuffer: Buffer, _width?: number, _height?: number): Promise<OCRResult[]>;
     /**
      * Check if service is ready
      */

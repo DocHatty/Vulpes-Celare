@@ -14,7 +14,7 @@ import { logger } from "../utils/Logger";
 
 // Import unified theme system
 import { theme } from "../theme";
-import { Status, Divider, Box } from "../theme/output";
+import { Status } from "../theme/output";
 import { status as statusIcons } from "../theme/icons";
 import { out } from "../utils/VulpesOutput";
 
@@ -22,20 +22,16 @@ import { out } from "../utils/VulpesOutput";
 let handleNativeChat: typeof import("./NativeChat").handleNativeChat;
 let handleAgent: typeof import("./Agent").handleAgent;
 let handleVulpesify: typeof import("./VulpesIntegration").handleVulpesify;
-let validateVulpesEnvironment: typeof import("../utils/SecurityUtils").validateVulpesEnvironment;
-
 async function loadModules() {
   if (!handleNativeChat) {
-    const [nativeChat, agent, vulpesInt, security] = await Promise.all([
+    const [nativeChat, agent, vulpesInt] = await Promise.all([
       import("./NativeChat"),
       import("./Agent"),
       import("./VulpesIntegration"),
-      import("../utils/SecurityUtils"),
     ]);
     handleNativeChat = nativeChat.handleNativeChat;
     handleAgent = agent.handleAgent;
     handleVulpesify = vulpesInt.handleVulpesify;
-    validateVulpesEnvironment = security.validateVulpesEnvironment;
   }
 }
 
@@ -47,12 +43,6 @@ async function loadModules() {
 
 function getTerminalWidth(): number {
   return process.stdout.columns || 80;
-}
-
-function centerText(text: string, width: number): string {
-  const visibleLength = text.replace(/\x1b\[[0-9;]*m/g, "").length;
-  const padding = Math.max(0, Math.floor((width - visibleLength) / 2));
-  return " ".repeat(padding) + text;
 }
 
 function printBanner(
@@ -367,7 +357,6 @@ async function main(): Promise<void> {
 }
 
 function printUsage(): void {
-  const width = getTerminalWidth();
 
   out.print(`
 ${theme.primary.bold("VULPES CELARE")} - HIPAA PHI Redaction Engine

@@ -19,13 +19,11 @@ import { Span, FilterType } from "../models/Span";
 import {
   EnhancedPHIDetector,
   DetectionCandidate,
-  EnhancedDetectionResult,
   enhancedDetector,
 } from "./EnhancedPHIDetector";
 import {
   WeightedPHIScorer,
   weightedScorer,
-  ScoringResult,
 } from "./WeightedPHIScorer";
 import { RedactionContext } from "../context/RedactionContext";
 

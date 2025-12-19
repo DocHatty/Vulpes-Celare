@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "description": "Geographic terms that indicate a NAME span is actually a location reference rather than a person name. If any word in a NAME span matches these terms, the span is filtered out.",
+  "category": "geo_terms",
+  "terms": [
+    "boulder",
+    "boston",
+    "denver",
+    "colorado",
+    "texas",
+    "california",
+    "regional",
+    "downtown",
+    "north",
+    "south",
+    "east",
+    "west",
+    "central",
+    "metro",
+    "urban",
+    "rural"
+  ],
+  "metadata": {
+    "lastUpdated": "2025-12-19",
+    "source": "Extracted from PostFilterService.ts GeographicTermFilter class"
+  }
+}

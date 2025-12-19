@@ -18,9 +18,6 @@ import { Span } from "../models/Span";
  * TinyBERT-based confidence ranker
  */
 export declare class TinyBertConfidenceRanker extends ONNXInference {
-    private loadingPromise;
-    private loadFailed;
-    private isReady;
     private constructor();
     /**
      * Create a new TinyBertConfidenceRanker instance

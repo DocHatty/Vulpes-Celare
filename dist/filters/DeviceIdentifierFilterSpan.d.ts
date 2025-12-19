@@ -22,7 +22,7 @@ export declare class DeviceIdentifierFilterSpan extends SpanBasedFilter {
     private readonly DEVICE_KEYWORDS;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Pattern 1: Device + Serial/ID + Number
      */

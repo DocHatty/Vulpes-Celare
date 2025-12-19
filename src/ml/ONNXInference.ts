@@ -228,7 +228,6 @@ export class SimpleWordPieceTokenizer implements Tokenizer {
   private unkId: number;
   private clsId: number;
   private sepId: number;
-  private padId: number;
   private maxLength: number;
 
   constructor(
@@ -244,7 +243,6 @@ export class SimpleWordPieceTokenizer implements Tokenizer {
     this.unkId = this.vocab.get("[UNK]") || 100;
     this.clsId = this.vocab.get("[CLS]") || 101;
     this.sepId = this.vocab.get("[SEP]") || 102;
-    this.padId = this.vocab.get("[PAD]") || 0;
     this.maxLength = options?.maxLength || 512;
   }
 

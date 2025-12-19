@@ -13,7 +13,7 @@ import { RedactionContext } from "../context/RedactionContext";
 export declare class FormattedNameFilterSpan extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, _context: RedactionContext): Span[];
     /**
      * Detect explicit "name field" values.
      * These are very high-signal contexts in clinical/admin documents and should not be missed.

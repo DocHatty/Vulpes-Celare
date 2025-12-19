@@ -26,7 +26,7 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.NAME;
     }
-    detect(text, config, context) {
+    detect(text, _config, _context) {
         const spans = [];
         // =========================================================================
         // UNIQUE PATTERNS (only in FormattedNameFilterSpan)
@@ -486,8 +486,6 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             // Not a recognized name pattern - reject it
             return false;
         }
-        const firstWord = words[0];
-        const lastWord = words[words.length - 1];
         // Check if any word is whitelisted (document terms, geographic, etc.)
         for (const word of words) {
             if ((0, UnifiedMedicalWhitelist_1.shouldWhitelist)(word, Span_1.FilterType.NAME))
@@ -558,7 +556,7 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * Uses coordinator for cached results to avoid duplicate FFI calls
      */
     detectRustLastFirstNames(text, spans) {
-        const detections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustLastFirst();
+        const detections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustLastFirst(text);
         if (!detections.length)
             return;
         for (const d of detections) {
@@ -607,7 +605,7 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * Uses coordinator for cached results to avoid duplicate FFI calls
      */
     detectRustFirstLastNames(text, spans) {
-        const detections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustFirstLast();
+        const detections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustFirstLast(text);
         if (!detections.length)
             return;
         for (const d of detections) {

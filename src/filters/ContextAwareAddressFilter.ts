@@ -19,7 +19,6 @@
 
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
-import { RedactionContext } from "../context/RedactionContext";
 import { ClinicalContextDetector } from "../context/ClinicalContextDetector";
 import { isMedicalTerm, isNonPHI } from "../utils/UnifiedMedicalWhitelist";
 
@@ -198,7 +197,7 @@ export class ContextAwareAddressFilter extends SpanBasedFilter {
     return FilterPriority.ADDRESS + 10;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, _context: unknown): Span[] {
     const spans: Span[] = [];
     const seen = new Set<string>();
 

@@ -57,11 +57,11 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.NAME;
     }
-    detect(text, config, context) {
+    detect(text, _config, _context) {
         const spans = [];
         // Try Rust acceleration first - detectSmart includes titled names
         // Uses coordinator for cached results to avoid duplicate FFI calls
-        const rustDetections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustSmart();
+        const rustDetections = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustSmart(text);
         if (rustDetections.length > 0) {
             // Filter for titled name patterns only
             const titledPatterns = rustDetections.filter((d) => d.pattern.includes("Titled") ||
@@ -142,25 +142,6 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             });
             spans.push(span);
         }
-    }
-    // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
-    /**
-     * Check if a titled name is a PROVIDER name (should NOT be redacted)
-     * In medical documents, ALL titled names are providers - patients don't have titles
-     */
-    isProviderTitledName(matchedText) {
-        const trimmed = matchedText.trim();
-        const titleMatch = trimmed.match(/^([A-Za-z]+)\.?\s+/i);
-        if (!titleMatch)
-            return false;
-        const title = titleMatch[1];
-        // Check case-insensitively
-        for (const prefix of NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES) {
-            if (title.toLowerCase() === prefix.toLowerCase()) {
-                return true;
-            }
-        }
-        return false;
     }
     /**
      * Pattern 1: Title + Name (handles both "Dr. Smith" and "Dr. John Smith")
@@ -333,7 +314,7 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * CRITICAL: This pattern is DISABLED because SmartNameFilterSpan handles
      * Last, First detection with proper validation to avoid false positives.
      */
-    detectLastFirstNames(text, spans) {
+    detectLastFirstNames(_text, _spans) {
         // DISABLED: SmartNameFilterSpan handles this pattern with proper validation.
         return;
     }
@@ -349,26 +330,11 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * Name detection should be handled by SmartNameFilterSpan which has proper
      * dictionary validation.
      */
-    detectGeneralFullNames(text, spans) {
+    detectGeneralFullNames(_text, _spans) {
         // DISABLED: This pattern matches too many false positives (medical diagnoses,
         // procedures, etc.) because it just looks for 2-4 capitalized words.
         // SmartNameFilterSpan handles general name detection with proper validation.
         return;
-    }
-    /**
-     * Validate that Last, First pattern is a likely person name
-     * Delegates to shared NameDetectionUtils
-     */
-    validateLastFirst(lastName, firstNames) {
-        const combined = `${lastName}, ${firstNames}`;
-        return NameDetectionUtils_1.NameDetectionUtils.validateLastFirst(combined);
-    }
-    /**
-     * Check if a capitalized word sequence is likely a person name
-     * Delegates to shared NameDetectionUtils
-     */
-    isLikelyPersonName(name) {
-        return NameDetectionUtils_1.NameDetectionUtils.isLikelyPersonName(name);
     }
     /**
      * Pattern 5: Family relationship names (Daughter: Emma, Wife: Mary, etc.)
@@ -455,20 +421,6 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             }
         }
         return false;
-    }
-    /**
-     * Check if text starts with a person title (Dr., Mr., Mrs., etc.)
-     * Delegates to shared NameDetectionUtils
-     */
-    startsWithTitle(text) {
-        return NameDetectionUtils_1.NameDetectionUtils.startsWithTitle(text);
-    }
-    /**
-     * Remove the title prefix from text
-     * Delegates to shared NameDetectionUtils
-     */
-    removeTitle(text) {
-        return NameDetectionUtils_1.NameDetectionUtils.removeTitle(text);
     }
     /**
      * Check if text is a non-person structure term.

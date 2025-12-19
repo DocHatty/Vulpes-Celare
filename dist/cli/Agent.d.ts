@@ -25,6 +25,7 @@
  * - Full Vulpes engine access
  */
 import { RedactionResult } from "../VulpesCelare";
+import { AgentOptions } from "./types";
 export type AgentMode = "dev" | "qa" | "production";
 export type AgentBackend = "codex" | "copilot" | "claude" | "native";
 export interface AgentConfig {
@@ -70,12 +71,6 @@ export declare class VulpesAgent {
     private startCopilot;
     private startNativeAgent;
     private spawnAgent;
-    private buildFullSystemPrompt;
-    /**
-     * Write system prompt to a temp file to avoid command line length limits
-     * Returns the path to the temp file
-     */
-    private writePromptToFile;
     testDocument(text: string): Promise<RedactionComparison>;
     private printComparison;
     private formatDocument;
@@ -89,10 +84,9 @@ export declare class VulpesAgent {
     private getModeDisplay;
     private getFilterInfo;
     private getHelpText;
-    private printBanner;
     private startSpinner;
     private stopSpinner;
 }
-export declare function handleAgent(options: any): Promise<void>;
+export declare function handleAgent(options: AgentOptions): Promise<void>;
 export {};
 //# sourceMappingURL=Agent.d.ts.map

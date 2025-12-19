@@ -15,7 +15,6 @@
 
 import { theme } from "../chalk-theme";
 import { progress as progressChars, status, arrows, bullets } from "../icons";
-import { getTerminalWidth } from "../spacing";
 
 // ============================================================================
 // TYPES

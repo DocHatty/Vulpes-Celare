@@ -62,21 +62,6 @@ export class PhoneticMatcher {
   private firstNameIndex: PhoneticIndex;
   private surnameIndex: PhoneticIndex;
   private initialized: boolean = false;
-  private nativeMatcher:
-    | null
-    | (new () => {
-        initialize(firstNames: string[], surnames: string[]): void;
-        matchFirstName(input: string): PhoneticMatch | null;
-        matchSurname(input: string): PhoneticMatch | null;
-        matchAnyName(input: string): PhoneticMatch | null;
-        isInitialized(): boolean;
-        getStats(): {
-          firstNames: number;
-          surnames: number;
-          primaryCodes: number;
-          secondaryCodes: number;
-        };
-      }) = null;
   private nativeInstance: any = null;
 
   // Configuration
@@ -92,11 +77,9 @@ export class PhoneticMatcher {
     try {
       const binding = loadNativeBinding({ configureOrt: false });
       if (binding.VulpesPhoneticMatcher) {
-        this.nativeMatcher = binding.VulpesPhoneticMatcher as any;
         this.nativeInstance = new (binding.VulpesPhoneticMatcher as any)();
       }
     } catch {
-      this.nativeMatcher = null;
       this.nativeInstance = null;
     }
   }

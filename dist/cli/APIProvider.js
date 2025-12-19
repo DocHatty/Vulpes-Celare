@@ -132,7 +132,7 @@ exports.PROVIDERS = {
         envKey: "ANTHROPIC_API_KEY",
         modelsEndpoint: "/v1/models",
         chatEndpoint: "/v1/messages",
-        modelExtractor: (response) => {
+        modelExtractor: (_response) => {
             // Anthropic doesn't have a public models endpoint, return known models
             return [
                 {
@@ -516,7 +516,6 @@ class APIProvider {
             req.end();
         });
         let buffer = "";
-        let currentToolUse = null;
         for await (const chunk of response) {
             buffer += chunk.toString();
             const lines = buffer.split("\n");
@@ -719,7 +718,8 @@ async function interactiveProviderSetup() {
     }
     catch (error) {
         spinner.fail("Failed to fetch models");
-        VulpesOutput_1.out.print(theme_1.theme.error(`  Error: ${error.message}`));
+        const message = error instanceof Error ? error.message : String(error);
+        VulpesOutput_1.out.print(theme_1.theme.error(`  Error: ${message}`));
         rl.close();
         return null;
     }

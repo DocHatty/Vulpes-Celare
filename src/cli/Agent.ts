@@ -26,8 +26,6 @@
  */
 
 import * as fs from "fs";
-import * as path from "path";
-import * as os from "os";
 import * as readline from "readline";
 import { spawn, ChildProcess, SpawnOptions } from "child_process";
 import { safeExecSync } from "../utils/SecurityUtils";
@@ -37,21 +35,13 @@ import figures from "figures";
 import { VulpesCelare, RedactionResult } from "../VulpesCelare";
 import { VERSION, ENGINE_NAME } from "../meta";
 import { logger } from "../utils/Logger";
-import {
-  getSystemPrompt,
-  SYSTEM_PROMPT_COMPACT,
-  SYSTEM_PROMPT_DEV,
-} from "./SystemPrompts";
 import { execSync } from "child_process";
-import {
-  VulpesIntegration,
-  CLAUDE_MD_CONTENT,
-  CODEX_AGENTS_MD,
-} from "./VulpesIntegration";
+import { VulpesIntegration } from "./VulpesIntegration";
+import { AgentOptions } from "./types";
 
 // Import unified theme system
 import { theme } from "../theme";
-import { Status, Divider, Box } from "../theme/output";
+import { Status, Box } from "../theme/output";
 import { out } from "../utils/VulpesOutput";
 
 // ============================================================================
@@ -88,78 +78,6 @@ interface RedactionIssue {
 }
 
 // Theme imported from unified theme system (../theme)
-
-// ============================================================================
-// ENHANCED SYSTEM PROMPT FOR WRAPPED AGENTS
-// ============================================================================
-
-const VULPES_INJECTION_PROMPT = `
-═══════════════════════════════════════════════════════════════════════════════
-                         VULPES CELARE INTEGRATION
-═══════════════════════════════════════════════════════════════════════════════
-
-You are running inside the Vulpes Celare environment - a HIPAA-compliant PHI
-redaction engine. You have special capabilities and responsibilities.
-
-## AVAILABLE VULPES COMMANDS
-
-These work in your current session:
-
-| Command | Description |
-|---------|-------------|
-| \`vulpes redact "<text>"\` | Redact PHI from text |
-| \`vulpes analyze "<text>"\` | Analyze text for PHI without redacting |
-| \`vulpes info\` | Show system info and active filters |
-| \`vulpes test\` | Run the test suite |
-| \`vulpes interactive\` | Enter interactive redaction mode |
-
-## MCP TOOLS (if MCP server is running)
-
-- \`redact_text\` - Redact PHI from any text
-- \`analyze_redaction\` - Show what PHI would be detected
-- \`get_system_info\` - Get Vulpes configuration
-- \`run_tests\` - Execute test suite
-
-## CRITICAL RULES
-
-1. **SENSITIVITY FIRST**: Never miss PHI. Target ≥99% sensitivity.
-2. **TEST AFTER CHANGES**: Always run \`npm run build && npm test\`
-3. **ONE CHANGE AT A TIME**: Make incremental changes, validate each
-4. **PHI AWARENESS**: Assume clinical documents contain PHI
-
-## CODEBASE PATHS
-
-| What | Path |
-|------|------|
-| Filters | src/filters/*.ts |
-| Dictionaries | src/dictionaries/ |
-| Engine | src/VulpesCelare.ts |
-| Tests | tests/master-suite/ |
-| MCP Cortex | localhost:3100 |
-
-## PHI TYPES DETECTED (25 filters, 17/18 HIPAA Safe Harbor)
-
-Names, SSN, Dates, Phone, Fax, Email, Address, ZIP, MRN,
-Health Plan IDs, Account Numbers, License Numbers,
-Vehicle IDs, Device IDs, URLs, IP Addresses, Biometrics, Passport Numbers
-
-## QUICK TEST
-
-To test redaction right now, run:
-\`\`\`bash
-echo "Patient John Smith SSN 123-45-6789" | vulpes redact -
-\`\`\`
-
-Or in Node:
-\`\`\`javascript
-const { VulpesCelare } = require('vulpes-celare');
-const v = new VulpesCelare();
-const result = await v.process("Patient John Smith SSN 123-45-6789");
-out.print(result.text); // Patient [NAME] SSN [SSN]
-\`\`\`
-
-═══════════════════════════════════════════════════════════════════════════════
-`;
 
 // ============================================================================
 // AGENT CLASS
@@ -598,29 +516,6 @@ export class VulpesAgent {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // BUILD SYSTEM PROMPT
-  // ══════════════════════════════════════════════════════════════════════════
-
-  private buildFullSystemPrompt(): string {
-    // Get the comprehensive system prompt from SystemPrompts.ts
-    const basePrompt = getSystemPrompt(this.config.mode);
-
-    // Add the Vulpes injection prompt with quick reference
-    return `${basePrompt}\n\n${VULPES_INJECTION_PROMPT}`;
-  }
-
-  /**
-   * Write system prompt to a temp file to avoid command line length limits
-   * Returns the path to the temp file
-   */
-  private writePromptToFile(): string {
-    const promptContent = this.buildFullSystemPrompt();
-    const promptFile = path.join(os.tmpdir(), `vulpes-prompt-${Date.now()}.md`);
-    fs.writeFileSync(promptFile, promptContent, "utf-8");
-    return promptFile;
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
   // DOCUMENT TESTING
   // ══════════════════════════════════════════════════════════════════════════
 
@@ -738,8 +633,9 @@ export class VulpesAgent {
             // Use synchronous exec to ensure it finishes before we move on
             execSync(`npm install -g ${packageName}`, { stdio: 'inherit' });
             out.print(theme.success(`  Update complete! Starting agent...\n`));
-          } catch (e: any) {
-            out.print(theme.error(`  Update failed: ${e.message}`));
+          } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : String(e);
+            out.print(theme.error(`  Update failed: ${message}`));
             out.print(theme.muted(`  Continuing with current version...\n`));
           }
         } else {
@@ -1014,34 +910,6 @@ ${theme.muted("  Or just paste text to redact it!")}
 `;
   }
 
-  private printBanner(): void {
-    const content = [
-      theme.primary.bold("VULPES AGENT"),
-      theme.muted(ENGINE_NAME + " v" + VERSION),
-      "",
-      `${theme.muted("Mode:")} ${this.getModeDisplay()}`,
-      `${theme.muted("Backend:")} ${theme.secondary(this.config.backend)}`,
-      "",
-    ];
-
-    if (this.config.mode === "dev") {
-      content.push(Status.warning("Full codebase access enabled"));
-      content.push(Status.warning("Only use with synthetic/test data"));
-    } else if (this.config.mode === "qa") {
-      content.push(Status.info("Can compare original vs redacted"));
-      content.push(Status.info("Read-only codebase access"));
-    } else {
-      content.push(Status.success("Production mode - original text hidden"));
-      content.push(Status.success("Safe for real patient data"));
-    }
-
-    const boxType = this.config.mode === "dev" ? Box.warning
-      : this.config.mode === "qa" ? Box.info
-      : Box.success;
-
-    out.print("\n" + boxType(content, { title: "VULPESIFIED AI AGENT" }));
-  }
-
   // ══════════════════════════════════════════════════════════════════════════
   // SPINNER
   // ══════════════════════════════════════════════════════════════════════════
@@ -1066,10 +934,17 @@ ${theme.muted("  Or just paste text to redact it!")}
 // CLI HANDLER
 // ============================================================================
 
-export async function handleAgent(options: any): Promise<void> {
+export async function handleAgent(options: AgentOptions): Promise<void> {
+  // Validate and cast backend to AgentBackend type
+  const backendValue = options.backend || "claude";
+  const validBackends: AgentBackend[] = ["claude", "codex", "copilot", "native"];
+  const backend: AgentBackend = validBackends.includes(backendValue as AgentBackend)
+    ? (backendValue as AgentBackend)
+    : "claude";
+
   const config: Partial<AgentConfig> = {
     mode: options.mode || "dev",
-    backend: options.backend || "claude",
+    backend,
     model: options.model,
     apiKey: options.apiKey,
     workingDir: process.cwd(),

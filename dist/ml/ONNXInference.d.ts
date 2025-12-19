@@ -96,7 +96,6 @@ export declare class SimpleWordPieceTokenizer implements Tokenizer {
     private unkId;
     private clsId;
     private sepId;
-    private padId;
     private maxLength;
     constructor(vocabData: Record<string, number>, options?: {
         maxLength?: number;

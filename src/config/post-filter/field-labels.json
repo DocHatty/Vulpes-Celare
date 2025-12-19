@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "description": "Common field labels that appear in medical forms and documents. These are filtered out when detected as NAME spans since they represent form field names, not person names.",
+  "category": "field_labels",
+  "terms": [
+    "spouse name",
+    "sister name",
+    "brother name",
+    "mother name",
+    "father name",
+    "employer name",
+    "employer contact",
+    "spouse phone",
+    "spouse email",
+    "sister contact",
+    "referring physician",
+    "personal website",
+    "admitting physician",
+    "nurse manager",
+    "last visit",
+    "next scheduled",
+    "health journal",
+    "patient education",
+    "document created",
+    "last updated",
+    "signature location"
+  ],
+  "metadata": {
+    "lastUpdated": "2025-12-19",
+    "source": "Extracted from PostFilterService.ts FieldLabelFilter class"
+  }
+}

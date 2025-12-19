@@ -17,7 +17,7 @@ import { RedactionContext } from "../context/RedactionContext";
 export declare class VehicleIdentifierFilterSpan extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Pattern 1: VIN with context (explicit label)
      */

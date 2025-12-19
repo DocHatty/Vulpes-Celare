@@ -217,7 +217,6 @@ class SimpleWordPieceTokenizer {
     unkId;
     clsId;
     sepId;
-    padId;
     maxLength;
     constructor(vocabData, options) {
         this.vocab = new Map(Object.entries(vocabData));
@@ -228,7 +227,6 @@ class SimpleWordPieceTokenizer {
         this.unkId = this.vocab.get("[UNK]") || 100;
         this.clsId = this.vocab.get("[CLS]") || 101;
         this.sepId = this.vocab.get("[SEP]") || 102;
-        this.padId = this.vocab.get("[PAD]") || 0;
         this.maxLength = options?.maxLength || 512;
     }
     encode(text, options) {

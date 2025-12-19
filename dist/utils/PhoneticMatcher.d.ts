@@ -23,7 +23,6 @@ export declare class PhoneticMatcher {
     private firstNameIndex;
     private surnameIndex;
     private initialized;
-    private nativeMatcher;
     private nativeInstance;
     private readonly MAX_LEVENSHTEIN_DISTANCE;
     private readonly MIN_NAME_LENGTH;

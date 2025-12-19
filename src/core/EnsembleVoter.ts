@@ -562,7 +562,7 @@ export class InterPHIDisambiguator {
    * Disambiguate between DATE and other interpretations
    */
   static disambiguateDate(
-    text: string,
+    _text: string,
     context: string,
     alternativeType: string,
   ): { winner: string; confidence: number; reason: string } {
@@ -617,7 +617,7 @@ export class InterPHIDisambiguator {
    * Disambiguate between NAME and other interpretations
    */
   static disambiguateName(
-    text: string,
+    _text: string,
     context: string,
     alternativeType: string,
   ): { winner: string; confidence: number; reason: string } {

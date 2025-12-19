@@ -487,7 +487,8 @@ class LLMIntegration {
                     }
                 }
                 catch (error) {
-                    spinner.fail(theme_1.theme.error("Error: " + error.message));
+                    const message = error instanceof Error ? error.message : String(error);
+                    spinner.fail(theme_1.theme.error("Error: " + message));
                 }
                 VulpesOutput_1.out.blank();
                 prompt();
@@ -577,7 +578,8 @@ async function handleQuery(text, options) {
         VulpesOutput_1.out.print(result.response);
     }
     catch (error) {
-        spinner.fail(theme_1.theme.error("Error: " + error.message));
+        const message = error instanceof Error ? error.message : String(error);
+        spinner.fail(theme_1.theme.error("Error: " + message));
         process.exit(1);
     }
 }

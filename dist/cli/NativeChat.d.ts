@@ -19,6 +19,7 @@
  * - System info display
  * - Full Vulpes engine integration
  */
+import { NativeChatOptions } from "./types";
 interface ChatConfig {
     provider?: string;
     model?: string;
@@ -42,7 +43,6 @@ export declare class NativeChat {
     private orchestrator;
     private messages;
     private renderMarkdownEnabled;
-    private interactiveRedactionActive;
     private subagentsEnabled;
     constructor(config: Partial<ChatConfig>);
     start(): Promise<void>;
@@ -72,6 +72,6 @@ export declare class NativeChat {
     private renderMarkdown;
     private hasMarkdown;
 }
-export declare function handleNativeChat(options: any): Promise<void>;
+export declare function handleNativeChat(options: NativeChatOptions): Promise<void>;
 export {};
 //# sourceMappingURL=NativeChat.d.ts.map

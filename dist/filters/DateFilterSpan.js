@@ -12,16 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DateFilterSpan = void 0;
 const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
-const SharedPatterns_1 = require("../patterns/SharedPatterns");
 const ValidationUtils_1 = require("../utils/ValidationUtils");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
-    /**
-     * Month names for pattern building - using centralized SharedPatterns
-     */
-    static MONTHS_FULL = SharedPatterns_1.PatternStrings.monthsFull;
-    static MONTHS_ABBR = SharedPatterns_1.PatternStrings.monthsAbbr;
-    static MONTHS_ALL = SharedPatterns_1.PatternStrings.monthsAll;
     /**
      * Date regex pattern sources
      *
@@ -230,7 +223,7 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.DATE;
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "DATE");
         // Only use Rust results if we got actual detections (empty array is truthy!)
         if (accelerated && accelerated.length > 0) {

@@ -24,29 +24,13 @@ const TitledNamePatterns_1 = require("./name-patterns/TitledNamePatterns");
 const NameDetectionCoordinator_1 = require("./name-patterns/NameDetectionCoordinator");
 class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     // ═══════════════════════════════════════════════════════════════════════════
-    // STATIC CACHED REGEX PATTERNS - Compiled once at class load, not per-call
-    // This is a MAJOR performance optimization (~5-15ms savings per document)
-    // ═══════════════════════════════════════════════════════════════════════════
-    /** Pattern for title prefix at end of lookback text */
-    static TITLE_PREFIX_PATTERN = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`, "i");
-    /** Pattern for titled name in lookback text */
-    static TITLED_NAME_LOOKBACK_PATTERN = new RegExp(`(?:${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Z][a-zA-Z'-]+(?:\\s+[A-Z][a-zA-Z'-]+)*\\s*$`, "i");
-    /** Pattern for name suffixes (Jr., Sr., III, etc.) */
-    static NAME_SUFFIX_PATTERN = new RegExp(`(?:${NameFilterConstants_1.NAME_SUFFIXES.join("|")})\\.?\\b`, "gi");
-    /** Pattern for title before name in text */
-    static TITLE_BEFORE_NAME_PATTERN = new RegExp(`\\b(${Array.from(NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`, "i");
-    /** Pattern for particle names (van Gogh, de Silva, etc.) */
-    static PARTICLE_NAME_PATTERN = new RegExp(`\\b([A-Z][a-z]+\\s+(?:van|de|von|di|da|du|del|della|la|le|el|al|bin|ibn|af|av|ten|ter|vander|vanden)\\s+[A-Z][a-z]+)\\b`, "gi");
-    /** Credential pattern after name */
-    static CREDENTIAL_AFTER_NAME_PATTERN = /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|FCCP|FAHA|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC|AGNP-C|OTR\/L)\b/i;
-    // ═══════════════════════════════════════════════════════════════════════════
     getType() {
         return "NAME";
     }
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.NAME;
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         const spans = [];
         const rustAvailable = NameDetectionCoordinator_1.nameDetectionCoordinator.isRustAvailable();
         if (rustAvailable) {
@@ -54,7 +38,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             // RUST PRIMARY SCANNING (using coordinator for cached results)
             // -----------------------------------------------------------------------
             // Pattern 0: Last, First format (Rust) - uses coordinator cache
-            const lastFirstDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustLastFirst();
+            const lastFirstDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustLastFirst(text);
             for (const d of lastFirstDets) {
                 const fullName = d.text;
                 const start = d.characterStart;
@@ -92,7 +76,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 }
             }
             // Pattern 0c: First Last (Rust) - uses coordinator cache
-            const firstLastDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustFirstLast();
+            const firstLastDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustFirstLast(text);
             for (const d of firstLastDets) {
                 const fullName = d.text;
                 const start = d.characterStart;
@@ -124,7 +108,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 }
             }
             // Rust "Smart" Scanner - uses coordinator cache
-            const smartDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustSmart();
+            const smartDets = NameDetectionCoordinator_1.nameDetectionCoordinator.getRustSmart(text);
             for (const d of smartDets) {
                 const fullName = d.text;
                 if (!this.isWhitelisted(fullName, text) &&
@@ -220,34 +204,6 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         this.detectOcrCorruptedNames(text, spans);
         return spans;
     }
-    // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
-    /**
-     * Check if a titled name is a PROVIDER name (should NOT be redacted)
-     * Provider names with professional titles or credentials are NOT patient PHI
-     */
-    isProviderName(matchedText, fullContext) {
-        const trimmed = matchedText.trim();
-        // Extract the title (first word)
-        const titleMatch = trimmed.match(/^([A-Za-z]+)\.?\s+/);
-        if (!titleMatch)
-            return false;
-        const title = titleMatch[1];
-        // Check if this is a provider title
-        if (NameDetectionUtils_1.PROVIDER_TITLE_PREFIXES.has(title)) {
-            return true;
-        }
-        // Also check if the name has professional credentials (e.g., "John Smith, MD")
-        // Check the context after the name for credentials
-        const nameEnd = fullContext.indexOf(trimmed) + trimmed.length;
-        if (nameEnd < fullContext.length) {
-            const afterName = fullContext.substring(nameEnd, nameEnd + 30); // Look ahead 30 chars
-            // Check for credentials pattern: ", MD" or ", DDS" or ", PhD" etc.
-            if (TitledNamePatterns_1.PROVIDER_CREDENTIAL_AFTER_NAME_PATTERN.test(afterName)) {
-                return true;
-            }
-        }
-        return false;
-    }
     /**
      * Check if a name (without title) appears in a provider context
      * This catches cases where "Sergei Hernandez" is detected but it's actually
@@ -295,7 +251,7 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
      * are PROVIDER names under HIPAA Safe Harbor and should NOT be redacted.
      * Only patient names should be redacted.
      */
-    detectTitledNames(text, spans) {
+    detectTitledNames(_text, _spans) {
         // DISABLED: TitledNameFilterSpan now handles all titled names with PROVIDER_NAME type
         // This prevents duplicate detection and ensures consistent labeling
         return;
@@ -990,14 +946,6 @@ class SmartNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             .filter((part) => part.length > 0)
             .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
             .join(" ");
-    }
-    /**
-     * Check if a string contains OCR-style digit substitutions that look like name corruption
-     */
-    hasOcrDigitSubstitution(text) {
-        // Check for digits that commonly substitute for letters in OCR
-        // Must be surrounded by letters to be likely OCR error (not a real number)
-        return (/[a-zA-Z][0-9][a-zA-Z]/.test(text) || /[a-zA-Z][|$@!][a-zA-Z]/.test(text));
     }
     /**
      * Validate whether an OCR-normalized candidate looks like a person name

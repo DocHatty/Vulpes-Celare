@@ -33,8 +33,6 @@ export interface GlinerEntity {
  * GLiNER Inference class
  */
 export declare class GlinerInference extends ONNXInference {
-    private tokenizerConfig;
-    private modelConfig;
     private vocab;
     private idToToken;
     static readonly DEFAULT_LABELS: string[];

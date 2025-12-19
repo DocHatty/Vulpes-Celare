@@ -197,7 +197,10 @@ async function safeGrep(pattern, searchPath, options = {}) {
     }
     catch (error) {
         // grep returns exit code 1 when no matches found - that's not an error
-        if (error.message?.includes("exit code 1") || error.code === 1) {
+        if (error instanceof Error && error.message?.includes("exit code 1")) {
+            return "No matches found";
+        }
+        if (typeof error === "object" && error !== null && "code" in error && error.code === 1) {
             return "No matches found";
         }
         throw error;

@@ -10,15 +10,8 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
-import {
-  shouldWhitelist,
-  isMedicalTerm,
-} from "../utils/UnifiedMedicalWhitelist";
-import {
-  NameDetectionUtils,
-  PROVIDER_TITLE_PREFIXES,
-} from "../utils/NameDetectionUtils";
-import { RustNameScanner } from "../utils/RustNameScanner";
+import { shouldWhitelist } from "../utils/UnifiedMedicalWhitelist";
+import { NameDetectionUtils } from "../utils/NameDetectionUtils";
 import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
 export class TitledNameFilterSpan extends SpanBasedFilter {
@@ -69,12 +62,12 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
     return FilterPriority.NAME;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, _context: RedactionContext): Span[] {
     const spans: Span[] = [];
 
     // Try Rust acceleration first - detectSmart includes titled names
     // Uses coordinator for cached results to avoid duplicate FFI calls
-    const rustDetections = nameDetectionCoordinator.getRustSmart();
+    const rustDetections = nameDetectionCoordinator.getRustSmart(text);
     if (rustDetections.length > 0) {
       // Filter for titled name patterns only
       const titledPatterns = rustDetections.filter(
@@ -172,27 +165,6 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
       });
       spans.push(span);
     }
-  }
-
-  // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
-
-  /**
-   * Check if a titled name is a PROVIDER name (should NOT be redacted)
-   * In medical documents, ALL titled names are providers - patients don't have titles
-   */
-  private isProviderTitledName(matchedText: string): boolean {
-    const trimmed = matchedText.trim();
-    const titleMatch = trimmed.match(/^([A-Za-z]+)\.?\s+/i);
-    if (!titleMatch) return false;
-
-    const title = titleMatch[1];
-    // Check case-insensitively
-    for (const prefix of PROVIDER_TITLE_PREFIXES) {
-      if (title.toLowerCase() === prefix.toLowerCase()) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -389,7 +361,7 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
    * CRITICAL: This pattern is DISABLED because SmartNameFilterSpan handles
    * Last, First detection with proper validation to avoid false positives.
    */
-  private detectLastFirstNames(text: string, spans: Span[]): void {
+  private detectLastFirstNames(_text: string, _spans: Span[]): void {
     // DISABLED: SmartNameFilterSpan handles this pattern with proper validation.
     return;
   }
@@ -406,28 +378,11 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
    * Name detection should be handled by SmartNameFilterSpan which has proper
    * dictionary validation.
    */
-  private detectGeneralFullNames(text: string, spans: Span[]): void {
+  private detectGeneralFullNames(_text: string, _spans: Span[]): void {
     // DISABLED: This pattern matches too many false positives (medical diagnoses,
     // procedures, etc.) because it just looks for 2-4 capitalized words.
     // SmartNameFilterSpan handles general name detection with proper validation.
     return;
-  }
-
-  /**
-   * Validate that Last, First pattern is a likely person name
-   * Delegates to shared NameDetectionUtils
-   */
-  private validateLastFirst(lastName: string, firstNames: string): boolean {
-    const combined = `${lastName}, ${firstNames}`;
-    return NameDetectionUtils.validateLastFirst(combined);
-  }
-
-  /**
-   * Check if a capitalized word sequence is likely a person name
-   * Delegates to shared NameDetectionUtils
-   */
-  private isLikelyPersonName(name: string): boolean {
-    return NameDetectionUtils.isLikelyPersonName(name);
   }
 
   /**
@@ -527,22 +482,6 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
     }
 
     return false;
-  }
-
-  /**
-   * Check if text starts with a person title (Dr., Mr., Mrs., etc.)
-   * Delegates to shared NameDetectionUtils
-   */
-  private startsWithTitle(text: string): boolean {
-    return NameDetectionUtils.startsWithTitle(text);
-  }
-
-  /**
-   * Remove the title prefix from text
-   * Delegates to shared NameDetectionUtils
-   */
-  private removeTitle(text: string): string {
-    return NameDetectionUtils.removeTitle(text);
   }
 
   /**

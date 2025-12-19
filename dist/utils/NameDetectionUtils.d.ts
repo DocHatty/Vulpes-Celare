@@ -131,7 +131,7 @@ export declare class NameDetectionUtils {
      * @param context - Optional surrounding context
      * @returns true if likely a person name
      */
-    static isLikelyPersonName(text: string, context?: string): boolean;
+    static isLikelyPersonName(text: string, _context?: string): boolean;
     /**
      * Check if name appears in provider context (after Dr., Physician:, etc.)
      *
@@ -140,7 +140,7 @@ export declare class NameDetectionUtils {
      * @param text - Full text
      * @returns true if in provider context
      */
-    static isInProviderContext(name: string, index: number, text: string): boolean;
+    static isInProviderContext(_name: string, index: number, text: string): boolean;
     /**
      * Comprehensive whitelist check for name candidates
      *

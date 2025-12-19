@@ -30,11 +30,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import chalk from "chalk";
 import figures from "figures";
 
-import { VERSION, ENGINE_NAME } from "../meta";
-import { getSystemPrompt, SYSTEM_PROMPT_COMPACT } from "./SystemPrompts";
+import { VERSION } from "../meta";
 
 // Import unified theme system
 import { theme } from "../theme";
@@ -410,12 +408,6 @@ export class VulpesIntegration {
       verbose: config.verbose || false,
       silent: config.silent || false,
     };
-  }
-
-  private log(message: string): void {
-    if (!this.config.silent) {
-      out.print(message);
-    }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -1319,7 +1311,7 @@ export async function handleVulpesify(options: any): Promise<void> {
   await integration.vulpesify();
 }
 
-export async function handleIntegrationStatus(options: any): Promise<void> {
+export async function handleIntegrationStatus(_options: any): Promise<void> {
   const integration = new VulpesIntegration({
     projectDir: process.cwd(),
   });

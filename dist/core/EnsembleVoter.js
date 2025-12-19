@@ -399,7 +399,7 @@ class InterPHIDisambiguator {
     /**
      * Disambiguate between DATE and other interpretations
      */
-    static disambiguateDate(text, context, alternativeType) {
+    static disambiguateDate(_text, context, alternativeType) {
         const lowerContext = context.toLowerCase();
         // Count matches using pre-compiled static patterns
         const dateMatches = InterPHIDisambiguator.countMatches(InterPHIDisambiguator.DATE_INDICATORS, lowerContext);
@@ -436,7 +436,7 @@ class InterPHIDisambiguator {
     /**
      * Disambiguate between NAME and other interpretations
      */
-    static disambiguateName(text, context, alternativeType) {
+    static disambiguateName(_text, context, alternativeType) {
         const lowerContext = context.toLowerCase();
         // Count matches using pre-compiled static patterns
         const nameMatches = InterPHIDisambiguator.countMatches(InterPHIDisambiguator.NAME_INDICATORS, lowerContext);

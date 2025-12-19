@@ -128,7 +128,7 @@ class DicomStreamTransformer extends stream_1.Transform {
         }
         return this.nativeBindingCache;
     }
-    _transform(chunk, encoding, callback) {
+    _transform(chunk, _encoding, callback) {
         this.chunks.push(chunk);
         this.bytesProcessed += chunk.length;
         if (this.config.onProgress) {
@@ -208,12 +208,6 @@ class DicomStreamTransformer extends stream_1.Transform {
                     return parts.join("=");
             }
             return String(first);
-        };
-        const setStringValue = (tag, value) => {
-            const element = getElementByTag(dict, tag);
-            if (!element)
-                return;
-            element.Value = value === "" ? [] : [value];
         };
         const hashToken = (value) => {
             const salt = this.config.hashSalt || "vulpes-default-salt";

@@ -18,10 +18,9 @@
 
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
-import { RedactionContext } from "../context/RedactionContext";
 import { ClinicalContextDetector } from "../context/ClinicalContextDetector";
 import { NameDictionary } from "../dictionaries/NameDictionary";
-import { shouldWhitelist, isMedicalTerm, isNonPHI } from "../utils/UnifiedMedicalWhitelist";
+import { isMedicalTerm, isNonPHI } from "../utils/UnifiedMedicalWhitelist";
 
 /**
  * Diverse first name patterns - names that may be underrepresented in
@@ -126,7 +125,7 @@ export class ContextAwareNameFilter extends SpanBasedFilter {
     return FilterPriority.NAME + 10;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, _context: unknown): Span[] {
     const spans: Span[] = [];
 
     // Pattern 1: Diverse first names (context-required)

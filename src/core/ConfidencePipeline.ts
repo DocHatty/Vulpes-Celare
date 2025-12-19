@@ -24,7 +24,7 @@ import { Span } from "../models/Span";
 import { RedactionContext } from "../context/RedactionContext";
 import { RadiologyLogger } from "../utils/RadiologyLogger";
 import { FeatureToggles } from "../config/FeatureToggles";
-import { getConfidenceRanker, TinyBertConfidenceRanker } from "../ml/TinyBertConfidenceRanker";
+import { getConfidenceRanker } from "../ml/TinyBertConfidenceRanker";
 
 /**
  * Result from a pipeline stage
@@ -118,7 +118,7 @@ export class ConfidencePipeline {
     this.registerStage({
       name: "contextModifier",
       config: configs.contextModifier || { enabled: true, priority: 10 },
-      execute: async (spans, text, context) => {
+      execute: async (spans, text, _context) => {
         return this.applyBasicContextModifiers(spans, text);
       },
     });
@@ -136,7 +136,7 @@ export class ConfidencePipeline {
     this.registerStage({
       name: "vectorDisambiguation",
       config: configs.vectorDisambiguation || { enabled: true, priority: 30 },
-      execute: async (spans, text, context) => {
+      execute: async (spans, _text, _context) => {
         return this.applyVectorDisambiguation(spans);
       },
     });
@@ -145,7 +145,7 @@ export class ConfidencePipeline {
     this.registerStage({
       name: "mlConfidenceRanking",
       config: configs.mlConfidenceRanking || { enabled: true, priority: 35 },
-      execute: async (spans, text, context) => {
+      execute: async (spans, text, _context) => {
         return this.applyMLConfidenceRanking(spans, text);
       },
     });
@@ -154,7 +154,7 @@ export class ConfidencePipeline {
     this.registerStage({
       name: "crossTypeReasoning",
       config: configs.crossTypeReasoning || { enabled: true, priority: 40 },
-      execute: async (spans, text, context) => {
+      execute: async (spans, text, _context) => {
         return this.applyCrossTypeReasoning(spans, text);
       },
     });
@@ -163,7 +163,7 @@ export class ConfidencePipeline {
     this.registerStage({
       name: "contextualConfidence",
       config: configs.contextualConfidence || { enabled: false, priority: 50 },
-      execute: async (spans, text, context) => {
+      execute: async (spans, text, _context) => {
         return this.applyContextualConfidence(spans, text);
       },
     });
@@ -172,7 +172,7 @@ export class ConfidencePipeline {
     this.registerStage({
       name: "calibration",
       config: configs.calibration || { enabled: true, priority: 60 },
-      execute: async (spans, text, context) => {
+      execute: async (spans, _text, _context) => {
         return this.applyCalibration(spans);
       },
     });
@@ -355,8 +355,8 @@ export class ConfidencePipeline {
    */
   private applySpanEnhancement(
     spans: Span[],
-    text: string,
-    context: RedactionContext
+    _text: string,
+    _context: RedactionContext
   ): Span[] {
     // Simplified enhancement - boost based on pattern quality
     for (const span of spans) {
@@ -446,7 +446,7 @@ export class ConfidencePipeline {
    * Stage 4: Cross-type reasoning
    * Applies constraint-based reasoning across PHI types
    */
-  private applyCrossTypeReasoning(spans: Span[], text: string): Span[] {
+  private applyCrossTypeReasoning(spans: Span[], _text: string): Span[] {
     // Mutual exclusion constraints
     const MUTUALLY_EXCLUSIVE = [
       ["DATE", "AGE_90_PLUS"],

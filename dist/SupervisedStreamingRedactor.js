@@ -37,10 +37,8 @@ class RedactorWorkerProcess {
     id;
     redactor;
     running = false;
-    config;
     constructor(id, config) {
         this.id = id;
-        this.config = config;
         this.redactor = new StreamingRedactor_1.StreamingRedactor(config);
     }
     async run() {

@@ -84,7 +84,7 @@ class FilterAdapter extends SpanBasedFilter_1.SpanBasedFilter {
     /**
      * Find position in original text by mapping from tokenized text
      */
-    findPositionInOriginal(originalText, tokenizedText, tokenPos, originalValue) {
+    findPositionInOriginal(originalText, _tokenizedText, tokenPos, originalValue) {
         // Simple heuristic: search near the token position
         const searchRadius = 200;
         const searchStart = Math.max(0, tokenPos - searchRadius);

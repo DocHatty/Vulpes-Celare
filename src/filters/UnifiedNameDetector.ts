@@ -22,7 +22,6 @@
 
 import { Span, FilterType } from "../models/Span";
 import { FilterPriority } from "../core/SpanBasedFilter";
-import { RustNameScanner } from "../utils/RustNameScanner";
 
 /**
  * Name detection result with metadata

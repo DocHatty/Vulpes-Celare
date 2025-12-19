@@ -73,7 +73,7 @@ export class BiometricContextFilterSpan extends SpanBasedFilter {
     return FilterPriority.BIOMETRIC;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     // Try Rust acceleration first
     const accelerated = RustScanKernel.getDetections(
       context,

@@ -64,7 +64,6 @@ export class CircuitBreaker extends EventEmitter {
   private state: CircuitState = "closed";
   private failures = 0;
   private successes = 0;
-  private lastFailure = 0;
   private nextRetryTime = 0;
 
   // Statistics
@@ -160,7 +159,6 @@ export class CircuitBreaker extends EventEmitter {
   private onFailure(error: Error): void {
     this.stats.failedRequests++;
     this.failures++;
-    this.lastFailure = Date.now();
     this.successes = 0;
 
     this.emit("failure", error);
@@ -234,7 +232,6 @@ export class CircuitBreaker extends EventEmitter {
     this.state = "closed";
     this.failures = 0;
     this.successes = 0;
-    this.lastFailure = 0;
     this.nextRetryTime = 0;
     this.emit("reset");
   }

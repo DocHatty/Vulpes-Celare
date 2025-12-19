@@ -26,7 +26,7 @@ export declare class BiometricContextFilterSpan extends SpanBasedFilter {
     private readonly BIOMETRIC_KEYWORDS;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Pattern 1: Sentence-level detection with biometric keywords
      */

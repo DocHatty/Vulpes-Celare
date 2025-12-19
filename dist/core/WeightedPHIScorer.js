@@ -617,7 +617,7 @@ class WeightedPHIScorer {
     /**
      * Calculate context bonuses
      */
-    calculateContextBonus(span, context, breakdown) {
+    calculateContextBonus(_span, context, breakdown) {
         let bonus = 0;
         // Check for title context
         if (CONTEXT_PATTERNS.titles.test(context)) {

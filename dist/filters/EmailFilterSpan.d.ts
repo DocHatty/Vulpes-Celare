@@ -22,6 +22,6 @@ export declare class EmailFilterSpan extends SpanBasedFilter {
     private static readonly EMAIL_PATTERN;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
 }
 //# sourceMappingURL=EmailFilterSpan.d.ts.map

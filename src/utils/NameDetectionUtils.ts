@@ -12,7 +12,7 @@
 
 import { NameDictionary } from "../dictionaries/NameDictionary";
 import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
-import { shouldWhitelist, isMedicalTerm, isNonPHI } from "./UnifiedMedicalWhitelist";
+import { isMedicalTerm, isNonPHI } from "./UnifiedMedicalWhitelist";
 
 /**
  * Provider and professional title prefixes (Mr., Dr., Prof., etc.)
@@ -495,7 +495,7 @@ export class NameDetectionUtils {
    * @param context - Optional surrounding context
    * @returns true if likely a person name
    */
-  static isLikelyPersonName(text: string, context?: string): boolean {
+  static isLikelyPersonName(text: string, _context?: string): boolean {
     const trimmed = text.trim();
 
     // Skip if too short or too long
@@ -542,7 +542,7 @@ export class NameDetectionUtils {
    * @returns true if in provider context
    */
   static isInProviderContext(
-    name: string,
+    _name: string,
     index: number,
     text: string,
   ): boolean {
@@ -600,8 +600,6 @@ export class NameDetectionUtils {
     context?: string,
     isAllCapsMode: boolean = false,
   ): boolean {
-    const normalized = text.trim().toLowerCase();
-
     // Check UnifiedMedicalWhitelist for medical terms, field labels, and non-PHI
     if (isMedicalTerm(text) || isNonPHI(text)) {
       return true;

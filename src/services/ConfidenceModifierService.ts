@@ -113,11 +113,6 @@ export class ConfidenceModifierService {
   private keywordBloomFilter: BloomFilter | null = null;
   private allKeywordsSet: Set<string> = new Set();
 
-  // OPTIMIZATION: Pre-compiled static regex patterns
-  private static readonly TITLE_PATTERN =
-    /\b(Dr|Mr|Mrs|Ms|Miss|Prof|Professor)\.\s*$/i;
-  private static readonly SHORT_NAME_PATTERN = /^[A-Z][a-z]{1,3}$/;
-
   constructor(modifiers: ConfidenceModifier[] = []) {
     this.modifiers = modifiers;
     this.registerDefaultModifiers();

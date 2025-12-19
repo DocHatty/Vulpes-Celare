@@ -34,7 +34,7 @@ class FaxNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.FAX;
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "FAX");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {

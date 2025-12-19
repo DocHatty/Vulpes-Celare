@@ -12,12 +12,6 @@ import { SpanBasedFilter } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 export declare class DateFilterSpan extends SpanBasedFilter {
     /**
-     * Month names for pattern building - using centralized SharedPatterns
-     */
-    private static readonly MONTHS_FULL;
-    private static readonly MONTHS_ABBR;
-    private static readonly MONTHS_ALL;
-    /**
      * Date regex pattern sources
      *
      * US Formats:
@@ -53,7 +47,7 @@ export declare class DateFilterSpan extends SpanBasedFilter {
     private static readonly COMPILED_PATTERNS;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Find a corrupted date in the original text that corresponds to a normalized match
      * Uses fuzzy matching to locate the original corrupted version

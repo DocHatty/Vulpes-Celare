@@ -10,37 +10,8 @@ exports.vulpesAIDebugger = exports.VulpesAIDebugger = void 0;
 // ============================================================================
 // Pattern Analysis Helpers
 // ============================================================================
-const PHI_TYPE_PATTERNS = {
-    SSN: [
-        /\b\d{3}-\d{2}-\d{4}\b/,
-        /\b\d{3}\s\d{2}\s\d{4}\b/,
-        /\b\d{9}\b/,
-    ],
-    PHONE: [
-        /\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/,
-        /\b\(\d{3}\)\s?\d{3}[-.\s]?\d{4}\b/,
-        /\b1[-.\s]?\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/,
-    ],
-    EMAIL: [
-        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
-    ],
-    DATE: [
-        /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/,
-        /\b\d{4}-\d{2}-\d{2}\b/,
-        /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4}\b/i,
-    ],
-    MRN: [
-        /\bMRN[:\s#]?\d{6,10}\b/i,
-        /\b(?:Medical\s+Record|Patient\s+ID)[:\s#]?\d{6,10}\b/i,
-    ],
-    NAME: [
-        /\b(?:Dr\.?|Mr\.?|Mrs\.?|Ms\.?|Miss)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\b/,
-        /\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/,
-    ],
-    ADDRESS: [
-        /\b\d+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:St|Street|Ave|Avenue|Rd|Road|Dr|Drive|Ln|Lane|Blvd|Boulevard|Ct|Court)\b\.?/i,
-    ],
-};
+// PHI_TYPE_PATTERNS - Reserved for future pattern analysis functionality
+// See: analyzePatternGaps() for current pattern gap detection
 // ============================================================================
 // VulpesAIDebugger Class
 // ============================================================================
@@ -251,7 +222,7 @@ class VulpesAIDebugger {
         const rootCauses = [];
         // Group failures by type for pattern analysis
         const falseNegatives = failures.filter((f) => f.failureType === "false_negative");
-        const falsePositives = failures.filter((f) => f.failureType === "false_positive");
+        // Note: false positives analysis is handled separately in analyzeThresholdIssues
         // Analyze false negatives for pattern gaps
         if (falseNegatives.length > 0) {
             const patternGaps = this.analyzePatternGaps(falseNegatives);
@@ -394,7 +365,7 @@ class VulpesAIDebugger {
     // ============================================================================
     // Fix Suggestions
     // ============================================================================
-    generateFixSuggestions(rootCauses, failures) {
+    generateFixSuggestions(rootCauses, _failures) {
         const suggestions = [];
         for (const cause of rootCauses) {
             switch (cause.category) {
@@ -475,7 +446,7 @@ class VulpesAIDebugger {
             typeGroups.set(type, examples);
         }
         // Generate pattern suggestions for each type
-        for (const [type, examples] of typeGroups) {
+        for (const [_type, examples] of typeGroups) {
             if (examples.length < 2)
                 continue;
             const pattern = this.inferPattern(examples);
@@ -499,7 +470,6 @@ class VulpesAIDebugger {
             return null;
         // Analyze character patterns
         const lengths = examples.map((e) => e.length);
-        const avgLength = lengths.reduce((a, b) => a + b, 0) / lengths.length;
         const hasDigits = examples.every((e) => /\d/.test(e));
         const hasLetters = examples.every((e) => /[a-zA-Z]/.test(e));
         const hasDashes = examples.every((e) => /-/.test(e));

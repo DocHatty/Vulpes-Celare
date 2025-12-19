@@ -428,34 +428,6 @@ export class VectorDisambiguationService {
   }
 
   /**
-   * Calculate Euclidean (L2) distance between two vectors
-   * Formula: d(A, B) = sqrt(sum((a_i - b_i)^2))
-   * Useful as alternative to cosine when vector magnitudes matter
-   */
-  private euclideanDistance(vec1: number[], vec2: number[]): number {
-    if (vec1.length !== vec2.length) {
-      throw new Error("Vectors must have same length");
-    }
-
-    let sumSquaredDiff = 0;
-    for (let i = 0; i < vec1.length; i++) {
-      const diff = vec1[i] - vec2[i];
-      sumSquaredDiff += diff * diff;
-    }
-
-    return Math.sqrt(sumSquaredDiff);
-  }
-
-  /**
-   * Convert Euclidean distance to similarity in [0, 1]
-   * Formula: similarity = 1 / (1 + distance)
-   * This is a standard transformation that maps [0, inf) -> (0, 1]
-   */
-  private distanceToSimilarity(distance: number): number {
-    return 1 / (1 + distance);
-  }
-
-  /**
    * Make cache key from window tokens
    */
   private makeWindowKey(window: string[]): string {

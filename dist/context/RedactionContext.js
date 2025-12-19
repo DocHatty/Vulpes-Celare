@@ -24,8 +24,6 @@ class RedactionContext {
     sessionId;
     tokenManager;
     statsTracker;
-    createdAt;
-    referenceDate;
     dateShiftingEngine;
     replacementService;
     contextName;
@@ -33,8 +31,6 @@ class RedactionContext {
     constructor(sessionId, contextName = "default", replacementScope = ReplacementContextService_1.ReplacementScope.DOCUMENT) {
         this.sessionId =
             sessionId || Date.now() + "_" + Math.floor(Math.random() * 9000 + 1000);
-        this.createdAt = Date.now();
-        this.referenceDate = new Date();
         this.contextName = contextName;
         this.tokenManager = new TokenManager_1.TokenManager(this.sessionId);
         this.statsTracker = new StatisticsTracker_1.StatisticsTracker();

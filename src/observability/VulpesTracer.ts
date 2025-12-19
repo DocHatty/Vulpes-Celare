@@ -266,14 +266,6 @@ class ContextManager {
     }
   }
 
-  bind<T extends (...args: unknown[]) => unknown>(
-    context: TraceContext,
-    fn: T
-  ): T {
-    return ((...args: Parameters<T>) => {
-      return this.with(context, () => fn(...args));
-    }) as T;
-  }
 }
 
 // ============================================================================
@@ -326,12 +318,10 @@ class MemoryExporter implements SpanExporter {
 class OTLPExporter implements SpanExporter {
   private readonly endpoint: string;
   private readonly headers: Record<string, string>;
-  private readonly compression: "gzip" | "none";
 
   constructor(config: ExporterConfig) {
     this.endpoint = config.endpoint ?? "http://localhost:4318/v1/traces";
     this.headers = config.headers ?? {};
-    this.compression = config.compression ?? "none";
   }
 
   async export(spans: VulpesSpan[]): Promise<void> {
@@ -446,7 +436,6 @@ class OTLPExporter implements SpanExporter {
 
 class FileExporter implements SpanExporter {
   private readonly filePath: string;
-  private buffer: VulpesSpan[] = [];
 
   constructor(config: ExporterConfig) {
     this.filePath = config.filePath ?? "./traces.jsonl";

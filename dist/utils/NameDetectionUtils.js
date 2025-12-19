@@ -446,7 +446,7 @@ class NameDetectionUtils {
      * @param context - Optional surrounding context
      * @returns true if likely a person name
      */
-    static isLikelyPersonName(text, context) {
+    static isLikelyPersonName(text, _context) {
         const trimmed = text.trim();
         // Skip if too short or too long
         if (trimmed.length < 3 || trimmed.length > 50)
@@ -487,7 +487,7 @@ class NameDetectionUtils {
      * @param text - Full text
      * @returns true if in provider context
      */
-    static isInProviderContext(name, index, text) {
+    static isInProviderContext(_name, index, text) {
         // Check 100 characters before the name
         const contextBefore = text.substring(Math.max(0, index - 100), index);
         const contextLower = contextBefore.toLowerCase();
@@ -533,7 +533,6 @@ class NameDetectionUtils {
      * @returns true if should be whitelisted (not a name)
      */
     static performWhitelistCheck(text, context, isAllCapsMode = false) {
-        const normalized = text.trim().toLowerCase();
         // Check UnifiedMedicalWhitelist for medical terms, field labels, and non-PHI
         if ((0, UnifiedMedicalWhitelist_1.isMedicalTerm)(text) || (0, UnifiedMedicalWhitelist_1.isNonPHI)(text)) {
             return true;

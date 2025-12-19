@@ -152,8 +152,8 @@ export class GlinerNameFilter extends SpanBasedFilter {
    */
   async detect(
     text: string,
-    config: any,
-    context: RedactionContext
+    _config: any,
+    _context: RedactionContext
   ): Promise<Span[]> {
     // Check if we should run
     if (!this.shouldRun()) {

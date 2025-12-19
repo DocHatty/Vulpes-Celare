@@ -86,7 +86,6 @@ export interface CortexBridgeConfig {
  */
 export declare class CortexPythonBridge extends EventEmitter {
     private config;
-    private pythonProcess;
     private pythonAvailable;
     constructor(config?: Partial<CortexBridgeConfig>);
     /**

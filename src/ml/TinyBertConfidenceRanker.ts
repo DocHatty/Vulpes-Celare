@@ -92,10 +92,6 @@ interface ConfidenceFeatures {
  * TinyBERT-based confidence ranker
  */
 export class TinyBertConfidenceRanker extends ONNXInference {
-  private loadingPromise: Promise<void> | null = null;
-  private loadFailed: boolean = false;
-  private isReady: boolean = false;
-
   private constructor(session: ort.InferenceSession, tokenizer: SimpleWordPieceTokenizer) {
     super(session);
     this.tokenizer = tokenizer;

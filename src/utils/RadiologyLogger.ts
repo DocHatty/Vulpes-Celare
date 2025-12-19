@@ -53,6 +53,7 @@ export class RadiologyLogger {
   private static _logLevel: LogLevel | null = null;
   private static _logFormat: LogFormat | null = null;
   private static suppressErrors = false;
+  private static readonly logPhiTextEnv = "VULPES_LOG_PHI_TEXT";
 
   private static get enabled(): boolean {
     if (this._enabled !== null) return this._enabled;
@@ -87,6 +88,10 @@ export class RadiologyLogger {
 
   private static set logFormat(value: LogFormat) {
     this._logFormat = value;
+  }
+
+  private static shouldLogPhiText(): boolean {
+    return process.env[this.logPhiTextEnv] === "1";
   }
 
   // Statistics tracking
@@ -162,8 +167,6 @@ export class RadiologyLogger {
     message: string,
     data?: Record<string, unknown>,
   ) {
-    const timestamp = new Date().toISOString();
-
     // Route through VulpesLogger for consistent output
     const context = { component: category, ...data };
     switch (level) {
@@ -285,10 +288,13 @@ export class RadiologyLogger {
     // Using ERROR level ensures these are never suppressed
     if (this.enabled && this.logLevel <= LogLevel.ERROR) {
       const confidenceStr = (options.confidence * 100).toFixed(1);
+      const textSnippet = this.shouldLogPhiText()
+        ? `"${this.truncateText(options.text, 50)}"`
+        : "<redacted>";
 
       // Compact, important log line - what IS being redacted
       vlog.info(
-        `[REDACTED] [${options.filterType}] "${this.truncateText(options.text, 50)}" -> ${options.token} (conf: ${confidenceStr}%)`,
+        `[REDACTED] [${options.filterType}] ${textSnippet} -> ${options.token} (conf: ${confidenceStr}%)`,
       );
     }
   }
@@ -318,23 +324,24 @@ export class RadiologyLogger {
     this.filteredHistory.push(log);
 
     if (this.enabled && this.logLevel <= LogLevel.INFO) {
-      const timestamp = this.getTimestamp();
       const posStr =
         options.start !== undefined
           ? ` (pos: ${options.start}-${options.end})`
           : "";
+      const textSnippet = this.shouldLogPhiText()
+        ? `"${this.truncateText(options.text, 50)}"`
+        : "<redacted>";
 
       vlog.info(
-        `[${timestamp}] [PHI-FILTERED] [${options.filterType}] ` +
-          `"${this.truncateText(options.text, 50)}"${posStr}`,
+        `[PHI-FILTERED] [${options.filterType}] ${textSnippet}${posStr}`,
       );
       vlog.info(
-        `[${timestamp}] [PHI-FILTERED]   -> Reason: ${options.reason}`,
+        `[PHI-FILTERED]   -> Reason: ${options.reason}`,
       );
 
       if (options.details) {
         vlog.info(
-          `[${timestamp}] [PHI-FILTERED]   -> Details: ${options.details}`,
+          `[PHI-FILTERED]   -> Details: ${options.details}`,
         );
       }
     }

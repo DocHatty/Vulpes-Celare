@@ -14,10 +14,8 @@
  */
 
 import * as fs from "fs";
-import * as path from "path";
 import * as readline from "readline";
 import * as https from "https";
-import chalk from "chalk";
 import ora from "ora";
 import boxen from "boxen";
 import figures from "figures";
@@ -576,8 +574,9 @@ export class LLMIntegration {
               ),
             );
           }
-        } catch (error: any) {
-          spinner.fail(theme.error("Error: " + error.message));
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : String(error);
+          spinner.fail(theme.error("Error: " + message));
         }
 
         out.blank();
@@ -693,8 +692,9 @@ export async function handleQuery(text: string, options: any): Promise<void> {
 
     out.print(theme.bold("\nResponse:"));
     out.print(result.response);
-  } catch (error: any) {
-    spinner.fail(theme.error("Error: " + error.message));
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    spinner.fail(theme.error("Error: " + message));
     process.exit(1);
   }
 }

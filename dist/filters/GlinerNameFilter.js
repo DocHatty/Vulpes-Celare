@@ -128,7 +128,7 @@ class GlinerNameFilter extends SpanBasedFilter_1.SpanBasedFilter {
     /**
      * Detect names using GLiNER
      */
-    async detect(text, config, context) {
+    async detect(text, _config, _context) {
         // Check if we should run
         if (!this.shouldRun()) {
             return [];

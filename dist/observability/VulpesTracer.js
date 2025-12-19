@@ -169,11 +169,6 @@ class ContextManager {
             this.contextStack.pop();
         }
     }
-    bind(context, fn) {
-        return ((...args) => {
-            return this.with(context, () => fn(...args));
-        });
-    }
 }
 class ConsoleExporter {
     async export(spans) {
@@ -207,11 +202,9 @@ class MemoryExporter {
 class OTLPExporter {
     endpoint;
     headers;
-    compression;
     constructor(config) {
         this.endpoint = config.endpoint ?? "http://localhost:4318/v1/traces";
         this.headers = config.headers ?? {};
-        this.compression = config.compression ?? "none";
     }
     async export(spans) {
         if (spans.length === 0)
@@ -317,7 +310,6 @@ class OTLPExporter {
 }
 class FileExporter {
     filePath;
-    buffer = [];
     constructor(config) {
         this.filePath = config.filePath ?? "./traces.jsonl";
     }

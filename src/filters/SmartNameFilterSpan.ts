@@ -13,24 +13,16 @@ import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { NameDictionary } from "../dictionaries/NameDictionary";
 import {
-  NAME_PREFIXES,
   NAME_SUFFIXES,
   isExcludedAllCaps,
 } from "./constants/NameFilterConstants";
 import { HospitalDictionary } from "../dictionaries/HospitalDictionary";
-import {
-  UnifiedMedicalWhitelist,
-  shouldWhitelist,
-  isMedicalTerm,
-} from "../utils/UnifiedMedicalWhitelist";
+import { shouldWhitelist } from "../utils/UnifiedMedicalWhitelist";
 import {
   NameDetectionUtils,
-  PROVIDER_TITLE_PREFIXES,
   PROVIDER_CREDENTIALS,
 } from "../utils/NameDetectionUtils";
 import { OcrChaosDetector } from "../utils/OcrChaosDetector";
-import { RustNameScanner } from "../utils/RustNameScanner";
-import { RustAccelConfig } from "../config/RustAccelConfig";
 import { RadiologyLogger } from "../utils/RadiologyLogger"; // Added Import
 
 import {
@@ -39,7 +31,6 @@ import {
 } from "./name-patterns/OcrTolerancePatterns";
 import {
   PROVIDER_CONTEXT_CREDENTIAL_AFTER_NAME_PATTERN,
-  PROVIDER_CREDENTIAL_AFTER_NAME_PATTERN,
   TITLE_PLUS_TRAILING_WORD_PATTERN,
   TITLE_PREFIX_PATTERN,
   TITLE_TRAILING_PATTERN,
@@ -48,45 +39,6 @@ import {
 import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
 export class SmartNameFilterSpan extends SpanBasedFilter {
-  // ═══════════════════════════════════════════════════════════════════════════
-  // STATIC CACHED REGEX PATTERNS - Compiled once at class load, not per-call
-  // This is a MAJOR performance optimization (~5-15ms savings per document)
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /** Pattern for title prefix at end of lookback text */
-  private static readonly TITLE_PREFIX_PATTERN = new RegExp(
-    `(?:${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s*$`,
-    "i",
-  );
-
-  /** Pattern for titled name in lookback text */
-  private static readonly TITLED_NAME_LOOKBACK_PATTERN = new RegExp(
-    `(?:${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Z][a-zA-Z'-]+(?:\\s+[A-Z][a-zA-Z'-]+)*\\s*$`,
-    "i",
-  );
-
-  /** Pattern for name suffixes (Jr., Sr., III, etc.) */
-  private static readonly NAME_SUFFIX_PATTERN = new RegExp(
-    `(?:${NAME_SUFFIXES.join("|")})\\.?\\b`,
-    "gi",
-  );
-
-  /** Pattern for title before name in text */
-  private static readonly TITLE_BEFORE_NAME_PATTERN = new RegExp(
-    `\\b(${Array.from(PROVIDER_TITLE_PREFIXES).join("|")})\\.?\\s+[A-Za-z]+\\s*$`,
-    "i",
-  );
-
-  /** Pattern for particle names (van Gogh, de Silva, etc.) */
-  private static readonly PARTICLE_NAME_PATTERN = new RegExp(
-    `\\b([A-Z][a-z]+\\s+(?:van|de|von|di|da|du|del|della|la|le|el|al|bin|ibn|af|av|ten|ter|vander|vanden)\\s+[A-Z][a-z]+)\\b`,
-    "gi",
-  );
-
-  /** Credential pattern after name */
-  private static readonly CREDENTIAL_AFTER_NAME_PATTERN =
-    /^[,\s]+(?:MD|DO|PhD|DDS|DMD|DPM|DVM|OD|PsyD|PharmD|EdD|DrPH|DC|ND|JD|RN|NP|BSN|MSN|DNP|APRN|CRNA|CNS|CNM|LPN|LVN|CNA|PA|PA-C|PT|DPT|OT|OTR|SLP|RT|RRT|RD|RDN|LCSW|LMFT|LPC|LCPC|FACS|FACP|FACC|FACOG|FASN|FAAN|FAAP|FACHE|FCCP|FAHA|Esq|CPA|MBA|MPH|MHA|MHSA|ACNP-BC|FNP-BC|ANP-BC|PNP-BC|PMHNP-BC|AGNP-C|OTR\/L)\b/i;
-
   // ═══════════════════════════════════════════════════════════════════════════
 
   getType(): string {
@@ -97,7 +49,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     return FilterPriority.NAME;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     const spans: Span[] = [];
     const rustAvailable = nameDetectionCoordinator.isRustAvailable();
 
@@ -107,7 +59,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       // -----------------------------------------------------------------------
 
       // Pattern 0: Last, First format (Rust) - uses coordinator cache
-      const lastFirstDets = nameDetectionCoordinator.getRustLastFirst();
+      const lastFirstDets = nameDetectionCoordinator.getRustLastFirst(text);
       for (const d of lastFirstDets) {
         const fullName = d.text;
         const start = d.characterStart;
@@ -156,7 +108,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       }
 
       // Pattern 0c: First Last (Rust) - uses coordinator cache
-      const firstLastDets = nameDetectionCoordinator.getRustFirstLast();
+      const firstLastDets = nameDetectionCoordinator.getRustFirstLast(text);
       for (const d of firstLastDets) {
         const fullName = d.text;
         const start = d.characterStart;
@@ -203,7 +155,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       }
 
       // Rust "Smart" Scanner - uses coordinator cache
-      const smartDets = nameDetectionCoordinator.getRustSmart();
+      const smartDets = nameDetectionCoordinator.getRustSmart(text);
       for (const d of smartDets) {
         const fullName = d.text;
         if (
@@ -331,40 +283,6 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
     return spans;
   }
 
-  // PROVIDER_TITLE_PREFIXES imported from NameDetectionUtils
-
-  /**
-   * Check if a titled name is a PROVIDER name (should NOT be redacted)
-   * Provider names with professional titles or credentials are NOT patient PHI
-   */
-  private isProviderName(matchedText: string, fullContext: string): boolean {
-    const trimmed = matchedText.trim();
-
-    // Extract the title (first word)
-    const titleMatch = trimmed.match(/^([A-Za-z]+)\.?\s+/);
-    if (!titleMatch) return false;
-
-    const title = titleMatch[1];
-
-    // Check if this is a provider title
-    if (PROVIDER_TITLE_PREFIXES.has(title)) {
-      return true;
-    }
-
-    // Also check if the name has professional credentials (e.g., "John Smith, MD")
-    // Check the context after the name for credentials
-    const nameEnd = fullContext.indexOf(trimmed) + trimmed.length;
-    if (nameEnd < fullContext.length) {
-      const afterName = fullContext.substring(nameEnd, nameEnd + 30); // Look ahead 30 chars
-      // Check for credentials pattern: ", MD" or ", DDS" or ", PhD" etc.
-      if (PROVIDER_CREDENTIAL_AFTER_NAME_PATTERN.test(afterName)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   /**
    * Check if a name (without title) appears in a provider context
    * This catches cases where "Sergei Hernandez" is detected but it's actually
@@ -421,7 +339,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
    * are PROVIDER names under HIPAA Safe Harbor and should NOT be redacted.
    * Only patient names should be redacted.
    */
-  private detectTitledNames(text: string, spans: Span[]): void {
+  private detectTitledNames(_text: string, _spans: Span[]): void {
     // DISABLED: TitledNameFilterSpan now handles all titled names with PROVIDER_NAME type
     // This prevents duplicate detection and ensures consistent labeling
     return;
@@ -1231,17 +1149,6 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       .filter((part) => part.length > 0)
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
       .join(" ");
-  }
-
-  /**
-   * Check if a string contains OCR-style digit substitutions that look like name corruption
-   */
-  private hasOcrDigitSubstitution(text: string): boolean {
-    // Check for digits that commonly substitute for letters in OCR
-    // Must be surrounded by letters to be likely OCR error (not a real number)
-    return (
-      /[a-zA-Z][0-9][a-zA-Z]/.test(text) || /[a-zA-Z][|$@!][a-zA-Z]/.test(text)
-    );
   }
 
   /**

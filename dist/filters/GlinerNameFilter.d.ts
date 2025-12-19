@@ -40,7 +40,7 @@ export declare class GlinerNameFilter extends SpanBasedFilter {
     /**
      * Detect names using GLiNER
      */
-    detect(text: string, config: any, context: RedactionContext): Promise<Span[]>;
+    detect(text: string, _config: any, _context: RedactionContext): Promise<Span[]>;
     /**
      * Check if text should be whitelisted (not treated as PHI)
      */

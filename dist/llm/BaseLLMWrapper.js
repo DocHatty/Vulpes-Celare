@@ -120,20 +120,53 @@ class BaseLLMWrapper {
         let totalRedacted = 0;
         const redactedMessages = [];
         for (const message of messages) {
-            if (typeof message.content === "string") {
-                const mapping = await this.redactText(message.content, effectiveSessionId);
-                totalRedacted += mapping.redactionCount;
-                redactedMessages.push({
-                    ...message,
-                    content: mapping.redactedText,
-                });
-            }
-            else {
-                // Non-string content (e.g., arrays for vision models) - pass through
-                redactedMessages.push(message);
-            }
+            const redaction = await this.redactContent(message.content, effectiveSessionId);
+            totalRedacted += redaction.redactionCount;
+            redactedMessages.push({
+                ...message,
+                content: redaction.content,
+            });
         }
         return { messages: redactedMessages, tokenManager, totalRedacted };
+    }
+    /**
+     * Redact content that may be string or structured blocks (e.g., multimodal arrays).
+     */
+    async redactContent(content, sessionId) {
+        if (typeof content === "string") {
+            const mapping = await this.redactText(content, sessionId);
+            return { content: mapping.redactedText, redactionCount: mapping.redactionCount };
+        }
+        if (Array.isArray(content)) {
+            let totalRedacted = 0;
+            const redactedBlocks = [];
+            for (const block of content) {
+                if (typeof block === "string") {
+                    const mapping = await this.redactText(block, sessionId);
+                    totalRedacted += mapping.redactionCount;
+                    redactedBlocks.push(mapping.redactedText);
+                    continue;
+                }
+                if (block && typeof block === "object") {
+                    const candidate = block;
+                    if (candidate.type === "text" && typeof candidate.text === "string") {
+                        const mapping = await this.redactText(candidate.text, sessionId);
+                        totalRedacted += mapping.redactionCount;
+                        redactedBlocks.push({ ...candidate, text: mapping.redactedText });
+                        continue;
+                    }
+                    if (typeof candidate.content === "string") {
+                        const mapping = await this.redactText(candidate.content, sessionId);
+                        totalRedacted += mapping.redactionCount;
+                        redactedBlocks.push({ ...candidate, content: mapping.redactedText });
+                        continue;
+                    }
+                }
+                redactedBlocks.push(block);
+            }
+            return { content: redactedBlocks, redactionCount: totalRedacted };
+        }
+        return { content, redactionCount: 0 };
     }
     /**
      * Generate a unique session ID

@@ -348,7 +348,6 @@ export class DocumentStructureAnalyzer {
   private static findColumnHeader(text: string, offset: number): string | null {
     // Look up to find header row
     const lineStart = text.lastIndexOf('\n', offset) + 1;
-    const line = text.substring(lineStart, text.indexOf('\n', offset));
 
     // Find column position
     const colPosition = offset - lineStart;

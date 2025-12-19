@@ -26,8 +26,7 @@
 
 import * as crypto from "crypto";
 import * as fs from "fs";
-import * as path from "path";
-import { TrustBundle, TrustBundleManifest, TrustBundleCertificate } from "./TrustBundleExporter";
+import { TrustBundle } from "./TrustBundleExporter";
 
 /**
  * OpenTimestamps calendar server URLs

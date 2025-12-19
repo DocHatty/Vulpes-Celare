@@ -29,7 +29,7 @@ export class IPAddressFilterSpan extends SpanBasedFilter {
     return FilterPriority.URL; // Same priority as URLs
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     const accelerated = RustScanKernel.getDetections(context, text, "IP");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {

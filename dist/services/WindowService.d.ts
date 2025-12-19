@@ -26,7 +26,6 @@ export interface WindowOptions {
  */
 export declare class WindowService {
     private static readonly DEFAULT_WINDOW_SIZE;
-    private static readonly WORD_BOUNDARY_PATTERN;
     private static readonly TOKEN_PATTERN;
     /**
      * Tokenize text with position information
@@ -56,14 +55,6 @@ export declare class WindowService {
      * @returns Array of tokens around the position
      */
     static getWindowAt(text: string, start: number, end: number, options?: WindowOptions): string[];
-    /**
-     * Tokenize text into words (and optionally punctuation)
-     *
-     * @param text - Text to tokenize
-     * @param includePunctuation - Include punctuation as separate tokens
-     * @returns Array of tokens
-     */
-    private static tokenize;
     /**
      * Check if window contains specific keywords (case-insensitive)
      *

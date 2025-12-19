@@ -133,7 +133,7 @@ export class DicomStreamTransformer extends Transform {
 
   _transform(
     chunk: Buffer,
-    encoding: BufferEncoding,
+    _encoding: BufferEncoding,
     callback: TransformCallback,
   ): void {
     this.chunks.push(chunk);
@@ -230,12 +230,6 @@ export class DicomStreamTransformer extends Transform {
       }
 
       return String(first);
-    };
-
-    const setStringValue = (tag: string, value: string) => {
-      const element = getElementByTag(dict, tag);
-      if (!element) return;
-      element.Value = value === "" ? [] : [value];
     };
 
     const hashToken = (value: string): string => {

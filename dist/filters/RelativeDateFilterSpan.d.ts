@@ -28,6 +28,6 @@ export declare class RelativeDateFilterSpan extends SpanBasedFilter {
     private static readonly ALL_PATTERNS;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
 }
 //# sourceMappingURL=RelativeDateFilterSpan.d.ts.map

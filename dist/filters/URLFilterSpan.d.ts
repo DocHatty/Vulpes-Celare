@@ -30,7 +30,7 @@ export declare class URLFilterSpan extends SpanBasedFilter {
     private static readonly PATTERN_NAMES;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Helper to detect URLs using a specific pattern and avoid duplicates
      */

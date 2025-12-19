@@ -11,17 +11,10 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
-import { PatternStrings } from "../patterns/SharedPatterns";
 import { ValidationUtils } from "../utils/ValidationUtils";
 import { RustScanKernel } from "../utils/RustScanKernel";
 
 export class DateFilterSpan extends SpanBasedFilter {
-  /**
-   * Month names for pattern building - using centralized SharedPatterns
-   */
-  private static readonly MONTHS_FULL = PatternStrings.monthsFull;
-  private static readonly MONTHS_ABBR = PatternStrings.monthsAbbr;
-  private static readonly MONTHS_ALL = PatternStrings.monthsAll;
 
   /**
    * Date regex pattern sources
@@ -251,7 +244,7 @@ export class DateFilterSpan extends SpanBasedFilter {
     return FilterPriority.DATE;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     const accelerated = RustScanKernel.getDetections(context, text, "DATE");
     // Only use Rust results if we got actual detections (empty array is truthy!)
     if (accelerated && accelerated.length > 0) {

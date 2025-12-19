@@ -17,8 +17,8 @@
 
 import sharp from "sharp";
 import * as path from "path";
-import { OCRService, OCRResult, TextBox } from "./OCRService";
-import { VulpesNative, VisualDetection, VisualBox } from "../../VulpesNative";
+import { OCRService, TextBox } from "./OCRService";
+import { VulpesNative, VisualBox } from "../../VulpesNative";
 import { getLogger } from "./logger";
 import { vulpesLogger as log } from "../../utils/VulpesLogger";
 

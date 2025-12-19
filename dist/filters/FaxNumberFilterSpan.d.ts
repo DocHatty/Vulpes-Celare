@@ -21,7 +21,7 @@ export declare class FaxNumberFilterSpan extends SpanBasedFilter {
     private static readonly COMPILED_PATTERNS;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Validate US phone number format (10 digits + optional +1)
      */

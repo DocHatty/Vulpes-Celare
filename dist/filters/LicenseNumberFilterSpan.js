@@ -40,7 +40,7 @@ class LicenseNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.MRN; // Same priority as MRN
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "LICENSE");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {

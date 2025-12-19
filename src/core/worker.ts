@@ -1,7 +1,6 @@
 
-import { parentPort, workerData, isMainThread } from "worker_threads";
+import { parentPort, isMainThread } from "worker_threads";
 import { FilterRegistry } from "../filters/FilterRegistry";
-import { Span } from "../models/Span";
 import { RedactionContext } from "../context/RedactionContext";
 import { vulpesLogger as log } from "../utils/VulpesLogger";
 

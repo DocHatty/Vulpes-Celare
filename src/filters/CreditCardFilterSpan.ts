@@ -63,7 +63,7 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
     return FilterPriority.CREDITCARD;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     const accelerated = RustScanKernel.getDetections(
       context,
       text,

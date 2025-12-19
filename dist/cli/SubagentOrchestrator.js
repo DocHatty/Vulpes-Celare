@@ -929,13 +929,11 @@ class Subagent {
     provider;
     vulpes;
     workingDir;
-    verbose;
-    constructor(role, provider, workingDir, verbose = false) {
+    constructor(role, provider, workingDir, _verbose = false) {
         this.role = role;
         this.provider = provider;
         this.vulpes = new VulpesCelare_1.VulpesCelare();
         this.workingDir = workingDir;
-        this.verbose = verbose;
     }
     async execute(task, previousResults) {
         const startTime = Date.now();
@@ -991,11 +989,12 @@ class Subagent {
             };
         }
         catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
             return {
                 taskId: task.id,
                 role: this.role,
                 success: false,
-                error: error.message,
+                error: message,
                 executionTimeMs: Date.now() - startTime,
             };
         }
@@ -1147,7 +1146,8 @@ class Subagent {
             return fs.readFileSync(fullPath, "utf-8");
         }
         catch (error) {
-            return `Security error: ${error.message}`;
+            const message = error instanceof Error ? error.message : String(error);
+            return `Security error: ${message}`;
         }
     }
     toolWriteFile(filePath, content) {
@@ -1157,7 +1157,8 @@ class Subagent {
             return `Written ${content.length} bytes to ${filePath}`;
         }
         catch (error) {
-            return `Security error: ${error.message}`;
+            const message = error instanceof Error ? error.message : String(error);
+            return `Security error: ${message}`;
         }
     }
     toolAppendDictionary(dictionary, entry) {
@@ -1279,7 +1280,6 @@ class SubagentOrchestrator {
     config;
     mainProvider;
     subagentProvider = null;
-    vulpes;
     taskQueue;
     constructor(config, mainProvider) {
         // Get preferences for max parallel (or use config override)
@@ -1302,7 +1302,6 @@ class SubagentOrchestrator {
             ...config,
         };
         this.mainProvider = mainProvider;
-        this.vulpes = new VulpesCelare_1.VulpesCelare();
         // Initialize p-queue with concurrency control
         this.taskQueue = new p_queue_1.default({
             concurrency: maxParallel,
@@ -1408,7 +1407,7 @@ class SubagentOrchestrator {
         const plan = this.planWorkflow(userMessage);
         // Execute if we have a subagent provider
         if (this.subagentProvider || this.config.autoRoute) {
-            const { results, summary } = await this.executeWorkflow(plan);
+            const { results, summary: _summary } = await this.executeWorkflow(plan);
             // Synthesize results with main LLM
             const synthesisPrompt = `You are synthesizing results from a Vulpes workflow.
 

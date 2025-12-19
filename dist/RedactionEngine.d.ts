@@ -42,18 +42,6 @@ export declare class RedactionEngine {
      */
     static redact(text: string, policy: any, context: RedactionContext): Promise<string>;
     /**
-     * Extract NER entities from NER result
-     */
-    private static extractNEREntities;
-    /**
-     * Map position in NER-redacted text back to original text position
-     */
-    private static mapNERPositionToOriginal;
-    /**
-     * Merge NER entities into regex-redacted text
-     */
-    private static mergeNEREntities;
-    /**
      * Normalize tokens in LLM response (handle formatting variations)
      */
     static normalizeTokensInResponse(llmResponse: string): string;

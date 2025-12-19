@@ -302,7 +302,7 @@ class EnhancedPHIDetector {
         return adjustment;
     }
     getContextSignal(candidate, fullText) {
-        const { start, end, phiType, text } = candidate;
+        const { start, end, phiType, text: _text } = candidate;
         // Get surrounding context (100 chars before and after)
         const contextStart = Math.max(0, start - 100);
         const contextEnd = Math.min(fullText.length, end + 100);

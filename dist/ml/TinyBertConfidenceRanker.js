@@ -99,9 +99,6 @@ const PHI_TYPE_ENCODING = {
  * TinyBERT-based confidence ranker
  */
 class TinyBertConfidenceRanker extends ONNXInference_1.ONNXInference {
-    loadingPromise = null;
-    loadFailed = false;
-    isReady = false;
     constructor(session, tokenizer) {
         super(session);
         this.tokenizer = tokenizer;

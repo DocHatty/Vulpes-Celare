@@ -150,8 +150,8 @@ export class OCRService {
    */
   async extractText(
     imageBuffer: Buffer,
-    width?: number,
-    height?: number,
+    _width?: number,
+    _height?: number,
   ): Promise<OCRResult[]> {
     // Validate input
     if (!imageBuffer || imageBuffer.length === 0) {

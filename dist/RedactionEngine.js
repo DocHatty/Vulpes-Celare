@@ -112,67 +112,6 @@ class RedactionEngine {
         }
     }
     /**
-     * Extract NER entities from NER result
-     */
-    static extractNEREntities(originalText, nerRedactedText, nerContext) {
-        const entities = [];
-        const tokenPattern = /\{\{[A-Z_]+_\d+_\d+\}\}/g;
-        let match;
-        while ((match = tokenPattern.exec(nerRedactedText)) !== null) {
-            const token = match[0];
-            const tokenStart = match.index;
-            const originalValue = nerContext.getOriginalValue(token);
-            if (!originalValue)
-                continue;
-            const positionInOriginal = this.mapNERPositionToOriginal(originalText, nerRedactedText, tokenStart, originalValue);
-            if (positionInOriginal !== -1) {
-                entities.push({
-                    start: positionInOriginal,
-                    end: positionInOriginal + originalValue.length,
-                    text: originalValue,
-                    token: token,
-                });
-            }
-        }
-        return entities;
-    }
-    /**
-     * Map position in NER-redacted text back to original text position
-     */
-    static mapNERPositionToOriginal(originalText, nerRedactedText, tokenPosition, originalValue) {
-        const searchRadius = 100;
-        const searchStart = Math.max(0, tokenPosition - searchRadius);
-        const searchEnd = Math.min(originalText.length, tokenPosition + searchRadius);
-        const searchWindow = originalText.substring(searchStart, searchEnd);
-        const index = searchWindow.indexOf(originalValue);
-        if (index !== -1) {
-            return searchStart + index;
-        }
-        return originalText.indexOf(originalValue);
-    }
-    /**
-     * Merge NER entities into regex-redacted text
-     */
-    static mergeNEREntities(regexRedactedText, nerEntities, context) {
-        // Sort entities by start position (descending) for replacement
-        const sortedEntities = nerEntities.sort((a, b) => b.start - a.start);
-        let mergedText = regexRedactedText;
-        for (const entity of sortedEntities) {
-            // Check if this position is already redacted (contains token)
-            const windowStart = Math.max(0, entity.start - 10);
-            const windowEnd = Math.min(mergedText.length, entity.end + 10);
-            const window = mergedText.substring(windowStart, windowEnd);
-            if (window.includes("{{")) {
-                continue; // Already redacted by regex
-            }
-            // Apply NER token
-            const before = mergedText.substring(0, entity.start);
-            const after = mergedText.substring(entity.end);
-            mergedText = before + entity.token + after;
-        }
-        return mergedText;
-    }
-    /**
      * Normalize tokens in LLM response (handle formatting variations)
      */
     static normalizeTokensInResponse(llmResponse) {

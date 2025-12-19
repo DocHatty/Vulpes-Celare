@@ -45,7 +45,6 @@ class CircuitBreaker extends events_1.EventEmitter {
     state = "closed";
     failures = 0;
     successes = 0;
-    lastFailure = 0;
     nextRetryTime = 0;
     // Statistics
     stats = {
@@ -128,7 +127,6 @@ class CircuitBreaker extends events_1.EventEmitter {
     onFailure(error) {
         this.stats.failedRequests++;
         this.failures++;
-        this.lastFailure = Date.now();
         this.successes = 0;
         this.emit("failure", error);
         if (this.state === "half_open") {
@@ -192,7 +190,6 @@ class CircuitBreaker extends events_1.EventEmitter {
         this.state = "closed";
         this.failures = 0;
         this.successes = 0;
-        this.lastFailure = 0;
         this.nextRetryTime = 0;
         this.emit("reset");
     }

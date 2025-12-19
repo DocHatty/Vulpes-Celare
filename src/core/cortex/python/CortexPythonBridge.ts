@@ -16,7 +16,7 @@
  * @module core/cortex/python/CortexPythonBridge
  */
 
-import { spawn, ChildProcess } from 'child_process';
+import { spawn } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import { EventEmitter } from 'events';
@@ -109,7 +109,6 @@ const DEFAULT_CONFIG: Required<CortexBridgeConfig> = {
  */
 export class CortexPythonBridge extends EventEmitter {
     private config: Required<CortexBridgeConfig>;
-    private pythonProcess: ChildProcess | null = null;
     private pythonAvailable: boolean | null = null;
 
     constructor(config: Partial<CortexBridgeConfig> = {}) {

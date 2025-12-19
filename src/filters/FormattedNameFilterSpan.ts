@@ -23,7 +23,6 @@ import {
   PROVIDER_TITLE_PREFIXES,
   PROVIDER_CREDENTIALS,
 } from "../utils/NameDetectionUtils";
-import { RustNameScanner } from "../utils/RustNameScanner";
 import { RustAccelConfig } from "../config/RustAccelConfig";
 import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
@@ -36,7 +35,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
     return FilterPriority.NAME;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, _context: RedactionContext): Span[] {
     const spans: Span[] = [];
 
     // =========================================================================
@@ -592,9 +591,6 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
       return false;
     }
 
-    const firstWord = words[0];
-    const lastWord = words[words.length - 1];
-
     // Check if any word is whitelisted (document terms, geographic, etc.)
     for (const word of words) {
       if (shouldWhitelist(word, FilterType.NAME)) return false;
@@ -685,7 +681,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
    * Uses coordinator for cached results to avoid duplicate FFI calls
    */
   private detectRustLastFirstNames(text: string, spans: Span[]): void {
-    const detections = nameDetectionCoordinator.getRustLastFirst();
+    const detections = nameDetectionCoordinator.getRustLastFirst(text);
     if (!detections.length) return;
 
     for (const d of detections) {
@@ -743,7 +739,7 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
    * Uses coordinator for cached results to avoid duplicate FFI calls
    */
   private detectRustFirstLastNames(text: string, spans: Span[]): void {
-    const detections = nameDetectionCoordinator.getRustFirstLast();
+    const detections = nameDetectionCoordinator.getRustFirstLast(text);
     if (!detections.length) return;
 
     for (const d of detections) {

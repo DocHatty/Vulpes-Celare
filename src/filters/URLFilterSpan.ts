@@ -65,7 +65,7 @@ export class URLFilterSpan extends SpanBasedFilter {
     return FilterPriority.URL;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     const accelerated = RustScanKernel.getDetections(context, text, "URL");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {

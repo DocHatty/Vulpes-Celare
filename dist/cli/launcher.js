@@ -53,19 +53,16 @@ const VulpesOutput_1 = require("../utils/VulpesOutput");
 let handleNativeChat;
 let handleAgent;
 let handleVulpesify;
-let validateVulpesEnvironment;
 async function loadModules() {
     if (!handleNativeChat) {
-        const [nativeChat, agent, vulpesInt, security] = await Promise.all([
+        const [nativeChat, agent, vulpesInt] = await Promise.all([
             Promise.resolve().then(() => __importStar(require("./NativeChat"))),
             Promise.resolve().then(() => __importStar(require("./Agent"))),
             Promise.resolve().then(() => __importStar(require("./VulpesIntegration"))),
-            Promise.resolve().then(() => __importStar(require("../utils/SecurityUtils"))),
         ]);
         handleNativeChat = nativeChat.handleNativeChat;
         handleAgent = agent.handleAgent;
         handleVulpesify = vulpesInt.handleVulpesify;
-        validateVulpesEnvironment = security.validateVulpesEnvironment;
     }
 }
 // Theme imported from unified theme system (../theme)
@@ -74,11 +71,6 @@ async function loadModules() {
 // ============================================================================
 function getTerminalWidth() {
     return process.stdout.columns || 80;
-}
-function centerText(text, width) {
-    const visibleLength = text.replace(/\x1b\[[0-9;]*m/g, "").length;
-    const padding = Math.max(0, Math.floor((width - visibleLength) / 2));
-    return " ".repeat(padding) + text;
 }
 function printBanner(showStats = true, clearScreen = true) {
     if (clearScreen) {
@@ -340,7 +332,6 @@ async function main() {
     await showMainMenu();
 }
 function printUsage() {
-    const width = getTerminalWidth();
     VulpesOutput_1.out.print(`
 ${theme_1.theme.primary.bold("VULPES CELARE")} - HIPAA PHI Redaction Engine
 

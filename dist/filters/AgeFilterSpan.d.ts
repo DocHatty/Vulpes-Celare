@@ -18,7 +18,7 @@ import { RedactionContext } from "../context/RedactionContext";
 export declare class AgeFilterSpan extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Pattern 1: Explicit age statements
      * Matches: "92 years old", "age 95", "94 y/o", "91 yo", "aged 96"

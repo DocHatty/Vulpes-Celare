@@ -16,11 +16,9 @@
 import * as https from "https";
 import * as http from "http";
 import * as readline from "readline";
-import chalk from "chalk";
-import ora, { Ora } from "ora";
+import ora from "ora";
 import figures from "figures";
 
-import { getSystemPrompt } from "./SystemPrompts";
 
 // Import unified theme system
 import { theme } from "../theme";
@@ -198,7 +196,7 @@ export const PROVIDERS: Record<string, ProviderConfig> = {
     envKey: "ANTHROPIC_API_KEY",
     modelsEndpoint: "/v1/models",
     chatEndpoint: "/v1/messages",
-    modelExtractor: (response) => {
+    modelExtractor: (_response) => {
       // Anthropic doesn't have a public models endpoint, return known models
       return [
         {
@@ -639,8 +637,6 @@ export class APIProvider {
     });
 
     let buffer = "";
-    let currentToolUse: { id: string; name: string; input: string } | null =
-      null;
 
     for await (const chunk of response) {
       buffer += chunk.toString();
@@ -906,9 +902,10 @@ export async function interactiveProviderSetup(): Promise<{
 
     rl.close();
     return { provider, model: selectedModel };
-  } catch (error: any) {
+  } catch (error: unknown) {
     spinner.fail("Failed to fetch models");
-    out.print(theme.error(`  Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    out.print(theme.error(`  Error: ${message}`));
     rl.close();
     return null;
   }

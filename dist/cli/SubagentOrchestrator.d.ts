@@ -129,7 +129,6 @@ export declare class SubagentOrchestrator {
     private config;
     private mainProvider;
     private subagentProvider;
-    private vulpes;
     private taskQueue;
     constructor(config: OrchestratorConfig, mainProvider: APIProvider);
     setSubagentProvider(provider: APIProvider): void;

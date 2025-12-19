@@ -294,7 +294,6 @@ class DocumentStructureAnalyzer {
     static findColumnHeader(text, offset) {
         // Look up to find header row
         const lineStart = text.lastIndexOf('\n', offset) + 1;
-        const line = text.substring(lineStart, text.indexOf('\n', offset));
         // Find column position
         const colPosition = offset - lineStart;
         // Search backwards for header row (usually has === or --- after it, or is first row)

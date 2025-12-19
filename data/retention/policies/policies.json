@@ -1,0 +1,24 @@
+[
+  {
+    "name": "HIPAA Default",
+    "description": "Default HIPAA-compliant retention policy (6 years)",
+    "createdBy": "system",
+    "retentionDays": 2190,
+    "archiveAfterDays": 365,
+    "dataTypes": [
+      "audit_logs",
+      "redaction_records",
+      "trust_bundles",
+      "fhir_audit_events",
+      "security_alerts"
+    ],
+    "compressArchive": true,
+    "encryptArchive": true,
+    "legalHolds": [],
+    "destructionMethod": "secure_delete",
+    "id": "policy_1766174860035_ac89b10f",
+    "version": 1,
+    "createdAt": "2025-12-19T20:07:40.034Z",
+    "updatedAt": "2025-12-19T20:07:40.034Z"
+  }
+]

@@ -55,7 +55,7 @@ class PassportNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // Same priority as LICENSE since it's an identifying document
         return SpanBasedFilter_1.FilterPriority.LICENSE;
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "PASSPORT");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {

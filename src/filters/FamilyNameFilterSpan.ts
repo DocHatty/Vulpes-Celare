@@ -10,12 +10,6 @@
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
-import { shouldWhitelist } from "../utils/UnifiedMedicalWhitelist";
-import {
-  NameDetectionUtils,
-  PROVIDER_TITLE_PREFIXES,
-} from "../utils/NameDetectionUtils";
-import { RustNameScanner } from "../utils/RustNameScanner";
 import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
 
 export class FamilyNameFilterSpan extends SpanBasedFilter {
@@ -27,10 +21,10 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
     return FilterPriority.NAME;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, _context: RedactionContext): Span[] {
     // Try Rust acceleration first - detectSmart includes family member patterns
     // Uses coordinator for cached results to avoid duplicate FFI calls
-    const rustDetections = nameDetectionCoordinator.getRustSmart();
+    const rustDetections = nameDetectionCoordinator.getRustSmart(text);
     if (rustDetections.length > 0) {
       // Filter for family-related patterns
       const familyPatterns = rustDetections.filter(
@@ -305,7 +299,7 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
    * and should NOT be redacted. Patients don't have formal titles.
    * This pattern is DISABLED to prevent provider name over-redaction.
    */
-  private detectTitledNames(text: string, spans: Span[]): void {
+  private detectTitledNames(_text: string, _spans: Span[]): void {
     // CRITICAL: ALL titled names are provider names - skip detection entirely
     // Titled names (Dr., Prof., Mr., Mrs., etc.) are NOT patient PHI
     return;
@@ -355,7 +349,7 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
    * medical diagnoses like "Trigeminal Neuralgia", "Bell Palsy", etc.
    * SmartNameFilterSpan handles general name detection with proper dictionary validation.
    */
-  private detectGeneralFullNames(text: string, spans: Span[]): void {
+  private detectGeneralFullNames(_text: string, _spans: Span[]): void {
     // DISABLED: This pattern matches too many false positives (medical diagnoses,
     // procedures, etc.) because it just looks for 2-4 capitalized words.
     // SmartNameFilterSpan handles general name detection with proper validation.
@@ -431,28 +425,4 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
     */
   }
 
-  /**
-   * Check if text looks like a person name (not organization/place)
-   * Delegates to shared NameDetectionUtils
-   */
-  private looksLikePersonName(name: string): boolean {
-    // Check unified whitelist
-    if (shouldWhitelist(name, FilterType.NAME)) {
-      return false;
-    }
-
-    // Use shared utility for non-person structure term check
-    if (NameDetectionUtils.isNonPersonStructureTerm(name)) {
-      return false;
-    }
-
-    // Check if first word is whitelisted (document terms, etc.)
-    const words = name.split(/\s+/);
-    if (words.length > 0 && shouldWhitelist(words[0], FilterType.NAME)) {
-      return false;
-    }
-
-    const wordCount = words.length;
-    return wordCount >= 2 && wordCount <= 4;
-  }
 }

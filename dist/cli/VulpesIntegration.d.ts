@@ -94,7 +94,6 @@ export declare const CODEX_MCP_CONFIG = "\n# Vulpes Celare MCP Server\n# Provide
 export declare class VulpesIntegration {
     private config;
     constructor(config?: Partial<IntegrationConfig>);
-    private log;
     checkStatus(): Promise<IntegrationStatus>;
     /**
      * Fast CLI detection - avoids slow execSync calls
@@ -138,5 +137,5 @@ export declare class VulpesIntegration {
     private createMcpServer;
 }
 export declare function handleVulpesify(options: any): Promise<void>;
-export declare function handleIntegrationStatus(options: any): Promise<void>;
+export declare function handleIntegrationStatus(_options: any): Promise<void>;
 //# sourceMappingURL=VulpesIntegration.d.ts.map

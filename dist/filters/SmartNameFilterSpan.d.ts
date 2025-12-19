@@ -11,26 +11,9 @@ import { Span } from "../models/Span";
 import { SpanBasedFilter } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 export declare class SmartNameFilterSpan extends SpanBasedFilter {
-    /** Pattern for title prefix at end of lookback text */
-    private static readonly TITLE_PREFIX_PATTERN;
-    /** Pattern for titled name in lookback text */
-    private static readonly TITLED_NAME_LOOKBACK_PATTERN;
-    /** Pattern for name suffixes (Jr., Sr., III, etc.) */
-    private static readonly NAME_SUFFIX_PATTERN;
-    /** Pattern for title before name in text */
-    private static readonly TITLE_BEFORE_NAME_PATTERN;
-    /** Pattern for particle names (van Gogh, de Silva, etc.) */
-    private static readonly PARTICLE_NAME_PATTERN;
-    /** Credential pattern after name */
-    private static readonly CREDENTIAL_AFTER_NAME_PATTERN;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
-    /**
-     * Check if a titled name is a PROVIDER name (should NOT be redacted)
-     * Provider names with professional titles or credentials are NOT patient PHI
-     */
-    private isProviderName;
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Check if a name (without title) appears in a provider context
      * This catches cases where "Sergei Hernandez" is detected but it's actually
@@ -175,10 +158,6 @@ export declare class SmartNameFilterSpan extends SpanBasedFilter {
      * Handles: digit-for-letter (1→l, 0→O, 7→u), case issues, extra spaces
      */
     private normalizeOcrName;
-    /**
-     * Check if a string contains OCR-style digit substitutions that look like name corruption
-     */
-    private hasOcrDigitSubstitution;
     /**
      * Validate whether an OCR-normalized candidate looks like a person name
      */

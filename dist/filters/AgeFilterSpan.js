@@ -25,7 +25,7 @@ class AgeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     getPriority() {
         return SpanBasedFilter_1.FilterPriority.DATE; // Same priority as dates (age-related)
     }
-    detect(text, config, context) {
+    detect(text, _config, context) {
         // Try Rust acceleration first
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "AGE");
         if (accelerated && accelerated.length > 0) {

@@ -20,7 +20,7 @@ export declare class LicenseNumberFilterSpan extends SpanBasedFilter {
     private static readonly COMPILED_PATTERNS;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Validate license number
      */

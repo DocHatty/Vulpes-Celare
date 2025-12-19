@@ -33,16 +33,37 @@
 import { type RustNameDetection } from "../../utils/RustNameScanner";
 /**
  * Singleton coordinator for unified name detection
+ *
+ * Supports both traditional singleton pattern and dependency injection:
+ * - getInstance() checks the DI container first, falling back to static instance
+ * - For testing, use container.replace() to inject mocks
  */
 export declare class NameDetectionCoordinator {
     private static instance;
     private cache;
-    private documentStartTime;
-    private constructor();
+    private readonly maxCacheEntries;
+    constructor();
     /**
-     * Get singleton instance
+     * Get singleton instance (DI-aware)
+     *
+     * Resolution order:
+     * 1. Check DI container for registered instance
+     * 2. Fall back to static singleton
+     *
+     * @example
+     * ```typescript
+     * // Normal usage
+     * const coordinator = NameDetectionCoordinator.getInstance();
+     *
+     * // For testing, inject a mock:
+     * container.replace(ServiceIds.NameDetectionCoordinator, () => mockCoordinator);
+     * ```
      */
     static getInstance(): NameDetectionCoordinator;
+    /**
+     * Reset the singleton instance (for testing)
+     */
+    static resetInstance(): void;
     /**
      * Begin processing a new document
      * Call this once at the start of document processing
@@ -55,15 +76,15 @@ export declare class NameDetectionCoordinator {
     /**
      * Get Rust "Last, First" detection results (cached)
      */
-    getRustLastFirst(): RustNameDetection[];
+    getRustLastFirst(text: string): RustNameDetection[];
     /**
      * Get Rust "First Last" detection results (cached)
      */
-    getRustFirstLast(): RustNameDetection[];
+    getRustFirstLast(text: string): RustNameDetection[];
     /**
      * Get Rust "Smart" detection results (cached)
      */
-    getRustSmart(): RustNameDetection[];
+    getRustSmart(text: string): RustNameDetection[];
     /**
      * Check if Rust scanner is available
      */
@@ -71,7 +92,7 @@ export declare class NameDetectionCoordinator {
     /**
      * Get all Rust results at once (for filters that need multiple)
      */
-    getAllRustResults(): {
+    getAllRustResults(text: string): {
         lastFirst: RustNameDetection[];
         firstLast: RustNameDetection[];
         smart: RustNameDetection[];
@@ -80,6 +101,9 @@ export declare class NameDetectionCoordinator {
      * Clear cache (for testing)
      */
     clearCache(): void;
+    private getCacheKey;
+    private getOrCreateCache;
+    private pruneCache;
 }
 /**
  * Singleton export for convenience

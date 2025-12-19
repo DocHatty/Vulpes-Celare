@@ -22,7 +22,7 @@ import {
   type PostFilterShadowReport,
 } from "./filters/PostFilterService";
 import { SpanEnhancer } from "./SpanEnhancer";
-import { crossTypeReasoner } from "./CrossTypeReasoner";
+// crossTypeReasoner imported but only datalogReasoner is used in the pipeline
 import { datalogReasoner } from "./DatalogReasoner";
 import { confidenceCalibrator } from "./ConfidenceCalibrator";
 import { shouldWhitelist } from "../utils/UnifiedMedicalWhitelist";
@@ -844,7 +844,7 @@ export class ParallelRedactionEngine {
     );
 
     // STEP 5: Apply all spans at once
-    const applyResult = this.applySpans(text, validSpans, context);
+    const applyResult = this.applySpans(text, validSpans, context, policy);
     const redactedText = applyResult.text;
 
     if (applyResult.shadow) {
@@ -953,6 +953,7 @@ export class ParallelRedactionEngine {
     text: string,
     spans: Span[],
     context: RedactionContext,
+    policy: any,
   ): { text: string; shadow?: ApplySpansShadowReport } {
     // Sort by position (reverse) so we can replace without messing up positions
     const sortedSpans = [...spans].sort(
@@ -961,12 +962,14 @@ export class ParallelRedactionEngine {
 
     const replacements: RustReplacement[] = [];
     for (const span of sortedSpans) {
-      // Create token for this span
-      const token = context.createToken(span.filterType, span.text);
+      const replacement =
+        span.replacement ??
+        policy?.identifiers?.[span.filterType]?.replacement ??
+        context.createToken(span.filterType, span.text);
       replacements.push({
         characterStart: span.characterStart,
         characterEnd: span.characterEnd,
-        replacement: token,
+        replacement,
       });
 
       // Log PHI detection with full details
@@ -980,12 +983,12 @@ export class ParallelRedactionEngine {
         start: span.characterStart,
         end: span.characterEnd,
         confidence: span.confidence,
-        token: token,
+        token: replacement,
         context: contextSnippet,
         pattern: span.pattern || undefined,
       });
 
-      span.replacement = token;
+      span.replacement = replacement;
       span.applied = true;
     }
 

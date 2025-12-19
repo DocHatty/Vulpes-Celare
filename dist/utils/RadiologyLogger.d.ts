@@ -45,12 +45,14 @@ export declare class RadiologyLogger {
     private static _logLevel;
     private static _logFormat;
     private static suppressErrors;
+    private static readonly logPhiTextEnv;
     private static get enabled();
     private static set enabled(value);
     private static get logLevel();
     private static set logLevel(value);
     private static get logFormat();
     private static set logFormat(value);
+    private static shouldLogPhiText;
     private static stats;
     private static detectionHistory;
     private static filteredHistory;

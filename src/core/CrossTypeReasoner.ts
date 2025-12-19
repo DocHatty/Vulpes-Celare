@@ -66,7 +66,8 @@ export class CrossTypeReasoner {
   // Reasoning parameters
   private static readonly CONSISTENCY_BOOST = 0.15;
   private static readonly CONFLICT_PENALTY = 0.25;
-  private static readonly MIN_CONFIDENCE_THRESHOLD = 0.3;
+  // MIN_CONFIDENCE_THRESHOLD reserved for future use
+  // private static readonly MIN_CONFIDENCE_THRESHOLD = 0.3;
   private static readonly PROXIMITY_WINDOW = 200; // characters
 
   constructor() {
@@ -442,7 +443,7 @@ export class CrossTypeReasoner {
   /**
    * Resolve remaining conflicts using context analysis
    */
-  private resolveConflicts(results: ReasoningResult[], fullText: string): void {
+  private resolveConflicts(results: ReasoningResult[], _fullText: string): void {
     // Group results by overlapping positions
     const positionGroups: Map<string, ReasoningResult[]> = new Map();
 
@@ -633,7 +634,7 @@ export class CrossTypeReasoner {
    * Check if a type change is valid based on constraints
    */
   isTypeChangeValid(
-    span: Span,
+    _span: Span,
     newType: FilterType,
     nearbySpans: Span[],
   ): { valid: boolean; reason: string } {

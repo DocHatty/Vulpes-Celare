@@ -6,7 +6,6 @@ export declare class DateShiftingEngine {
     private shiftDays;
     private dateMap;
     private tokenCounter;
-    private sessionId;
     constructor(sessionIdOrShiftDays?: string | number);
     shiftDate(date: Date): Date;
     addDate(original: string): number | null;

@@ -17,8 +17,6 @@ export declare class RedactionContext {
     private sessionId;
     private tokenManager;
     private statsTracker;
-    private createdAt;
-    private referenceDate;
     private dateShiftingEngine;
     private replacementService;
     private contextName;

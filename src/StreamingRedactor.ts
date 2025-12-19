@@ -19,17 +19,14 @@
 
 import {
   VulpesCelare,
-  RedactionResult,
   VulpesCelareConfig,
 } from "./VulpesCelare";
 import { loadNativeBinding } from "./native/binding";
 import {
   RustStreamingIdentifierScanner,
-  RustStreamingIdentifierDetection,
 } from "./utils/RustStreamingIdentifierScanner";
 import {
   RustStreamingNameScanner,
-  RustStreamingNameDetection,
 } from "./utils/RustStreamingNameScanner";
 
 let cachedStreamingBinding:

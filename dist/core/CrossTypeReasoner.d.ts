@@ -49,7 +49,6 @@ export declare class CrossTypeReasoner {
     private entityTracker;
     private static readonly CONSISTENCY_BOOST;
     private static readonly CONFLICT_PENALTY;
-    private static readonly MIN_CONFIDENCE_THRESHOLD;
     private static readonly PROXIMITY_WINDOW;
     constructor();
     /**
@@ -105,7 +104,7 @@ export declare class CrossTypeReasoner {
     /**
      * Check if a type change is valid based on constraints
      */
-    isTypeChangeValid(span: Span, newType: FilterType, nearbySpans: Span[]): {
+    isTypeChangeValid(_span: Span, newType: FilterType, nearbySpans: Span[]): {
         valid: boolean;
         reason: string;
     };

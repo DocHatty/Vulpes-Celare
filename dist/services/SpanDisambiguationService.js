@@ -104,10 +104,8 @@ const AMBIGUOUS_PATTERNS = new Map([
  */
 class SpanDisambiguationService {
     confidenceThreshold;
-    windowSize;
-    constructor(confidenceThreshold = 0.15, windowSize = 5) {
+    constructor(confidenceThreshold = 0.15, _windowSize = 5) {
         this.confidenceThreshold = confidenceThreshold;
-        this.windowSize = windowSize;
     }
     /**
      * Disambiguate a group of identical spans (same position, different types)

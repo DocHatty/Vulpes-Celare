@@ -20,7 +20,6 @@
 
 import { Span, FilterType } from "../models/Span";
 import { loadNativeBinding } from "../native/binding";
-import { RustAccelConfig } from "../config/RustAccelConfig";
 
 // Rust binding cache
 let cachedBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
@@ -799,7 +798,7 @@ export class WeightedPHIScorer {
    * Calculate context bonuses
    */
   private calculateContextBonus(
-    span: Span,
+    _span: Span,
     context: string,
     breakdown: ScoringResult["breakdown"],
   ): number {

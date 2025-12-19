@@ -100,18 +100,6 @@ export declare class VectorDisambiguationService {
      */
     private cosineSimilarity;
     /**
-     * Calculate Euclidean (L2) distance between two vectors
-     * Formula: d(A, B) = sqrt(sum((a_i - b_i)^2))
-     * Useful as alternative to cosine when vector magnitudes matter
-     */
-    private euclideanDistance;
-    /**
-     * Convert Euclidean distance to similarity in [0, 1]
-     * Formula: similarity = 1 / (1 + distance)
-     * This is a standard transformation that maps [0, inf) -> (0, 1]
-     */
-    private distanceToSimilarity;
-    /**
      * Make cache key from window tokens
      */
     private makeWindowKey;

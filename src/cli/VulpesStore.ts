@@ -206,7 +206,7 @@ try {
   configInstance = new Conf<VulpesConfig>(confOptions);
   // Verify access
   configInstance.get("preferences");
-} catch (error: any) {
+} catch (error: unknown) {
   // Handle corruption or encryption errors
   const configPath = path.join(VULPES_DIR, "config.json");
   const backupPath = path.join(VULPES_DIR, `config.json.corrupt.${Date.now()}.bak`);

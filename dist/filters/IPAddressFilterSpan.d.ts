@@ -19,7 +19,7 @@ export declare class IPAddressFilterSpan extends SpanBasedFilter {
     private static readonly IP_PATTERN;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * Validate IPv4 address octets
      *

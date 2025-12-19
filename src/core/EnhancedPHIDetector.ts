@@ -12,12 +12,10 @@
  * @module redaction/core
  */
 
-import { Span, FilterType } from "../models/Span";
 import { EnsembleVoter, VoteSignal } from "./EnsembleVoter";
 import {
   DocumentStructureAnalyzer,
   DocumentProfile,
-  StructuralPosition,
 } from "../context/DocumentStructureAnalyzer";
 import { FuzzyDictionaryMatcher } from "../dictionaries/FuzzyDictionaryMatcher";
 import { OcrChaosDetector, ChaosAnalysis } from "../utils/OcrChaosDetector";
@@ -400,7 +398,7 @@ export class EnhancedPHIDetector {
     candidate: DetectionCandidate,
     fullText: string,
   ): VoteSignal | null {
-    const { start, end, phiType, text } = candidate;
+    const { start, end, phiType, text: _text } = candidate;
 
     // Get surrounding context (100 chars before and after)
     const contextStart = Math.max(0, start - 100);

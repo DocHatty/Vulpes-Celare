@@ -220,7 +220,7 @@ export class FalsePositiveClassifier extends ONNXInference implements IPostFilte
    * IPostFilterStrategy implementation - synchronous check
    * For async ML prediction, use classifyAsync instead
    */
-  shouldKeep(span: Span, text: string): boolean {
+  shouldKeep(span: Span, _text: string): boolean {
     // Only apply to NAME type (highest FP rate)
     if (span.filterType !== FilterType.NAME) {
       return true;

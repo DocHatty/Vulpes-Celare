@@ -234,7 +234,7 @@ export class RelativeDateFilterSpan extends SpanBasedFilter {
     return FilterPriority.DATE + 10;
   }
 
-  detect(text: string, config: any, context: RedactionContext): Span[] {
+  detect(text: string, _config: any, context: RedactionContext): Span[] {
     // Try Rust acceleration first
     const accelerated = RustScanKernel.getDetections(
       context,

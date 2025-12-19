@@ -39,7 +39,6 @@ export declare class CircuitBreaker extends EventEmitter {
     private state;
     private failures;
     private successes;
-    private lastFailure;
     private nextRetryTime;
     private stats;
     constructor(config: CircuitBreakerConfig);

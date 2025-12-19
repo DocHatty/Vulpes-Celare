@@ -47,4 +47,13 @@ if (fs.existsSync(srcCli)) {
     copyDir(srcCli, distCli);
 }
 
+// Copy post-filter config files
+const srcPostFilter = path.join(srcDir, 'config', 'post-filter');
+const distPostFilter = path.join(distDir, 'config', 'post-filter');
+
+if (fs.existsSync(srcPostFilter)) {
+    console.log('Copying post-filter configs...');
+    copyDir(srcPostFilter, distPostFilter);
+}
+
 console.log('Assets copied successfully.');

@@ -117,7 +117,7 @@ class OCRService {
     /**
      * Extract text and bounding boxes from an image buffer via Rust Native
      */
-    async extractText(imageBuffer, width, height) {
+    async extractText(imageBuffer, _width, _height) {
         // Validate input
         if (!imageBuffer || imageBuffer.length === 0) {
             this.logger.warn(SERVICE_NAME, "extractText", "Empty image buffer provided");

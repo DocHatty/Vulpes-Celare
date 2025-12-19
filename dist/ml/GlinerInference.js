@@ -59,8 +59,6 @@ const logger = VulpesLogger_1.vulpesLogger.forComponent("GlinerInference");
  * GLiNER Inference class
  */
 class GlinerInference extends ONNXInference_1.ONNXInference {
-    tokenizerConfig = null;
-    modelConfig = null;
     vocab = new Map();
     idToToken = new Map();
     // Default entity labels for PHI detection
@@ -264,9 +262,8 @@ class GlinerInference extends ONNXInference_1.ONNXInference {
     /**
      * Create input feeds for ONNX inference
      */
-    createInputFeeds(tokenized, labelTokens, numLabels) {
+    createInputFeeds(tokenized, labelTokens, _numLabels) {
         const { inputIds, attentionMask } = tokenized;
-        const seqLen = inputIds.length;
         // Create tensors - shape depends on model architecture
         // GLiNER typically expects:
         // - input_ids: [batch_size, seq_length]
@@ -323,7 +320,6 @@ class GlinerInference extends ONNXInference_1.ONNXInference {
         // GLiNER output is typically:
         // - logits/scores: [batch_size, seq_length, seq_length, num_labels] or similar
         // The exact format depends on the model variant
-        const outputNames = this.getOutputNames();
         // Try different output formats
         let scores = null;
         let scoreTensor = null;

@@ -18,8 +18,7 @@ import { Span, FilterType } from "../models/Span";
  */
 export declare class SpanDisambiguationService {
     private confidenceThreshold;
-    private windowSize;
-    constructor(confidenceThreshold?: number, windowSize?: number);
+    constructor(confidenceThreshold?: number, _windowSize?: number);
     /**
      * Disambiguate a group of identical spans (same position, different types)
      * Returns the most likely FilterType based on context

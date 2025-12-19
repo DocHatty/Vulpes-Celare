@@ -237,7 +237,7 @@ class ModelManagerImpl {
   /**
    * Detect which execution provider is actually being used
    */
-  private detectExecutionProvider(session: ort.InferenceSession): string {
+  private detectExecutionProvider(_session: ort.InferenceSession): string {
     // ONNX Runtime doesn't expose this directly, so we infer from configuration
     const preferred = (process.env.VULPES_ML_DEVICE || "cpu").toLowerCase();
 

@@ -63,7 +63,7 @@ class ConfidencePipeline {
         this.registerStage({
             name: "contextModifier",
             config: configs.contextModifier || { enabled: true, priority: 10 },
-            execute: async (spans, text, context) => {
+            execute: async (spans, text, _context) => {
                 return this.applyBasicContextModifiers(spans, text);
             },
         });
@@ -79,7 +79,7 @@ class ConfidencePipeline {
         this.registerStage({
             name: "vectorDisambiguation",
             config: configs.vectorDisambiguation || { enabled: true, priority: 30 },
-            execute: async (spans, text, context) => {
+            execute: async (spans, _text, _context) => {
                 return this.applyVectorDisambiguation(spans);
             },
         });
@@ -87,7 +87,7 @@ class ConfidencePipeline {
         this.registerStage({
             name: "mlConfidenceRanking",
             config: configs.mlConfidenceRanking || { enabled: true, priority: 35 },
-            execute: async (spans, text, context) => {
+            execute: async (spans, text, _context) => {
                 return this.applyMLConfidenceRanking(spans, text);
             },
         });
@@ -95,7 +95,7 @@ class ConfidencePipeline {
         this.registerStage({
             name: "crossTypeReasoning",
             config: configs.crossTypeReasoning || { enabled: true, priority: 40 },
-            execute: async (spans, text, context) => {
+            execute: async (spans, text, _context) => {
                 return this.applyCrossTypeReasoning(spans, text);
             },
         });
@@ -103,7 +103,7 @@ class ConfidencePipeline {
         this.registerStage({
             name: "contextualConfidence",
             config: configs.contextualConfidence || { enabled: false, priority: 50 },
-            execute: async (spans, text, context) => {
+            execute: async (spans, text, _context) => {
                 return this.applyContextualConfidence(spans, text);
             },
         });
@@ -111,7 +111,7 @@ class ConfidencePipeline {
         this.registerStage({
             name: "calibration",
             config: configs.calibration || { enabled: true, priority: 60 },
-            execute: async (spans, text, context) => {
+            execute: async (spans, _text, _context) => {
                 return this.applyCalibration(spans);
             },
         });
@@ -256,7 +256,7 @@ class ConfidencePipeline {
      * Stage 2: Span enhancement
      * Applies multi-signal ensemble scoring
      */
-    applySpanEnhancement(spans, text, context) {
+    applySpanEnhancement(spans, _text, _context) {
         // Simplified enhancement - boost based on pattern quality
         for (const span of spans) {
             // High-confidence patterns get boosted
@@ -330,7 +330,7 @@ class ConfidencePipeline {
      * Stage 4: Cross-type reasoning
      * Applies constraint-based reasoning across PHI types
      */
-    applyCrossTypeReasoning(spans, text) {
+    applyCrossTypeReasoning(spans, _text) {
         // Mutual exclusion constraints
         const MUTUALLY_EXCLUSIVE = [
             ["DATE", "AGE_90_PLUS"],

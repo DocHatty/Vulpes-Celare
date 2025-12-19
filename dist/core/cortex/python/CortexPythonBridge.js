@@ -90,7 +90,6 @@ const DEFAULT_CONFIG = {
  */
 class CortexPythonBridge extends events_1.EventEmitter {
     config;
-    pythonProcess = null;
     pythonAvailable = null;
     constructor(config = {}) {
         super();

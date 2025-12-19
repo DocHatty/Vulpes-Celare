@@ -39,31 +39,9 @@ export interface GlinerEntity {
 }
 
 /**
- * GLiNER tokenizer configuration
- */
-interface GlinerTokenizerConfig {
-  vocab: Record<string, number>;
-  maxLength: number;
-  clsToken: string;
-  sepToken: string;
-  padToken: string;
-  unkToken: string;
-}
-
-/**
- * GLiNER model configuration
- */
-interface GlinerModelConfig {
-  maxWidth: number;
-  entityLabels: string[];
-}
-
-/**
  * GLiNER Inference class
  */
 export class GlinerInference extends ONNXInference {
-  private tokenizerConfig: GlinerTokenizerConfig | null = null;
-  private modelConfig: GlinerModelConfig | null = null;
   private vocab: Map<string, number> = new Map();
   private idToToken: Map<number, string> = new Map();
 
@@ -322,10 +300,9 @@ export class GlinerInference extends ONNXInference {
   private createInputFeeds(
     tokenized: { inputIds: number[]; attentionMask: number[] },
     labelTokens: number[][],
-    numLabels: number
+    _numLabels: number
   ): Record<string, ort.Tensor> {
     const { inputIds, attentionMask } = tokenized;
-    const seqLen = inputIds.length;
 
     // Create tensors - shape depends on model architecture
     // GLiNER typically expects:
@@ -407,8 +384,6 @@ export class GlinerInference extends ONNXInference {
     // GLiNER output is typically:
     // - logits/scores: [batch_size, seq_length, seq_length, num_labels] or similar
     // The exact format depends on the model variant
-
-    const outputNames = this.getOutputNames();
 
     // Try different output formats
     let scores: Float32Array | null = null;

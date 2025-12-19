@@ -74,10 +74,100 @@ const meta_1 = require("../meta");
 const SystemPrompts_1 = require("./SystemPrompts");
 const APIProvider_1 = require("./APIProvider");
 const SubagentOrchestrator_1 = require("./SubagentOrchestrator");
+const types_1 = require("./types");
 // Import unified theme system
 const theme_1 = require("../theme");
 const output_1 = require("../theme/output");
 const VulpesOutput_1 = require("../utils/VulpesOutput");
+// ============================================================================
+// COMMAND WHITELIST - Security mitigation for shell command injection
+// ============================================================================
+// Based on OWASP and Node.js security best practices:
+// - https://auth0.com/blog/preventing-command-injection-attacks-in-node-js-apps/
+// - https://www.stackhawk.com/blog/nodejs-command-injection-examples-and-prevention/
+//
+// Only these commands are allowed to be executed by the LLM agent.
+// This prevents malicious prompt injection from executing arbitrary commands.
+const ALLOWED_COMMANDS = new Set([
+    // Package managers
+    "npm",
+    "yarn",
+    "pnpm",
+    "npx",
+    // Version control
+    "git",
+    // Testing
+    "jest",
+    "vitest",
+    "mocha",
+    // Build tools
+    "tsc",
+    "node",
+    "ts-node",
+    // File listing (safe)
+    "ls",
+    "dir",
+    "find",
+    // Text processing (read-only)
+    "cat",
+    "head",
+    "tail",
+    "grep",
+    "wc",
+    // System info (safe)
+    "pwd",
+    "whoami",
+    "echo",
+    "date",
+    // Vulpes CLI
+    "vulpes",
+]);
+/**
+ * Dangerous command patterns that should never be executed regardless of whitelist
+ */
+const DANGEROUS_PATTERNS = [
+    // Command chaining that could bypass whitelist
+    /[;&|`$]/, // Shell metacharacters
+    /\$\(/, // Command substitution
+    />\s*\//, // Redirect to root paths
+    /rm\s+-rf?\s+\//, // Destructive rm
+    /curl.*\|\s*sh/, // Pipe to shell
+    /wget.*\|\s*sh/, // Pipe to shell
+    /eval\s/, // Eval command
+    /exec\s/, // Exec command
+    /sudo\s/, // Sudo command
+    /chmod\s+[0-7]*7/, // World-writable permissions
+    /\/etc\//, // System config paths
+    /\/root\//, // Root home directory
+];
+/**
+ * Validates a command against the whitelist and dangerous patterns
+ * @param command The command string to validate
+ * @returns Object with isAllowed flag and reason if rejected
+ */
+function validateCommand(command) {
+    const trimmed = command.trim();
+    // Check for dangerous patterns first
+    for (const pattern of DANGEROUS_PATTERNS) {
+        if (pattern.test(trimmed)) {
+            return {
+                isAllowed: false,
+                reason: `Command contains dangerous pattern: ${pattern.source}`,
+            };
+        }
+    }
+    // Extract the base command (first word)
+    const baseCommand = trimmed.split(/\s+/)[0].toLowerCase();
+    // Handle paths like /usr/bin/npm -> npm
+    const commandName = path.basename(baseCommand);
+    if (!ALLOWED_COMMANDS.has(commandName)) {
+        return {
+            isAllowed: false,
+            reason: `Command '${commandName}' is not in the allowed list. Allowed: ${Array.from(ALLOWED_COMMANDS).join(", ")}`,
+        };
+    }
+    return { isAllowed: true };
+}
 // Initialize marked with terminal renderer using theme colors
 const marked = new marked_1.Marked((0, marked_terminal_1.markedTerminal)({
     code: chalk_1.default.hex(theme_1.terminal.codeBg).inverse,
@@ -113,7 +203,7 @@ const VULPES_TOOLS = [
     },
     {
         name: "analyze_redaction",
-        description: "Analyze text for PHI without redacting. Shows what would be detected.",
+        description: "Analyze text for PHI and return redacted output with statistics.",
         input_schema: {
             type: "object",
             properties: {
@@ -209,7 +299,6 @@ class NativeChat {
     orchestrator = null;
     messages = [];
     renderMarkdownEnabled = true;
-    interactiveRedactionActive = false;
     subagentsEnabled = false;
     constructor(config) {
         this.config = {
@@ -268,7 +357,8 @@ class NativeChat {
                 }
             }
             catch (e) {
-                spinner.fail(`Failed to fetch models: ${e.message}`);
+                const message = e instanceof Error ? e.message : String(e);
+                spinner.fail(`Failed to fetch models: ${message}`);
                 process.exit(1);
             }
         }
@@ -461,7 +551,8 @@ class NativeChat {
         }
         catch (error) {
             VulpesOutput_1.out.blank();
-            VulpesOutput_1.out.print(theme_1.theme.error(`\n  ${figures_1.default.cross} Error: ${error.message}`));
+            const message = error instanceof Error ? error.message : String(error);
+            VulpesOutput_1.out.print(theme_1.theme.error(`\n  ${figures_1.default.cross} Error: ${message}`));
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -472,29 +563,55 @@ class NativeChat {
         try {
             switch (name) {
                 case "redact_text":
-                    return await this.toolRedactText(input.text);
+                    if ((0, types_1.isRedactTextInput)(input)) {
+                        return await this.toolRedactText(input.text);
+                    }
+                    return "Invalid input for redact_text: missing 'text' field";
                 case "analyze_redaction":
-                    return await this.toolAnalyzeRedaction(input.text);
+                    if ((0, types_1.isRedactTextInput)(input)) {
+                        return await this.toolAnalyzeRedaction(input.text);
+                    }
+                    return "Invalid input for analyze_redaction: missing 'text' field";
                 case "read_file":
-                    return await this.toolReadFile(input.path);
+                    if ((0, types_1.isReadFileInput)(input)) {
+                        return await this.toolReadFile(input.path);
+                    }
+                    return "Invalid input for read_file: missing 'path' field";
                 case "write_file":
-                    return await this.toolWriteFile(input.path, input.content);
+                    if ((0, types_1.isWriteFileInput)(input)) {
+                        return await this.toolWriteFile(input.path, input.content);
+                    }
+                    return "Invalid input for write_file: missing 'path' or 'content' field";
                 case "run_command":
-                    return await this.toolRunCommand(input.command);
+                    if ((0, types_1.isRunCommandInput)(input)) {
+                        return await this.toolRunCommand(input.command);
+                    }
+                    return "Invalid input for run_command: missing 'command' field";
                 case "list_files":
-                    return await this.toolListFiles(input.directory, input.pattern);
+                    if ((0, types_1.isListFilesInput)(input)) {
+                        return await this.toolListFiles(input.directory, input.pattern);
+                    }
+                    return "Invalid input for list_files: missing 'directory' field";
                 case "search_code":
-                    return await this.toolSearchCode(input.pattern, input.path);
+                    if ((0, types_1.isSearchCodeInput)(input)) {
+                        return await this.toolSearchCode(input.pattern, input.path);
+                    }
+                    return "Invalid input for search_code: missing 'pattern' field";
                 case "get_system_info":
                     return await this.toolGetSystemInfo();
                 case "run_tests":
-                    return await this.toolRunTests(input.filter);
+                    if ((0, types_1.isRunTestsInput)(input)) {
+                        const testsInput = input;
+                        return await this.toolRunTests(testsInput.filter);
+                    }
+                    return await this.toolRunTests();
                 default:
                     return `Unknown tool: ${name}`;
             }
         }
         catch (error) {
-            return `Error executing ${name}: ${error.message}`;
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            return `Error executing ${name}: ${errorMessage}`;
         }
     }
     async toolRedactText(text) {
@@ -512,8 +629,8 @@ class NativeChat {
     }
     async toolAnalyzeRedaction(text) {
         const result = await this.vulpes.process(text);
-        let output = `ANALYSIS:\nOriginal: ${text.length} chars\nPHI found: ${result.redactionCount}\n\n`;
-        output += `ORIGINAL:\n${text}\n\nREDACTED:\n${result.text}\n`;
+        let output = `ANALYSIS:\nInput length: ${text.length} chars\nPHI found: ${result.redactionCount}\n\n`;
+        output += `REDACTED:\n${result.text}\n`;
         if (Object.keys(result.breakdown).length > 0) {
             output += `\nBREAKDOWN:\n`;
             for (const [type, count] of Object.entries(result.breakdown)) {
@@ -532,7 +649,8 @@ class NativeChat {
             return content;
         }
         catch (error) {
-            return `Security error: ${error.message}`;
+            const message = error instanceof Error ? error.message : String(error);
+            return `Security error: ${message}`;
         }
     }
     async toolWriteFile(filePath, content) {
@@ -546,12 +664,19 @@ class NativeChat {
             return `Wrote ${content.length} bytes to ${filePath}`;
         }
         catch (error) {
-            return `Security error: ${error.message}`;
+            const message = error instanceof Error ? error.message : String(error);
+            return `Security error: ${message}`;
         }
     }
     async toolRunCommand(command) {
+        // Security: Validate command against whitelist before execution
+        const validation = validateCommand(command);
+        if (!validation.isAllowed) {
+            VulpesOutput_1.out.print(theme_1.theme.error(`    ${figures_1.default.cross} Command blocked: ${validation.reason}`));
+            return `SECURITY: Command execution blocked. ${validation.reason}`;
+        }
         return new Promise((resolve) => {
-            // Use exec for shell command strings to avoid deprecation warning
+            // Use spawn with shell for whitelisted commands only
             const proc = (0, child_process_1.spawn)(command, {
                 cwd: this.config.workingDir,
                 shell: true,
@@ -595,7 +720,8 @@ class NativeChat {
             });
         }
         catch (error) {
-            return `Search error: ${error.message}`;
+            const message = error instanceof Error ? error.message : String(error);
+            return `Search error: ${message}`;
         }
     }
     async toolGetSystemInfo() {
@@ -872,7 +998,8 @@ class NativeChat {
             this.messages.push({ role: "assistant", content: result.response });
         }
         catch (error) {
-            spinner.fail(`Orchestration failed: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            spinner.fail(`Orchestration failed: ${message}`);
         }
     }
     // ══════════════════════════════════════════════════════════════════════════
@@ -961,12 +1088,18 @@ exports.NativeChat = NativeChat;
 // HANDLER
 // ============================================================================
 async function handleNativeChat(options) {
+    const maxTokens = typeof options.maxTokens === "string"
+        ? parseInt(options.maxTokens, 10)
+        : options.maxTokens;
+    const parallel = typeof options.parallel === "string"
+        ? parseInt(options.parallel, 10)
+        : options.parallel;
     const chat = new NativeChat({
         provider: options.provider,
         model: options.model,
         apiKey: options.apiKey,
         baseUrl: options.baseUrl,
-        maxTokens: parseInt(options.maxTokens) || 8192,
+        maxTokens: maxTokens || 8192,
         workingDir: process.cwd(),
         mode: options.mode || "dev",
         verbose: options.verbose,
@@ -975,7 +1108,7 @@ async function handleNativeChat(options) {
         subagentProvider: options.subagentProvider,
         subagentModel: options.subagentModel,
         subagentApiKey: options.subagentApiKey,
-        maxParallelSubagents: parseInt(options.parallel) || 3,
+        maxParallelSubagents: parallel || 3,
         // UI options
         skipBanner: options.skipBanner || false,
     });

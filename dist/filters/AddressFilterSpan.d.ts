@@ -47,7 +47,7 @@ export declare class AddressFilterSpan extends SpanBasedFilter {
     private static readonly COMPILED_PATTERNS;
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, context: RedactionContext): Span[];
     /**
      * OCR-corrupted suffix variants - maps common OCR errors to their correct suffix
      * Key: regex pattern, Value: confidence penalty (1.0 = no penalty)

@@ -12,7 +12,7 @@ import { RedactionContext } from "../context/RedactionContext";
 export declare class FamilyNameFilterSpan extends SpanBasedFilter {
     getType(): string;
     getPriority(): number;
-    detect(text: string, config: any, context: RedactionContext): Span[];
+    detect(text: string, _config: any, _context: RedactionContext): Span[];
     /**
      * Fallback: Detect titled names (Dr. Smith, Mr. John Doe, etc.)
      *
@@ -33,10 +33,5 @@ export declare class FamilyNameFilterSpan extends SpanBasedFilter {
      * SmartNameFilterSpan handles general name detection with proper dictionary validation.
      */
     private detectGeneralFullNames;
-    /**
-     * Check if text looks like a person name (not organization/place)
-     * Delegates to shared NameDetectionUtils
-     */
-    private looksLikePersonName;
 }
 //# sourceMappingURL=FamilyNameFilterSpan.d.ts.map

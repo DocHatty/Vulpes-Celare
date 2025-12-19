@@ -52,6 +52,7 @@ const UnifiedMedicalWhitelist_1 = require("../utils/UnifiedMedicalWhitelist");
 const HospitalDictionary_1 = require("../dictionaries/HospitalDictionary");
 const PostFilterService_1 = require("./filters/PostFilterService");
 const SpanEnhancer_1 = require("./SpanEnhancer");
+// crossTypeReasoner imported but only datalogReasoner is used in the pipeline
 const DatalogReasoner_1 = require("./DatalogReasoner");
 const ConfidenceCalibrator_1 = require("./ConfidenceCalibrator");
 const UnifiedMedicalWhitelist_2 = require("../utils/UnifiedMedicalWhitelist");
@@ -577,7 +578,7 @@ class ParallelRedactionEngine {
         });
         RadiologyLogger_1.RadiologyLogger.pipelineStage("POST-FILTER", `Final false positive removal: ${mergedSpans.length} -> ${validSpans.length}`, validSpans.length);
         // STEP 5: Apply all spans at once
-        const applyResult = this.applySpans(text, validSpans, context);
+        const applyResult = this.applySpans(text, validSpans, context, policy);
         const redactedText = applyResult.text;
         if (applyResult.shadow) {
             shadow = { ...(shadow ?? {}), applySpans: applyResult.shadow };
@@ -650,17 +651,18 @@ class ParallelRedactionEngine {
      * Apply all spans to text in a single pass
      * Processes spans in reverse order to maintain positions
      */
-    static applySpans(text, spans, context) {
+    static applySpans(text, spans, context, policy) {
         // Sort by position (reverse) so we can replace without messing up positions
         const sortedSpans = [...spans].sort((a, b) => b.characterStart - a.characterStart);
         const replacements = [];
         for (const span of sortedSpans) {
-            // Create token for this span
-            const token = context.createToken(span.filterType, span.text);
+            const replacement = span.replacement ??
+                policy?.identifiers?.[span.filterType]?.replacement ??
+                context.createToken(span.filterType, span.text);
             replacements.push({
                 characterStart: span.characterStart,
                 characterEnd: span.characterEnd,
-                replacement: token,
+                replacement,
             });
             // Log PHI detection with full details
             const contextStart = Math.max(0, span.characterStart - 30);
@@ -672,11 +674,11 @@ class ParallelRedactionEngine {
                 start: span.characterStart,
                 end: span.characterEnd,
                 confidence: span.confidence,
-                token: token,
+                token: replacement,
                 context: contextSnippet,
                 pattern: span.pattern || undefined,
             });
-            span.replacement = token;
+            span.replacement = replacement;
             span.applied = true;
         }
         const applyShadowEnabled = process.env.VULPES_SHADOW_APPLY_SPANS === "1";

@@ -86,8 +86,6 @@ export declare class ConfidenceModifierService {
     private static readonly CONFIDENCE_FLOOR;
     private keywordBloomFilter;
     private allKeywordsSet;
-    private static readonly TITLE_PATTERN;
-    private static readonly SHORT_NAME_PATTERN;
     constructor(modifiers?: ConfidenceModifier[]);
     /**
      * OPTIMIZATION: Build bloom filter and keyword set from all modifiers

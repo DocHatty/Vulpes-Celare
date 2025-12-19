@@ -76,7 +76,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: "analyze_redaction",
         description:
-          "Analyze text for PHI without redacting. Shows what would be detected.",
+          "Analyze text for PHI and return redacted output with statistics.",
         inputSchema: {
           type: "object" as const,
           properties: {
@@ -138,7 +138,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               type: "text" as const,
               text: JSON.stringify(
                 {
-                  original: (args as { text: string }).text,
                   redacted: result.text,
                   phiCount: result.redactionCount,
                   breakdown: result.breakdown,

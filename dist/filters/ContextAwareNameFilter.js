@@ -102,7 +102,7 @@ class ContextAwareNameFilter extends SpanBasedFilter_1.SpanBasedFilter {
         // Run after main name filters to catch what they miss
         return SpanBasedFilter_1.FilterPriority.NAME + 10;
     }
-    detect(text, config, context) {
+    detect(text, _config, _context) {
         const spans = [];
         // Pattern 1: Diverse first names (context-required)
         this.detectDiverseFirstNames(text, spans);
