@@ -21,6 +21,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { vulpesLogger as log } from "../utils/VulpesLogger";
 import { EventEmitter } from "events";
+import { container, ServiceIds } from "../core/ServiceContainer";
 
 // ============================================================================
 // Types
@@ -180,8 +181,15 @@ export class PluginManager extends EventEmitter {
   }
 
   static getInstance(config?: PluginManagerConfig): PluginManager {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<PluginManager>(ServiceIds.PluginManager);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!PluginManager.instance) {
       PluginManager.instance = new PluginManager(config);
+      container.registerInstance(ServiceIds.PluginManager, PluginManager.instance);
     }
     return PluginManager.instance;
   }

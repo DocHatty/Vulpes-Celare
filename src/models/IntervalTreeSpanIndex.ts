@@ -27,6 +27,7 @@ import type { Span } from "./Span";
 import { loadNativeBinding, VulpesNativeBinding } from "../native/binding";
 import { TYPE_SPECIFICITY } from "./FilterPriority";
 import { RustAccelConfig } from "../config/RustAccelConfig";
+import { RadiologyLogger } from "../utils/RadiologyLogger";
 
 // Cache the native binding
 let cachedBinding: ReturnType<typeof loadNativeBinding> | null | undefined =
@@ -328,11 +329,12 @@ export class IntervalTreeSpanIndex {
 
     // DEBUG: Log input spans
     if (process.env.VULPES_DEBUG_OVERLAP === "1") {
-      console.log("[DEBUG] dropOverlappingSpans input:");
+      const debugLines = ["[DEBUG] dropOverlappingSpans input:"];
       spans.forEach((s, i) => {
         const score = IntervalTreeSpanIndex.calculateSpanScore(s);
-        console.log(`  ${i}: "${s.text}" [${s.characterStart}-${s.characterEnd}] conf=${s.confidence.toFixed(3)} score=${score.toFixed(1)}`);
+        debugLines.push(`  ${i}: "${s.text}" [${s.characterStart}-${s.characterEnd}] conf=${s.confidence.toFixed(3)} score=${score.toFixed(1)}`);
       });
+      RadiologyLogger.info("IntervalTreeSpanIndex", debugLines.join("\n"));
     }
 
     // Try Rust accelerator first
@@ -404,7 +406,7 @@ export class IntervalTreeSpanIndex {
       let indexToReplace = -1;
       let rejectReason = "";
 
-      if (debug) console.log(`[TRACE] Processing: "${span.text}" score=${score.toFixed(1)}`);
+      if (debug) RadiologyLogger.info("IntervalTreeSpanIndex", `[TRACE] Processing: "${span.text}" score=${score.toFixed(1)}`);
 
       for (let i = 0; i < kept.length; i++) {
         const existing = kept[i];
@@ -429,9 +431,7 @@ export class IntervalTreeSpanIndex {
         const existSpec = TYPE_SPECIFICITY[existing.filterType as string] || 25;
 
         if (debug) {
-          console.log(`  Overlaps with kept[${i}]: "${existing.text}"`);
-          console.log(`    spanContainsExisting=${spanContainsExisting} existingContainsSpan=${existingContainsSpan}`);
-          console.log(`    spanSpec=${spanSpec} existSpec=${existSpec}`);
+          RadiologyLogger.info("IntervalTreeSpanIndex", `  Overlaps with kept[${i}]: "${existing.text}"\n    spanContainsExisting=${spanContainsExisting} existingContainsSpan=${existingContainsSpan}\n    spanSpec=${spanSpec} existSpec=${existSpec}`);
         }
 
         if (spanContainsExisting) {
@@ -465,27 +465,28 @@ export class IntervalTreeSpanIndex {
       }
 
       if (indexToReplace >= 0) {
-        if (debug) console.log(`  -> REPLACING kept[${indexToReplace}] with this span`);
+        if (debug) RadiologyLogger.info("IntervalTreeSpanIndex", `  -> REPLACING kept[${indexToReplace}] with this span`);
         kept[indexToReplace] = span;
       } else if (shouldKeep) {
-        if (debug) console.log(`  -> KEEPING (kept.length now ${kept.length + 1})`);
+        if (debug) RadiologyLogger.info("IntervalTreeSpanIndex", `  -> KEEPING (kept.length now ${kept.length + 1})`);
         kept.push(span);
       } else {
-        if (debug) console.log(`  -> REJECTED: ${rejectReason}`);
+        if (debug) RadiologyLogger.info("IntervalTreeSpanIndex", `  -> REJECTED: ${rejectReason}`);
       }
     }
 
     // Sort by position for consistent output
     const result = kept.sort((a, b) => a.characterStart - b.characterStart);
-    
+
     // DEBUG: Log output spans
     if (process.env.VULPES_DEBUG_OVERLAP === "1") {
-      console.log("[DEBUG] dropOverlappingSpans output:");
+      const outputLines = ["[DEBUG] dropOverlappingSpans output:"];
       result.forEach((s, i) => {
-        console.log(`  ${i}: "${s.text}" [${s.characterStart}-${s.characterEnd}]`);
+        outputLines.push(`  ${i}: "${s.text}" [${s.characterStart}-${s.characterEnd}]`);
       });
+      RadiologyLogger.info("IntervalTreeSpanIndex", outputLines.join("\n"));
     }
-    
+
     return result;
   }
 

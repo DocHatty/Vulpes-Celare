@@ -15,6 +15,7 @@
  */
 
 import { LRUCache } from "lru-cache";
+import { container, ServiceIds } from "../core/ServiceContainer";
 
 /**
  * Cache statistics for monitoring
@@ -90,8 +91,15 @@ export class ComputationCache {
    * Get singleton instance
    */
   static getInstance(): ComputationCache {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<ComputationCache>(ServiceIds.ComputationCache);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!ComputationCache.instance) {
       ComputationCache.instance = new ComputationCache();
+      container.registerInstance(ServiceIds.ComputationCache, ComputationCache.instance);
     }
     return ComputationCache.instance;
   }

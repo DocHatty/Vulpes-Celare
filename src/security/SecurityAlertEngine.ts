@@ -24,6 +24,7 @@ import * as path from "path";
 import * as https from "https";
 import { vulpesLogger as log } from "../utils/VulpesLogger";
 import { out as output } from "../utils/VulpesOutput";
+import { container, ServiceIds } from "../core/ServiceContainer";
 
 // ============================================================================
 // TYPES
@@ -300,8 +301,15 @@ export class SecurityAlertEngine extends EventEmitter {
   }
 
   static getInstance(config?: SecurityAlertEngineConfig): SecurityAlertEngine {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<SecurityAlertEngine>(ServiceIds.SecurityAlertEngine);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!SecurityAlertEngine.instance) {
       SecurityAlertEngine.instance = new SecurityAlertEngine(config);
+      container.registerInstance(ServiceIds.SecurityAlertEngine, SecurityAlertEngine.instance);
     }
     return SecurityAlertEngine.instance;
   }

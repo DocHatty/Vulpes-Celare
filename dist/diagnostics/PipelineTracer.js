@@ -17,6 +17,8 @@ exports.spanJourneyTracker = exports.SpanJourneyTracker = exports.pipelineTracer
 exports.createCodePathDecision = createCodePathDecision;
 const RustAccelConfig_1 = require("../config/RustAccelConfig");
 const binding_1 = require("../native/binding");
+const RadiologyLogger_1 = require("../utils/RadiologyLogger");
+const ServiceContainer_1 = require("../core/ServiceContainer");
 /**
  * PipelineTracer - Always-on pipeline state tracker
  */
@@ -36,8 +38,15 @@ class PipelineTracer {
         this.refreshState();
     }
     static getInstance() {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.PipelineTracer);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!PipelineTracer.instance) {
             PipelineTracer.instance = new PipelineTracer();
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.PipelineTracer, PipelineTracer.instance);
         }
         return PipelineTracer.instance;
     }
@@ -163,27 +172,29 @@ class PipelineTracer {
     printStateSummary() {
         const state = this.getState();
         const paths = this.getCodePathSummary();
-        console.log("\n" + "=".repeat(60));
-        console.log("PIPELINE STATE SUMMARY");
-        console.log("=".repeat(60));
-        console.log("\nRust Binding: " + (state.accelerators.rustBindingAvailable ? "AVAILABLE" : "NOT AVAILABLE"));
-        console.log("\nAccelerators:");
-        console.log("  spanOps:      " + (state.accelerators.spanOps ? "ON" : "OFF"));
-        console.log("  intervalTree: " + (state.accelerators.intervalTree ? "ON" : "OFF"));
-        console.log("  postFilter:   " + (state.accelerators.postFilter ? "ON" : "OFF"));
-        console.log("  applySpans:   " + (state.accelerators.applySpans ? "ON" : "OFF"));
-        console.log("  nameAccel:    mode " + state.accelerators.nameAccelMode);
-        console.log("  workers:      " + (state.accelerators.workersEnabled ? "ENABLED" : "DISABLED"));
-        console.log("\nCode Paths:");
+        const lines = [];
+        lines.push("=".repeat(60));
+        lines.push("PIPELINE STATE SUMMARY");
+        lines.push("=".repeat(60));
+        lines.push("Rust Binding: " + (state.accelerators.rustBindingAvailable ? "AVAILABLE" : "NOT AVAILABLE"));
+        lines.push("Accelerators:");
+        lines.push("  spanOps:      " + (state.accelerators.spanOps ? "ON" : "OFF"));
+        lines.push("  intervalTree: " + (state.accelerators.intervalTree ? "ON" : "OFF"));
+        lines.push("  postFilter:   " + (state.accelerators.postFilter ? "ON" : "OFF"));
+        lines.push("  applySpans:   " + (state.accelerators.applySpans ? "ON" : "OFF"));
+        lines.push("  nameAccel:    mode " + state.accelerators.nameAccelMode);
+        lines.push("  workers:      " + (state.accelerators.workersEnabled ? "ENABLED" : "DISABLED"));
+        lines.push("Code Paths:");
         Object.entries(paths).forEach(([op, path]) => {
-            console.log("  " + op.padEnd(20) + path);
+            lines.push("  " + op.padEnd(20) + path);
         });
         if (state.changesSinceLastCheck.length > 0) {
-            console.log("\nRecent Changes:");
-            state.changesSinceLastCheck.forEach(c => console.log("  " + c));
+            lines.push("Recent Changes:");
+            state.changesSinceLastCheck.forEach(c => lines.push("  " + c));
         }
-        console.log("\nLast Updated: " + new Date(state.lastUpdated).toISOString());
-        console.log("=".repeat(60) + "\n");
+        lines.push("Last Updated: " + new Date(state.lastUpdated).toISOString());
+        lines.push("=".repeat(60));
+        RadiologyLogger_1.RadiologyLogger.info("PipelineTracer", lines.join("\n"));
     }
     // ============ Per-Request Tracing (verbose mode) ============
     startTrace(inputText) {
@@ -272,22 +283,23 @@ class PipelineTracer {
     }
     printTrace(trace) {
         const sep = "=".repeat(80);
-        console.log("\n" + sep);
-        console.log("PIPELINE TRACE: " + trace.id);
-        console.log(sep);
-        console.log("\nINPUT: " + trace.inputLength + " chars");
-        console.log("  " + trace.inputText);
-        console.log("\nCODE PATHS USED:");
+        const lines = [];
+        lines.push(sep);
+        lines.push("PIPELINE TRACE: " + trace.id);
+        lines.push(sep);
+        lines.push("INPUT: " + trace.inputLength + " chars");
+        lines.push("  " + trace.inputText);
+        lines.push("CODE PATHS USED:");
         const paths = this.getCodePathSummary();
         Object.entries(paths).forEach(([op, path]) => {
-            console.log("  " + op + ": " + path);
+            lines.push("  " + op + ": " + path);
         });
-        console.log("\nSTAGES:");
-        console.log("-".repeat(80));
+        lines.push("STAGES:");
+        lines.push("-".repeat(80));
         trace.stages.forEach((s) => {
             const delta = s.outputCount - s.inputCount;
             const sign = delta >= 0 ? "+" : "";
-            console.log("  " +
+            lines.push("  " +
                 s.stage.padEnd(25) +
                 String(s.inputCount).padStart(5) +
                 " -> " +
@@ -295,16 +307,17 @@ class PipelineTracer {
                 " (" + sign + delta + ")" +
                 (s.details ? "  " + s.details : ""));
         });
-        console.log("-".repeat(80));
-        console.log("\nFINAL: " + (trace.finalSpans?.length || 0) + " spans");
+        lines.push("-".repeat(80));
+        lines.push("FINAL: " + (trace.finalSpans?.length || 0) + " spans");
         trace.finalSpans?.forEach((sp) => {
-            console.log("  [" + sp.start + "-" + sp.end + "] " + sp.type + ' "' + sp.text + '"');
+            lines.push("  [" + sp.start + "-" + sp.end + "] " + sp.type + ' "' + sp.text + '"');
         });
         if (trace.error) {
-            console.log("\nERROR: " + trace.error);
+            lines.push("ERROR: " + trace.error);
         }
-        console.log("\nTIME: " + trace.totalDurationMs + "ms");
-        console.log(sep + "\n");
+        lines.push("TIME: " + trace.totalDurationMs + "ms");
+        lines.push(sep);
+        RadiologyLogger_1.RadiologyLogger.info("PipelineTracer", lines.join("\n"));
     }
     // ============ Static Convenience Methods ============
     static getAcceleratorStatus() {
@@ -511,34 +524,36 @@ class SpanJourneyTracker {
         const journeys = this.getJourneys();
         const kept = journeys.filter((j) => j.finalStatus === "kept").length;
         const removed = journeys.filter((j) => j.finalStatus === "removed").length;
-        console.log("\n" + "=".repeat(80));
-        console.log("SPAN JOURNEY REPORT");
-        console.log("=".repeat(80));
-        console.log(`Total spans tracked: ${journeys.length}`);
-        console.log(`Kept: ${kept}`);
-        console.log(`Removed: ${removed}`);
+        const lines = [];
+        lines.push("=".repeat(80));
+        lines.push("SPAN JOURNEY REPORT");
+        lines.push("=".repeat(80));
+        lines.push(`Total spans tracked: ${journeys.length}`);
+        lines.push(`Kept: ${kept}`);
+        lines.push(`Removed: ${removed}`);
         if (removed > 0) {
-            console.log("\n--- REMOVED SPANS ---");
+            lines.push("--- REMOVED SPANS ---");
             const summary = this.getRemovalSummary();
             Object.entries(summary).forEach(([stage, info]) => {
-                console.log(`\n[${stage}] Removed ${info.count} span(s):`);
-                info.reasons.forEach((reason) => console.log(`  - ${reason}`));
+                lines.push(`[${stage}] Removed ${info.count} span(s):`);
+                info.reasons.forEach((reason) => lines.push(`  - ${reason}`));
             });
-            console.log("\n--- REMOVED SPAN DETAILS ---");
+            lines.push("--- REMOVED SPAN DETAILS ---");
             for (const journey of this.getRemovedSpanJourneys()) {
-                console.log(`\n"${journey.originalText}" (${journey.filterType})`);
-                console.log(`  Initial confidence: ${journey.initialConfidence.toFixed(3)}`);
-                console.log(`  Removed at: ${journey.removalStage}`);
-                console.log(`  Reason: ${journey.removalReason}`);
-                console.log("  Journey:");
+                lines.push(`"${journey.originalText}" (${journey.filterType})`);
+                lines.push(`  Initial confidence: ${journey.initialConfidence.toFixed(3)}`);
+                lines.push(`  Removed at: ${journey.removalStage}`);
+                lines.push(`  Reason: ${journey.removalReason}`);
+                lines.push("  Journey:");
                 journey.steps.forEach((step) => {
                     const conf = step.confidence !== undefined ? ` [conf=${step.confidence.toFixed(3)}]` : "";
                     const reason = step.reason ? ` (${step.reason})` : "";
-                    console.log(`    ${step.stage}: ${step.action}${conf}${reason}`);
+                    lines.push(`    ${step.stage}: ${step.action}${conf}${reason}`);
                 });
             }
         }
-        console.log("\n" + "=".repeat(80) + "\n");
+        lines.push("=".repeat(80));
+        RadiologyLogger_1.RadiologyLogger.info("SpanJourneyTracker", lines.join("\n"));
     }
     /**
      * Export journeys to JSON for external analysis.

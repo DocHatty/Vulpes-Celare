@@ -13,6 +13,7 @@ exports.isInteractive = isInteractive;
 exports.shouldUseColor = shouldUseColor;
 exports.getCIProvider = getCIProvider;
 exports.getEnvironmentInfo = getEnvironmentInfo;
+const ServiceContainer_1 = require("../core/ServiceContainer");
 const CI_DETECTORS = [
     {
         name: "github_actions",
@@ -337,8 +338,15 @@ class VulpesEnvironment {
     cachedInfo = null;
     constructor() { }
     static getInstance() {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.VulpesEnvironment);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!VulpesEnvironment.instance) {
             VulpesEnvironment.instance = new VulpesEnvironment();
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.VulpesEnvironment, VulpesEnvironment.instance);
         }
         return VulpesEnvironment.instance;
     }

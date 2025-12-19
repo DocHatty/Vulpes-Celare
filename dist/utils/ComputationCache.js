@@ -19,6 +19,7 @@ exports.ComputationCache = void 0;
 exports.memoize = memoize;
 exports.cachedStringDistance = cachedStringDistance;
 const lru_cache_1 = require("lru-cache");
+const ServiceContainer_1 = require("../core/ServiceContainer");
 /**
  * Computation cache singleton
  */
@@ -60,8 +61,15 @@ class ComputationCache {
      * Get singleton instance
      */
     static getInstance() {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.ComputationCache);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!ComputationCache.instance) {
             ComputationCache.instance = new ComputationCache();
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.ComputationCache, ComputationCache.instance);
         }
         return ComputationCache.instance;
     }

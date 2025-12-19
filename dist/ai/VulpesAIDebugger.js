@@ -7,6 +7,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.vulpesAIDebugger = exports.VulpesAIDebugger = void 0;
+const ServiceContainer_1 = require("../core/ServiceContainer");
 // ============================================================================
 // Pattern Analysis Helpers
 // ============================================================================
@@ -21,8 +22,15 @@ class VulpesAIDebugger {
     currentSession = null;
     constructor() { }
     static getInstance() {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.VulpesAIDebugger);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!VulpesAIDebugger.instance) {
             VulpesAIDebugger.instance = new VulpesAIDebugger();
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.VulpesAIDebugger, VulpesAIDebugger.instance);
         }
         return VulpesAIDebugger.instance;
     }

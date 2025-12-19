@@ -19,6 +19,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
 import * as http from "http";
+import { RadiologyLogger } from "../utils/RadiologyLogger";
 
 // Model definitions with HuggingFace Hub URLs
 interface ModelDefinition {
@@ -109,24 +110,26 @@ const colors = {
   cyan: "\x1b[36m",
 };
 
+const COMPONENT = "ModelDownloader";
+
 function log(message: string): void {
-  console.log(message);
+  RadiologyLogger.info(COMPONENT, message);
 }
 
 function logSuccess(message: string): void {
-  console.log(`${colors.green}✓${colors.reset} ${message}`);
+  RadiologyLogger.info(COMPONENT, `${colors.green}✓${colors.reset} ${message}`);
 }
 
 function logWarning(message: string): void {
-  console.log(`${colors.yellow}⚠${colors.reset} ${message}`);
+  RadiologyLogger.warn(COMPONENT, `${colors.yellow}⚠${colors.reset} ${message}`);
 }
 
 function logError(message: string): void {
-  console.log(`${colors.red}✗${colors.reset} ${message}`);
+  RadiologyLogger.error(COMPONENT, `${colors.red}✗${colors.reset} ${message}`);
 }
 
 function logInfo(message: string): void {
-  console.log(`${colors.blue}ℹ${colors.reset} ${message}`);
+  RadiologyLogger.info(COMPONENT, `${colors.blue}ℹ${colors.reset} ${message}`);
 }
 
 /**

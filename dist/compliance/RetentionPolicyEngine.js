@@ -59,6 +59,7 @@ const crypto = __importStar(require("crypto"));
 const zlib = __importStar(require("zlib"));
 const util_1 = require("util");
 const VulpesLogger_1 = require("../utils/VulpesLogger");
+const ServiceContainer_1 = require("../core/ServiceContainer");
 const gzip = (0, util_1.promisify)(zlib.gzip);
 const gunzip = (0, util_1.promisify)(zlib.gunzip);
 // ============================================================================
@@ -128,8 +129,15 @@ class RetentionPolicyEngine {
         });
     }
     static getInstance(config) {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.RetentionPolicyEngine);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!RetentionPolicyEngine.instance) {
             RetentionPolicyEngine.instance = new RetentionPolicyEngine(config);
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.RetentionPolicyEngine, RetentionPolicyEngine.instance);
         }
         return RetentionPolicyEngine.instance;
     }

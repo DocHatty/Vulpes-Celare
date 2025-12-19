@@ -7,6 +7,7 @@
 
 import { EventEmitter } from "events";
 import * as crypto from "crypto";
+import { container, ServiceIds } from "../core/ServiceContainer";
 
 // ============================================================================
 // Types
@@ -564,10 +565,17 @@ export class VulpesTracer extends EventEmitter {
   }
 
   static getInstance(config?: TracerConfig): VulpesTracer {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<VulpesTracer>(ServiceIds.VulpesTracer);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!VulpesTracer.instance) {
       VulpesTracer.instance = new VulpesTracer(
         config ?? { serviceName: "vulpes-celare" }
       );
+      container.registerInstance(ServiceIds.VulpesTracer, VulpesTracer.instance);
     }
     return VulpesTracer.instance;
   }

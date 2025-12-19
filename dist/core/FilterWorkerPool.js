@@ -39,6 +39,7 @@ const path = __importStar(require("path"));
 const os = __importStar(require("os"));
 const Span_1 = require("../models/Span");
 const RadiologyLogger_1 = require("../utils/RadiologyLogger");
+const ServiceContainer_1 = require("./ServiceContainer");
 class FilterWorkerPool {
     static instance;
     workers = [];
@@ -60,8 +61,15 @@ class FilterWorkerPool {
         }
     }
     static getInstance() {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.FilterWorkerPool);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!FilterWorkerPool.instance) {
             FilterWorkerPool.instance = new FilterWorkerPool();
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.FilterWorkerPool, FilterWorkerPool.instance);
         }
         return FilterWorkerPool.instance;
     }

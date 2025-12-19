@@ -43,6 +43,7 @@ exports.vulpesTracer = exports.VulpesTracer = exports.MetricsCollector = void 0;
 exports.configureTracer = configureTracer;
 const events_1 = require("events");
 const crypto = __importStar(require("crypto"));
+const ServiceContainer_1 = require("../core/ServiceContainer");
 // ============================================================================
 // Span Implementation
 // ============================================================================
@@ -414,8 +415,15 @@ class VulpesTracer extends events_1.EventEmitter {
         this.startFlushTimer();
     }
     static getInstance(config) {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.VulpesTracer);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!VulpesTracer.instance) {
             VulpesTracer.instance = new VulpesTracer(config ?? { serviceName: "vulpes-celare" });
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.VulpesTracer, VulpesTracer.instance);
         }
         return VulpesTracer.instance;
     }

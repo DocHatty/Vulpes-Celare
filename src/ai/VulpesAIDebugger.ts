@@ -5,6 +5,8 @@
  * Provides root cause analysis, fix suggestions, and pattern recommendations.
  */
 
+import { container, ServiceIds } from "../core/ServiceContainer";
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -118,8 +120,15 @@ export class VulpesAIDebugger {
   private constructor() {}
 
   static getInstance(): VulpesAIDebugger {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<VulpesAIDebugger>(ServiceIds.VulpesAIDebugger);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!VulpesAIDebugger.instance) {
       VulpesAIDebugger.instance = new VulpesAIDebugger();
+      container.registerInstance(ServiceIds.VulpesAIDebugger, VulpesAIDebugger.instance);
     }
     return VulpesAIDebugger.instance;
   }

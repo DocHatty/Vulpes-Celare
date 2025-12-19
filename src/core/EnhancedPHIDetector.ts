@@ -24,6 +24,7 @@ import { LRUCache } from "lru-cache";
 import * as fs from "fs";
 import * as path from "path";
 import { vulpesLogger as log } from "../utils/VulpesLogger";
+import { container, ServiceIds } from "./ServiceContainer";
 
 export interface DetectionCandidate {
   text: string;
@@ -79,8 +80,15 @@ export class EnhancedPHIDetector {
   }
 
   static getInstance(): EnhancedPHIDetector {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<EnhancedPHIDetector>(ServiceIds.EnhancedPHIDetector);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!EnhancedPHIDetector.instance) {
       EnhancedPHIDetector.instance = new EnhancedPHIDetector();
+      container.registerInstance(ServiceIds.EnhancedPHIDetector, EnhancedPHIDetector.instance);
     }
     return EnhancedPHIDetector.instance;
   }

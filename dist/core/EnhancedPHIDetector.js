@@ -56,6 +56,7 @@ const lru_cache_1 = require("lru-cache");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const VulpesLogger_1 = require("../utils/VulpesLogger");
+const ServiceContainer_1 = require("./ServiceContainer");
 /**
  * Singleton orchestrator that combines all detection signals
  */
@@ -79,8 +80,15 @@ class EnhancedPHIDetector {
         });
     }
     static getInstance() {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.EnhancedPHIDetector);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!EnhancedPHIDetector.instance) {
             EnhancedPHIDetector.instance = new EnhancedPHIDetector();
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.EnhancedPHIDetector, EnhancedPHIDetector.instance);
         }
         return EnhancedPHIDetector.instance;
     }

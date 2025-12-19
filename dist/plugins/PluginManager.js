@@ -56,6 +56,7 @@ const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const VulpesLogger_1 = require("../utils/VulpesLogger");
 const events_1 = require("events");
+const ServiceContainer_1 = require("../core/ServiceContainer");
 // ============================================================================
 // Plugin Manager
 // ============================================================================
@@ -79,8 +80,15 @@ class PluginManager extends events_1.EventEmitter {
         this.pluginConfig = config.pluginConfig ?? {};
     }
     static getInstance(config) {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.PluginManager);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!PluginManager.instance) {
             PluginManager.instance = new PluginManager(config);
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.PluginManager, PluginManager.instance);
         }
         return PluginManager.instance;
     }

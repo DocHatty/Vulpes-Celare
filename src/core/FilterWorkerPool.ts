@@ -3,6 +3,7 @@ import * as path from "path";
 import * as os from "os";
 import { Span } from "../models/Span";
 import { RadiologyLogger } from "../utils/RadiologyLogger";
+import { container, ServiceIds } from "./ServiceContainer";
 
 interface WorkerTask {
   taskId: string;
@@ -38,8 +39,15 @@ export class FilterWorkerPool {
   }
 
   static getInstance(): FilterWorkerPool {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<FilterWorkerPool>(ServiceIds.FilterWorkerPool);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!FilterWorkerPool.instance) {
       FilterWorkerPool.instance = new FilterWorkerPool();
+      container.registerInstance(ServiceIds.FilterWorkerPool, FilterWorkerPool.instance);
     }
     return FilterWorkerPool.instance;
   }

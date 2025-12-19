@@ -60,6 +60,7 @@ const path = __importStar(require("path"));
 const https = __importStar(require("https"));
 const VulpesLogger_1 = require("../utils/VulpesLogger");
 const VulpesOutput_1 = require("../utils/VulpesOutput");
+const ServiceContainer_1 = require("../core/ServiceContainer");
 // ============================================================================
 // DEFAULT CONFIGURATION
 // ============================================================================
@@ -177,8 +178,15 @@ class SecurityAlertEngine extends events_1.EventEmitter {
         });
     }
     static getInstance(config) {
+        // Check DI container first (enables testing/replacement)
+        const fromContainer = ServiceContainer_1.container.tryResolve(ServiceContainer_1.ServiceIds.SecurityAlertEngine);
+        if (fromContainer) {
+            return fromContainer;
+        }
+        // Fall back to static instance
         if (!SecurityAlertEngine.instance) {
             SecurityAlertEngine.instance = new SecurityAlertEngine(config);
+            ServiceContainer_1.container.registerInstance(ServiceContainer_1.ServiceIds.SecurityAlertEngine, SecurityAlertEngine.instance);
         }
         return SecurityAlertEngine.instance;
     }

@@ -5,6 +5,8 @@
  * Detects TTY, CI providers, and adjusts output accordingly.
  */
 
+import { container, ServiceIds } from "../core/ServiceContainer";
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -461,8 +463,15 @@ export class VulpesEnvironment {
   private constructor() {}
 
   static getInstance(): VulpesEnvironment {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<VulpesEnvironment>(ServiceIds.VulpesEnvironment);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!VulpesEnvironment.instance) {
       VulpesEnvironment.instance = new VulpesEnvironment();
+      container.registerInstance(ServiceIds.VulpesEnvironment, VulpesEnvironment.instance);
     }
     return VulpesEnvironment.instance;
   }

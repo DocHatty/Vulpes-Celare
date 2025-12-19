@@ -24,6 +24,7 @@ import * as crypto from "crypto";
 import * as zlib from "zlib";
 import { promisify } from "util";
 import { vulpesLogger as log } from "../utils/VulpesLogger";
+import { container, ServiceIds } from "../core/ServiceContainer";
 
 const gzip = promisify(zlib.gzip);
 const gunzip = promisify(zlib.gunzip);
@@ -257,8 +258,15 @@ export class RetentionPolicyEngine {
   }
 
   static getInstance(config?: RetentionPolicyEngineConfig): RetentionPolicyEngine {
+    // Check DI container first (enables testing/replacement)
+    const fromContainer = container.tryResolve<RetentionPolicyEngine>(ServiceIds.RetentionPolicyEngine);
+    if (fromContainer) {
+      return fromContainer;
+    }
+    // Fall back to static instance
     if (!RetentionPolicyEngine.instance) {
       RetentionPolicyEngine.instance = new RetentionPolicyEngine(config);
+      container.registerInstance(ServiceIds.RetentionPolicyEngine, RetentionPolicyEngine.instance);
     }
     return RetentionPolicyEngine.instance;
   }

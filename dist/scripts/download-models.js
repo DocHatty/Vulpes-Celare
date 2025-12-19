@@ -53,6 +53,7 @@ const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const https = __importStar(require("https"));
 const http = __importStar(require("http"));
+const RadiologyLogger_1 = require("../utils/RadiologyLogger");
 const MODELS = {
     gliner: {
         name: "GLiNER",
@@ -127,20 +128,21 @@ const colors = {
     red: "\x1b[31m",
     cyan: "\x1b[36m",
 };
+const COMPONENT = "ModelDownloader";
 function log(message) {
-    console.log(message);
+    RadiologyLogger_1.RadiologyLogger.info(COMPONENT, message);
 }
 function logSuccess(message) {
-    console.log(`${colors.green}✓${colors.reset} ${message}`);
+    RadiologyLogger_1.RadiologyLogger.info(COMPONENT, `${colors.green}✓${colors.reset} ${message}`);
 }
 function logWarning(message) {
-    console.log(`${colors.yellow}⚠${colors.reset} ${message}`);
+    RadiologyLogger_1.RadiologyLogger.warn(COMPONENT, `${colors.yellow}⚠${colors.reset} ${message}`);
 }
 function logError(message) {
-    console.log(`${colors.red}✗${colors.reset} ${message}`);
+    RadiologyLogger_1.RadiologyLogger.error(COMPONENT, `${colors.red}✗${colors.reset} ${message}`);
 }
 function logInfo(message) {
-    console.log(`${colors.blue}ℹ${colors.reset} ${message}`);
+    RadiologyLogger_1.RadiologyLogger.info(COMPONENT, `${colors.blue}ℹ${colors.reset} ${message}`);
 }
 /**
  * Get the models directory path
