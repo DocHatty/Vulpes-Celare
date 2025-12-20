@@ -11,9 +11,11 @@ auditable de-identification pipeline suitable for healthcare research and air-ga
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](#)
 [![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)](#)
-[![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)](#)
-[![ONNX](https://img.shields.io/badge/ONNX_Runtime-005CED?logo=onnx&logoColor=white)](#)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](#requirements)
+[![ONNX](https://img.shields.io/badge/ONNX_Runtime-1.22-005CED?logo=onnx&logoColor=white)](#)
 [![License](https://img.shields.io/badge/License-Source_Available-blue)](#license--commercial-use)
+[![GitHub last commit](https://img.shields.io/github/last-commit/DocHatty/Vulpes-Celare)](https://github.com/DocHatty/Vulpes-Celare/commits)
+[![GitHub issues](https://img.shields.io/github/issues/DocHatty/Vulpes-Celare)](https://github.com/DocHatty/Vulpes-Celare/issues)
 
 **Source-Available** · Evaluation License · [Commercial licensing welcomed](#license--commercial-use)
 
@@ -131,6 +133,39 @@ const redactedImage = await VulpesCelare.redactImage(imageBuffer);
 // DICOM anonymization
 const cleanDicom = await anonymizeDicomBuffer(dicomData);
 ```
+
+<br>
+
+## Requirements
+
+### System Requirements
+
+| Requirement | Minimum | Recommended |
+|:--|:--|:--|
+| **Node.js** | 18.0.0+ | 20.x LTS |
+| **RAM** | 4 GB | 8 GB (for image/DICOM processing) |
+| **Disk Space** | 500 MB | 2 GB (with optional ML models) |
+
+### Platform Support
+
+| Platform | Native Addon | TypeScript Fallback | Notes |
+|:--|:-:|:-:|:--|
+| Windows x64 | Prebuilt | Fallback available | Full support, prebuilt binaries included |
+| macOS arm64 | Build required | Fallback available | Requires Rust toolchain |
+| macOS x64 | Build required | Fallback available | Requires Rust toolchain |
+| Linux x64 | Build required | Fallback available | Requires Rust toolchain |
+
+TypeScript fallbacks ensure the engine works on any platform Node.js supports, with the native Rust addon providing acceleration where available.
+
+### Optional Dependencies
+
+| Dependency | Purpose | Required For |
+|:--|:--|:--|
+| Rust toolchain | Native addon builds | Non-Windows platforms |
+| CUDA 11.8+ | GPU acceleration | `VULPES_ML_DEVICE=cuda` |
+| Visual C++ Redistributable | Windows DLL loading | Windows native addon |
+
+For detailed setup instructions, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 <br>
 
@@ -635,6 +670,24 @@ Licensing structures may include standalone commercial licenses, dual-license mo
 Again, such arrangements are subject to confirmation of IP rights and confirmation of applicable institutional review; this can be handled collaboratively during discussions, if and when required.
 
 If you are exploring licensing, acquisition, or strategic integration, please open a [GitHub Issue](https://github.com/DocHatty/Vulpes-Celare/issues) (public or private) or email [andrew@vulpescelare.com](mailto:andrew@vulpescelare.com) to discuss evaluation, pilots, or potential commercial terms (subject to rights clearance).
+
+<br>
+
+## Acknowledgments
+
+Vulpes Celare builds on the work of excellent open source projects:
+
+| Project | Use |
+|:--|:--|
+| [ONNX Runtime](https://onnxruntime.ai/) | Cross-platform ML inference engine |
+| [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) | Text detection and recognition models |
+| [UltraFace](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB) | Lightweight face detection |
+| [sharp](https://sharp.pixelplumbing.com/) | High-performance image processing |
+| [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) | Fast, synchronous SQLite bindings |
+| [Zod](https://zod.dev/) | TypeScript-first schema validation |
+| [dcmjs](https://github.com/dcmjs-org/dcmjs) | DICOM parsing and manipulation |
+
+Special thanks to the healthcare informatics community for feedback on clinical documentation patterns and edge cases.
 
 <br>
 
