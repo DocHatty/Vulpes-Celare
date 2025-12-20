@@ -1,0 +1,702 @@
+"use strict";
+/**
+ * EnsembleEmbeddingService - Multi-Model Embedding Fusion
+ *
+ * Generates high-quality semantic embeddings by combining multiple
+ * transformer models specialized for different aspects:
+ * - Bio_ClinicalBERT: Clinical/medical domain understanding
+ * - MiniLM-L6-v2: Fast general semantic similarity
+ * - BioBERT: Biomedical entity recognition
+ *
+ * Features:
+ * - Weighted fusion of embeddings from multiple models
+ * - LRU cache for computed embeddings
+ * - Graceful degradation if models unavailable
+ * - Batch inference for efficiency
+ *
+ * @module ml/EnsembleEmbeddingService
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EnsembleEmbeddingService = void 0;
+exports.getEnsembleEmbeddingService = getEnsembleEmbeddingService;
+exports.resetEnsembleEmbeddingService = resetEnsembleEmbeddingService;
+const path = __importStar(require("path"));
+const fs = __importStar(require("fs"));
+const ONNXInference_1 = require("./ONNXInference");
+const ModelManager_1 = require("./ModelManager");
+const FeatureToggles_1 = require("../config/FeatureToggles");
+const VulpesLogger_1 = require("../utils/VulpesLogger");
+const logger = VulpesLogger_1.vulpesLogger.forComponent("EnsembleEmbeddingService");
+/**
+ * Model configurations for the ensemble
+ */
+const MODEL_CONFIGS = [
+    {
+        modelId: "bio-clinicalbert",
+        weight: 0.45,
+        dimension: 768,
+        maxLength: 512,
+        description: "Bio_ClinicalBERT - Clinical domain embeddings",
+        required: false,
+    },
+    {
+        modelId: "minilm-l6",
+        weight: 0.35,
+        dimension: 384,
+        maxLength: 256,
+        description: "MiniLM-L6-v2 - Fast semantic similarity",
+        required: true, // Required for basic functionality
+    },
+    {
+        modelId: "biobert",
+        weight: 0.20,
+        dimension: 768,
+        maxLength: 512,
+        description: "BioBERT - Biomedical NER embeddings",
+        required: false,
+    },
+];
+/**
+ * Unified output embedding dimension (projected from all models)
+ */
+const UNIFIED_DIMENSION = 256;
+/**
+ * LRU Cache for embeddings
+ */
+class EmbeddingCache {
+    cache = new Map();
+    maxSize;
+    hits = 0;
+    misses = 0;
+    constructor(maxSize = 10000) {
+        this.maxSize = maxSize;
+    }
+    /**
+     * Get embedding from cache
+     */
+    get(key) {
+        const entry = this.cache.get(key);
+        if (entry) {
+            entry.hitCount++;
+            entry.timestamp = Date.now();
+            this.hits++;
+            return entry.embedding;
+        }
+        this.misses++;
+        return null;
+    }
+    /**
+     * Set embedding in cache with LRU eviction
+     */
+    set(key, embedding) {
+        // Evict least recently used if at capacity
+        if (this.cache.size >= this.maxSize) {
+            this.evictLRU();
+        }
+        this.cache.set(key, {
+            embedding,
+            timestamp: Date.now(),
+            hitCount: 1,
+        });
+    }
+    /**
+     * Evict least recently used entry
+     */
+    evictLRU() {
+        let oldestKey = null;
+        let oldestTime = Infinity;
+        for (const [key, entry] of this.cache) {
+            // Consider both timestamp and hit count for eviction
+            const score = entry.timestamp - entry.hitCount * 1000;
+            if (score < oldestTime) {
+                oldestTime = score;
+                oldestKey = key;
+            }
+        }
+        if (oldestKey) {
+            this.cache.delete(oldestKey);
+        }
+    }
+    /**
+     * Clear all cached embeddings
+     */
+    clear() {
+        this.cache.clear();
+        this.hits = 0;
+        this.misses = 0;
+    }
+    /**
+     * Get cache statistics
+     */
+    getStats() {
+        const total = this.hits + this.misses;
+        return {
+            size: this.cache.size,
+            hits: this.hits,
+            misses: this.misses,
+            hitRate: total > 0 ? this.hits / total : 0,
+        };
+    }
+}
+/**
+ * Ensemble Embedding Service
+ *
+ * Combines multiple transformer models to generate high-quality
+ * embeddings for PHI disambiguation and semantic analysis.
+ */
+class EnsembleEmbeddingService extends ONNXInference_1.ONNXInference {
+    models = new Map();
+    cache;
+    projectionMatrices = new Map();
+    initialized = false;
+    constructor() {
+        // Call parent with null session - we manage multiple sessions
+        super(null, undefined);
+        this.cache = new EmbeddingCache(10000);
+    }
+    /**
+     * Create and initialize the ensemble service
+     */
+    static async create() {
+        const service = new EnsembleEmbeddingService();
+        await service.initialize();
+        return service;
+    }
+    /**
+     * Check if ensemble embeddings are enabled
+     */
+    static isEnabled() {
+        return FeatureToggles_1.FeatureToggles.isEnsembleEmbeddingsEnabled?.() ?? true;
+    }
+    /**
+     * Initialize all available models
+     */
+    async initialize() {
+        if (this.initialized)
+            return;
+        logger.info("Initializing EnsembleEmbeddingService...");
+        let loadedCount = 0;
+        let requiredLoaded = true;
+        for (const config of MODEL_CONFIGS) {
+            try {
+                const loaded = await this.loadModel(config);
+                if (loaded) {
+                    this.models.set(config.modelId, loaded);
+                    loadedCount++;
+                    logger.info(`Loaded ${config.description}`);
+                }
+                else if (config.required) {
+                    requiredLoaded = false;
+                    logger.error(`Required model ${config.modelId} not available`);
+                }
+            }
+            catch (error) {
+                logger.warn(`Failed to load ${config.modelId}: ${error}`);
+                if (config.required) {
+                    requiredLoaded = false;
+                }
+            }
+        }
+        if (!requiredLoaded) {
+            throw new Error("Required embedding model(s) not available. Run 'npm run models:download'");
+        }
+        if (loadedCount === 0) {
+            throw new Error("No embedding models available");
+        }
+        // Normalize weights based on loaded models
+        this.normalizeWeights();
+        // Initialize projection matrices for dimension reduction
+        await this.initializeProjections();
+        this.initialized = true;
+        logger.info(`EnsembleEmbeddingService initialized with ${loadedCount} models`);
+    }
+    /**
+     * Load a single model
+     */
+    async loadModel(config) {
+        // Check if model is available
+        if (!ModelManager_1.ModelManager.modelAvailable(config.modelId)) {
+            logger.debug(`Model ${config.modelId} not available`);
+            return null;
+        }
+        try {
+            const loadedModel = await ModelManager_1.ModelManager.loadModel(config.modelId);
+            const modelsDir = ModelManager_1.ModelManager.getModelsDirectory();
+            const vocabPath = path.join(modelsDir, config.modelId, "vocab.json");
+            let vocab;
+            try {
+                const vocabData = fs.readFileSync(vocabPath, "utf-8");
+                vocab = JSON.parse(vocabData);
+            }
+            catch {
+                // Try tokenizer.json format
+                const tokenizerPath = path.join(modelsDir, config.modelId, "tokenizer.json");
+                if (fs.existsSync(tokenizerPath)) {
+                    const tokenizerData = JSON.parse(fs.readFileSync(tokenizerPath, "utf-8"));
+                    vocab = tokenizerData.model?.vocab || {};
+                }
+                else {
+                    logger.warn(`No vocabulary found for ${config.modelId}`);
+                    vocab = this.getDefaultVocab();
+                }
+            }
+            const tokenizer = new ONNXInference_1.SimpleWordPieceTokenizer(vocab, {
+                maxLength: config.maxLength,
+            });
+            return {
+                config,
+                session: loadedModel.session,
+                tokenizer,
+                projectionMatrix: null,
+            };
+        }
+        catch (error) {
+            logger.error(`Error loading model ${config.modelId}: ${error}`);
+            return null;
+        }
+    }
+    /**
+     * Normalize weights based on loaded models
+     */
+    normalizeWeights() {
+        const totalWeight = Array.from(this.models.values())
+            .reduce((sum, m) => sum + m.config.weight, 0);
+        if (totalWeight > 0 && totalWeight !== 1) {
+            for (const model of this.models.values()) {
+                model.config.weight /= totalWeight;
+            }
+        }
+    }
+    /**
+     * Initialize projection matrices for dimension reduction
+     */
+    async initializeProjections() {
+        for (const [modelId, model] of this.models) {
+            const projPath = path.join(ModelManager_1.ModelManager.getModelsDirectory(), modelId, "projection.bin");
+            if (fs.existsSync(projPath)) {
+                // Load pre-computed projection matrix
+                const buffer = fs.readFileSync(projPath);
+                model.projectionMatrix = new Float32Array(buffer.buffer);
+            }
+            else {
+                // Generate random orthogonal projection (for initial use)
+                model.projectionMatrix = this.generateRandomProjection(model.config.dimension, UNIFIED_DIMENSION);
+            }
+            this.projectionMatrices.set(modelId, model.projectionMatrix);
+        }
+    }
+    /**
+     * Generate random orthogonal projection matrix
+     * Uses Gram-Schmidt orthogonalization
+     */
+    generateRandomProjection(inputDim, outputDim) {
+        const matrix = new Float32Array(inputDim * outputDim);
+        // Initialize with random values
+        for (let i = 0; i < matrix.length; i++) {
+            matrix[i] = (Math.random() - 0.5) * 2 / Math.sqrt(inputDim);
+        }
+        // Gram-Schmidt orthogonalization (simplified)
+        for (let col = 0; col < outputDim; col++) {
+            // Get column vector
+            const colStart = col;
+            // Normalize
+            let norm = 0;
+            for (let row = 0; row < inputDim; row++) {
+                norm += matrix[row * outputDim + colStart] ** 2;
+            }
+            norm = Math.sqrt(norm);
+            if (norm > 0) {
+                for (let row = 0; row < inputDim; row++) {
+                    matrix[row * outputDim + colStart] /= norm;
+                }
+            }
+        }
+        return matrix;
+    }
+    /**
+     * Get embedding for a single text
+     */
+    async embed(text) {
+        const embeddings = await this.embedBatch([text]);
+        return embeddings[0];
+    }
+    /**
+     * Get embeddings for multiple texts (batch)
+     */
+    async embedBatch(texts) {
+        if (!this.initialized) {
+            throw new Error("EnsembleEmbeddingService not initialized");
+        }
+        const results = [];
+        const uncachedIndices = [];
+        const uncachedTexts = [];
+        // Check cache first
+        for (let i = 0; i < texts.length; i++) {
+            const cacheKey = this.getCacheKey(texts[i]);
+            const cached = this.cache.get(cacheKey);
+            if (cached) {
+                results[i] = cached;
+            }
+            else {
+                uncachedIndices.push(i);
+                uncachedTexts.push(texts[i]);
+            }
+        }
+        // Compute embeddings for uncached texts
+        if (uncachedTexts.length > 0) {
+            const computed = await this.computeEmbeddings(uncachedTexts);
+            for (let j = 0; j < uncachedTexts.length; j++) {
+                const originalIndex = uncachedIndices[j];
+                results[originalIndex] = computed[j];
+                // Cache the result
+                const cacheKey = this.getCacheKey(uncachedTexts[j]);
+                this.cache.set(cacheKey, computed[j]);
+            }
+        }
+        return results;
+    }
+    /**
+     * Compute embeddings using the ensemble
+     */
+    async computeEmbeddings(texts) {
+        const modelEmbeddings = new Map();
+        // Get embeddings from each model
+        for (const [modelId, model] of this.models) {
+            try {
+                const embeddings = await this.runModelInference(model, texts);
+                modelEmbeddings.set(modelId, embeddings);
+            }
+            catch (error) {
+                logger.warn(`Model ${modelId} inference failed: ${error}`);
+            }
+        }
+        // Fuse embeddings
+        const fused = this.fuseEmbeddings(texts.length, modelEmbeddings);
+        return fused;
+    }
+    /**
+     * Run inference on a single model
+     */
+    async runModelInference(model, texts) {
+        const batchSize = texts.length;
+        // Tokenize all texts
+        const encodedInputs = texts.map((text) => model.tokenizer.encode(text, { addSpecialTokens: true }));
+        // Pad to same length
+        const maxLen = Math.min(model.config.maxLength, Math.max(...encodedInputs.map((e) => e.input_ids.length)));
+        const paddedInputIds = [];
+        const paddedAttentionMask = [];
+        for (const encoded of encodedInputs) {
+            const padLength = maxLen - encoded.input_ids.length;
+            paddedInputIds.push([
+                ...encoded.input_ids,
+                ...new Array(padLength).fill(0),
+            ]);
+            paddedAttentionMask.push([
+                ...encoded.attention_mask,
+                ...new Array(padLength).fill(0),
+            ]);
+        }
+        // Create tensors
+        const inputIdsTensor = this.createTensor2D(paddedInputIds, "int64");
+        const attentionMaskTensor = this.createTensor2D(paddedAttentionMask, "int64");
+        const feeds = {
+            input_ids: inputIdsTensor,
+            attention_mask: attentionMaskTensor,
+        };
+        // Add token_type_ids if needed
+        const inputNames = model.session.inputNames;
+        if (inputNames.includes("token_type_ids")) {
+            const tokenTypeIds = paddedInputIds.map((ids) => ids.map(() => 0));
+            feeds["token_type_ids"] = this.createTensor2D(tokenTypeIds, "int64");
+        }
+        // Run inference
+        const outputs = await model.session.run(feeds);
+        // Extract embeddings (use [CLS] token or mean pooling)
+        const embeddings = this.extractEmbeddings(outputs, batchSize, model.config.dimension, paddedAttentionMask);
+        // Project to unified dimension
+        const projected = embeddings.map((emb) => this.projectEmbedding(emb, model.projectionMatrix));
+        return projected;
+    }
+    /**
+     * Extract embeddings from model output
+     */
+    extractEmbeddings(outputs, batchSize, _dimension, attentionMasks) {
+        // Try different output tensor names
+        const outputTensor = outputs["last_hidden_state"] ||
+            outputs["pooler_output"] ||
+            outputs["embeddings"] ||
+            outputs[Object.keys(outputs)[0]];
+        if (!outputTensor) {
+            throw new Error("No output tensor found");
+        }
+        const data = this.extractFloatArray(outputTensor);
+        const dims = outputTensor.dims;
+        const embeddings = [];
+        if (dims.length === 3) {
+            // [batch, seq_len, hidden_size] - use mean pooling
+            const seqLen = dims[1];
+            const hiddenSize = dims[2];
+            for (let b = 0; b < batchSize; b++) {
+                const embedding = new Float32Array(hiddenSize);
+                let count = 0;
+                for (let s = 0; s < seqLen; s++) {
+                    if (attentionMasks[b][s] === 1) {
+                        for (let h = 0; h < hiddenSize; h++) {
+                            embedding[h] += data[b * seqLen * hiddenSize + s * hiddenSize + h];
+                        }
+                        count++;
+                    }
+                }
+                // Average
+                if (count > 0) {
+                    for (let h = 0; h < hiddenSize; h++) {
+                        embedding[h] /= count;
+                    }
+                }
+                // L2 normalize
+                this.l2Normalize(embedding);
+                embeddings.push(embedding);
+            }
+        }
+        else if (dims.length === 2) {
+            // [batch, hidden_size] - already pooled
+            const hiddenSize = dims[1];
+            for (let b = 0; b < batchSize; b++) {
+                const embedding = new Float32Array(hiddenSize);
+                for (let h = 0; h < hiddenSize; h++) {
+                    embedding[h] = data[b * hiddenSize + h];
+                }
+                this.l2Normalize(embedding);
+                embeddings.push(embedding);
+            }
+        }
+        return embeddings;
+    }
+    /**
+     * Project embedding to unified dimension
+     */
+    projectEmbedding(embedding, projectionMatrix) {
+        const inputDim = embedding.length;
+        const outputDim = UNIFIED_DIMENSION;
+        const projected = new Float32Array(outputDim);
+        for (let o = 0; o < outputDim; o++) {
+            let sum = 0;
+            for (let i = 0; i < inputDim; i++) {
+                sum += embedding[i] * projectionMatrix[i * outputDim + o];
+            }
+            projected[o] = sum;
+        }
+        this.l2Normalize(projected);
+        return projected;
+    }
+    /**
+     * Fuse embeddings from multiple models
+     */
+    fuseEmbeddings(count, modelEmbeddings) {
+        const fused = [];
+        for (let i = 0; i < count; i++) {
+            const embedding = new Float32Array(UNIFIED_DIMENSION);
+            for (const [modelId, embeddings] of modelEmbeddings) {
+                const model = this.models.get(modelId);
+                if (!model || !embeddings[i])
+                    continue;
+                const weight = model.config.weight;
+                for (let d = 0; d < UNIFIED_DIMENSION; d++) {
+                    embedding[d] += weight * embeddings[i][d];
+                }
+            }
+            // L2 normalize final embedding
+            this.l2Normalize(embedding);
+            fused.push(embedding);
+        }
+        return fused;
+    }
+    /**
+     * L2 normalize a vector in-place
+     */
+    l2Normalize(vector) {
+        let norm = 0;
+        for (let i = 0; i < vector.length; i++) {
+            norm += vector[i] * vector[i];
+        }
+        norm = Math.sqrt(norm);
+        if (norm > 0) {
+            for (let i = 0; i < vector.length; i++) {
+                vector[i] /= norm;
+            }
+        }
+    }
+    /**
+     * Compute cosine similarity between two embeddings
+     */
+    cosineSimilarity(a, b) {
+        if (a.length !== b.length) {
+            throw new Error("Embedding dimensions must match");
+        }
+        let dot = 0;
+        for (let i = 0; i < a.length; i++) {
+            dot += a[i] * b[i];
+        }
+        // Vectors are already L2 normalized, so dot product = cosine similarity
+        return dot;
+    }
+    /**
+     * Find most similar embedding from a set
+     */
+    findMostSimilar(query, candidates, topK = 1) {
+        const similarities = candidates.map((candidate, index) => ({
+            index,
+            similarity: this.cosineSimilarity(query, candidate),
+        }));
+        similarities.sort((a, b) => b.similarity - a.similarity);
+        return similarities.slice(0, topK);
+    }
+    /**
+     * Generate cache key for text
+     */
+    getCacheKey(text) {
+        // Use text content as key (truncated for memory)
+        const normalized = text.toLowerCase().trim().substring(0, 200);
+        return normalized;
+    }
+    /**
+     * Get default vocabulary (fallback)
+     */
+    getDefaultVocab() {
+        const vocab = {
+            "[PAD]": 0,
+            "[UNK]": 100,
+            "[CLS]": 101,
+            "[SEP]": 102,
+            "[MASK]": 103,
+        };
+        // Add lowercase letters
+        for (let i = 0; i < 26; i++) {
+            const char = String.fromCharCode(97 + i);
+            vocab[char] = 1000 + i;
+        }
+        // Add digits
+        for (let i = 0; i < 10; i++) {
+            vocab[String(i)] = 2000 + i;
+        }
+        return vocab;
+    }
+    /**
+     * Get cache statistics
+     */
+    getCacheStats() {
+        return this.cache.getStats();
+    }
+    /**
+     * Clear embedding cache
+     */
+    clearCache() {
+        this.cache.clear();
+        logger.info("Embedding cache cleared");
+    }
+    /**
+     * Get list of loaded models
+     */
+    getLoadedModels() {
+        return Array.from(this.models.keys());
+    }
+    /**
+     * Get embedding dimension
+     */
+    getEmbeddingDimension() {
+        return UNIFIED_DIMENSION;
+    }
+    /**
+     * Dispose of all resources
+     */
+    async dispose() {
+        for (const model of this.models.values()) {
+            await model.session.release?.();
+        }
+        this.models.clear();
+        this.cache.clear();
+        this.initialized = false;
+        logger.info("EnsembleEmbeddingService disposed");
+    }
+}
+exports.EnsembleEmbeddingService = EnsembleEmbeddingService;
+/**
+ * Singleton instance management
+ */
+let serviceInstance = null;
+let instancePromise = null;
+/**
+ * Get or create the EnsembleEmbeddingService singleton
+ */
+async function getEnsembleEmbeddingService() {
+    // Check if ensemble embeddings are enabled
+    if (!EnsembleEmbeddingService.isEnabled()) {
+        return null;
+    }
+    // Return existing instance
+    if (serviceInstance) {
+        return serviceInstance;
+    }
+    // Return existing loading promise
+    if (instancePromise) {
+        return instancePromise;
+    }
+    // Create new instance
+    instancePromise = EnsembleEmbeddingService.create()
+        .then((instance) => {
+        serviceInstance = instance;
+        logger.info("EnsembleEmbeddingService singleton created");
+        return instance;
+    })
+        .catch((error) => {
+        logger.warn(`Failed to create EnsembleEmbeddingService: ${error}`);
+        instancePromise = null;
+        return null;
+    });
+    return instancePromise;
+}
+/**
+ * Reset singleton (for testing)
+ */
+function resetEnsembleEmbeddingService() {
+    if (serviceInstance) {
+        serviceInstance.dispose();
+    }
+    serviceInstance = null;
+    instancePromise = null;
+}
+exports.default = EnsembleEmbeddingService;
+//# sourceMappingURL=EnsembleEmbeddingService.js.map

@@ -84,6 +84,7 @@ export declare const FeatureToggles: {
     isGlinerEnabled: () => boolean;
     isMLConfidenceEnabled: () => boolean;
     isMLFPFilterEnabled: () => boolean;
+    isEnsembleEmbeddingsEnabled: () => boolean;
     isShadowRustNameEnabled: () => boolean;
     isShadowRustNameFullEnabled: () => boolean;
     isShadowRustNameSmartEnabled: () => boolean;

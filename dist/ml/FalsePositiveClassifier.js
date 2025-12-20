@@ -122,7 +122,7 @@ class FalsePositiveClassifier extends ONNXInference_1.ONNXInference {
     static loadingPromise = null;
     static loadFailed = false;
     constructor(session, tokenizer, fpThreshold = DEFAULT_FP_THRESHOLD) {
-        super(session);
+        super(session, "fp_classifier");
         this.tokenizer = tokenizer;
         this.fpThreshold = fpThreshold;
     }

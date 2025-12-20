@@ -7,6 +7,7 @@
  * @module ml/ONNXInference
  */
 import * as ort from "onnxruntime-node";
+import { ModelType } from "./ModelManager";
 /**
  * Tokenizer output format (simplified)
  */
@@ -32,7 +33,8 @@ export interface Tokenizer {
 export declare abstract class ONNXInference {
     protected session: ort.InferenceSession;
     protected tokenizer: Tokenizer | null;
-    constructor(session: ort.InferenceSession);
+    protected modelType: ModelType | null;
+    constructor(session: ort.InferenceSession, modelType?: ModelType);
     /**
      * Get input names for the model
      */
@@ -55,6 +57,7 @@ export declare abstract class ONNXInference {
     protected createTensor3D(data: number[][][], dtype?: "float32" | "int32"): ort.Tensor;
     /**
      * Run inference with the given inputs
+     * Automatically tracks performance metrics if model type is set
      */
     protected runInference(feeds: Record<string, ort.Tensor>): Promise<ort.InferenceSession.OnnxValueMapType>;
     /**

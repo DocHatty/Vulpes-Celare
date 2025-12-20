@@ -12,7 +12,7 @@
  * @module ml
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applyMLFalsePositiveFilter = exports.FalsePositiveClassifier = exports.getConfidenceRanker = exports.TinyBertConfidenceRanker = exports.GlinerInference = exports.SimpleWordPieceTokenizer = exports.ONNXInference = exports.ModelManager = void 0;
+exports.resetEnsembleEmbeddingService = exports.getEnsembleEmbeddingService = exports.EnsembleEmbeddingService = exports.applyMLFalsePositiveFilter = exports.FalsePositiveClassifier = exports.getConfidenceRanker = exports.TinyBertConfidenceRanker = exports.GlinerInference = exports.SimpleWordPieceTokenizer = exports.ONNXInference = exports.ModelManager = void 0;
 exports.getMLStatus = getMLStatus;
 exports.printMLStatus = printMLStatus;
 // Core infrastructure
@@ -32,6 +32,11 @@ Object.defineProperty(exports, "getConfidenceRanker", { enumerable: true, get: f
 var FalsePositiveClassifier_1 = require("./FalsePositiveClassifier");
 Object.defineProperty(exports, "FalsePositiveClassifier", { enumerable: true, get: function () { return FalsePositiveClassifier_1.FalsePositiveClassifier; } });
 Object.defineProperty(exports, "applyMLFalsePositiveFilter", { enumerable: true, get: function () { return FalsePositiveClassifier_1.applyMLFalsePositiveFilter; } });
+// Ensemble embeddings for semantic disambiguation
+var EnsembleEmbeddingService_1 = require("./EnsembleEmbeddingService");
+Object.defineProperty(exports, "EnsembleEmbeddingService", { enumerable: true, get: function () { return EnsembleEmbeddingService_1.EnsembleEmbeddingService; } });
+Object.defineProperty(exports, "getEnsembleEmbeddingService", { enumerable: true, get: function () { return EnsembleEmbeddingService_1.getEnsembleEmbeddingService; } });
+Object.defineProperty(exports, "resetEnsembleEmbeddingService", { enumerable: true, get: function () { return EnsembleEmbeddingService_1.resetEnsembleEmbeddingService; } });
 /**
  * Check if ML features are available
  */
@@ -51,6 +56,10 @@ function getMLStatus() {
         fpClassifier: {
             enabled: FeatureToggles.isMLFPFilterEnabled(),
             available: MM.modelAvailable("fp_classifier"),
+        },
+        ensembleEmbeddings: {
+            enabled: FeatureToggles.isEnsembleEmbeddingsEnabled(),
+            available: MM.modelAvailable("minilm-l6"), // Required model
         },
     };
 }
@@ -72,19 +81,22 @@ function printMLStatus() {
     out.print(`  GLiNER Name Detection:     ${formatStatus(status.gliner)}`);
     out.print(`  TinyBERT Confidence:       ${formatStatus(status.tinybert)}`);
     out.print(`  ML False Positive Filter:  ${formatStatus(status.fpClassifier)}`);
+    out.print(`  Ensemble Embeddings:       ${formatStatus(status.ensembleEmbeddings)}`);
     out.blank();
     const anyMissing = !status.gliner.available ||
         !status.tinybert.available ||
-        !status.fpClassifier.available;
+        !status.fpClassifier.available ||
+        !status.ensembleEmbeddings.available;
     if (anyMissing) {
         out.print("Run 'npm run models:download' to install missing models.");
         out.blank();
     }
     out.print("Environment variables to enable ML features:");
-    out.print("  VULPES_USE_GLINER=1          # Enable GLiNER");
-    out.print("  VULPES_USE_ML_CONFIDENCE=1   # Enable TinyBERT");
-    out.print("  VULPES_USE_ML_FP_FILTER=1    # Enable FP classifier");
-    out.print("  VULPES_ML_DEVICE=cuda        # Use GPU (optional)");
+    out.print("  VULPES_USE_GLINER=1              # Enable GLiNER");
+    out.print("  VULPES_USE_ML_CONFIDENCE=1       # Enable TinyBERT");
+    out.print("  VULPES_USE_ML_FP_FILTER=1        # Enable FP classifier");
+    out.print("  VULPES_USE_ENSEMBLE_EMBEDDINGS=1 # Enable ensemble embeddings");
+    out.print("  VULPES_ML_DEVICE=cuda            # Use GPU (optional)");
     out.blank();
 }
 //# sourceMappingURL=index.js.map

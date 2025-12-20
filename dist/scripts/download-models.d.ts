@@ -6,6 +6,9 @@
  * - GLiNER: Zero-shot NER for name detection
  * - TinyBERT: Confidence re-ranking
  * - FP Classifier: False positive detection
+ * - Bio_ClinicalBERT: Clinical domain embeddings (Phase 6)
+ * - MiniLM-L6-v2: Fast semantic similarity (Phase 6)
+ * - BioBERT: Biomedical NER embeddings (Phase 6)
  *
  * Usage:
  *   npm run models:download              # Download all models

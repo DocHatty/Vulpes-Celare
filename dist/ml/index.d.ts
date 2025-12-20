@@ -18,6 +18,7 @@ export { GlinerInference } from "./GlinerInference";
 export type { GlinerEntity } from "./GlinerInference";
 export { TinyBertConfidenceRanker, getConfidenceRanker, } from "./TinyBertConfidenceRanker";
 export { FalsePositiveClassifier, applyMLFalsePositiveFilter, } from "./FalsePositiveClassifier";
+export { EnsembleEmbeddingService, getEnsembleEmbeddingService, resetEnsembleEmbeddingService, } from "./EnsembleEmbeddingService";
 /**
  * Check if ML features are available
  */
@@ -31,6 +32,10 @@ export declare function getMLStatus(): {
         available: boolean;
     };
     fpClassifier: {
+        enabled: boolean;
+        available: boolean;
+    };
+    ensembleEmbeddings: {
         enabled: boolean;
         available: boolean;
     };

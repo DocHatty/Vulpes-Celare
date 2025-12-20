@@ -25,4 +25,5 @@
 export { CalibrationDataExtractor, calibrationDataExtractor, FilterCalibrationStats, } from "./CalibrationDataExtractor";
 export { CalibrationPersistence, calibrationPersistence, CalibrationMetadata, PersistedCalibration, } from "./CalibrationPersistence";
 export { AutoCalibrator, autoCalibrator, initializeCalibration, getCalibratedConfidence, AutoCalibrationOptions, CalibrationResult, LiveTestResult, } from "./AutoCalibrator";
+export { AdaptiveThresholdService, adaptiveThresholds, MedicalSpecialty, PurposeOfUse, type PHIType, type AdaptiveContext, type AdaptiveThresholds, type ThresholdAdjustment, type ThresholdFeedback, type ContextPerformance, type AdaptiveThresholdConfig, } from "./AdaptiveThresholdService";
 //# sourceMappingURL=index.d.ts.map

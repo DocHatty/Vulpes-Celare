@@ -66,8 +66,12 @@ const MultiPatternScanner_1 = require("../dfa/MultiPatternScanner");
 const PipelineTracer_1 = require("../diagnostics/PipelineTracer");
 const NameDetectionCoordinator_1 = require("../filters/name-patterns/NameDetectionCoordinator");
 const SemanticRedactionCache_1 = require("../cache/SemanticRedactionCache");
+const StructureExtractor_1 = require("../cache/StructureExtractor");
+const ClinicalContextDetector_1 = require("../context/ClinicalContextDetector");
+const AdaptiveThresholdService_1 = require("../calibration/AdaptiveThresholdService");
 const crypto_1 = require("crypto");
 const plugins_1 = require("../plugins");
+const VulpesTracer_1 = require("../observability/VulpesTracer");
 /**
  * Check if Cortex ML enhancement is enabled via environment variable
  */
@@ -168,6 +172,15 @@ class ParallelRedactionEngine {
         const startTime = Date.now();
         const filterResults = [];
         let pluginTimeMs = 0;
+        // Create root trace span for the entire redaction operation
+        const rootSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.redaction.pipeline", {
+            attributes: {
+                "vulpes.operation": "redaction",
+                "vulpes.document.length": text.length,
+                "vulpes.filter.count": filters.length,
+                "vulpes.session.id": context.getSessionId(),
+            },
+        });
         // PLUGIN PRE-PROCESS HOOK: Allow plugins to modify text before processing
         const pluginsEnabled = plugins_1.pluginManager.isEnabled() && plugins_1.pluginManager.hasPlugins();
         let processedText = text;
@@ -221,15 +234,45 @@ class ParallelRedactionEngine {
         const workingText = processedText;
         // CACHE CHECK: Try semantic cache before running full pipeline
         if (isSemanticCacheEnabled() && workingText.length >= 50) {
+            const cacheSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.cache.lookup", {
+                attributes: {
+                    "vulpes.cache.enabled": true,
+                    "vulpes.document.length": workingText.length,
+                },
+            });
             const cache = (0, SemanticRedactionCache_1.getSemanticCache)();
             const policyHash = computePolicyHash(policy);
             const cacheLookup = cache.lookup(text, policyHash);
             if (cacheLookup.hit && cacheLookup.spans && cacheLookup.spans.length > 0) {
                 // CACHE HIT - apply cached spans and return
+                cacheSpan.setAttributes({
+                    "vulpes.cache.hit": true,
+                    "vulpes.cache.hit_type": cacheLookup.hitType,
+                    "vulpes.cache.confidence": cacheLookup.confidence,
+                    "vulpes.cache.spans": cacheLookup.spans.length,
+                    "vulpes.cache.lookup_ms": cacheLookup.lookupTimeMs,
+                });
+                cacheSpan.setStatus("ok");
+                cacheSpan.end();
                 const cachedResult = this.applyCachedSpans(text, cacheLookup.spans, context, policy, filters.length, cacheLookup, startTime);
                 RadiologyLogger_1.RadiologyLogger.info("CACHE", `Cache ${cacheLookup.hitType.toUpperCase()} hit: ${cacheLookup.spans.length} spans in ${cacheLookup.lookupTimeMs}ms (confidence: ${(cacheLookup.confidence * 100).toFixed(1)}%)`);
+                // End root span on cache hit
+                rootSpan.setAttributes({
+                    "vulpes.cache.hit": true,
+                    "vulpes.spans.detected": cacheLookup.spans.length,
+                    "vulpes.execution_ms": Date.now() - startTime,
+                });
+                rootSpan.setStatus("ok");
+                rootSpan.end();
                 return cachedResult;
             }
+            // Cache miss
+            cacheSpan.setAttributes({
+                "vulpes.cache.hit": false,
+                "vulpes.cache.lookup_ms": cacheLookup.lookupTimeMs,
+            });
+            cacheSpan.setStatus("ok");
+            cacheSpan.end();
         }
         // Start pipeline trace (enabled via VULPES_TRACE=1)
         PipelineTracer_1.pipelineTracer.startTrace(workingText);
@@ -277,25 +320,60 @@ class ParallelRedactionEngine {
         // Fast multi-pattern scanning to identify candidate regions before filter execution
         let dfaSpans = [];
         if ((0, MultiPatternScanner_1.isDFAScanningEnabled)()) {
+            const dfaSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.dfa.prescan", {
+                attributes: {
+                    "vulpes.stage": "dfa_prescan",
+                    "vulpes.document.length": workingText.length,
+                },
+            });
             const dfaStart = Date.now();
             const dfaResult = (0, MultiPatternScanner_1.scanWithDFA)(workingText);
             const dfaTimeMs = Date.now() - dfaStart;
             // Convert DFA matches to Spans
             dfaSpans = this.dfaMatchesToSpans(dfaResult.matches, workingText);
+            dfaSpan.setAttributes({
+                "vulpes.dfa.matches": dfaResult.stats.matchesFound,
+                "vulpes.dfa.patterns_checked": dfaResult.stats.patternsChecked,
+                "vulpes.dfa.duration_ms": dfaTimeMs,
+                "vulpes.dfa.spans": dfaSpans.length,
+            });
+            dfaSpan.setStatus("ok");
+            dfaSpan.end();
             RadiologyLogger_1.RadiologyLogger.pipelineStage("DFA-PRESCAN", `DFA pre-scan: ${dfaResult.stats.matchesFound} matches in ${dfaTimeMs}ms (${dfaResult.stats.patternsChecked} patterns)`, dfaSpans.length);
         }
         // STEP 1: Execute all filters in parallel using Worker Threads
         // This offloads CPU-intensive operations to separate threads
+        const filterExecSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.filters.execute", {
+            attributes: {
+                "vulpes.stage": "filter_execution",
+                "vulpes.filter.enabled_count": enabledFilters.length,
+                "vulpes.filter.total_count": filters.length,
+            },
+        });
         const workerPool = FilterWorkerPool_1.FilterWorkerPool.getInstance();
         const executionResults = await Promise.all(enabledFilters.map(async (filter) => {
             const filterStart = Date.now();
             const filterType = filter.getType();
             const filterName = filter.constructor.name;
             const config = policy.identifiers?.[filterType];
+            // Create child span for individual filter
+            const filterSpan = VulpesTracer_1.vulpesTracer.startSpan(`phi.filter.${filterType}`, {
+                attributes: {
+                    "vulpes.filter.name": filterName,
+                    "vulpes.filter.type": filterType,
+                },
+            });
             try {
                 // Use worker pool for execution
                 const spans = await workerPool.execute(filterName, workingText, config);
                 const executionTimeMs = Date.now() - filterStart;
+                filterSpan.setAttributes({
+                    "vulpes.filter.spans_detected": spans.length,
+                    "vulpes.filter.duration_ms": executionTimeMs,
+                    "vulpes.filter.success": true,
+                });
+                filterSpan.setStatus("ok");
+                filterSpan.end();
                 // Log completion
                 RadiologyLogger_1.RadiologyLogger.filterComplete({
                     filterName,
@@ -317,6 +395,13 @@ class ParallelRedactionEngine {
             }
             catch (error) {
                 const executionTimeMs = Date.now() - filterStart;
+                filterSpan.setAttributes({
+                    "vulpes.filter.spans_detected": 0,
+                    "vulpes.filter.duration_ms": executionTimeMs,
+                    "vulpes.filter.success": false,
+                });
+                filterSpan.setStatus("error", error instanceof Error ? error.message : String(error));
+                filterSpan.end();
                 RadiologyLogger_1.RadiologyLogger.error("REDACTION", `Filter ${filterName} failed (Worker): ${error}`);
                 // FALLBACK: Try local execution if worker fails?
                 // For now, log error and proceed.
@@ -332,6 +417,14 @@ class ParallelRedactionEngine {
                 return { filter, spans: [], executionTimeMs };
             }
         }));
+        // End filter execution span
+        const totalFilterSpans = executionResults.reduce((sum, r) => sum + r.spans.length, 0);
+        filterExecSpan.setAttributes({
+            "vulpes.filter.total_spans": totalFilterSpans,
+            "vulpes.filter.failed_count": filterResults.filter(r => !r.success).length,
+        });
+        filterExecSpan.setStatus("ok");
+        filterExecSpan.end();
         let allSpans = executionResults.flatMap((r) => r.spans);
         // Merge DFA pre-scan spans with filter-detected spans
         // DFA spans have lower priority so filter spans will win on overlap
@@ -424,6 +517,12 @@ class ParallelRedactionEngine {
             }
         }
         // STEP 1.7: Filter out non-PHI terms using UnifiedMedicalWhitelist (EARLY FILTERING)
+        const whitelistSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.whitelist.filter", {
+            attributes: {
+                "vulpes.stage": "whitelist",
+                "vulpes.spans.input": allSpans.length,
+            },
+        });
         // Track removed spans for pool release
         const beforeWhitelist = [...allSpans];
         allSpans = this.filterUsingUnifiedWhitelist(allSpans);
@@ -434,6 +533,12 @@ class ParallelRedactionEngine {
             const removedByWhitelist = beforeWhitelist.filter(s => !keptSet.has(s));
             SpanFactory_1.SpanFactory.releaseMany(removedByWhitelist);
         }
+        whitelistSpan.setAttributes({
+            "vulpes.whitelist.removed": whitelistRemoved,
+            "vulpes.spans.output": allSpans.length,
+        });
+        whitelistSpan.setStatus("ok");
+        whitelistSpan.end();
         RadiologyLogger_1.RadiologyLogger.pipelineStage("WHITELIST", `UnifiedMedicalWhitelist removed ${whitelistRemoved} false positives`, allSpans.length);
         // STEP 1.7c: Filter ALL CAPS section headings (document structure detection)
         const beforeAllCaps = [...allSpans];
@@ -523,6 +628,12 @@ class ParallelRedactionEngine {
             }
         }
         // STEP 3: Resolve overlaps and deduplicate
+        const overlapSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.overlap.resolve", {
+            attributes: {
+                "vulpes.stage": "overlap_resolution",
+                "vulpes.spans.input": disambiguatedSpans.length,
+            },
+        });
         PipelineTracer_1.pipelineTracer.startStage();
         const mergedSpans = Span_1.SpanUtils.dropOverlappingSpans(disambiguatedSpans);
         PipelineTracer_1.pipelineTracer.recordStage("OVERLAP_RESOLUTION", mergedSpans, {
@@ -534,6 +645,12 @@ class ParallelRedactionEngine {
             const droppedInOverlap = disambiguatedSpans.filter(s => !mergedSet.has(s));
             SpanFactory_1.SpanFactory.releaseMany(droppedInOverlap);
         }
+        overlapSpan.setAttributes({
+            "vulpes.overlap.dropped": disambiguatedSpans.length - mergedSpans.length,
+            "vulpes.spans.output": mergedSpans.length,
+        });
+        overlapSpan.setStatus("ok");
+        overlapSpan.end();
         RadiologyLogger_1.RadiologyLogger.pipelineStage("OVERLAP", `Resolved overlapping spans: ${disambiguatedSpans.length} -> ${mergedSpans.length}`, mergedSpans.length);
         // SHADOW MODE: compare Rust name-scanner output vs TS pipeline (no behavior change).
         let shadow = undefined;
@@ -678,13 +795,31 @@ class ParallelRedactionEngine {
         if (postfilterShadow) {
             shadow = { ...(shadow ?? {}), postfilter: postfilterShadow };
         }
+        // STEP 3.5: Set up adaptive threshold context for post-filtering
+        // Analyze document to determine type, specialty, and clinical context
+        const structureExtractor = new StructureExtractor_1.StructureExtractor();
+        const docStructure = structureExtractor.extract(workingText);
+        const contextAnalysis = ClinicalContextDetector_1.ClinicalContextDetector.analyzeContext(workingText, 0, workingText.length);
+        const adaptiveContext = AdaptiveThresholdService_1.adaptiveThresholds.analyzeDocument(workingText, docStructure.documentType, contextAnalysis.strength);
+        // Set adaptive context for PostFilterService
+        PostFilterService_1.PostFilterService.setAdaptiveContext(adaptiveContext);
         // STEP 4: Post-filter to remove false positives (using PostFilterService)
+        const postFilterSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.postfilter.execute", {
+            attributes: {
+                "vulpes.stage": "post_filter",
+                "vulpes.spans.input": mergedSpans.length,
+                "vulpes.adaptive.specialty": adaptiveContext.specialty ?? "UNKNOWN",
+                "vulpes.adaptive.document_type": adaptiveContext.documentType ?? "UNKNOWN",
+            },
+        });
         PipelineTracer_1.pipelineTracer.startStage();
         const validSpans = PostFilterService_1.PostFilterService.filter(mergedSpans, workingText, {
             shadowReport: postfilterShadow,
         });
+        // Clear adaptive context after filtering
+        PostFilterService_1.PostFilterService.clearAdaptiveContext();
         PipelineTracer_1.pipelineTracer.recordStage("POST_FILTER", validSpans, {
-            details: `${mergedSpans.length} -> ${validSpans.length}`,
+            details: `${mergedSpans.length} -> ${validSpans.length} (adaptive: ${adaptiveContext.specialty ?? "UNKNOWN"})`,
         });
         // Release spans dropped during post-filter back to pool
         if (validSpans.length < mergedSpans.length) {
@@ -692,6 +827,12 @@ class ParallelRedactionEngine {
             const droppedInPostFilter = mergedSpans.filter(s => !validSet.has(s));
             SpanFactory_1.SpanFactory.releaseMany(droppedInPostFilter);
         }
+        postFilterSpan.setAttributes({
+            "vulpes.postfilter.removed": mergedSpans.length - validSpans.length,
+            "vulpes.spans.output": validSpans.length,
+        });
+        postFilterSpan.setStatus("ok");
+        postFilterSpan.end();
         RadiologyLogger_1.RadiologyLogger.pipelineStage("POST-FILTER", `Final false positive removal: ${mergedSpans.length} -> ${validSpans.length}`, validSpans.length);
         // PLUGIN PRE-REDACTION HOOK: Last chance to modify spans before token application
         let finalSpans = validSpans;
@@ -729,8 +870,20 @@ class ParallelRedactionEngine {
             pluginTimeMs += performance.now() - preRedactionStart;
         }
         // STEP 5: Apply all spans at once
+        const applySpansSpan = VulpesTracer_1.vulpesTracer.startSpan("phi.spans.apply", {
+            attributes: {
+                "vulpes.stage": "apply_spans",
+                "vulpes.spans.to_apply": finalSpans.length,
+            },
+        });
         const applyResult = this.applySpans(workingText, finalSpans, context, policy);
         let redactedText = applyResult.text;
+        applySpansSpan.setAttributes({
+            "vulpes.apply.input_length": workingText.length,
+            "vulpes.apply.output_length": redactedText.length,
+        });
+        applySpansSpan.setStatus("ok");
+        applySpansSpan.end();
         if (applyResult.shadow) {
             shadow = { ...(shadow ?? {}), applySpans: applyResult.shadow };
         }
@@ -794,6 +947,19 @@ class ParallelRedactionEngine {
         PipelineTracer_1.pipelineTracer.endTrace(finalSpans, redactedText);
         // End name detection coordinator (clears cache)
         NameDetectionCoordinator_1.nameDetectionCoordinator.endDocument();
+        // Complete root trace span with final metrics
+        rootSpan.setAttributes({
+            "vulpes.cache.hit": false,
+            "vulpes.spans.detected": allSpans.length,
+            "vulpes.spans.after_filter": mergedSpans.length,
+            "vulpes.spans.applied": finalSpans.length,
+            "vulpes.execution_ms": totalTime,
+            "vulpes.filters.executed": enabledFilters.length,
+            "vulpes.filters.failed": failedFilters.length,
+            "vulpes.output.length": redactedText.length,
+        });
+        rootSpan.setStatus(failedFilters.length > 0 ? "error" : "ok");
+        rootSpan.end();
         // Log comprehensive summary
         RadiologyLogger_1.RadiologyLogger.redactionSummary({
             inputLength: workingText.length,

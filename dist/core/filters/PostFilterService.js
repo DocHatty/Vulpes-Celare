@@ -18,6 +18,7 @@ const binding_1 = require("../../native/binding");
 const RustAccelConfig_1 = require("../../config/RustAccelConfig");
 const FalsePositiveClassifier_1 = require("../../ml/FalsePositiveClassifier");
 const post_filter_1 = require("../../config/post-filter");
+const AdaptiveThresholdService_1 = require("../../calibration/AdaptiveThresholdService");
 let cachedPostFilterBinding = undefined;
 function isPostFilterAccelEnabled() {
     return RustAccelConfig_1.RustAccelConfig.isPostFilterEnabled();
@@ -472,6 +473,69 @@ class FieldLabelFilter {
     }
 }
 exports.FieldLabelFilter = FieldLabelFilter;
+/**
+ * Filter spans below adaptive confidence threshold
+ *
+ * Uses AdaptiveThresholdService to determine context-aware thresholds
+ * based on document type, specialty, and PHI type.
+ */
+class ConfidenceThresholdFilter {
+    name = "ConfidenceThreshold";
+    // Document-level context cache (set before filtering batch)
+    static documentContext = null;
+    /**
+     * Set the document context for adaptive threshold calculation
+     * Call this before filtering a batch of spans from the same document
+     */
+    static setDocumentContext(context) {
+        ConfidenceThresholdFilter.documentContext = context;
+    }
+    /**
+     * Clear document context after processing
+     */
+    static clearDocumentContext() {
+        ConfidenceThresholdFilter.documentContext = null;
+    }
+    shouldKeep(span, _text) {
+        // Get PHI type from filter type
+        const phiType = this.filterTypeToPHIType(span.filterType);
+        // Build context for this span
+        const context = {
+            ...ConfidenceThresholdFilter.documentContext,
+            phiType,
+        };
+        // Get adaptive threshold for this context
+        const threshold = AdaptiveThresholdService_1.adaptiveThresholds.getMinimumThreshold(context);
+        // Keep if confidence meets threshold
+        return span.confidence >= threshold;
+    }
+    /**
+     * Map FilterType to PHIType for threshold lookup
+     */
+    filterTypeToPHIType(filterType) {
+        const mapping = {
+            NAME: "NAME",
+            DATE: "DATE",
+            AGE: "AGE",
+            SSN: "SSN",
+            MRN: "MRN",
+            PHONE: "PHONE",
+            FAX: "FAX",
+            EMAIL: "EMAIL",
+            ADDRESS: "ADDRESS",
+            ZIP: "ZIP",
+            IP_ADDRESS: "IP_ADDRESS",
+            URL: "URL",
+            ACCOUNT: "ACCOUNT",
+            LICENSE: "LICENSE",
+            VEHICLE_ID: "VEHICLE_ID",
+            DEVICE: "DEVICE_ID",
+            BIOMETRIC: "BIOMETRIC",
+            HEALTH_PLAN: "HEALTH_PLAN",
+        };
+        return mapping[filterType];
+    }
+}
 // =============================================================================
 // POST FILTER SERVICE
 // =============================================================================
@@ -483,6 +547,9 @@ exports.FieldLabelFilter = FieldLabelFilter;
  */
 class PostFilterService {
     static strategies = [
+        // Confidence threshold filter runs first (adaptive thresholds)
+        new ConfidenceThresholdFilter(),
+        // Rule-based filters
         new DevicePhoneFalsePositiveFilter(),
         new SectionHeadingFilter(),
         new StructureWordFilter(),
@@ -495,6 +562,19 @@ class PostFilterService {
         new GeographicTermFilter(),
         new FieldLabelFilter(),
     ];
+    /**
+     * Set document context for adaptive threshold calculation
+     * Call before filtering spans from a document
+     */
+    static setAdaptiveContext(context) {
+        ConfidenceThresholdFilter.setDocumentContext(context);
+    }
+    /**
+     * Clear adaptive context after processing
+     */
+    static clearAdaptiveContext() {
+        ConfidenceThresholdFilter.clearDocumentContext();
+    }
     static filterTs(spans, text) {
         return spans.filter((span) => {
             for (const strategy of PostFilterService.strategies) {

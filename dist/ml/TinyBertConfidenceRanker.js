@@ -100,7 +100,7 @@ const PHI_TYPE_ENCODING = {
  */
 class TinyBertConfidenceRanker extends ONNXInference_1.ONNXInference {
     constructor(session, tokenizer) {
-        super(session);
+        super(session, "tinybert");
         this.tokenizer = tokenizer;
     }
     /**

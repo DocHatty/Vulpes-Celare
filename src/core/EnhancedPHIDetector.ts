@@ -20,6 +20,7 @@ import {
 import { FuzzyDictionaryMatcher } from "../dictionaries/FuzzyDictionaryMatcher";
 import { OcrChaosDetector, ChaosAnalysis } from "../utils/OcrChaosDetector";
 import { NameDictionary } from "../dictionaries/NameDictionary";
+import { UnicodeNormalizer } from "../adversarial/UnicodeNormalizer";
 import { LRUCache } from "lru-cache";
 import * as fs from "fs";
 import * as path from "path";
@@ -288,16 +289,22 @@ export class EnhancedPHIDetector {
   // ============ Private Signal Generators ============
 
   private getDictionarySignal(nameText: string): VoteSignal | null {
+    // Apply Unicode normalization to catch homoglyph/adversarial attacks
+    const normalizedText = UnicodeNormalizer.quickNormalize(nameText);
+
     if (!this.firstNameMatcher || !this.surnameMatcher) {
-      // Fall back to basic NameDictionary
-      const confidence = NameDictionary.getNameConfidence(nameText);
+      // Fall back to basic NameDictionary - try both original and normalized
+      let confidence = NameDictionary.getNameConfidence(nameText);
+      if (confidence === 0 && normalizedText !== nameText) {
+        confidence = NameDictionary.getNameConfidence(normalizedText);
+      }
       if (confidence > 0) {
         return EnsembleVoter.dictionarySignal(confidence, "basic-dict", false);
       }
       return null;
     }
 
-    const words = nameText.trim().split(/\s+/);
+    const words = normalizedText.trim().split(/\s+/);
     if (words.length < 1) return null;
 
     const firstWord = words[0];

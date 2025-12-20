@@ -58,6 +58,7 @@ const path = __importStar(require("path"));
 const RadiologyLogger_1 = require("../utils/RadiologyLogger");
 const PhoneticMatcher_1 = require("../utils/PhoneticMatcher");
 const SQLiteDictionaryMatcher_1 = require("./SQLiteDictionaryMatcher");
+const UnicodeNormalizer_1 = require("../adversarial/UnicodeNormalizer");
 /**
  * Dictionary initialization error - thrown when dictionaries cannot be loaded
  */
@@ -358,13 +359,18 @@ class NameDictionary {
         if (!name)
             return false;
         const lower = name.toLowerCase().trim();
+        // Apply Unicode normalization first (catches homoglyphs, invisible chars)
+        const unicodeNorm = UnicodeNormalizer_1.UnicodeNormalizer.quickNormalize(lower);
         // Use SQLite backend if available
         if (this.usingSQLite && this.sqliteMatcher) {
             if (this.sqliteMatcher.hasExact(lower, "first"))
                 return true;
+            // Try Unicode-normalized form
+            if (unicodeNorm !== lower && this.sqliteMatcher.hasExact(unicodeNorm, "first"))
+                return true;
             // Try OCR normalization
-            const normalized = this.normalizeOCR(lower);
-            if (normalized !== lower &&
+            const normalized = this.normalizeOCR(unicodeNorm);
+            if (normalized !== unicodeNorm &&
                 this.sqliteMatcher.hasExact(normalized, "first"))
                 return true;
             // Try deduplication
@@ -389,9 +395,12 @@ class NameDictionary {
             return false;
         if (this.firstNames.has(lower))
             return true;
-        // Try OCR normalization
-        const normalized = this.normalizeOCR(lower);
-        if (normalized !== lower && this.firstNames.has(normalized))
+        // Try Unicode-normalized form
+        if (unicodeNorm !== lower && this.firstNames.has(unicodeNorm))
+            return true;
+        // Try OCR normalization (on Unicode-normalized text)
+        const normalized = this.normalizeOCR(unicodeNorm);
+        if (normalized !== unicodeNorm && this.firstNames.has(normalized))
             return true;
         // Try deduplication (handle T@yyl0r -> Taylor, WiIlliam -> William)
         const deduplicated = this.deduplicate(normalized);
@@ -422,13 +431,18 @@ class NameDictionary {
         if (!name)
             return false;
         const lower = name.toLowerCase().trim();
+        // Apply Unicode normalization first (catches homoglyphs, invisible chars)
+        const unicodeNorm = UnicodeNormalizer_1.UnicodeNormalizer.quickNormalize(lower);
         // Use SQLite backend if available
         if (this.usingSQLite && this.sqliteMatcher) {
             if (this.sqliteMatcher.hasExact(lower, "surname"))
                 return true;
+            // Try Unicode-normalized form
+            if (unicodeNorm !== lower && this.sqliteMatcher.hasExact(unicodeNorm, "surname"))
+                return true;
             // Try OCR normalization
-            const normalized = this.normalizeOCR(lower);
-            if (normalized !== lower &&
+            const normalized = this.normalizeOCR(unicodeNorm);
+            if (normalized !== unicodeNorm &&
                 this.sqliteMatcher.hasExact(normalized, "surname"))
                 return true;
             // Try deduplication
@@ -453,9 +467,12 @@ class NameDictionary {
             return false;
         if (this.surnames.has(lower))
             return true;
-        // Try OCR normalization
-        const normalized = this.normalizeOCR(lower);
-        if (normalized !== lower && this.surnames.has(normalized))
+        // Try Unicode-normalized form
+        if (unicodeNorm !== lower && this.surnames.has(unicodeNorm))
+            return true;
+        // Try OCR normalization (on Unicode-normalized text)
+        const normalized = this.normalizeOCR(unicodeNorm);
+        if (normalized !== unicodeNorm && this.surnames.has(normalized))
             return true;
         // Try deduplication
         const deduplicated = this.deduplicate(normalized);

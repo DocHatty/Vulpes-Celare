@@ -44,6 +44,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SimpleWordPieceTokenizer = exports.ONNXInference = void 0;
 const ort = __importStar(require("onnxruntime-node"));
 const VulpesLogger_1 = require("../utils/VulpesLogger");
+const ModelManager_1 = require("./ModelManager");
 const logger = VulpesLogger_1.vulpesLogger.forComponent("ONNXInference");
 /**
  * Base class for ONNX inference operations
@@ -51,8 +52,10 @@ const logger = VulpesLogger_1.vulpesLogger.forComponent("ONNXInference");
 class ONNXInference {
     session;
     tokenizer = null;
-    constructor(session) {
+    modelType = null;
+    constructor(session, modelType) {
         this.session = session;
+        this.modelType = modelType || null;
     }
     /**
      * Get input names for the model
@@ -118,10 +121,18 @@ class ONNXInference {
     }
     /**
      * Run inference with the given inputs
+     * Automatically tracks performance metrics if model type is set
      */
     async runInference(feeds) {
+        const startTime = Date.now();
         try {
-            return await this.session.run(feeds);
+            const result = await this.session.run(feeds);
+            // Record metrics if model type is known
+            if (this.modelType) {
+                const durationMs = Date.now() - startTime;
+                ModelManager_1.ModelManager.recordInference(this.modelType, durationMs);
+            }
+            return result;
         }
         catch (error) {
             logger.error(`Inference failed: ${error}`);

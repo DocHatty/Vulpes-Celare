@@ -185,17 +185,17 @@ export declare const FeatureTogglesConfigSchema: z.ZodObject<{
     shadowPostfilter: z.ZodDefault<z.ZodBoolean>;
     shadowApplySpans: z.ZodDefault<z.ZodBoolean>;
     gpuProvider: z.ZodDefault<z.ZodEnum<{
-        cpu: "cpu";
         cuda: "cuda";
         directml: "directml";
         coreml: "coreml";
+        cpu: "cpu";
         rocm: "rocm";
     }>>;
     mlDevice: z.ZodDefault<z.ZodEnum<{
-        cpu: "cpu";
         cuda: "cuda";
         directml: "directml";
         coreml: "coreml";
+        cpu: "cpu";
     }>>;
     nameDetectionMode: z.ZodDefault<z.ZodEnum<{
         gliner: "gliner";
@@ -480,17 +480,17 @@ export declare const VulpesConfigSchema: z.ZodObject<{
         shadowPostfilter: z.ZodDefault<z.ZodBoolean>;
         shadowApplySpans: z.ZodDefault<z.ZodBoolean>;
         gpuProvider: z.ZodDefault<z.ZodEnum<{
-            cpu: "cpu";
             cuda: "cuda";
             directml: "directml";
             coreml: "coreml";
+            cpu: "cpu";
             rocm: "rocm";
         }>>;
         mlDevice: z.ZodDefault<z.ZodEnum<{
-            cpu: "cpu";
             cuda: "cuda";
             directml: "directml";
             coreml: "coreml";
+            cpu: "cpu";
         }>>;
         nameDetectionMode: z.ZodDefault<z.ZodEnum<{
             gliner: "gliner";

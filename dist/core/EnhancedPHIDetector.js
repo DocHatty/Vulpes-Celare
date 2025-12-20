@@ -52,6 +52,7 @@ const DocumentStructureAnalyzer_1 = require("../context/DocumentStructureAnalyze
 const FuzzyDictionaryMatcher_1 = require("../dictionaries/FuzzyDictionaryMatcher");
 const OcrChaosDetector_1 = require("../utils/OcrChaosDetector");
 const NameDictionary_1 = require("../dictionaries/NameDictionary");
+const UnicodeNormalizer_1 = require("../adversarial/UnicodeNormalizer");
 const lru_cache_1 = require("lru-cache");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
@@ -220,15 +221,20 @@ class EnhancedPHIDetector {
     }
     // ============ Private Signal Generators ============
     getDictionarySignal(nameText) {
+        // Apply Unicode normalization to catch homoglyph/adversarial attacks
+        const normalizedText = UnicodeNormalizer_1.UnicodeNormalizer.quickNormalize(nameText);
         if (!this.firstNameMatcher || !this.surnameMatcher) {
-            // Fall back to basic NameDictionary
-            const confidence = NameDictionary_1.NameDictionary.getNameConfidence(nameText);
+            // Fall back to basic NameDictionary - try both original and normalized
+            let confidence = NameDictionary_1.NameDictionary.getNameConfidence(nameText);
+            if (confidence === 0 && normalizedText !== nameText) {
+                confidence = NameDictionary_1.NameDictionary.getNameConfidence(normalizedText);
+            }
             if (confidence > 0) {
                 return EnsembleVoter_1.EnsembleVoter.dictionarySignal(confidence, "basic-dict", false);
             }
             return null;
         }
-        const words = nameText.trim().split(/\s+/);
+        const words = normalizedText.trim().split(/\s+/);
         if (words.length < 1)
             return null;
         const firstWord = words[0];

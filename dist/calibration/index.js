@@ -24,7 +24,7 @@
  * @module calibration
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCalibratedConfidence = exports.initializeCalibration = exports.autoCalibrator = exports.AutoCalibrator = exports.calibrationPersistence = exports.CalibrationPersistence = exports.calibrationDataExtractor = exports.CalibrationDataExtractor = void 0;
+exports.PurposeOfUse = exports.MedicalSpecialty = exports.adaptiveThresholds = exports.AdaptiveThresholdService = exports.getCalibratedConfidence = exports.initializeCalibration = exports.autoCalibrator = exports.AutoCalibrator = exports.calibrationPersistence = exports.CalibrationPersistence = exports.calibrationDataExtractor = exports.CalibrationDataExtractor = void 0;
 var CalibrationDataExtractor_1 = require("./CalibrationDataExtractor");
 Object.defineProperty(exports, "CalibrationDataExtractor", { enumerable: true, get: function () { return CalibrationDataExtractor_1.CalibrationDataExtractor; } });
 Object.defineProperty(exports, "calibrationDataExtractor", { enumerable: true, get: function () { return CalibrationDataExtractor_1.calibrationDataExtractor; } });
@@ -36,4 +36,9 @@ Object.defineProperty(exports, "AutoCalibrator", { enumerable: true, get: functi
 Object.defineProperty(exports, "autoCalibrator", { enumerable: true, get: function () { return AutoCalibrator_1.autoCalibrator; } });
 Object.defineProperty(exports, "initializeCalibration", { enumerable: true, get: function () { return AutoCalibrator_1.initializeCalibration; } });
 Object.defineProperty(exports, "getCalibratedConfidence", { enumerable: true, get: function () { return AutoCalibrator_1.getCalibratedConfidence; } });
+var AdaptiveThresholdService_1 = require("./AdaptiveThresholdService");
+Object.defineProperty(exports, "AdaptiveThresholdService", { enumerable: true, get: function () { return AdaptiveThresholdService_1.AdaptiveThresholdService; } });
+Object.defineProperty(exports, "adaptiveThresholds", { enumerable: true, get: function () { return AdaptiveThresholdService_1.adaptiveThresholds; } });
+Object.defineProperty(exports, "MedicalSpecialty", { enumerable: true, get: function () { return AdaptiveThresholdService_1.MedicalSpecialty; } });
+Object.defineProperty(exports, "PurposeOfUse", { enumerable: true, get: function () { return AdaptiveThresholdService_1.PurposeOfUse; } });
 //# sourceMappingURL=index.js.map

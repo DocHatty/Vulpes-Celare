@@ -139,18 +139,32 @@
       "filterCount": 28,
       "dictionaryCount": 8,
       "hash": "9a87dd3989fcdb11"
+    },
+    {
+      "id": "STATE-1766256161210",
+      "timestamp": "2025-12-20T18:42:41.210Z",
+      "filterCount": 28,
+      "dictionaryCount": 10,
+      "hash": "5eb85592b3833eb3"
+    },
+    {
+      "id": "STATE-1766256341013",
+      "timestamp": "2025-12-20T18:45:41.013Z",
+      "filterCount": 28,
+      "dictionaryCount": 10,
+      "hash": "5eb85592b3833eb3"
     }
   ],
   "current": {
-    "id": "STATE-1765173702117",
-    "timestamp": "2025-12-08T06:01:42.117Z",
+    "id": "STATE-1766256341013",
+    "timestamp": "2025-12-20T18:45:41.013Z",
     "filters": {
       "count": 28,
       "filters": [
         {
           "name": "AccountNumberFilterSpan",
           "file": "AccountNumberFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\AccountNumberFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\AccountNumberFilterSpan.ts",
           "phiType": "ACCOUNT_NUMBER",
           "patterns": [
             {
@@ -163,7 +177,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -184,14 +206,6 @@
             {
               "type": "regex",
               "pattern": "/\\b(?:Billing|Bill)(?:\\s+(?:Number|No|#))?\\s*[#:]?\\s*([0-9][0-9-]{5,14})\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:Hospital|Medical\\s+Center)(?:\\s+(?:Account|Acct))(?:\\s+(?:Number|No|#))?\\s*[#:]?\\s*([0-9][0-9-"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:Bank(?:ing)?|Checking|Savings)\\s+(?:Account|Acct)(?:\\s+(?:Number|No|#))?\\s*[:#]?\\s*([*\\d][-*\\d"
             }
           ],
           "capabilities": [
@@ -202,18 +216,18 @@
           "complexity": {
             "level": "HIGH",
             "lines": 310,
-            "conditionals": 18,
-            "loops": 4,
-            "functions": 1
+            "conditionals": 19,
+            "loops": 5,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 9926,
-          "hash": "212b827a7df0"
+          "lastModified": "2025-12-20T02:37:14.223Z",
+          "size": 10050,
+          "hash": "4a05f678ea3e"
         },
         {
           "name": "AddressFilterSpan",
           "file": "AddressFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\AddressFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\AddressFilterSpan.ts",
           "phiType": "ADDRESS",
           "patterns": [
             {
@@ -226,7 +240,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -247,17 +269,10 @@
             {
               "type": "regex",
               "pattern": "/\\b(?:Interstate|I[-\\s]?)\\s*\\d{1,3}\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:State\\s+)?(?:Route|SR)[-\\s]?\\d{1,4}\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:County\\s+Road|CR)[-\\s]?\\d{1,4}\\b/gi"
             }
           ],
           "capabilities": [
+            "OCR_TOLERANCE",
             "CONTEXT_AWARE",
             "CONFIDENCE_SCORING",
             "CASE_INSENSITIVE"
@@ -265,19 +280,19 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 573,
-            "conditionals": 6,
-            "loops": 7,
-            "functions": 1
+            "lines": 741,
+            "conditionals": 16,
+            "loops": 12,
+            "functions": 5
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 16264,
-          "hash": "ec9f8e75385e"
+          "lastModified": "2025-12-20T02:36:31.637Z",
+          "size": 23083,
+          "hash": "2d0209fefacf"
         },
         {
           "name": "AgeFilterSpan",
           "file": "AgeFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\AgeFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\AgeFilterSpan.ts",
           "phiType": "AGE",
           "patterns": [
             {
@@ -291,6 +306,14 @@
             {
               "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
             },
             {
               "type": "regex",
@@ -311,36 +334,29 @@
             {
               "type": "regex",
               "pattern": "/ Pattern 4: Ordinal ages (e.g., \"in her 90s\", \"early 90s\")"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 5: Contextual age mentions (e.g., \"the 93-year-old patient\")"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern for \"X years old\", \"X year old\", \"X y/"
             }
           ],
           "capabilities": [
+            "OCR_TOLERANCE",
             "CONTEXT_AWARE",
             "CONFIDENCE_SCORING"
           ],
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 423,
-            "conditionals": 7,
-            "loops": 8,
-            "functions": 1
+            "lines": 479,
+            "conditionals": 19,
+            "loops": 13,
+            "functions": 5
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 12378,
-          "hash": "8d8615e1b909"
+          "lastModified": "2025-12-20T02:36:54.111Z",
+          "size": 15899,
+          "hash": "9d44ee842057"
         },
         {
           "name": "BiometricContextFilterSpan",
           "file": "BiometricContextFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\BiometricContextFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\BiometricContextFilterSpan.ts",
           "phiType": "BIOMETRIC",
           "patterns": [
             {
@@ -353,7 +369,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -374,14 +398,6 @@
             {
               "type": "regex",
               "pattern": "/\\s+/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:shows|has|displays|visible|noted|observed)\\s+(?:tattoo|scar|birthmark|identifying\\s+mark)[^.!?"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:photograph|photo|image|picture)\\s+(?:of|shows|depicts|displaying)?\\s*(?:patient|individual|sub"
             }
           ],
           "capabilities": [
@@ -391,19 +407,145 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 455,
-            "conditionals": 7,
-            "loops": 7,
-            "functions": 3
+            "lines": 369,
+            "conditionals": 8,
+            "loops": 8,
+            "functions": 4
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 12913,
-          "hash": "215ded9c1f6f"
+          "lastModified": "2025-12-20T02:38:32.598Z",
+          "size": 10882,
+          "hash": "6c240d60bd92"
+        },
+        {
+          "name": "ContextAwareAddressFilter",
+          "file": "ContextAwareAddressFilter.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\ContextAwareAddressFilter.ts",
+          "phiType": "ADDRESS",
+          "patterns": [
+            {
+              "type": "regex",
+              "pattern": "/models/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(?:address|location|residence|home|lives?\\s+(?:at|in|near))[:\\s]+/gi"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(?:mailing|billing|shipping|physical)\\s+address[:\\s]+/gi"
+            },
+            {
+              "type": "regex",
+              "pattern": "/ Directional/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(?:resides?|residing|located|situated)\\s+(?:at|in|near)\\b/gi"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(?:from|near|around|outside)\\s+(?:the\\s+)?(?:city|town|area)\\s+of\\b/gi"
+            }
+          ],
+          "capabilities": [
+            "CONTEXT_AWARE",
+            "CONFIDENCE_SCORING"
+          ],
+          "configOptions": [],
+          "complexity": {
+            "level": "HIGH",
+            "lines": 388,
+            "conditionals": 11,
+            "loops": 5,
+            "functions": 0
+          },
+          "lastModified": "2025-12-20T02:36:12.956Z",
+          "size": 12001,
+          "hash": "789796328280"
+        },
+        {
+          "name": "ContextAwareNameFilter",
+          "file": "ContextAwareNameFilter.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\ContextAwareNameFilter.ts",
+          "phiType": "NAME",
+          "patterns": [
+            {
+              "type": "regex",
+              "pattern": "/models/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/dictionaries/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/ La-/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(La[A-Z][a-z]{2,})\\b/g"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(Le[A-Z][a-z]{2,})\\b/g"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(De[A-Z][a-z]{2,})\\b/g"
+            }
+          ],
+          "capabilities": [
+            "CONTEXT_AWARE",
+            "CONFIDENCE_SCORING"
+          ],
+          "configOptions": [],
+          "complexity": {
+            "level": "HIGH",
+            "lines": 359,
+            "conditionals": 9,
+            "loops": 7,
+            "functions": 0
+          },
+          "lastModified": "2025-12-20T02:48:59.424Z",
+          "size": 11011,
+          "hash": "8a7c226cff27"
         },
         {
           "name": "CreditCardFilterSpan",
           "file": "CreditCardFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\CreditCardFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\CreditCardFilterSpan.ts",
           "phiType": "CREDIT_CARD",
           "patterns": [
             {
@@ -416,7 +558,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -437,14 +587,6 @@
             {
               "type": "regex",
               "pattern": "/\\b(\\d{4}\\s+\\d{4}\\s+\\d{4}\\s+\\d{1,4})\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(\\d{4}[\\s-]+\\d{4}[\\s-]+\\d{4}[\\s-]+\\d{4})\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(\\d{4}\\s{2,}\\d{4}\\s{2,}\\d{4}\\s{2,}\\d{4})\\b/g"
             }
           ],
           "capabilities": [
@@ -455,19 +597,19 @@
           "configOptions": [],
           "complexity": {
             "level": "MEDIUM",
-            "lines": 172,
-            "conditionals": 6,
-            "loops": 3,
-            "functions": 0
+            "lines": 175,
+            "conditionals": 7,
+            "loops": 4,
+            "functions": 1
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 5726,
-          "hash": "332f82395e0f"
+          "lastModified": "2025-12-20T02:35:44.149Z",
+          "size": 5808,
+          "hash": "76108fcf7a0d"
         },
         {
           "name": "DateFilterSpan",
           "file": "DateFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\DateFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\DateFilterSpan.ts",
           "phiType": "DATE",
           "patterns": [
             {
@@ -484,59 +626,11 @@
             },
             {
               "type": "regex",
-              "pattern": "/patterns/"
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
-              "pattern": "/DD/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/DD/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/MM/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/MM/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ DOB: 10/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/1961, D.O.B. - 7-3-60 (short year)"
-            }
-          ],
-          "capabilities": [
-            "OCR_TOLERANCE",
-            "CONTEXT_AWARE",
-            "CONFIDENCE_SCORING"
-          ],
-          "configOptions": [],
-          "complexity": {
-            "level": "HIGH",
-            "lines": 233,
-            "conditionals": 0,
-            "loops": 2,
-            "functions": 0
-          },
-          "lastModified": "2025-12-05T20:02:12.941Z",
-          "size": 10085,
-          "hash": "5a4613943e58"
-        },
-        {
-          "name": "DEAFilterSpan",
-          "file": "DEAFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\DEAFilterSpan.ts",
-          "phiType": "DEA",
-          "patterns": [
-            {
-              "type": "regex",
-              "pattern": "/models/"
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -544,58 +638,43 @@
             },
             {
               "type": "regex",
-              "pattern": "/context/"
+              "pattern": "/DD/"
             },
             {
               "type": "regex",
-              "pattern": "/Subutex prescribers (DATA waiver)"
+              "pattern": "/DD/"
             },
             {
               "type": "regex",
-              "pattern": "/\\bDEA(?:\\s+(?:Number|No|#))?\\s*[:#]?\\s*([A-Z]{2}\\d{7})\\b/gi"
+              "pattern": "/MM/"
             },
             {
               "type": "regex",
-              "pattern": "/ Pattern 2: Standalone DEA format (strict - valid first letters only)"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b([ABCDEFGHJKLMPRSTUX][A-Z]\\d{7})\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\bDEA(?:\\s+(?:Number|No|#))?\\s*[:#]?\\s*([A-Z]{2}[0-9OoIlBbSs]{7})\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b([ABCDEFGHJKLMPRSTUX][A-Z][0-9OoIlBbSs]{7})\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 5: Separator-tolerant (spaces/"
+              "pattern": "/MM/"
             }
           ],
           "capabilities": [
+            "FUZZY_MATCHING",
             "OCR_TOLERANCE",
             "CONTEXT_AWARE",
             "CONFIDENCE_SCORING"
           ],
           "configOptions": [],
           "complexity": {
-            "level": "MEDIUM",
-            "lines": 191,
-            "conditionals": 6,
-            "loops": 3,
-            "functions": 0
+            "level": "HIGH",
+            "lines": 455,
+            "conditionals": 8,
+            "loops": 4,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 6350,
-          "hash": "80449a009b0d"
+          "lastModified": "2025-12-20T02:48:58.138Z",
+          "size": 20080,
+          "hash": "dd6c8835412f"
         },
         {
           "name": "DeviceIdentifierFilterSpan",
           "file": "DeviceIdentifierFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\DeviceIdentifierFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\DeviceIdentifierFilterSpan.ts",
           "phiType": "DEVICE",
           "patterns": [
             {
@@ -608,7 +687,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -629,14 +716,6 @@
             {
               "type": "regex",
               "pattern": "/\\b(?:Model)(?:\\s+(?:Number|No|#))?\\s*[#:]?\\s*([A-Z0-9][A-Z0-9-]{6,24})\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Long serial numbers (7+ alphanumeric chars)"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:Serial|SN)(?:\\s+(?:Number|No|#))?\\s*[#:]?\\s*([A-Z0-9][A-Z0-9-]{6,24})\\b/gi"
             }
           ],
           "capabilities": [
@@ -646,19 +725,19 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 523,
-            "conditionals": 13,
-            "loops": 8,
-            "functions": 0
+            "lines": 414,
+            "conditionals": 14,
+            "loops": 9,
+            "functions": 1
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 15430,
-          "hash": "88a8d13b99a7"
+          "lastModified": "2025-12-20T02:37:28.880Z",
+          "size": 12703,
+          "hash": "3d2fbb66632f"
         },
         {
           "name": "EmailFilterSpan",
           "file": "EmailFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\EmailFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\EmailFilterSpan.ts",
           "phiType": "EMAIL",
           "patterns": [
             {
@@ -671,7 +750,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -685,19 +772,19 @@
           "configOptions": [],
           "complexity": {
             "level": "LOW",
-            "lines": 54,
-            "conditionals": 0,
-            "loops": 1,
-            "functions": 0
+            "lines": 68,
+            "conditionals": 1,
+            "loops": 2,
+            "functions": 1
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 1462,
-          "hash": "9c899316d50d"
+          "lastModified": "2025-12-20T02:33:42.100Z",
+          "size": 2067,
+          "hash": "675f1806b4a6"
         },
         {
           "name": "FamilyNameFilterSpan",
           "file": "FamilyNameFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\FamilyNameFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\FamilyNameFilterSpan.ts",
           "phiType": "NAME",
           "patterns": [
             {
@@ -710,15 +797,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
             },
             {
               "type": "regex",
-              "pattern": "/constants/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/utils/"
+              "pattern": "/name-patterns/"
             },
             {
               "type": "regex",
@@ -748,19 +835,19 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 420,
-            "conditionals": 15,
+            "lines": 247,
+            "conditionals": 8,
             "loops": 9,
-            "functions": 0
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 14059,
-          "hash": "f7a35c22c01c"
+          "lastModified": "2025-12-20T02:50:57.756Z",
+          "size": 8965,
+          "hash": "d0cbe1548922"
         },
         {
           "name": "FaxNumberFilterSpan",
           "file": "FaxNumberFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\FaxNumberFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\FaxNumberFilterSpan.ts",
           "phiType": "FAX",
           "patterns": [
             {
@@ -774,6 +861,14 @@
             {
               "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
             },
             {
               "type": "regex",
@@ -797,24 +892,25 @@
             }
           ],
           "capabilities": [
-            "CONTEXT_AWARE"
+            "CONTEXT_AWARE",
+            "CONFIDENCE_SCORING"
           ],
           "configOptions": [],
           "complexity": {
             "level": "MEDIUM",
-            "lines": 102,
-            "conditionals": 4,
-            "loops": 2,
-            "functions": 0
+            "lines": 112,
+            "conditionals": 5,
+            "loops": 3,
+            "functions": 1
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 2826,
-          "hash": "41a22146bd43"
+          "lastModified": "2025-12-20T02:35:40.816Z",
+          "size": 3337,
+          "hash": "86158ee99852"
         },
         {
           "name": "FilterRegistry",
           "file": "FilterRegistry.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\FilterRegistry.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\FilterRegistry.ts",
           "phiType": "UNKNOWN",
           "patterns": [
             {
@@ -823,19 +919,7 @@
             },
             {
               "type": "regex",
-              "pattern": "/utils/"
-            },
-            {
-              "type": "regex",
               "pattern": "/core/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/context/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Hospital names should be PROTECTED (whitelisted)"
             },
             {
               "type": "regex",
@@ -856,32 +940,46 @@
             {
               "type": "regex",
               "pattern": "/URLFilterSpan\")"
+            },
+            {
+              "type": "regex",
+              "pattern": "/IPAddressFilterSpan\")"
+            },
+            {
+              "type": "regex",
+              "pattern": "/CreditCardFilterSpan\")"
+            },
+            {
+              "type": "regex",
+              "pattern": "/ZipCodeFilterSpan\")"
             }
           ],
-          "capabilities": [
-            "CONTEXT_AWARE"
-          ],
+          "capabilities": [],
           "configOptions": [],
           "complexity": {
             "level": "MEDIUM",
-            "lines": 160,
+            "lines": 147,
             "conditionals": 1,
             "loops": 0,
             "functions": 0
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 5346,
-          "hash": "bd1f4a0ef614"
+          "lastModified": "2025-12-20T00:00:14.027Z",
+          "size": 4463,
+          "hash": "cdb42f55470c"
         },
         {
           "name": "FormattedNameFilterSpan",
           "file": "FormattedNameFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\FormattedNameFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\FormattedNameFilterSpan.ts",
           "phiType": "NAME",
           "patterns": [
             {
               "type": "regex",
               "pattern": "/models/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
             },
             {
               "type": "regex",
@@ -901,10 +999,6 @@
             },
             {
               "type": "regex",
-              "pattern": "/vocabulary/"
-            },
-            {
-              "type": "regex",
               "pattern": "/dictionaries/"
             },
             {
@@ -913,11 +1007,11 @@
             },
             {
               "type": "regex",
-              "pattern": "/ Pattern 0: Last, First format (medical records format)"
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
-              "pattern": "/ Pattern 0.5: Titled names (Dr. Smith, Mr. Jones)"
+              "pattern": "/config/"
             }
           ],
           "capabilities": [
@@ -929,19 +1023,85 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 1022,
-            "conditionals": 48,
-            "loops": 24,
-            "functions": 12
+            "lines": 695,
+            "conditionals": 58,
+            "loops": 20,
+            "functions": 10
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 32800,
-          "hash": "991316ea9ecd"
+          "lastModified": "2025-12-20T02:36:28.689Z",
+          "size": 25176,
+          "hash": "85195c6cb8e3"
+        },
+        {
+          "name": "GlinerNameFilter",
+          "file": "GlinerNameFilter.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\GlinerNameFilter.ts",
+          "phiType": "NAME",
+          "patterns": [
+            {
+              "type": "regex",
+              "pattern": "/provider/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/models/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/ml/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/ml/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/config/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            }
+          ],
+          "capabilities": [
+            "OCR_TOLERANCE",
+            "CONTEXT_AWARE",
+            "CONFIDENCE_SCORING"
+          ],
+          "configOptions": [
+            "loadFailed"
+          ],
+          "complexity": {
+            "level": "HIGH",
+            "lines": 286,
+            "conditionals": 20,
+            "loops": 1,
+            "functions": 0
+          },
+          "lastModified": "2025-12-20T02:49:12.719Z",
+          "size": 7667,
+          "hash": "9763c36878cb"
         },
         {
           "name": "HealthPlanNumberFilterSpan",
           "file": "HealthPlanNumberFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\HealthPlanNumberFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\HealthPlanNumberFilterSpan.ts",
           "phiType": "HEALTH_PLAN_ID",
           "patterns": [
             {
@@ -954,7 +1114,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -975,14 +1143,6 @@
             {
               "type": "regex",
               "pattern": "/\\b(?:Group)(?:\\s+(?:Number|No|#))?\\s*[#:]?\\s*([A-Z0-9][A-Z0-9-]{4,24})\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:Plan)(?:\\s+(?:ID|Number|No|#))?\\s*[#:]?\\s*([A-Z0-9][A-Z0-9-]{4,24})\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b((?:PLAN|GRP|POLICY|POL|PL)-[A-Z0-9-]{4,24})\\b/gi"
             }
           ],
           "capabilities": [
@@ -992,62 +1152,19 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 214,
-            "conditionals": 5,
-            "loops": 3,
-            "functions": 2
+            "lines": 215,
+            "conditionals": 6,
+            "loops": 4,
+            "functions": 3
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 6050,
-          "hash": "294d1a70ed9e"
-        },
-        {
-          "name": "HospitalFilterSpan",
-          "file": "HospitalFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\HospitalFilterSpan.ts",
-          "phiType": "UNKNOWN",
-          "patterns": [
-            {
-              "type": "regex",
-              "pattern": "/models/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/core/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/context/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/dictionaries/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/Facility name (dictionary)"
-            }
-          ],
-          "capabilities": [
-            "CONTEXT_AWARE",
-            "CONFIDENCE_SCORING"
-          ],
-          "configOptions": [],
-          "complexity": {
-            "level": "LOW",
-            "lines": 73,
-            "conditionals": 1,
-            "loops": 1,
-            "functions": 0
-          },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 2135,
-          "hash": "307a518ecff7"
+          "lastModified": "2025-12-20T02:37:16.891Z",
+          "size": 6202,
+          "hash": "2fd73990c5b1"
         },
         {
           "name": "IPAddressFilterSpan",
           "file": "IPAddressFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\IPAddressFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\IPAddressFilterSpan.ts",
           "phiType": "ADDRESS",
           "patterns": [
             {
@@ -1064,6 +1181,14 @@
             },
             {
               "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b/g"
             }
           ],
@@ -1074,19 +1199,19 @@
           "configOptions": [],
           "complexity": {
             "level": "LOW",
-            "lines": 74,
-            "conditionals": 2,
-            "loops": 1,
-            "functions": 1
+            "lines": 86,
+            "conditionals": 3,
+            "loops": 2,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 1813,
-          "hash": "bf8d16a16561"
+          "lastModified": "2025-12-20T02:35:26.820Z",
+          "size": 2326,
+          "hash": "8c894042576f"
         },
         {
           "name": "LicenseNumberFilterSpan",
           "file": "LicenseNumberFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\LicenseNumberFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\LicenseNumberFilterSpan.ts",
           "phiType": "LICENSE",
           "patterns": [
             {
@@ -1099,7 +1224,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -1111,23 +1244,15 @@
             },
             {
               "type": "regex",
-              "pattern": "/\\b(?:Medical|Nursing|Professional|RN|MD|NP|PA|DEA)\\s+(?:License|Lic|Number|#)\\s*[#:]?\\s*([A-Z0-9][A"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:NPI)(?:\\s+(?:Number|No|#))?\\s*[#:]?\\s*([0-9]{10})\\b/gi"
-            },
-            {
-              "type": "regex",
               "pattern": "/\\b(?:License|Lic)(?:\\s+(?:Number|No))?\\s*[#:]\\s*([A-Z0-9][A-Z0-9-]{5,19})\\b/gi"
             },
             {
               "type": "regex",
-              "pattern": "/ DEA numbers: 2 letters + 7 digits (standard format)"
+              "pattern": "/ For state license format (pattern index 1), we want the license number (match[2])"
             },
             {
               "type": "regex",
-              "pattern": "/ First letter is registrant type (A,B,F,G,M,P,R,X)"
+              "pattern": "/[-\\s.]/g"
             }
           ],
           "capabilities": [
@@ -1136,20 +1261,20 @@
           ],
           "configOptions": [],
           "complexity": {
-            "level": "HIGH",
-            "lines": 227,
-            "conditionals": 4,
-            "loops": 3,
-            "functions": 1
+            "level": "MEDIUM",
+            "lines": 124,
+            "conditionals": 5,
+            "loops": 4,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "size": 6853,
-          "hash": "1d37810b6837"
+          "lastModified": "2025-12-20T02:37:19.502Z",
+          "size": 3847,
+          "hash": "1ad9180a72ea"
         },
         {
           "name": "MRNFilterSpan",
           "file": "MRNFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\MRNFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\MRNFilterSpan.ts",
           "phiType": "MRN",
           "patterns": [
             {
@@ -1162,7 +1287,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -1183,14 +1316,6 @@
             {
               "type": "regex",
               "pattern": "/\\b(?:Record)(?:\\s+(?:Number|No|#))?\\s*(?:[:#]\\s*)?#?\\s*([A-Z0-9][A-Z0-9-]{4,11})\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 4: Patient ID /"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(?:Patient)(?:\\s+(?:ID|Number|#))?\\s*(?:[:#]\\s*)?#?\\s*([A-Z0-9][A-Z0-9-]{4,14})\\b/gi"
             }
           ],
           "capabilities": [
@@ -1200,63 +1325,20 @@
           ],
           "configOptions": [],
           "complexity": {
-            "level": "MEDIUM",
-            "lines": 178,
-            "conditionals": 2,
-            "loops": 3,
-            "functions": 1
+            "level": "HIGH",
+            "lines": 241,
+            "conditionals": 3,
+            "loops": 4,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 6218,
-          "hash": "8ae055027374"
-        },
-        {
-          "name": "NPIFilterSpan",
-          "file": "NPIFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\NPIFilterSpan.ts",
-          "phiType": "NPI",
-          "patterns": [
-            {
-              "type": "regex",
-              "pattern": "/models/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/core/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/context/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\bNPI(?:\\s+(?:Number|No|#))?\\s*[#:]*\\s*([0-9]{10})\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/^\\d{10}$/"
-            }
-          ],
-          "capabilities": [
-            "CONTEXT_AWARE",
-            "CONFIDENCE_SCORING"
-          ],
-          "configOptions": [],
-          "complexity": {
-            "level": "LOW",
-            "lines": 70,
-            "conditionals": 1,
-            "loops": 1,
-            "functions": 0
-          },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 2008,
-          "hash": "b612e683921b"
+          "lastModified": "2025-12-20T02:37:22.247Z",
+          "size": 8732,
+          "hash": "cb0a8b1d0b87"
         },
         {
           "name": "PassportNumberFilterSpan",
           "file": "PassportNumberFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\PassportNumberFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\PassportNumberFilterSpan.ts",
           "phiType": "PASSPORT",
           "patterns": [
             {
@@ -1269,7 +1351,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -1290,14 +1380,6 @@
             {
               "type": "regex",
               "pattern": "/\\b([A-Z]\\d{8}|\\d{9})\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ UK/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b([A-Z]{2}\\d{7}|[A-Z]\\d{8})\\b/g"
             }
           ],
           "capabilities": [
@@ -1307,19 +1389,19 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 321,
-            "conditionals": 12,
-            "loops": 7,
-            "functions": 0
+            "lines": 318,
+            "conditionals": 13,
+            "loops": 8,
+            "functions": 1
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 9221,
-          "hash": "88eb679f5d95"
+          "lastModified": "2025-12-20T02:37:57.314Z",
+          "size": 9433,
+          "hash": "2098ea4f22e9"
         },
         {
           "name": "PhoneFilterSpan",
           "file": "PhoneFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\PhoneFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\PhoneFilterSpan.ts",
           "phiType": "PHONE",
           "patterns": [
             {
@@ -1332,7 +1414,19 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -1349,18 +1443,6 @@
             {
               "type": "regex",
               "pattern": "/(\\+?1[-. \\t]?)?\\(?\\d{3}\\)?[-. \\t]?\\d{3}[-. \\t]?\\d{4}(?:[ \\t]*(?:ext\\.?|x|extension)[ \\t]*[A-Z0-9]{1"
-            },
-            {
-              "type": "regex",
-              "pattern": "/(\\+?1[-.]?)?\\(?\\d{3}\\)?[-.]?\\d{3}[-][A-Z]{4,7}\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/(\\+?1[-.]?)?\\(?\\d{3}\\)?[-.]?[A-Z0-9]{2,3}[-][A-Z]{4,7}\\b/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ +44 with area code: +44 20 7946 0958, +44 (0)"
             }
           ],
           "capabilities": [
@@ -1371,24 +1453,91 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 218,
-            "conditionals": 6,
-            "loops": 2,
-            "functions": 0
+            "lines": 251,
+            "conditionals": 8,
+            "loops": 3,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 9461,
-          "hash": "eb16c64b3177"
+          "lastModified": "2025-12-20T02:34:01.644Z",
+          "size": 10864,
+          "hash": "130f7111363f"
+        },
+        {
+          "name": "RelativeDateFilterSpan",
+          "file": "RelativeDateFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\RelativeDateFilterSpan.ts",
+          "phiType": "DATE",
+          "patterns": [
+            {
+              "type": "regex",
+              "pattern": "/models/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/ Day of week references (narrow to specific date)"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(?:last|this|next)\\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\\b/gi"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\bon\\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\\b/gi"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(?:the\\s+)?night\\s+before\\b/gi"
+            }
+          ],
+          "capabilities": [
+            "CONTEXT_AWARE",
+            "CONFIDENCE_SCORING"
+          ],
+          "configOptions": [],
+          "complexity": {
+            "level": "HIGH",
+            "lines": 323,
+            "conditionals": 5,
+            "loops": 4,
+            "functions": 2
+          },
+          "lastModified": "2025-12-20T02:35:17.625Z",
+          "size": 9226,
+          "hash": "b88c60edea36"
         },
         {
           "name": "SmartNameFilterSpan",
           "file": "SmartNameFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\SmartNameFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\SmartNameFilterSpan.ts",
           "phiType": "NAME",
           "patterns": [
             {
               "type": "regex",
               "pattern": "/models/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
             },
             {
               "type": "regex",
@@ -1408,15 +1557,11 @@
             },
             {
               "type": "regex",
-              "pattern": "/vocabulary/"
-            },
-            {
-              "type": "regex",
               "pattern": "/dictionaries/"
             },
             {
               "type": "regex",
-              "pattern": "/core/"
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -1433,22 +1578,24 @@
             "CONFIDENCE_SCORING",
             "CASE_INSENSITIVE"
           ],
-          "configOptions": [],
+          "configOptions": [
+            "skipCommaPatterns"
+          ],
           "complexity": {
             "level": "HIGH",
-            "lines": 1582,
-            "conditionals": 75,
-            "loops": 31,
-            "functions": 11
+            "lines": 1626,
+            "conditionals": 93,
+            "loops": 39,
+            "functions": 12
           },
-          "lastModified": "2025-12-08T05:58:36.286Z",
-          "size": 53157,
-          "hash": "4b715041497c"
+          "lastModified": "2025-12-20T02:39:53.147Z",
+          "size": 59021,
+          "hash": "3c1bb97b156c"
         },
         {
           "name": "SSNFilterSpan",
           "file": "SSNFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\SSNFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\SSNFilterSpan.ts",
           "phiType": "SSN",
           "patterns": [
             {
@@ -1461,7 +1608,19 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -1478,18 +1637,6 @@
             {
               "type": "regex",
               "pattern": "/\\b\\d{3}\\s*[-.\\u2013]\\s*\\d{2}\\s*[-.\\u2013]\\s*\\d{4}\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b\\d{2}-\\d{3}-\\d{4}\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/\\b(\\d{9})\\b/g"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ 123456789 (9 consecutive digits)"
             }
           ],
           "capabilities": [
@@ -1499,20 +1646,20 @@
           ],
           "configOptions": [],
           "complexity": {
-            "level": "MEDIUM",
-            "lines": 144,
-            "conditionals": 4,
-            "loops": 2,
-            "functions": 0
+            "level": "HIGH",
+            "lines": 205,
+            "conditionals": 10,
+            "loops": 3,
+            "functions": 2
           },
-          "lastModified": "2025-12-05T19:58:56.293Z",
-          "size": 5186,
-          "hash": "9b68cd06a0c0"
+          "lastModified": "2025-12-20T02:32:36.521Z",
+          "size": 7692,
+          "hash": "f9f3bd04d747"
         },
         {
           "name": "TitledNameFilterSpan",
           "file": "TitledNameFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\TitledNameFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\TitledNameFilterSpan.ts",
           "phiType": "NAME",
           "patterns": [
             {
@@ -1525,15 +1672,11 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/constants/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/vocabulary/"
             },
             {
               "type": "regex",
@@ -1541,19 +1684,23 @@
             },
             {
               "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/name-patterns/"
+            },
+            {
+              "type": "regex",
               "pattern": "/ WHITELIST functionality now provided by NameDetectionUtils.isNonPersonStructureTerm()"
             },
             {
               "type": "regex",
-              "pattern": "/^([A-Za-z]+)\\.?\\s+/i"
+              "pattern": "/ (e.g., provider role names like \"NURSE: Patrick Thompson, NP\")"
             },
             {
               "type": "regex",
-              "pattern": "/ procedures, etc.)"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Context (Son:, Daughter:, etc.)"
+              "pattern": "/ because \\s includes newlines. Now we explicitly use space/"
             }
           ],
           "capabilities": [
@@ -1564,82 +1711,19 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 516,
-            "conditionals": 12,
-            "loops": 7,
-            "functions": 2
+            "lines": 423,
+            "conditionals": 10,
+            "loops": 8,
+            "functions": 3
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 15703,
-          "hash": "cfd2ef5da898"
-        },
-        {
-          "name": "UniqueIdentifierFilterSpan",
-          "file": "UniqueIdentifierFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\UniqueIdentifierFilterSpan.ts",
-          "phiType": "UNIQUE_ID",
-          "patterns": [
-            {
-              "type": "regex",
-              "pattern": "/models/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/core/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/context/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Fitness/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Credit/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 1: Brand prefix IDs (PLANETFIT-392847, DELTA-847392SK)"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 2: Labeled membership/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 4: Frequent flyer/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 5: Badge/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern: BRAND-ALPHANUMERIC (1-3 segments)"
-            }
-          ],
-          "capabilities": [
-            "CONTEXT_AWARE",
-            "CONFIDENCE_SCORING"
-          ],
-          "configOptions": [],
-          "complexity": {
-            "level": "HIGH",
-            "lines": 434,
-            "conditionals": 5,
-            "loops": 6,
-            "functions": 1
-          },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 11574,
-          "hash": "03d162985667"
+          "lastModified": "2025-12-20T02:37:34.710Z",
+          "size": 13385,
+          "hash": "77d0dad4b461"
         },
         {
           "name": "URLFilterSpan",
           "file": "URLFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\URLFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\URLFilterSpan.ts",
           "phiType": "URL",
           "patterns": [
             {
@@ -1660,6 +1744,14 @@
             },
             {
               "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/, https:/"
             },
             {
@@ -1673,14 +1765,6 @@
             {
               "type": "regex",
               "pattern": "/|ftp:\\/"
-            },
-            {
-              "type": "regex",
-              "pattern": "/|www\\.)[^\\s<>\"{}|\\\\^`\\[\\]]+/gi"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ URLs with patient/m"
             }
           ],
           "capabilities": [
@@ -1690,28 +1774,28 @@
           "configOptions": [],
           "complexity": {
             "level": "MEDIUM",
-            "lines": 155,
-            "conditionals": 2,
-            "loops": 3,
-            "functions": 1
+            "lines": 148,
+            "conditionals": 3,
+            "loops": 4,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 4725,
-          "hash": "0ef58b7d2a8d"
+          "lastModified": "2025-12-20T02:35:11.361Z",
+          "size": 4812,
+          "hash": "98f04053a9c0"
         },
         {
           "name": "VehicleIdentifierFilterSpan",
           "file": "VehicleIdentifierFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\VehicleIdentifierFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\VehicleIdentifierFilterSpan.ts",
           "phiType": "VEHICLE",
           "patterns": [
             {
               "type": "regex",
-              "pattern": "/longitude)"
+              "pattern": "/models/"
             },
             {
               "type": "regex",
-              "pattern": "/models/"
+              "pattern": "/core/"
             },
             {
               "type": "regex",
@@ -1723,6 +1807,10 @@
             },
             {
               "type": "regex",
+              "pattern": "/utils/"
+            },
+            {
+              "type": "regex",
               "pattern": "/ Pattern 1: VIN with context (explicit label)"
             },
             {
@@ -1731,19 +1819,15 @@
             },
             {
               "type": "regex",
-              "pattern": "/ Pattern 7: Workstation IDs (explicit format)"
-            },
-            {
-              "type": "regex",
-              "pattern": "/ Pattern 9: Vehicle Make/"
-            },
-            {
-              "type": "regex",
               "pattern": "/\\b(?:VIN|Vehicle\\s+Identification\\s+Number|Vehicle\\s+ID)[\\s:#]*([A-HJ-NPR-Z0-9]{17})\\b/gi"
             },
             {
               "type": "regex",
               "pattern": "/\\b([A-HJ-NPR-Z0-9]{17})\\b/g"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b(?:license\\s+plate|plate\\s+number|registration|plate)[\\s:#]*([A-Z]{2}[-\\s]?[A-Z0-9]{5,7}|[A-Z0-9]"
             }
           ],
           "capabilities": [
@@ -1753,19 +1837,19 @@
           "configOptions": [],
           "complexity": {
             "level": "HIGH",
-            "lines": 988,
-            "conditionals": 35,
-            "loops": 16,
-            "functions": 6
+            "lines": 334,
+            "conditionals": 18,
+            "loops": 7,
+            "functions": 2
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 27002,
-          "hash": "9953f86eb1ef"
+          "lastModified": "2025-12-20T02:35:43.991Z",
+          "size": 10126,
+          "hash": "b59375f7c983"
         },
         {
           "name": "ZipCodeFilterSpan",
           "file": "ZipCodeFilterSpan.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\filters\\ZipCodeFilterSpan.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\filters\\ZipCodeFilterSpan.ts",
           "phiType": "ZIPCODE",
           "patterns": [
             {
@@ -1778,7 +1862,15 @@
             },
             {
               "type": "regex",
+              "pattern": "/core/"
+            },
+            {
+              "type": "regex",
               "pattern": "/context/"
+            },
+            {
+              "type": "regex",
+              "pattern": "/utils/"
             },
             {
               "type": "regex",
@@ -1794,24 +1886,29 @@
             },
             {
               "type": "regex",
-              "pattern": "/ Apply patterns in order (ZIP+4 first to avoid partial matches)"
+              "pattern": "/ OCR/s"
+            },
+            {
+              "type": "regex",
+              "pattern": "/\\b[A-Z]\\s*[A-Z](\\d{5})(?:-\\d{4})?\\b/g"
             }
           ],
           "capabilities": [
+            "OCR_TOLERANCE",
             "CONTEXT_AWARE",
             "CONFIDENCE_SCORING"
           ],
           "configOptions": [],
           "complexity": {
             "level": "LOW",
-            "lines": 66,
-            "conditionals": 0,
-            "loops": 2,
-            "functions": 0
+            "lines": 87,
+            "conditionals": 2,
+            "loops": 3,
+            "functions": 1
           },
-          "lastModified": "2025-12-04T03:50:04.984Z",
-          "size": 1792,
-          "hash": "8e267f417d66"
+          "lastModified": "2025-12-20T02:36:52.189Z",
+          "size": 2774,
+          "hash": "ed697d342532"
         }
       ],
       "byType": {
@@ -1820,6 +1917,7 @@
         ],
         "ADDRESS": [
           "AddressFilterSpan",
+          "ContextAwareAddressFilter",
           "IPAddressFilterSpan"
         ],
         "AGE": [
@@ -1828,14 +1926,20 @@
         "BIOMETRIC": [
           "BiometricContextFilterSpan"
         ],
+        "NAME": [
+          "ContextAwareNameFilter",
+          "FamilyNameFilterSpan",
+          "FormattedNameFilterSpan",
+          "GlinerNameFilter",
+          "SmartNameFilterSpan",
+          "TitledNameFilterSpan"
+        ],
         "CREDIT_CARD": [
           "CreditCardFilterSpan"
         ],
         "DATE": [
-          "DateFilterSpan"
-        ],
-        "DEA": [
-          "DEAFilterSpan"
+          "DateFilterSpan",
+          "RelativeDateFilterSpan"
         ],
         "DEVICE": [
           "DeviceIdentifierFilterSpan"
@@ -1843,18 +1947,11 @@
         "EMAIL": [
           "EmailFilterSpan"
         ],
-        "NAME": [
-          "FamilyNameFilterSpan",
-          "FormattedNameFilterSpan",
-          "SmartNameFilterSpan",
-          "TitledNameFilterSpan"
-        ],
         "FAX": [
           "FaxNumberFilterSpan"
         ],
         "UNKNOWN": [
-          "FilterRegistry",
-          "HospitalFilterSpan"
+          "FilterRegistry"
         ],
         "HEALTH_PLAN_ID": [
           "HealthPlanNumberFilterSpan"
@@ -1865,9 +1962,6 @@
         "MRN": [
           "MRNFilterSpan"
         ],
-        "NPI": [
-          "NPIFilterSpan"
-        ],
         "PASSPORT": [
           "PassportNumberFilterSpan"
         ],
@@ -1876,9 +1970,6 @@
         ],
         "SSN": [
           "SSNFilterSpan"
-        ],
-        "UNIQUE_ID": [
-          "UniqueIdentifierFilterSpan"
         ],
         "URL": [
           "URLFilterSpan"
@@ -1893,34 +1984,11 @@
       "capabilities": [
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "CASE_INSENSITIVE",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "OCR_TOLERANCE",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "OCR_TOLERANCE",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "OCR_TOLERANCE",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONTEXT_AWARE",
         "OCR_TOLERANCE",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
         "CASE_INSENSITIVE",
+        "OCR_TOLERANCE",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
         "CONTEXT_AWARE",
@@ -1932,11 +2000,16 @@
         "OCR_TOLERANCE",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
+        "FUZZY_MATCHING",
         "OCR_TOLERANCE",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
         "OCR_TOLERANCE",
@@ -1948,13 +2021,35 @@
         "CONFIDENCE_SCORING",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "OCR_TOLERANCE",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "OCR_TOLERANCE",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "OCR_TOLERANCE",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CASE_INSENSITIVE",
+        "OCR_TOLERANCE",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
+        "CONTEXT_AWARE",
+        "CONFIDENCE_SCORING",
         "CASE_INSENSITIVE",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING",
-        "CONTEXT_AWARE",
-        "CONFIDENCE_SCORING",
+        "OCR_TOLERANCE",
         "CONTEXT_AWARE",
         "CONFIDENCE_SCORING"
       ],
@@ -1964,14 +2059,23 @@
       ]
     },
     "dictionaries": {
-      "count": 8,
+      "count": 10,
       "dictionaries": [
         {
+          "name": "BloomFilterStore.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\BloomFilterStore.ts",
+          "type": "OTHER",
+          "size": 6910,
+          "lastModified": "2025-12-20T00:00:14.003Z",
+          "hash": "7225f96a43f8",
+          "isCodeFile": true
+        },
+        {
           "name": "cities.txt",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\cities.txt",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\cities.txt",
           "type": "CITIES",
           "size": 11047,
-          "lastModified": "2025-12-04T03:50:04.952Z",
+          "lastModified": "2025-12-20T00:00:14.006Z",
           "hash": "cefa96a8e1e1",
           "entries": 1000,
           "sampleEntries": [
@@ -1984,21 +2088,21 @@
         },
         {
           "name": "FastFuzzyMatcher.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\FastFuzzyMatcher.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\FastFuzzyMatcher.ts",
           "type": "OTHER",
-          "size": 15541,
-          "lastModified": "2025-12-08T03:42:35.535Z",
-          "hash": "612f05dcd3ff",
+          "size": 20682,
+          "lastModified": "2025-12-20T00:00:14.004Z",
+          "hash": "c15446e3ac5d",
           "isCodeFile": true
         },
         {
           "name": "first-names.txt",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\first-names.txt",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\first-names.txt",
           "type": "FIRST_NAMES",
-          "size": 250079,
-          "lastModified": "2025-12-04T03:50:04.952Z",
-          "hash": "af46f90c51a9",
-          "entries": 30460,
+          "size": 250120,
+          "lastModified": "2025-12-20T00:00:14.008Z",
+          "hash": "7ef5c129e3e3",
+          "entries": 30465,
           "sampleEntries": [
             "aaban\r",
             "aabha\r",
@@ -2009,28 +2113,28 @@
         },
         {
           "name": "FuzzyDictionaryMatcher.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\FuzzyDictionaryMatcher.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\FuzzyDictionaryMatcher.ts",
           "type": "OTHER",
-          "size": 18784,
-          "lastModified": "2025-12-08T03:45:35.586Z",
-          "hash": "5b86ca0320cc",
+          "size": 19470,
+          "lastModified": "2025-12-20T00:00:14.004Z",
+          "hash": "93f1c2bb3e4f",
           "isCodeFile": true
         },
         {
           "name": "HospitalDictionary.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\HospitalDictionary.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\HospitalDictionary.ts",
           "type": "OTHER",
-          "size": 8545,
-          "lastModified": "2025-12-04T04:08:48.626Z",
-          "hash": "aece2d1ea0be",
+          "size": 9284,
+          "lastModified": "2025-12-20T00:00:14.005Z",
+          "hash": "7323150b4f68",
           "isCodeFile": true
         },
         {
           "name": "hospitals.txt",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\hospitals.txt",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\hospitals.txt",
           "type": "HOSPITALS",
           "size": 230541,
-          "lastModified": "2025-12-04T03:50:04.952Z",
+          "lastModified": "2025-12-20T00:00:14.010Z",
           "hash": "8569e18cda52",
           "entries": 7390,
           "sampleEntries": [
@@ -2043,21 +2147,30 @@
         },
         {
           "name": "NameDictionary.ts",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\NameDictionary.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\NameDictionary.ts",
           "type": "OTHER",
-          "size": 12367,
-          "lastModified": "2025-12-08T06:00:28.595Z",
-          "hash": "0ea330d3f5c3",
+          "size": 21504,
+          "lastModified": "2025-12-20T00:00:14.006Z",
+          "hash": "7c92418bb4bf",
+          "isCodeFile": true
+        },
+        {
+          "name": "SQLiteDictionaryMatcher.ts",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\SQLiteDictionaryMatcher.ts",
+          "type": "OTHER",
+          "size": 13157,
+          "lastModified": "2025-12-20T00:00:14.006Z",
+          "hash": "90f214e5b42b",
           "isCodeFile": true
         },
         {
           "name": "surnames.txt",
-          "path": "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\src\\dictionaries\\surnames.txt",
+          "path": "C:\\Users\\docto\\Downloads\\GIT\\Vulpes-Celare\\src\\dictionaries\\surnames.txt",
           "type": "SURNAMES",
-          "size": 1452540,
-          "lastModified": "2025-12-04T03:50:04.968Z",
-          "hash": "96c58da18b92",
-          "entries": 162253,
+          "size": 1452738,
+          "lastModified": "2025-12-20T00:00:14.019Z",
+          "hash": "ec067d14be6d",
+          "entries": 162266,
           "sampleEntries": [
             "aab\r",
             "aaberg\r",
@@ -2067,28 +2180,30 @@
           ]
         }
       ],
-      "totalEntries": 201103,
+      "totalEntries": 201121,
       "byType": {
+        "OTHER": {
+          "files": [
+            "BloomFilterStore.ts",
+            "FastFuzzyMatcher.ts",
+            "FuzzyDictionaryMatcher.ts",
+            "HospitalDictionary.ts",
+            "NameDictionary.ts",
+            "SQLiteDictionaryMatcher.ts"
+          ],
+          "totalEntries": 0
+        },
         "CITIES": {
           "files": [
             "cities.txt"
           ],
           "totalEntries": 1000
         },
-        "OTHER": {
-          "files": [
-            "FastFuzzyMatcher.ts",
-            "FuzzyDictionaryMatcher.ts",
-            "HospitalDictionary.ts",
-            "NameDictionary.ts"
-          ],
-          "totalEntries": 0
-        },
         "FIRST_NAMES": {
           "files": [
             "first-names.txt"
           ],
-          "totalEntries": 30460
+          "totalEntries": 30465
         },
         "HOSPITALS": {
           "files": [
@@ -2100,20 +2215,40 @@
           "files": [
             "surnames.txt"
           ],
-          "totalEntries": 162253
+          "totalEntries": 162266
         }
       }
     },
     "pipeline": {
       "stages": [
         {
+          "name": "BaseFilter",
+          "file": "BaseFilter.ts",
+          "type": "CORE"
+        },
+        {
           "name": "ConfidenceCalibrator",
           "file": "ConfidenceCalibrator.ts",
           "type": "CORE"
         },
         {
+          "name": "ConfidencePipeline",
+          "file": "ConfidencePipeline.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "ContextualConfidenceModifier",
+          "file": "ContextualConfidenceModifier.ts",
+          "type": "CORE"
+        },
+        {
           "name": "CrossTypeReasoner",
           "file": "CrossTypeReasoner.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "DatalogReasoner",
+          "file": "DatalogReasoner.ts",
           "type": "CORE"
         },
         {
@@ -2132,13 +2267,13 @@
           "type": "CORE"
         },
         {
-          "name": "FieldLabelWhitelist",
-          "file": "FieldLabelWhitelist.ts",
+          "name": "FilterAdapter",
+          "file": "FilterAdapter.ts",
           "type": "CORE"
         },
         {
-          "name": "FilterAdapter",
-          "file": "FilterAdapter.ts",
+          "name": "FilterWorkerPool",
+          "file": "FilterWorkerPool.ts",
           "type": "CORE"
         },
         {
@@ -2149,6 +2284,11 @@
         {
           "name": "ParallelRedactionEngine",
           "file": "ParallelRedactionEngine.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "ServiceContainer",
+          "file": "ServiceContainer.ts",
           "type": "CORE"
         },
         {
@@ -2167,8 +2307,18 @@
           "type": "CORE"
         },
         {
+          "name": "SpanPool",
+          "file": "SpanPool.ts",
+          "type": "CORE"
+        },
+        {
           "name": "WeightedPHIScorer",
           "file": "WeightedPHIScorer.ts",
+          "type": "CORE"
+        },
+        {
+          "name": "worker",
+          "file": "worker.ts",
           "type": "CORE"
         }
       ],
@@ -2176,6 +2326,11 @@
         {
           "name": "ConfidenceModifierService",
           "file": "ConfidenceModifierService.ts",
+          "type": "SERVICE"
+        },
+        {
+          "name": "ProvenanceService",
+          "file": "ProvenanceService.ts",
           "type": "SERVICE"
         },
         {
@@ -2201,10 +2356,10 @@
       ],
       "entryPoint": {
         "file": "VulpesCelare.ts",
-        "version": "1.0.0",
-        "filterCount": 25,
+        "version": "unknown",
+        "filterCount": 26,
         "hasParallelProcessing": true,
-        "hasLogging": false
+        "hasLogging": true
       },
       "flow": [
         "Input Text",
@@ -2221,68 +2376,79 @@
       ]
     },
     "fileHashes": {
-      "filters\\AccountNumberFilterSpan.ts": "212b827a7df0",
-      "filters\\AddressFilterSpan.ts": "ec9f8e75385e",
-      "filters\\AgeFilterSpan.ts": "8d8615e1b909",
-      "filters\\BiometricContextFilterSpan.ts": "215ded9c1f6f",
-      "filters\\CreditCardFilterSpan.ts": "332f82395e0f",
-      "filters\\DateFilterSpan.ts": "5a4613943e58",
-      "filters\\DEAFilterSpan.ts": "80449a009b0d",
-      "filters\\DeviceIdentifierFilterSpan.ts": "88a8d13b99a7",
-      "filters\\EmailFilterSpan.ts": "9c899316d50d",
-      "filters\\FamilyNameFilterSpan.ts": "f7a35c22c01c",
-      "filters\\FaxNumberFilterSpan.ts": "41a22146bd43",
-      "filters\\FilterRegistry.ts": "bd1f4a0ef614",
-      "filters\\FormattedNameFilterSpan.ts": "991316ea9ecd",
-      "filters\\HealthPlanNumberFilterSpan.ts": "294d1a70ed9e",
-      "filters\\HospitalFilterSpan.ts": "307a518ecff7",
-      "filters\\IPAddressFilterSpan.ts": "bf8d16a16561",
-      "filters\\LicenseNumberFilterSpan.ts": "1d37810b6837",
-      "filters\\MRNFilterSpan.ts": "8ae055027374",
-      "filters\\NPIFilterSpan.ts": "b612e683921b",
-      "filters\\PassportNumberFilterSpan.ts": "88eb679f5d95",
-      "filters\\PhoneFilterSpan.ts": "eb16c64b3177",
-      "filters\\SmartNameFilterSpan.ts": "4b715041497c",
-      "filters\\SSNFilterSpan.ts": "9b68cd06a0c0",
-      "filters\\TitledNameFilterSpan.ts": "cfd2ef5da898",
-      "filters\\UniqueIdentifierFilterSpan.ts": "03d162985667",
-      "filters\\URLFilterSpan.ts": "0ef58b7d2a8d",
-      "filters\\VehicleIdentifierFilterSpan.ts": "9953f86eb1ef",
-      "filters\\ZipCodeFilterSpan.ts": "8e267f417d66",
+      "filters\\AccountNumberFilterSpan.ts": "4a05f678ea3e",
+      "filters\\AddressFilterSpan.ts": "2d0209fefacf",
+      "filters\\AgeFilterSpan.ts": "9d44ee842057",
+      "filters\\BiometricContextFilterSpan.ts": "6c240d60bd92",
+      "filters\\ContextAwareAddressFilter.ts": "789796328280",
+      "filters\\ContextAwareNameFilter.ts": "8a7c226cff27",
+      "filters\\CreditCardFilterSpan.ts": "76108fcf7a0d",
+      "filters\\DateFilterSpan.ts": "dd6c8835412f",
+      "filters\\DeviceIdentifierFilterSpan.ts": "3d2fbb66632f",
+      "filters\\EmailFilterSpan.ts": "675f1806b4a6",
+      "filters\\FamilyNameFilterSpan.ts": "d0cbe1548922",
+      "filters\\FaxNumberFilterSpan.ts": "86158ee99852",
+      "filters\\FilterRegistry.ts": "cdb42f55470c",
+      "filters\\FormattedNameFilterSpan.ts": "85195c6cb8e3",
+      "filters\\GlinerNameFilter.ts": "9763c36878cb",
+      "filters\\HealthPlanNumberFilterSpan.ts": "2fd73990c5b1",
+      "filters\\IPAddressFilterSpan.ts": "8c894042576f",
+      "filters\\LicenseNumberFilterSpan.ts": "1ad9180a72ea",
+      "filters\\MRNFilterSpan.ts": "cb0a8b1d0b87",
+      "filters\\PassportNumberFilterSpan.ts": "2098ea4f22e9",
+      "filters\\PhoneFilterSpan.ts": "130f7111363f",
+      "filters\\RelativeDateFilterSpan.ts": "b88c60edea36",
+      "filters\\SmartNameFilterSpan.ts": "3c1bb97b156c",
+      "filters\\SSNFilterSpan.ts": "f9f3bd04d747",
+      "filters\\TitledNameFilterSpan.ts": "77d0dad4b461",
+      "filters\\UnifiedNameDetector.ts": "b906f71a8523",
+      "filters\\URLFilterSpan.ts": "98f04053a9c0",
+      "filters\\VehicleIdentifierFilterSpan.ts": "b59375f7c983",
+      "filters\\ZipCodeFilterSpan.ts": "ed697d342532",
+      "dictionaries\\BloomFilterStore.ts": "7225f96a43f8",
       "dictionaries\\cities.txt": "cefa96a8e1e1",
-      "dictionaries\\FastFuzzyMatcher.ts": "612f05dcd3ff",
-      "dictionaries\\first-names.txt": "af46f90c51a9",
-      "dictionaries\\FuzzyDictionaryMatcher.ts": "5b86ca0320cc",
-      "dictionaries\\HospitalDictionary.ts": "aece2d1ea0be",
+      "dictionaries\\FastFuzzyMatcher.ts": "c15446e3ac5d",
+      "dictionaries\\first-names.txt": "7ef5c129e3e3",
+      "dictionaries\\FuzzyDictionaryMatcher.ts": "93f1c2bb3e4f",
+      "dictionaries\\HospitalDictionary.ts": "7323150b4f68",
       "dictionaries\\hospitals.txt": "8569e18cda52",
-      "dictionaries\\NameDictionary.ts": "0ea330d3f5c3",
-      "dictionaries\\surnames.txt": "96c58da18b92",
-      "core\\ConfidenceCalibrator.ts": "d38b4c7be09a",
-      "core\\CrossTypeReasoner.ts": "ffaaff8d9da4",
-      "core\\EnhancedPHIDetector.ts": "e96cfffeb6d4",
-      "core\\EnsembleVoter.ts": "e2fcd4fd813b",
+      "dictionaries\\NameDictionary.ts": "7c92418bb4bf",
+      "dictionaries\\SQLiteDictionaryMatcher.ts": "90f214e5b42b",
+      "dictionaries\\surnames.txt": "ec067d14be6d",
+      "core\\BaseFilter.ts": "ff39572d7daa",
+      "core\\ConfidenceCalibrator.ts": "8daa2e808511",
+      "core\\ConfidencePipeline.ts": "bf659016365d",
+      "core\\ContextualConfidenceModifier.ts": "8936ab2b77a4",
+      "core\\CrossTypeReasoner.ts": "637c33a8618f",
+      "core\\DatalogReasoner.ts": "637f4d0a4451",
+      "core\\EnhancedPHIDetector.ts": "a02979a6166d",
+      "core\\EnsembleVoter.ts": "37a23858da0b",
       "core\\FieldContextDetector.ts": "464a978703e2",
-      "core\\FieldLabelWhitelist.ts": "9fca018d148c",
-      "core\\FilterAdapter.ts": "15e4f3fa1fce",
-      "core\\MLWeightOptimizer.ts": "984aa8156773",
-      "core\\ParallelRedactionEngine.ts": "976e94e2f9c6",
-      "core\\SpanBasedFilter.ts": "60b4b6fcb8c4",
-      "core\\SpanEnhancer.ts": "c554fbce1ca9",
-      "core\\SpanFactory.ts": "71d3fc6183ba",
-      "core\\WeightedPHIScorer.ts": "8e4db172b73b",
-      "services\\ConfidenceModifierService.ts": "d0aacd6c458e",
-      "services\\index.ts": "7e15643e4078",
+      "core\\FilterAdapter.ts": "dbce1f7dd0a4",
+      "core\\FilterWorkerPool.ts": "fdc1735d2252",
+      "core\\MLWeightOptimizer.ts": "0070a3d28827",
+      "core\\ParallelRedactionEngine.ts": "116188c0fa5c",
+      "core\\ServiceContainer.ts": "f4581c58c175",
+      "core\\SpanBasedFilter.ts": "b77840e1122f",
+      "core\\SpanEnhancer.ts": "9f1bc48448cb",
+      "core\\SpanFactory.ts": "fdefcc667eaf",
+      "core\\SpanPool.ts": "1fb23fa2cb19",
+      "core\\WeightedPHIScorer.ts": "ebf7b910848e",
+      "core\\worker.ts": "08d64fd5f6ef",
+      "services\\ConfidenceModifierService.ts": "8eb95acf8fb6",
+      "services\\index.ts": "0630a380230b",
+      "services\\ProvenanceService.ts": "3599ec5941c1",
       "services\\ReplacementContextService.ts": "ce309f267127",
-      "services\\SpanDisambiguationService.ts": "5af9abf375ce",
-      "services\\VectorDisambiguationService.ts": "4ae052f4554e",
-      "services\\WindowService.ts": "c77184eafa52",
-      "VulpesCelare.ts": "f5754f324e2c"
+      "services\\SpanDisambiguationService.ts": "70726fd41bee",
+      "services\\VectorDisambiguationService.ts": "f2f4d49f2dac",
+      "services\\WindowService.ts": "6ae1163b4756",
+      "VulpesCelare.ts": "98b7ce9ea764"
     },
     "summary": {
-      "timestamp": "2025-12-08T06:01:42.117Z",
+      "timestamp": "2025-12-20T18:45:41.013Z",
       "filters": {
         "total": 28,
-        "byType": 23,
+        "byType": 20,
         "gaps": [
           "IP",
           "PHOTO"
@@ -2290,26 +2456,27 @@
         "capabilities": [
           "CONTEXT_AWARE",
           "CONFIDENCE_SCORING",
+          "OCR_TOLERANCE",
           "CASE_INSENSITIVE",
-          "OCR_TOLERANCE"
+          "FUZZY_MATCHING"
         ]
       },
       "dictionaries": {
-        "total": 8,
-        "totalEntries": 201103,
+        "total": 10,
+        "totalEntries": 201121,
         "types": [
-          "CITIES",
           "OTHER",
+          "CITIES",
           "FIRST_NAMES",
           "HOSPITALS",
           "SURNAMES"
         ]
       },
       "pipeline": {
-        "stages": 13,
-        "services": 5
+        "stages": 20,
+        "services": 6
       },
-      "codebaseHash": "9a87dd3989fcdb11"
+      "codebaseHash": "5eb85592b3833eb3"
     }
   }
 }

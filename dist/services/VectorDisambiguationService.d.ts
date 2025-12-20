@@ -16,9 +16,14 @@
  *    Formula: tf-idf(t,d) = tf(t,d) * log(N / df(t))
  *    Reference: Sparck Jones (1972) "A statistical interpretation of term specificity"
  *
+ * ENSEMBLE EMBEDDINGS (Phase 6):
+ * When enabled, uses neural embeddings from Bio_ClinicalBERT, MiniLM-L6, and BioBERT
+ * for more accurate semantic disambiguation. Falls back to hash-based vectors
+ * when ensemble models are unavailable.
+ *
  * Example: "Jordan" could be NAME or ADDRESS
  * - Analyzes context window: ["Dr", "Jordan", "examined", "patient"]
- * - Creates vector from hash of context
+ * - Creates vector from hash of context OR neural embedding
  * - Compares to historical patterns using cosine similarity
  * - Selects most similar filter type
  *
@@ -34,15 +39,25 @@ export interface VectorConfig {
     filterStopWords?: boolean;
     /** Minimum confidence threshold for disambiguation (default: 0.3) */
     minConfidence?: number;
+    /** Use ensemble neural embeddings when available (default: true) */
+    useEnsembleEmbeddings?: boolean;
 }
 /**
  * Vector-Based Disambiguation Service
  * Uses hashing + vector similarity to resolve ambiguous spans
+ * Optionally uses neural ensemble embeddings for better accuracy
  */
 export declare class VectorDisambiguationService {
     private config;
     private vectorCache;
+    private neuralEmbeddingCache;
+    private useNeuralEmbeddings;
+    private initialized;
     constructor(config?: VectorConfig);
+    /**
+     * Initialize the service (loads ensemble embeddings if available)
+     */
+    initialize(): Promise<void>;
     /**
      * Disambiguate all spans with ambiguous interpretations
      *
@@ -54,6 +69,26 @@ export declare class VectorDisambiguationService {
      * Select best span from ambiguous group using vector similarity
      */
     private selectBestSpan;
+    /**
+     * Async version of disambiguate that uses neural embeddings
+     */
+    disambiguateAsync(spans: Span[]): Promise<Span[]>;
+    /**
+     * Select best span using neural ensemble embeddings
+     */
+    private selectBestSpanNeural;
+    /**
+     * Calculate disambiguation score using neural embeddings
+     */
+    private calculateNeuralDisambiguationScore;
+    /**
+     * Create context text for embedding
+     */
+    private createContextText;
+    /**
+     * Get prototype text for filter type (used for semantic matching)
+     */
+    private getFilterTypePrototype;
     /**
      * Calculate disambiguation score for a span
      * Higher score = more confident in this filter type
@@ -104,6 +139,10 @@ export declare class VectorDisambiguationService {
      */
     private makeWindowKey;
     /**
+     * Check if neural embeddings are being used
+     */
+    isUsingNeuralEmbeddings(): boolean;
+    /**
      * Get cache statistics
      */
     getCacheStats(): {
@@ -111,6 +150,8 @@ export declare class VectorDisambiguationService {
         totalVectors: number;
         typeDistribution: Record<string, number>;
         avgVectorsPerContext: number;
+        neuralEmbeddingsEnabled: boolean;
+        neuralEmbeddingsCached: number;
     };
     /**
      * Clear cache

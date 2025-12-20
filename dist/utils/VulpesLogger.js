@@ -75,6 +75,25 @@ const path = __importStar(require("path"));
 const os = __importStar(require("os"));
 const theme_1 = require("../theme");
 const icons_1 = require("../theme/icons");
+// Lazy import to avoid circular dependency
+let tracerInstance = null;
+/**
+ * Get the VulpesTracer instance lazily to avoid circular dependency
+ */
+function getTracer() {
+    if (tracerInstance === null) {
+        try {
+            // Dynamic require to break circular dependency
+            const { vulpesTracer } = require("../observability/VulpesTracer");
+            tracerInstance = vulpesTracer;
+        }
+        catch {
+            // Tracer not available (e.g., during early initialization)
+            tracerInstance = undefined;
+        }
+    }
+    return tracerInstance || null;
+}
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -593,11 +612,23 @@ class VulpesLogger {
     log(level, message, context) {
         if (LEVEL_PRIORITY[level] < LEVEL_PRIORITY[this.level])
             return;
+        // Automatically inject trace context for log-trace correlation
+        let traceContext = {};
+        const tracer = getTracer();
+        if (tracer) {
+            const logContext = tracer.getLogContext();
+            if (logContext) {
+                traceContext = {
+                    traceId: logContext.traceId,
+                    spanId: logContext.spanId,
+                };
+            }
+        }
         const entry = {
             level,
             message,
             timestamp: Date.now(),
-            context: { ...this.context, ...context },
+            context: { ...this.context, ...traceContext, ...context },
             sessionId: this.sessionId,
         };
         for (const transport of this.transports) {

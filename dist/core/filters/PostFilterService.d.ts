@@ -10,6 +10,7 @@
  * @module core/filters
  */
 import { Span } from "../../models/Span";
+import { type AdaptiveContext } from "../../calibration/AdaptiveThresholdService";
 export type PostFilterShadowReport = {
     enabled: boolean;
     rustAvailable: boolean;
@@ -120,6 +121,15 @@ declare class FieldLabelFilter implements IPostFilterStrategy {
  */
 export declare class PostFilterService {
     private static readonly strategies;
+    /**
+     * Set document context for adaptive threshold calculation
+     * Call before filtering spans from a document
+     */
+    static setAdaptiveContext(context: AdaptiveContext): void;
+    /**
+     * Clear adaptive context after processing
+     */
+    static clearAdaptiveContext(): void;
     private static filterTs;
     /**
      * Apply all post-filter strategies to remove false positives

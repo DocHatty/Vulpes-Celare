@@ -40,6 +40,10 @@ export interface LogContext {
     [key: string]: unknown;
     /** Correlation ID for distributed tracing */
     correlationId?: string;
+    /** OpenTelemetry trace ID (auto-injected from VulpesTracer) */
+    traceId?: string;
+    /** OpenTelemetry span ID (auto-injected from VulpesTracer) */
+    spanId?: string;
     /** Component/module name */
     component?: string;
     /** PHI type being processed */

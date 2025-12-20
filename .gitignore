@@ -85,3 +85,9 @@ AUDIT.txt
 docs/SESSION_ISSUES.md
 docs/STRICT_MODE_AND_CONFIG_EXTERNALIZATION_PLAN.md
 docs/POST-DEV-FIXES.md
+docs/ELITE_IMPLEMENTATION_PLAN.md
+docs/GOLD_STANDARD_AUDIT_DEC_2025.md
+tests/master-suite/cortex/storage/knowledge/codebase-history.json
+tests/master-suite/cortex/storage/knowledge/codebase-states.json
+tests/master-suite/cortex/storage/knowledge/codebase-history.json
+tests/master-suite/cortex/storage/knowledge/codebase-states.json

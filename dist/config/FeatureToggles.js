@@ -119,6 +119,12 @@ const FEATURE_TOGGLES = {
         description: "ML-based false positive filtering",
         category: "experimental",
     },
+    ensembleEmbeddings: {
+        envVar: "VULPES_USE_ENSEMBLE_EMBEDDINGS",
+        defaultEnabled: false,
+        description: "Ensemble embeddings for semantic disambiguation",
+        category: "experimental",
+    },
 };
 /**
  * Check if a feature is enabled
@@ -236,6 +242,7 @@ exports.FeatureToggles = {
     isGlinerEnabled: () => isEnabled("gliner"),
     isMLConfidenceEnabled: () => isEnabled("mlConfidence"),
     isMLFPFilterEnabled: () => isEnabled("mlFPFilter"),
+    isEnsembleEmbeddingsEnabled: () => isEnabled("ensembleEmbeddings"),
     // Shadow mode checks
     isShadowRustNameEnabled: () => isEnabled("shadowRustName"),
     isShadowRustNameFullEnabled: () => isEnabled("shadowRustNameFull"),

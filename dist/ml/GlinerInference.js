@@ -80,7 +80,7 @@ class GlinerInference extends ONNXInference_1.ONNXInference {
      */
     static async create() {
         const model = await ModelManager_1.ModelManager.loadModel("gliner");
-        const inference = new GlinerInference(model.session);
+        const inference = new GlinerInference(model.session, "gliner");
         await inference.loadConfig();
         return inference;
     }

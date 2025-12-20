@@ -176,6 +176,31 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // ===== YEAR ONLY (when contextually relevant) =====
         // Born in 1985, admitted 2024, etc. - captured by context
         /\b(?:born|admitted|discharged|diagnosed|since|in|year)\s+(19|20)\d{2}\b/gi,
+        // ===== NARRATIVE DATE PATTERNS =====
+        // Month + Year only (March 2024, in January 2023)
+        /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(19|20)\d{2}\b/gi,
+        /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+(19|20)\d{2}\b/gi,
+        // "in [Month]" patterns
+        /\b(?:in|during|by|before|after|since|until)\s+(January|February|March|April|May|June|July|August|September|October|November|December)(?:\s+(19|20)\d{2})?\b/gi,
+        // "on [date]" patterns - capture the full date after "on"
+        /\bon\s+(?:the\s+)?(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?(January|February|March|April|May|June|July|August|September|October|November|December)(?:,?\s+(19|20)\d{2})?\b/gi,
+        /\bon\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(19|20)\d{2})?\b/gi,
+        // "as of [date]", "effective [date]", "dated [date]"
+        /\b(?:as\s+of|effective|dated|through|thru|until)\s+(\d{1,2})[-/](\d{1,2})[-/]((?:19|20)?\d{2})\b/gi,
+        /\b(?:as\s+of|effective|dated|through|thru|until)\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(19|20)\d{2})?\b/gi,
+        // Week patterns: "week of January 15", "the week of 3/15"
+        /\b(?:the\s+)?week\s+of\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(19|20)\d{2})?\b/gi,
+        /\b(?:the\s+)?week\s+of\s+(\d{1,2})[-/](\d{1,2})(?:[-/]((?:19|20)?\d{2}))?\b/gi,
+        // Quarter patterns: "Q1 2024", "1Q2024", "first quarter 2024"
+        /\b[Qq][1-4]\s*(19|20)\d{2}\b/g,
+        /\b[1-4][Qq]\s*(19|20)\d{2}\b/g,
+        /\b(?:first|second|third|fourth|1st|2nd|3rd|4th)\s+quarter\s+(?:of\s+)?(19|20)\d{2}\b/gi,
+        // Fiscal year: "FY2024", "FY 2024", "fiscal year 2024"
+        /\bFY\s*(19|20)\d{2}\b/gi,
+        /\bfiscal\s+year\s+(19|20)\d{2}\b/gi,
+        // Age-related date context: "age 45", "45 years old", "45-year-old"
+        /\bage\s+(\d{1,3})\b/gi,
+        /\b(\d{1,3})\s*(?:years?\s+old|-year-old)\b/gi,
         // ===== EXTREME OCR ERROR PATTERNS =====
         // Missing first digit: "/93/2021", "/15/1985", "/1/50"
         /\/\d{1,2}\/(?:19|20)?\d{2}\b/g,
