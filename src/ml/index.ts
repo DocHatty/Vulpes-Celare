@@ -34,6 +34,13 @@ export {
   applyMLFalsePositiveFilter,
 } from "./FalsePositiveClassifier";
 
+// Ensemble embeddings for semantic disambiguation
+export {
+  EnsembleEmbeddingService,
+  getEnsembleEmbeddingService,
+  resetEnsembleEmbeddingService,
+} from "./EnsembleEmbeddingService";
+
 /**
  * Check if ML features are available
  */
@@ -41,6 +48,7 @@ export function getMLStatus(): {
   gliner: { enabled: boolean; available: boolean };
   tinybert: { enabled: boolean; available: boolean };
   fpClassifier: { enabled: boolean; available: boolean };
+  ensembleEmbeddings: { enabled: boolean; available: boolean };
 } {
   // Import here to avoid circular dependencies
   const { FeatureToggles } = require("../config/FeatureToggles");
@@ -58,6 +66,10 @@ export function getMLStatus(): {
     fpClassifier: {
       enabled: FeatureToggles.isMLFPFilterEnabled(),
       available: MM.modelAvailable("fp_classifier"),
+    },
+    ensembleEmbeddings: {
+      enabled: FeatureToggles.isEnsembleEmbeddingsEnabled(),
+      available: MM.modelAvailable("minilm-l6"), // Required model
     },
   };
 }
@@ -82,12 +94,14 @@ export function printMLStatus(): void {
   out.print(`  GLiNER Name Detection:     ${formatStatus(status.gliner)}`);
   out.print(`  TinyBERT Confidence:       ${formatStatus(status.tinybert)}`);
   out.print(`  ML False Positive Filter:  ${formatStatus(status.fpClassifier)}`);
+  out.print(`  Ensemble Embeddings:       ${formatStatus(status.ensembleEmbeddings)}`);
   out.blank();
 
   const anyMissing =
     !status.gliner.available ||
     !status.tinybert.available ||
-    !status.fpClassifier.available;
+    !status.fpClassifier.available ||
+    !status.ensembleEmbeddings.available;
 
   if (anyMissing) {
     out.print("Run 'npm run models:download' to install missing models.");
@@ -95,9 +109,10 @@ export function printMLStatus(): void {
   }
 
   out.print("Environment variables to enable ML features:");
-  out.print("  VULPES_USE_GLINER=1          # Enable GLiNER");
-  out.print("  VULPES_USE_ML_CONFIDENCE=1   # Enable TinyBERT");
-  out.print("  VULPES_USE_ML_FP_FILTER=1    # Enable FP classifier");
-  out.print("  VULPES_ML_DEVICE=cuda        # Use GPU (optional)");
+  out.print("  VULPES_USE_GLINER=1              # Enable GLiNER");
+  out.print("  VULPES_USE_ML_CONFIDENCE=1       # Enable TinyBERT");
+  out.print("  VULPES_USE_ML_FP_FILTER=1        # Enable FP classifier");
+  out.print("  VULPES_USE_ENSEMBLE_EMBEDDINGS=1 # Enable ensemble embeddings");
+  out.print("  VULPES_ML_DEVICE=cuda            # Use GPU (optional)");
   out.blank();
 }

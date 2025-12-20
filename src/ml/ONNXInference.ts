@@ -9,6 +9,7 @@
 
 import * as ort from "onnxruntime-node";
 import { vulpesLogger } from "../utils/VulpesLogger";
+import { ModelManager, ModelType } from "./ModelManager";
 
 const logger = vulpesLogger.forComponent("ONNXInference");
 
@@ -37,9 +38,11 @@ export interface Tokenizer {
 export abstract class ONNXInference {
   protected session: ort.InferenceSession;
   protected tokenizer: Tokenizer | null = null;
+  protected modelType: ModelType | null = null;
 
-  constructor(session: ort.InferenceSession) {
+  constructor(session: ort.InferenceSession, modelType?: ModelType) {
     this.session = session;
+    this.modelType = modelType || null;
   }
 
   /**
@@ -117,12 +120,22 @@ export abstract class ONNXInference {
 
   /**
    * Run inference with the given inputs
+   * Automatically tracks performance metrics if model type is set
    */
   protected async runInference(
     feeds: Record<string, ort.Tensor>
   ): Promise<ort.InferenceSession.OnnxValueMapType> {
+    const startTime = Date.now();
     try {
-      return await this.session.run(feeds);
+      const result = await this.session.run(feeds);
+      
+      // Record metrics if model type is known
+      if (this.modelType) {
+        const durationMs = Date.now() - startTime;
+        ModelManager.recordInference(this.modelType, durationMs);
+      }
+      
+      return result;
     } catch (error) {
       logger.error(`Inference failed: ${error}`);
       throw error;

@@ -45,3 +45,17 @@ export {
   CalibrationResult,
   LiveTestResult,
 } from "./AutoCalibrator";
+
+export {
+  AdaptiveThresholdService,
+  adaptiveThresholds,
+  MedicalSpecialty,
+  PurposeOfUse,
+  type PHIType,
+  type AdaptiveContext,
+  type AdaptiveThresholds,
+  type ThresholdAdjustment,
+  type ThresholdFeedback,
+  type ContextPerformance,
+  type AdaptiveThresholdConfig,
+} from "./AdaptiveThresholdService";

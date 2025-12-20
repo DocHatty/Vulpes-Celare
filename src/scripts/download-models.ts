@@ -6,6 +6,9 @@
  * - GLiNER: Zero-shot NER for name detection
  * - TinyBERT: Confidence re-ranking
  * - FP Classifier: False positive detection
+ * - Bio_ClinicalBERT: Clinical domain embeddings (Phase 6)
+ * - MiniLM-L6-v2: Fast semantic similarity (Phase 6)
+ * - BioBERT: Biomedical NER embeddings (Phase 6)
  *
  * Usage:
  *   npm run models:download              # Download all models
@@ -95,6 +98,77 @@ const MODELS: Record<string, ModelDefinition> = {
       },
     ],
     sizeEstimate: "~5MB",
+  },
+
+  // Phase 6: Ensemble Embedding Models
+  "bio-clinicalbert": {
+    name: "Bio_ClinicalBERT",
+    description: "Clinical domain BERT for medical text embeddings",
+    directory: "bio-clinicalbert",
+    files: [
+      {
+        filename: "model.onnx",
+        url: "https://huggingface.co/emilyalsentzer/Bio_ClinicalBERT/resolve/main/onnx/model.onnx",
+        required: true,
+      },
+      {
+        filename: "tokenizer.json",
+        url: "https://huggingface.co/emilyalsentzer/Bio_ClinicalBERT/resolve/main/tokenizer.json",
+        required: true,
+      },
+      {
+        filename: "config.json",
+        url: "https://huggingface.co/emilyalsentzer/Bio_ClinicalBERT/resolve/main/config.json",
+        required: false,
+      },
+    ],
+    sizeEstimate: "~440MB",
+  },
+  "minilm-l6": {
+    name: "MiniLM-L6-v2",
+    description: "Fast, lightweight sentence embeddings for semantic similarity",
+    directory: "minilm-l6",
+    files: [
+      {
+        filename: "model.onnx",
+        url: "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/onnx/model.onnx",
+        required: true,
+      },
+      {
+        filename: "tokenizer.json",
+        url: "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer.json",
+        required: true,
+      },
+      {
+        filename: "config.json",
+        url: "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json",
+        required: false,
+      },
+    ],
+    sizeEstimate: "~90MB",
+  },
+  biobert: {
+    name: "BioBERT",
+    description: "Biomedical domain BERT for entity recognition",
+    directory: "biobert",
+    files: [
+      {
+        filename: "model.onnx",
+        url: "https://huggingface.co/dmis-lab/biobert-base-cased-v1.2/resolve/main/onnx/model.onnx",
+        required: true,
+      },
+      {
+        filename: "tokenizer.json",
+        url: "https://huggingface.co/dmis-lab/biobert-base-cased-v1.2/resolve/main/tokenizer.json",
+        required: true,
+      },
+      {
+        filename: "config.json",
+        url: "https://huggingface.co/dmis-lab/biobert-base-cased-v1.2/resolve/main/config.json",
+        required: false,
+      },
+    ],
+    sizeEstimate: "~440MB",
   },
 };
 
@@ -398,9 +472,12 @@ ${colors.cyan}Usage:${colors.reset}
   npm run models:download -- --help    Show this help
 
 ${colors.cyan}Available Models:${colors.reset}
-  gliner          GLiNER zero-shot NER (~100MB)
-  tinybert        TinyBERT confidence ranker (~60MB)
-  fp_classifier   False positive classifier (~5MB)
+  gliner            GLiNER zero-shot NER (~100MB)
+  tinybert          TinyBERT confidence ranker (~60MB)
+  fp_classifier     False positive classifier (~5MB)
+  bio-clinicalbert  Bio_ClinicalBERT clinical embeddings (~440MB)
+  minilm-l6         MiniLM-L6-v2 sentence embeddings (~90MB)
+  biobert           BioBERT biomedical embeddings (~440MB)
 
 ${colors.cyan}Environment Variables:${colors.reset}
   VULPES_MODELS_DIR    Override default models directory
@@ -456,10 +533,11 @@ async function main(): Promise<void> {
     logSuccess("All models downloaded successfully!");
     log("");
     log(`${colors.dim}To enable ML features, set environment variables:${colors.reset}`);
-    log(`  VULPES_USE_GLINER=1          # Enable GLiNER name detection`);
-    log(`  VULPES_USE_ML_CONFIDENCE=1   # Enable TinyBERT confidence re-ranking`);
-    log(`  VULPES_USE_ML_FP_FILTER=1    # Enable ML false positive filtering`);
-    log(`  VULPES_ML_DEVICE=cuda        # Use GPU acceleration (optional)`);
+    log(`  VULPES_USE_GLINER=1              # Enable GLiNER name detection`);
+    log(`  VULPES_USE_ML_CONFIDENCE=1       # Enable TinyBERT confidence re-ranking`);
+    log(`  VULPES_USE_ML_FP_FILTER=1        # Enable ML false positive filtering`);
+    log(`  VULPES_USE_ENSEMBLE_EMBEDDINGS=1 # Enable ensemble embeddings for disambiguation`);
+    log(`  VULPES_ML_DEVICE=cuda            # Use GPU acceleration (optional)`);
   } else {
     logWarning("Some models failed to download. Check errors above.");
     logInfo("You can retry with: npm run models:download -- --force");

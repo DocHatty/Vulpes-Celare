@@ -41,6 +41,26 @@ import * as os from "os";
 import { theme } from "../theme";
 import { status as statusIcons, arrows } from "../theme/icons";
 
+// Lazy import to avoid circular dependency
+let tracerInstance: { getLogContext(): { traceId: string; spanId: string } | null } | null = null;
+
+/**
+ * Get the VulpesTracer instance lazily to avoid circular dependency
+ */
+function getTracer(): { getLogContext(): { traceId: string; spanId: string } | null } | null {
+  if (tracerInstance === null) {
+    try {
+      // Dynamic require to break circular dependency
+      const { vulpesTracer } = require("../observability/VulpesTracer");
+      tracerInstance = vulpesTracer;
+    } catch {
+      // Tracer not available (e.g., during early initialization)
+      tracerInstance = undefined as any;
+    }
+  }
+  return tracerInstance || null;
+}
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -53,6 +73,10 @@ export interface LogContext {
   [key: string]: unknown;
   /** Correlation ID for distributed tracing */
   correlationId?: string;
+  /** OpenTelemetry trace ID (auto-injected from VulpesTracer) */
+  traceId?: string;
+  /** OpenTelemetry span ID (auto-injected from VulpesTracer) */
+  spanId?: string;
   /** Component/module name */
   component?: string;
   /** PHI type being processed */
@@ -677,11 +701,24 @@ export class VulpesLogger {
   private log(level: LogLevel, message: string, context?: LogContext): void {
     if (LEVEL_PRIORITY[level] < LEVEL_PRIORITY[this.level]) return;
 
+    // Automatically inject trace context for log-trace correlation
+    let traceContext: { traceId?: string; spanId?: string } = {};
+    const tracer = getTracer();
+    if (tracer) {
+      const logContext = tracer.getLogContext();
+      if (logContext) {
+        traceContext = {
+          traceId: logContext.traceId,
+          spanId: logContext.spanId,
+        };
+      }
+    }
+
     const entry: LogEntry = {
       level,
       message,
       timestamp: Date.now(),
-      context: { ...this.context, ...context },
+      context: { ...this.context, ...traceContext, ...context },
       sessionId: this.sessionId,
     };
 

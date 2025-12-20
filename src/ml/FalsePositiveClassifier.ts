@@ -129,7 +129,7 @@ export class FalsePositiveClassifier extends ONNXInference implements IPostFilte
     tokenizer: SimpleWordPieceTokenizer | null,
     fpThreshold: number = DEFAULT_FP_THRESHOLD
   ) {
-    super(session);
+    super(session, "fp_classifier");
     this.tokenizer = tokenizer;
     this.fpThreshold = fpThreshold;
   }

@@ -23,3 +23,47 @@ export {
   type MetricValue,
   type ResourceAttributes,
 } from "./VulpesTracer";
+
+// Semantic Conventions (OTEL + Vulpes-specific)
+export {
+  SemanticConventions,
+  ServiceAttributes,
+  DeploymentAttributes,
+  ExceptionAttributes,
+  CodeAttributes,
+  ProcessAttributes,
+  HostAttributes,
+  OSAttributes,
+  PHIAttributes,
+  DocumentAttributes,
+  FilterAttributes,
+  PipelineAttributes,
+  SpanAttributes as VulpesSpanAttributes,
+  CacheAttributes,
+  MLAttributes,
+  SessionAttributes,
+  AuditAttributes,
+  SpanNames,
+  MetricNames,
+  EventNames,
+} from "./SemanticConventions";
+
+// Smart Sampling Strategies
+export {
+  createDefaultSampler,
+  RateSampler,
+  ParentBasedSampler,
+  AlwaysSampler,
+  NeverSampler,
+  ErrorBiasedSampler,
+  LatencyBasedSampler,
+  AdaptiveSampler,
+  RuleBasedSampler,
+  CompositeSampler,
+  PHIAwareSampler,
+  type Sampler,
+  type SamplingContext,
+  type SamplingDecision,
+  type SamplingReason,
+  type SamplingRule,
+} from "./SmartSampler";

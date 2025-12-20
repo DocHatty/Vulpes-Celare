@@ -16,9 +16,14 @@
  *    Formula: tf-idf(t,d) = tf(t,d) * log(N / df(t))
  *    Reference: Sparck Jones (1972) "A statistical interpretation of term specificity"
  *
+ * ENSEMBLE EMBEDDINGS (Phase 6):
+ * When enabled, uses neural embeddings from Bio_ClinicalBERT, MiniLM-L6, and BioBERT
+ * for more accurate semantic disambiguation. Falls back to hash-based vectors
+ * when ensemble models are unavailable.
+ *
  * Example: "Jordan" could be NAME or ADDRESS
  * - Analyzes context window: ["Dr", "Jordan", "examined", "patient"]
- * - Creates vector from hash of context
+ * - Creates vector from hash of context OR neural embedding
  * - Compares to historical patterns using cosine similarity
  * - Selects most similar filter type
  *
@@ -26,6 +31,9 @@
  */
 
 import { Span, FilterType, SpanUtils } from "../models/Span";
+import { vulpesLogger } from "../utils/VulpesLogger";
+
+const logger = vulpesLogger.forComponent("VectorDisambiguationService");
 
 export interface VectorConfig {
   /** Vector size (default: 512) */
@@ -39,6 +47,9 @@ export interface VectorConfig {
 
   /** Minimum confidence threshold for disambiguation (default: 0.3) */
   minConfidence?: number;
+
+  /** Use ensemble neural embeddings when available (default: true) */
+  useEnsembleEmbeddings?: boolean;
 }
 
 /**
@@ -101,13 +112,39 @@ const STOP_WORDS = new Set([
   "their",
 ]);
 
+// Lazy import to avoid circular dependencies
+let ensembleServicePromise: Promise<any> | null = null;
+let ensembleService: any = null;
+
+async function getEnsembleService(): Promise<any> {
+  if (ensembleService) return ensembleService;
+  if (ensembleServicePromise) return ensembleServicePromise;
+
+  ensembleServicePromise = (async () => {
+    try {
+      const { getEnsembleEmbeddingService } = await import("../ml/EnsembleEmbeddingService");
+      ensembleService = await getEnsembleEmbeddingService();
+      return ensembleService;
+    } catch (error) {
+      logger.debug(`Ensemble embeddings not available: ${error}`);
+      return null;
+    }
+  })();
+
+  return ensembleServicePromise;
+}
+
 /**
  * Vector-Based Disambiguation Service
  * Uses hashing + vector similarity to resolve ambiguous spans
+ * Optionally uses neural ensemble embeddings for better accuracy
  */
 export class VectorDisambiguationService {
   private config: Required<VectorConfig>;
   private vectorCache: Map<string, SpanVector[]> = new Map();
+  private neuralEmbeddingCache: Map<string, Float32Array> = new Map();
+  private useNeuralEmbeddings = false;
+  private initialized = false;
 
   constructor(config: VectorConfig = {}) {
     this.config = {
@@ -115,7 +152,29 @@ export class VectorDisambiguationService {
       hashAlgorithm: config.hashAlgorithm ?? "murmur3",
       filterStopWords: config.filterStopWords ?? true,
       minConfidence: config.minConfidence ?? 0.3,
+      useEnsembleEmbeddings: config.useEnsembleEmbeddings ?? true,
     };
+  }
+
+  /**
+   * Initialize the service (loads ensemble embeddings if available)
+   */
+  async initialize(): Promise<void> {
+    if (this.initialized) return;
+
+    if (this.config.useEnsembleEmbeddings) {
+      try {
+        const service = await getEnsembleService();
+        if (service) {
+          this.useNeuralEmbeddings = true;
+          logger.info("VectorDisambiguationService using neural ensemble embeddings");
+        }
+      } catch (error) {
+        logger.debug(`Falling back to hash-based vectors: ${error}`);
+      }
+    }
+
+    this.initialized = true;
   }
 
   /**
@@ -189,6 +248,178 @@ export class VectorDisambiguationService {
       .map((s) => s.filterType);
 
     return bestSpan;
+  }
+
+  /**
+   * Async version of disambiguate that uses neural embeddings
+   */
+  async disambiguateAsync(spans: Span[]): Promise<Span[]> {
+    // Ensure initialized
+    await this.initialize();
+
+    // Find ambiguous span groups (same position, different types)
+    const ambiguousGroups = SpanUtils.getIdenticalSpanGroups(spans);
+
+    if (ambiguousGroups.length === 0) {
+      return spans; // No ambiguity
+    }
+
+    const disambiguated: Span[] = [];
+    const processedPositions = new Set<string>();
+
+    for (const span of spans) {
+      const posKey = `${span.characterStart}-${span.characterEnd}`;
+
+      if (processedPositions.has(posKey)) {
+        continue;
+      }
+
+      const ambiguousGroup = ambiguousGroups.find((group) =>
+        group.some((s) => s.isIdenticalTo(span)),
+      );
+
+      if (ambiguousGroup && ambiguousGroup.length > 1) {
+        // Use neural embeddings if available
+        const bestSpan = this.useNeuralEmbeddings
+          ? await this.selectBestSpanNeural(ambiguousGroup)
+          : this.selectBestSpan(ambiguousGroup);
+        disambiguated.push(bestSpan);
+        processedPositions.add(posKey);
+
+        this.cacheObservation(bestSpan);
+      } else {
+        disambiguated.push(span);
+        processedPositions.add(posKey);
+        this.cacheObservation(span);
+      }
+    }
+
+    return disambiguated;
+  }
+
+  /**
+   * Select best span using neural ensemble embeddings
+   */
+  private async selectBestSpanNeural(ambiguousGroup: Span[]): Promise<Span> {
+    const service = await getEnsembleService();
+    if (!service) {
+      // Fallback to hash-based
+      return this.selectBestSpan(ambiguousGroup);
+    }
+
+    const scores: Array<{ span: Span; score: number }> = [];
+
+    for (const span of ambiguousGroup) {
+      const score = await this.calculateNeuralDisambiguationScore(span, service);
+      scores.push({ span, score });
+    }
+
+    scores.sort((a, b) => b.score - a.score);
+
+    const bestSpan = scores[0].span;
+    bestSpan.disambiguationScore = scores[0].score;
+    bestSpan.ambiguousWith = ambiguousGroup
+      .filter((s) => s !== bestSpan)
+      .map((s) => s.filterType);
+
+    return bestSpan;
+  }
+
+  /**
+   * Calculate disambiguation score using neural embeddings
+   */
+  private async calculateNeuralDisambiguationScore(
+    span: Span,
+    service: any
+  ): Promise<number> {
+    // Create context text for embedding
+    const contextText = this.createContextText(span);
+    const cacheKey = `${contextText}:${span.filterType}`;
+
+    // Check cache first
+    let embedding: Float32Array | undefined = this.neuralEmbeddingCache.get(cacheKey);
+    if (!embedding) {
+      try {
+        const newEmbedding: Float32Array = await service.embed(contextText);
+        embedding = newEmbedding;
+        this.neuralEmbeddingCache.set(cacheKey, newEmbedding);
+
+        // Limit cache size
+        if (this.neuralEmbeddingCache.size > 5000) {
+          const firstKey = this.neuralEmbeddingCache.keys().next().value;
+          if (firstKey) this.neuralEmbeddingCache.delete(firstKey);
+        }
+      } catch (error) {
+        logger.warn(`Neural embedding failed: ${error}`);
+        return this.calculateDisambiguationScore(span);
+      }
+    }
+
+    // Get prototype embeddings for this filter type
+    const prototypeKey = `prototype:${span.filterType}`;
+    let prototypeEmbedding: Float32Array | undefined = this.neuralEmbeddingCache.get(prototypeKey);
+
+    if (!prototypeEmbedding) {
+      // Create prototype from filter type semantics
+      const prototypeText = this.getFilterTypePrototype(span.filterType);
+      try {
+        const newProtoEmbedding: Float32Array = await service.embed(prototypeText);
+        prototypeEmbedding = newProtoEmbedding;
+        this.neuralEmbeddingCache.set(prototypeKey, newProtoEmbedding);
+      } catch (error) {
+        return this.calculateDisambiguationScore(span);
+      }
+    }
+
+    // At this point, both embeddings are guaranteed to be defined
+    // Calculate similarity
+    const similarity = service.cosineSimilarity(embedding, prototypeEmbedding);
+
+    // Combine with span confidence
+    const combinedScore = 0.7 * similarity + 0.3 * span.confidence;
+
+    return Math.max(0, Math.min(1, combinedScore));
+  }
+
+  /**
+   * Create context text for embedding
+   */
+  private createContextText(span: Span): string {
+    let window = span.window;
+    if (this.config.filterStopWords) {
+      window = window.filter((token) => !STOP_WORDS.has(token.toLowerCase()));
+    }
+    return `${span.text} ${window.join(" ")}`.trim();
+  }
+
+  /**
+   * Get prototype text for filter type (used for semantic matching)
+   */
+  private getFilterTypePrototype(filterType: FilterType): string {
+    const prototypes: Record<string, string> = {
+      [FilterType.NAME]: "patient name person individual human identity first last name",
+      [FilterType.DATE]: "date calendar day month year time birthday anniversary",
+      [FilterType.PHONE]: "phone number telephone call mobile cell contact",
+      [FilterType.EMAIL]: "email address electronic mail contact message",
+      [FilterType.SSN]: "social security number identification government tax",
+      [FilterType.MRN]: "medical record number patient identifier hospital",
+      [FilterType.ADDRESS]: "address street city state zip location residence home",
+      [FilterType.ZIPCODE]: "zip code postal area region geographic",
+      [FilterType.AGE]: "age years old birthday patient elderly young",
+      [FilterType.IP]: "IP address network computer internet protocol",
+      [FilterType.URL]: "URL website link web address internet",
+      [FilterType.FAX]: "fax facsimile number machine document transmission",
+      [FilterType.ACCOUNT]: "account number bank financial identifier",
+      [FilterType.LICENSE]: "license number driver identification state permit",
+      [FilterType.VEHICLE]: "vehicle identification VIN car automobile",
+      [FilterType.DEVICE]: "device identifier serial number medical equipment",
+      [FilterType.HEALTH_PLAN]: "health plan insurance beneficiary policy",
+      [FilterType.BIOMETRIC]: "biometric fingerprint retina voice face recognition",
+      [FilterType.CREDIT_CARD]: "credit card payment financial number visa mastercard",
+      [FilterType.PASSPORT]: "passport travel identification international document",
+    };
+
+    return prototypes[filterType] || filterType.toLowerCase();
   }
 
   /**
@@ -441,6 +672,13 @@ export class VectorDisambiguationService {
   }
 
   /**
+   * Check if neural embeddings are being used
+   */
+  isUsingNeuralEmbeddings(): boolean {
+    return this.useNeuralEmbeddings;
+  }
+
+  /**
    * Get cache statistics
    */
   getCacheStats() {
@@ -461,6 +699,8 @@ export class VectorDisambiguationService {
       totalVectors,
       typeDistribution,
       avgVectorsPerContext: totalVectors / Math.max(1, this.vectorCache.size),
+      neuralEmbeddingsEnabled: this.useNeuralEmbeddings,
+      neuralEmbeddingsCached: this.neuralEmbeddingCache.size,
     };
   }
 
@@ -469,6 +709,7 @@ export class VectorDisambiguationService {
    */
   clearCache(): void {
     this.vectorCache.clear();
+    this.neuralEmbeddingCache.clear();
   }
 
   /**

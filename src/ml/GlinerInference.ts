@@ -66,7 +66,7 @@ export class GlinerInference extends ONNXInference {
    */
   static async create(): Promise<GlinerInference> {
     const model = await ModelManager.loadModel("gliner");
-    const inference = new GlinerInference(model.session);
+    const inference = new GlinerInference(model.session, "gliner");
     await inference.loadConfig();
     return inference;
   }

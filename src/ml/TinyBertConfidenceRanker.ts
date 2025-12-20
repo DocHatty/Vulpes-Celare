@@ -93,7 +93,7 @@ interface ConfidenceFeatures {
  */
 export class TinyBertConfidenceRanker extends ONNXInference {
   private constructor(session: ort.InferenceSession, tokenizer: SimpleWordPieceTokenizer) {
-    super(session);
+    super(session, "tinybert");
     this.tokenizer = tokenizer;
   }
 

@@ -23,6 +23,11 @@ import {
   getGeoTerms,
   getFieldLabels,
 } from "../../config/post-filter";
+import {
+  adaptiveThresholds,
+  type AdaptiveContext,
+  type PHIType,
+} from "../../calibration/AdaptiveThresholdService";
 
 let cachedPostFilterBinding:
   | ReturnType<typeof loadNativeBinding>
@@ -563,6 +568,78 @@ class FieldLabelFilter implements IPostFilterStrategy {
   }
 }
 
+/**
+ * Filter spans below adaptive confidence threshold
+ *
+ * Uses AdaptiveThresholdService to determine context-aware thresholds
+ * based on document type, specialty, and PHI type.
+ */
+class ConfidenceThresholdFilter implements IPostFilterStrategy {
+  readonly name = "ConfidenceThreshold";
+
+  // Document-level context cache (set before filtering batch)
+  private static documentContext: AdaptiveContext | null = null;
+
+  /**
+   * Set the document context for adaptive threshold calculation
+   * Call this before filtering a batch of spans from the same document
+   */
+  static setDocumentContext(context: AdaptiveContext): void {
+    ConfidenceThresholdFilter.documentContext = context;
+  }
+
+  /**
+   * Clear document context after processing
+   */
+  static clearDocumentContext(): void {
+    ConfidenceThresholdFilter.documentContext = null;
+  }
+
+  shouldKeep(span: Span, _text: string): boolean {
+    // Get PHI type from filter type
+    const phiType = this.filterTypeToPHIType(span.filterType);
+
+    // Build context for this span
+    const context: AdaptiveContext = {
+      ...ConfidenceThresholdFilter.documentContext,
+      phiType,
+    };
+
+    // Get adaptive threshold for this context
+    const threshold = adaptiveThresholds.getMinimumThreshold(context);
+
+    // Keep if confidence meets threshold
+    return span.confidence >= threshold;
+  }
+
+  /**
+   * Map FilterType to PHIType for threshold lookup
+   */
+  private filterTypeToPHIType(filterType: FilterType | string): PHIType | undefined {
+    const mapping: Record<string, PHIType> = {
+      NAME: "NAME",
+      DATE: "DATE",
+      AGE: "AGE",
+      SSN: "SSN",
+      MRN: "MRN",
+      PHONE: "PHONE",
+      FAX: "FAX",
+      EMAIL: "EMAIL",
+      ADDRESS: "ADDRESS",
+      ZIP: "ZIP",
+      IP_ADDRESS: "IP_ADDRESS",
+      URL: "URL",
+      ACCOUNT: "ACCOUNT",
+      LICENSE: "LICENSE",
+      VEHICLE_ID: "VEHICLE_ID",
+      DEVICE: "DEVICE_ID",
+      BIOMETRIC: "BIOMETRIC",
+      HEALTH_PLAN: "HEALTH_PLAN",
+    };
+    return mapping[filterType as string];
+  }
+}
+
 // =============================================================================
 // POST FILTER SERVICE
 // =============================================================================
@@ -575,6 +652,9 @@ class FieldLabelFilter implements IPostFilterStrategy {
  */
 export class PostFilterService {
   private static readonly strategies: IPostFilterStrategy[] = [
+    // Confidence threshold filter runs first (adaptive thresholds)
+    new ConfidenceThresholdFilter(),
+    // Rule-based filters
     new DevicePhoneFalsePositiveFilter(),
     new SectionHeadingFilter(),
     new StructureWordFilter(),
@@ -587,6 +667,21 @@ export class PostFilterService {
     new GeographicTermFilter(),
     new FieldLabelFilter(),
   ];
+
+  /**
+   * Set document context for adaptive threshold calculation
+   * Call before filtering spans from a document
+   */
+  static setAdaptiveContext(context: AdaptiveContext): void {
+    ConfidenceThresholdFilter.setDocumentContext(context);
+  }
+
+  /**
+   * Clear adaptive context after processing
+   */
+  static clearAdaptiveContext(): void {
+    ConfidenceThresholdFilter.clearDocumentContext();
+  }
 
   private static filterTs(spans: Span[], text: string): Span[] {
     return spans.filter((span) => {
