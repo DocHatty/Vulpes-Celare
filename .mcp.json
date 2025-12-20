@@ -3,7 +3,7 @@
     "vulpes": {
       "command": "node",
       "args": [
-        "C:\\Users\\docto\\Documents\\Programs\\Vulpes-Celare\\tests\\master-suite\\cortex\\mcp\\server.js"
+        "tests/master-suite/cortex/mcp/server.js"
       ]
     }
   }

@@ -44,7 +44,8 @@ const PROJECT_ROOT = path.resolve(__dirname, "..");
 const HOME_DIR = os.homedir();
 
 // Server paths - use Cortex for full learning capabilities
-const CORTEX_SERVER = path.join(
+// ABSOLUTE paths (for global configs or checking existence)
+const CORTEX_SERVER_ABS = path.join(
   PROJECT_ROOT,
   "tests",
   "master-suite",
@@ -52,12 +53,22 @@ const CORTEX_SERVER = path.join(
   "mcp",
   "server.js"
 );
-const PRODUCTION_SERVER = path.join(PROJECT_ROOT, "dist", "mcp", "server.js");
+const PRODUCTION_SERVER_ABS = path.join(PROJECT_ROOT, "dist", "mcp", "server.js");
+
+// RELATIVE paths (for portable project-level configs)
+const CORTEX_SERVER_REL = "tests/master-suite/cortex/mcp/server.js";
+const PRODUCTION_SERVER_REL = "dist/mcp/server.js";
 
 // Use Cortex if available, otherwise production
-const MCP_SERVER = fs.existsSync(CORTEX_SERVER)
-  ? CORTEX_SERVER
-  : PRODUCTION_SERVER;
+const MCP_SERVER_ABS = fs.existsSync(CORTEX_SERVER_ABS)
+  ? CORTEX_SERVER_ABS
+  : PRODUCTION_SERVER_ABS;
+const MCP_SERVER_REL = fs.existsSync(CORTEX_SERVER_ABS)
+  ? CORTEX_SERVER_REL
+  : PRODUCTION_SERVER_REL;
+
+// Legacy alias for compatibility
+const MCP_SERVER = MCP_SERVER_ABS;
 
 // Client configuration locations
 const CLIENTS = {
@@ -170,13 +181,13 @@ async function testMcpServer() {
   return new Promise((resolve) => {
     header("Testing MCP Server...");
 
-    if (!fs.existsSync(MCP_SERVER)) {
-      error(`MCP server not found: ${MCP_SERVER}`);
+    if (!fs.existsSync(MCP_SERVER_ABS)) {
+      error(`MCP server not found: ${MCP_SERVER_REL}`);
       resolve(false);
       return;
     }
 
-    info(`Server path: ${MCP_SERVER}`);
+    info(`Server path: ${MCP_SERVER_REL} (exists at ${MCP_SERVER_ABS})`);
 
     const initRequest = JSON.stringify({
       jsonrpc: "2.0",
@@ -189,7 +200,7 @@ async function testMcpServer() {
       },
     });
 
-    const child = spawn("node", [MCP_SERVER], {
+    const child = spawn("node", [MCP_SERVER_ABS], {
       stdio: ["pipe", "pipe", "pipe"],
       timeout: 10000,
     });
@@ -256,13 +267,17 @@ function setupClaudeCode(global = false) {
     ? CLIENTS.claude.globalConfig
     : CLIENTS.claude.projectConfig;
 
+  // Use relative path for project config (portable), absolute for global
+  const serverPath = global ? MCP_SERVER_ABS : MCP_SERVER_REL;
+  const expectedPath = global ? MCP_SERVER_ABS : MCP_SERVER_REL;
+
   let config = readJsonConfig(configPath) || {};
   config.mcpServers = config.mcpServers || {};
 
   // Check if already configured
   if (config.mcpServers.vulpes) {
     const existingPath = config.mcpServers.vulpes.args?.[0];
-    if (existingPath === MCP_SERVER) {
+    if (existingPath === expectedPath) {
       info(`Already configured correctly in ${path.basename(configPath)}`);
       return true;
     }
@@ -271,11 +286,14 @@ function setupClaudeCode(global = false) {
 
   config.mcpServers.vulpes = {
     command: "node",
-    args: [MCP_SERVER],
+    args: [serverPath],
   };
 
   writeJsonConfig(configPath, config);
   success(`Wrote config to ${configPath}`);
+  if (!global) {
+    info("Using relative path for portability across different installations");
+  }
 
   // Show the tools that will be available
   info("Available tools: run_tests, analyze_test_results, get_recommendation,");
@@ -322,18 +340,25 @@ function setupCursor() {
   let config = readJsonConfig(configPath) || {};
   config.mcpServers = config.mcpServers || {};
 
+  // Check if already configured with relative path
   if (config.mcpServers.vulpes) {
-    info("Already configured in .cursor/mcp.json");
-    return true;
+    const existingPath = config.mcpServers.vulpes.args?.[0];
+    if (existingPath === MCP_SERVER_REL) {
+      info("Already configured correctly in .cursor/mcp.json");
+      return true;
+    }
+    warn("Updating existing vulpes config in .cursor/mcp.json");
   }
 
+  // Use relative path for portability
   config.mcpServers.vulpes = {
     command: "node",
-    args: [MCP_SERVER],
+    args: [MCP_SERVER_REL],
   };
 
   writeJsonConfig(configPath, config);
   success(`Wrote config to ${configPath}`);
+  info("Using relative path for portability across different installations");
 
   return true;
 }
@@ -350,8 +375,13 @@ function checkSetup() {
   // Check Claude Code project config
   const claudeProject = readJsonConfig(CLIENTS.claude.projectConfig);
   if (claudeProject?.mcpServers?.vulpes) {
+    const serverPath = claudeProject.mcpServers.vulpes.args?.[0];
+    const isRelative = !path.isAbsolute(serverPath);
     success(`Claude Code (project): .mcp.json configured`);
-    info(`  Server: ${claudeProject.mcpServers.vulpes.args?.[0]}`);
+    info(`  Server: ${serverPath}${isRelative ? " (relative - portable)" : " (absolute)"}`);
+    if (!isRelative) {
+      warn("  Consider using relative path for portability. Run setup-mcp.js to fix.");
+    }
   } else {
     warn("Claude Code (project): .mcp.json not configured");
     allGood = false;
@@ -376,16 +406,21 @@ function checkSetup() {
   // Check Cursor
   const cursorConfig = readJsonConfig(CLIENTS.cursor.projectConfig);
   if (cursorConfig?.mcpServers?.vulpes) {
+    const serverPath = cursorConfig.mcpServers.vulpes.args?.[0];
+    const isRelative = !path.isAbsolute(serverPath);
     success(`Cursor: .cursor/mcp.json configured`);
+    if (!isRelative) {
+      warn("  Consider using relative path for portability. Run setup-mcp.js to fix.");
+    }
   } else {
     info("Cursor: .cursor/mcp.json not configured");
   }
 
   // Check MCP server exists
-  if (fs.existsSync(MCP_SERVER)) {
-    success(`MCP Server exists: ${path.basename(MCP_SERVER)}`);
+  if (fs.existsSync(MCP_SERVER_ABS)) {
+    success(`MCP Server exists: ${MCP_SERVER_REL}`);
   } else {
-    error(`MCP Server not found: ${MCP_SERVER}`);
+    error(`MCP Server not found: ${MCP_SERVER_REL}`);
     allGood = false;
   }
 
@@ -405,7 +440,8 @@ async function main() {
 ║                     VULPES CELARE MCP SETUP                                   ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║  Registers Vulpes Cortex MCP server with LLM clients                          ║
-║  Server: ${MCP_SERVER.length > 55 ? "..." + MCP_SERVER.slice(-55) : MCP_SERVER.padEnd(58)}║
+║  Server: ${MCP_SERVER_REL.padEnd(58)}║
+║  (Using relative paths for portability)                                       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝`,
     colors.cyan
   );
