@@ -23,6 +23,7 @@
 import { Span, FilterType } from '../models/Span';
 import { ScoringWeights, WeightedPHIScorer } from './WeightedPHIScorer';
 import { VotingConfig } from './EnsembleVoter';
+import { SpanFactory } from './SpanFactory';
 
 /**
  * Ground truth label for a span
@@ -225,24 +226,16 @@ export class MLWeightOptimizer {
     for (const doc of documents) {
       for (const label of doc.groundTruth) {
         // Create a mock span for scoring
-        const mockSpan = new Span({
-          text: label.text,
-          originalValue: label.text,
-          characterStart: label.start,
-          characterEnd: label.end,
-          filterType: label.filterType,
-          confidence: 0.5, // Neutral starting confidence
-          priority: 50,
-          context: '',
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: null,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
+        const mockSpan = SpanFactory.fromPosition(
+          doc.text,
+          label.start,
+          label.end,
+          label.filterType,
+          {
+            confidence: 0.5, // Neutral starting confidence
+            priority: 50,
+          }
+        );
 
         // Get context around the span
         const contextStart = Math.max(0, label.start - 100);

@@ -17,6 +17,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { ClinicalContextDetector } from "../context/ClinicalContextDetector";
 import { NameDictionary } from "../dictionaries/NameDictionary";
@@ -190,23 +191,10 @@ export class ContextAwareNameFilter extends SpanBasedFilter {
         );
         const confidence = Math.min(0.95, baseConfidence + contextBoost);
 
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: start,
-          characterEnd: end,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
           confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, start, end),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: `Diverse name (${contextResult.strength} context)`,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);
@@ -259,23 +247,10 @@ export class ContextAwareNameFilter extends SpanBasedFilter {
         );
         const confidence = Math.min(0.95, baseConfidence + contextBoost);
 
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: start,
-          characterEnd: end,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
           confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, start, end),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Hyphenated name",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);
@@ -295,7 +270,6 @@ export class ContextAwareNameFilter extends SpanBasedFilter {
       while ((match = pattern.exec(text)) !== null) {
         const name = match[1]; // Name portion without suffix
         const start = match.index;
-        const end = start + match[0].length;
 
         // Skip if medical term
         if (
@@ -307,23 +281,10 @@ export class ContextAwareNameFilter extends SpanBasedFilter {
         // Suffix is strong signal, minimal context needed
         const confidence = 0.9;
 
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: start,
-          characterEnd: start + name.length,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, start, start + name.length, FilterType.NAME, {
           confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, start, end),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Name with suffix",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);
@@ -385,23 +346,10 @@ export class ContextAwareNameFilter extends SpanBasedFilter {
       // Label provides strong context
       const confidence = 0.88;
 
-      const span = new Span({
-        text: name,
-        originalValue: name,
-        characterStart: start,
-        characterEnd: end,
-        filterType: FilterType.NAME,
+      const span = SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
         confidence,
         priority: this.getPriority(),
-        context: this.extractContext(text, start, end),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Labeled single name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
 
       spans.push(span);

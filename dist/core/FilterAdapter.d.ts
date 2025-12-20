@@ -40,7 +40,7 @@ export declare class FilterAdapter extends SpanBasedFilter {
      */
     private findPositionInOriginal;
     /**
-     * Create a Span from position info
+     * Create a Span from position info (using pool for memory efficiency)
      */
     private createSpan;
 }

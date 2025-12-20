@@ -12,6 +12,7 @@ import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
+import { SpanFactory } from "../core/SpanFactory";
 
 export class URLFilterSpan extends SpanBasedFilter {
   /**
@@ -69,23 +70,10 @@ export class URLFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "URL");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.URL,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.URL, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -148,27 +136,10 @@ export class URLFilterSpan extends SpanBasedFilter {
 
       seenPositions.add(posKey);
 
-      const span = new Span({
-        text: match[0],
-        originalValue: match[0],
-        characterStart: match.index,
-        characterEnd: match.index + match[0].length,
-        filterType: FilterType.URL,
+      const span = SpanFactory.fromPosition(text, match.index, match.index + match[0].length, FilterType.URL, {
         confidence: confidence,
         priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          match.index,
-          match.index + match[0].length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: patternName,
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }

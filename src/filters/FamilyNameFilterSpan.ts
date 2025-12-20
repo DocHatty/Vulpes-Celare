@@ -8,6 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { nameDetectionCoordinator } from "./name-patterns/NameDetectionCoordinator";
@@ -32,27 +33,10 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
       );
       if (familyPatterns.length > 0) {
         return familyPatterns.map((d) => {
-          return new Span({
-            text: d.text,
-            originalValue: d.text,
-            characterStart: d.characterStart,
-            characterEnd: d.characterEnd,
-            filterType: FilterType.NAME,
+          return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.NAME, {
             confidence: d.confidence,
             priority: this.getPriority(),
-            context: this.extractContext(
-              text,
-              d.characterStart,
-              d.characterEnd,
-            ),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: d.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
         });
       }
@@ -89,25 +73,13 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
         const nameStart = matchPos + fullMatch.indexOf(name);
         const nameEnd = nameStart + name.length;
 
-        const span = new Span({
-          text: name.trim(),
-          originalValue: name.trim(),
-          characterStart: nameStart,
-          characterEnd: nameEnd,
-          filterType: FilterType.NAME,
-          confidence: 0.9,
-          priority: this.getPriority(),
-          context: this.extractContext(text, nameStart, nameEnd),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Family relationship",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+        spans.push(
+          SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
+            confidence: 0.9,
+            priority: this.getPriority(),
+            pattern: "Family relationship",
+          }),
+        );
       }
     }
 
@@ -140,29 +112,13 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
           // Find position of each name in the original text
           const namePos = text.indexOf(name, match.index!);
           if (namePos !== -1) {
-            const span = new Span({
-              text: name.trim(),
-              originalValue: name.trim(),
-              characterStart: namePos,
-              characterEnd: namePos + name.length,
-              filterType: FilterType.NAME,
-              confidence: 0.88,
-              priority: this.getPriority(),
-              context: this.extractContext(
-                text,
-                namePos,
-                namePos + name.length,
-              ),
-              window: [],
-              replacement: null,
-              salt: null,
-              pattern: "Nickname/AKA",
-              applied: false,
-              ignored: false,
-              ambiguousWith: [],
-              disambiguationScore: null,
-            });
-            spans.push(span);
+            spans.push(
+              SpanFactory.fromPosition(text, namePos, namePos + name.length, FilterType.NAME, {
+                confidence: 0.88,
+                priority: this.getPriority(),
+                pattern: "Nickname/AKA",
+              }),
+            );
           }
         }
       }
@@ -181,57 +137,25 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
 
       // Create span for first name
       const name1Start = matchPos + fullMatch.indexOf(name1);
-      const span1 = new Span({
-        text: name1,
-        originalValue: name1,
-        characterStart: name1Start,
-        characterEnd: name1Start + name1.length,
-        filterType: FilterType.NAME,
-        confidence: 0.9,
-        priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          name1Start,
-          name1Start + name1.length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
-        pattern: "Child with age",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
-      });
-      spans.push(span1);
+      spans.push(
+        SpanFactory.fromPosition(text, name1Start, name1Start + name1.length, FilterType.NAME, {
+          confidence: 0.9,
+          priority: this.getPriority(),
+          pattern: "Child with age",
+        }),
+      );
 
       // Create span for second name
       const name2Start =
         matchPos +
         fullMatch.indexOf(name2, name1Start - matchPos + name1.length);
-      const span2 = new Span({
-        text: name2,
-        originalValue: name2,
-        characterStart: name2Start,
-        characterEnd: name2Start + name2.length,
-        filterType: FilterType.NAME,
-        confidence: 0.9,
-        priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          name2Start,
-          name2Start + name2.length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
-        pattern: "Child with age",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
-      });
-      spans.push(span2);
+      spans.push(
+        SpanFactory.fromPosition(text, name2Start, name2Start + name2.length, FilterType.NAME, {
+          confidence: 0.9,
+          priority: this.getPriority(),
+          pattern: "Child with age",
+        }),
+      );
     }
 
     // Pattern 5: SINGLE CHILD NAMES with age
@@ -251,29 +175,13 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
       if (firstName && firstName.length >= 2) {
         const matchPos = match.index!;
         const firstNameStart = matchPos + fullMatch.indexOf(firstName);
-        const span = new Span({
-          text: firstName,
-          originalValue: firstName,
-          characterStart: firstNameStart,
-          characterEnd: firstNameStart + firstName.length,
-          filterType: FilterType.NAME,
-          confidence: 0.9,
-          priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            firstNameStart,
-            firstNameStart + firstName.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Child with age",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+        spans.push(
+          SpanFactory.fromPosition(text, firstNameStart, firstNameStart + firstName.length, FilterType.NAME, {
+            confidence: 0.9,
+            priority: this.getPriority(),
+            pattern: "Child with age",
+          }),
+        );
       }
     }
 
@@ -316,113 +224,23 @@ export class FamilyNameFilterSpan extends SpanBasedFilter {
     while ((match = lastFirstPattern.exec(text)) !== null) {
       const fullMatch = match[0];
 
-      const span = new Span({
-        text: fullMatch,
-        originalValue: fullMatch,
-        characterStart: match.index,
-        characterEnd: match.index + fullMatch.length,
-        filterType: FilterType.NAME,
-        confidence: 0.82,
-        priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          match.index,
-          match.index + fullMatch.length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
-        pattern: "Last, First format (fallback)",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
-      });
-      spans.push(span);
+      spans.push(
+        SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.NAME, {
+          confidence: 0.82,
+          priority: this.getPriority(),
+          pattern: "Last, First format (fallback)",
+        }),
+      );
     }
   }
 
   /**
    * Fallback: Detect general full names (John Smith, Jane Mary Doe)
    *
-   * CRITICAL: This pattern is DISABLED because it's too aggressive and matches
-   * medical diagnoses like "Trigeminal Neuralgia", "Bell Palsy", etc.
+   * DISABLED: Too aggressive - matches medical diagnoses like "Trigeminal Neuralgia".
    * SmartNameFilterSpan handles general name detection with proper dictionary validation.
    */
   private detectGeneralFullNames(_text: string, _spans: Span[]): void {
-    // DISABLED: This pattern matches too many false positives (medical diagnoses,
-    // procedures, etc.) because it just looks for 2-4 capitalized words.
-    // SmartNameFilterSpan handles general name detection with proper validation.
-    return;
-
-    // Original code preserved for reference but not executed:
-    /*
-    const fullNamePattern =
-      /\b([A-Z][a-z]{1,20}(?:\s+[A-Z][a-z]{1,20}){1,3})\b/g;
-
-    let match;
-    while ((match = fullNamePattern.exec(text)) !== null) {
-      const fullMatch = match[0];
-
-      // Skip if whitelisted (medications, medical terms, etc.)
-      if (isWhitelisted(fullMatch)) {
-        continue;
-      }
-
-      // CRITICAL: Check if name starts with a provider title prefix
-      // Names like "Dame Joshua Jung", "Sir John Smith" are provider names
-      const firstWord = fullMatch.split(/\s+/)[0];
-      if (PROVIDER_TITLE_PREFIXES.has(firstWord)) {
-        continue;
-      }
-
-      // CRITICAL: Check if name is PRECEDED by a provider title
-      // "Dr. Hassan Lindberg" -> "Hassan Lindberg" should NOT be redacted
-      const lookbackStart = Math.max(0, match.index - 10);
-      const textBefore = text.substring(lookbackStart, match.index);
-      const titleBeforeMatch = textBefore.match(/\b([A-Za-z]+)\.?\s*$/);
-      if (titleBeforeMatch) {
-        const possibleTitle = titleBeforeMatch[1];
-        let isPrecededByTitle = false;
-        for (const prefix of PROVIDER_TITLE_PREFIXES) {
-          if (possibleTitle.toLowerCase() === prefix.toLowerCase()) {
-            isPrecededByTitle = true;
-            break;
-          }
-        }
-        if (isPrecededByTitle) {
-          continue;
-        }
-      }
-
-      // Basic validation to avoid false positives
-      if (this.looksLikePersonName(fullMatch)) {
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.NAME,
-          confidence: 0.75,
-          priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "General full name (fallback)",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
-      }
-    }
-    */
+    // Intentionally empty - SmartNameFilterSpan handles this with proper validation
   }
-
 }

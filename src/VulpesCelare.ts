@@ -26,6 +26,7 @@ import {
 } from "./core/ParallelRedactionEngine";
 import { SpanBasedFilter } from "./core/SpanBasedFilter";
 import { Span } from "./models/Span";
+import { SpanPool } from "./core/SpanPool";
 import { RedactionContext } from "./context/RedactionContext";
 import {
   ImageRedactor,
@@ -234,6 +235,12 @@ export class VulpesCelare {
     },
   ) {
     this.config = config;
+
+    // Pre-warm span pool for optimal first-request performance
+    // Pool eliminates GC pressure by reusing Span objects
+    if (!SpanPool.isInitialized()) {
+      SpanPool.prewarm(500);
+    }
 
     // Use injected providers or fall back to internal implementations
     if (dependencies?.filterProvider) {

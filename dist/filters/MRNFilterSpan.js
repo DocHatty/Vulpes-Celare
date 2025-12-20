@@ -10,6 +10,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MRNFilterSpan = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class MRNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
@@ -167,23 +168,10 @@ class MRNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "MRN");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
-                return new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: Span_1.FilterType.MRN,
+                return SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, Span_1.FilterType.MRN, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
             });
         }
@@ -201,23 +189,10 @@ class MRNFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                     // Find the position of the value within the full match
                     const valueStart = match.index + fullMatch.indexOf(value);
                     const valueEnd = valueStart + value.length;
-                    const span = new Span_1.Span({
-                        text: value,
-                        originalValue: value,
-                        characterStart: valueStart,
-                        characterEnd: valueEnd,
-                        filterType: Span_1.FilterType.MRN,
+                    const span = SpanFactory_1.SpanFactory.fromPosition(text, valueStart, valueEnd, Span_1.FilterType.MRN, {
                         confidence: 0.9,
                         priority: this.getPriority(),
-                        context: this.extractContext(text, valueStart, valueEnd),
-                        window: [],
-                        replacement: null,
-                        salt: null,
                         pattern: patternDef.description,
-                        applied: false,
-                        ignored: false,
-                        ambiguousWith: [],
-                        disambiguationScore: null,
                     });
                     spans.push(span);
                 }

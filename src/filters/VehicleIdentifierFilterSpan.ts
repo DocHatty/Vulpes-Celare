@@ -13,6 +13,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -30,23 +31,10 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "VEHICLE");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.VEHICLE,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.VEHICLE, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -85,23 +73,10 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
         const matchPos = match.index;
         const vinStart = matchPos + fullMatch.indexOf(vin);
 
-        const span = new Span({
-          text: vin,
-          originalValue: vin,
-          characterStart: vinStart,
-          characterEnd: vinStart + vin.length,
-          filterType: FilterType.VEHICLE,
+        const span = SpanFactory.fromPosition(text, vinStart, vinStart + vin.length, FilterType.VEHICLE, {
           confidence: 0.98,
           priority: this.getPriority(),
-          context: this.extractContext(text, vinStart, vinStart + vin.length),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Labeled VIN",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -149,27 +124,10 @@ export class VehicleIdentifierFilterSpan extends SpanBasedFilter {
         const matchPos = match.index;
         const plateStart = matchPos + fullMatch.indexOf(plate);
 
-        const span = new Span({
-          text: plate,
-          originalValue: plate,
-          characterStart: plateStart,
-          characterEnd: plateStart + plate.length,
-          filterType: FilterType.VEHICLE,
+        const span = SpanFactory.fromPosition(text, plateStart, plateStart + plate.length, FilterType.VEHICLE, {
           confidence: 0.95,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            plateStart,
-            plateStart + plate.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Labeled license plate",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }

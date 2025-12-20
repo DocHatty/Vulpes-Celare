@@ -8,6 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -37,23 +38,11 @@ export class EmailFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "EMAIL");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.EMAIL,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.EMAIL, {
           confidence: d.confidence,
           priority: this.getPriority(),
           context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }

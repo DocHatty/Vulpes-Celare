@@ -8,6 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -185,23 +186,10 @@ export class MRNFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "MRN");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.MRN,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.MRN, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -224,23 +212,10 @@ export class MRNFilterSpan extends SpanBasedFilter {
           const valueStart = match.index! + fullMatch.indexOf(value);
           const valueEnd = valueStart + value.length;
 
-          const span = new Span({
-            text: value,
-            originalValue: value,
-            characterStart: valueStart,
-            characterEnd: valueEnd,
-            filterType: FilterType.MRN,
+          const span = SpanFactory.fromPosition(text, valueStart, valueEnd, FilterType.MRN, {
             confidence: 0.9,
             priority: this.getPriority(),
-            context: this.extractContext(text, valueStart, valueEnd),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: patternDef.description,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }

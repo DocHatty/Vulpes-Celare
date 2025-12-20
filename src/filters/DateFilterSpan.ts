@@ -13,6 +13,7 @@ import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { ValidationUtils } from "../utils/ValidationUtils";
 import { RustScanKernel } from "../utils/RustScanKernel";
+import { SpanFactory } from "../core/SpanFactory";
 
 export class DateFilterSpan extends SpanBasedFilter {
 
@@ -249,23 +250,11 @@ export class DateFilterSpan extends SpanBasedFilter {
     // Only use Rust results if we got actual detections (empty array is truthy!)
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.DATE,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.DATE, {
           confidence: d.confidence,
           priority: this.getPriority(),
           context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -284,7 +273,6 @@ export class DateFilterSpan extends SpanBasedFilter {
 
         while ((match = pattern.exec(source)) !== null) {
           // For normalized text, find the corrupted version in original
-          let originalMatch = match[0];
           let startIndex = match.index;
           let endIndex = match.index + match[0].length;
 
@@ -297,7 +285,6 @@ export class DateFilterSpan extends SpanBasedFilter {
               match.index,
             );
             if (found) {
-              originalMatch = found.text;
               startIndex = found.start;
               endIndex = found.end;
             } else {
@@ -310,25 +297,13 @@ export class DateFilterSpan extends SpanBasedFilter {
           const key = `${startIndex}-${endIndex}`;
           if (seen.has(key)) continue;
 
-          const span = new Span({
-            text: originalMatch,
-            originalValue: originalMatch,
-            characterStart: startIndex,
-            characterEnd: endIndex,
-            filterType: FilterType.DATE,
+          const span = SpanFactory.fromPosition(originalText, startIndex, endIndex, FilterType.DATE, {
             confidence: isNormalized ? 0.85 : 0.95,
             priority: this.getPriority(),
             context: this.extractContext(originalText, startIndex, endIndex),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: isNormalized
               ? "OCR-normalized date"
               : pattern.source.substring(0, 30),
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
           seen.add(key);

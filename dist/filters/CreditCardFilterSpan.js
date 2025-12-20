@@ -10,6 +10,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreditCardFilterSpan = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class CreditCardFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
@@ -60,23 +61,10 @@ class CreditCardFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "CREDITCARD");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
-                return new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: Span_1.FilterType.CREDIT_CARD,
+                return SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, Span_1.FilterType.CREDIT_CARD, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
             });
         }
@@ -94,23 +82,9 @@ class CreditCardFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                         // Labeled format - create span for the card number only
                         const cardStart = match.index + match[0].indexOf(cardNumber);
                         const cardEnd = cardStart + cardNumber.length;
-                        const span = new Span_1.Span({
-                            text: cardNumber.trim(),
-                            originalValue: cardNumber.trim(),
-                            characterStart: cardStart,
-                            characterEnd: cardEnd,
-                            filterType: Span_1.FilterType.CREDIT_CARD,
+                        const span = SpanFactory_1.SpanFactory.fromPosition(text, cardStart, cardEnd, Span_1.FilterType.CREDIT_CARD, {
                             confidence: 0.95,
                             priority: this.getPriority(),
-                            context: this.extractContext(text, cardStart, cardEnd),
-                            window: [],
-                            replacement: null,
-                            salt: null,
-                            pattern: null,
-                            applied: false,
-                            ignored: false,
-                            ambiguousWith: [],
-                            disambiguationScore: null,
                         });
                         spans.push(span);
                     }

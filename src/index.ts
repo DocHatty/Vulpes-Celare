@@ -46,6 +46,7 @@ export {
 } from "./core/ParallelRedactionEngine";
 export { SpanBasedFilter, FilterPriority } from "./core/SpanBasedFilter";
 export { SpanFactory, SpanCreateOptions } from "./core/SpanFactory";
+export { SpanPool, SpanPoolStats, SpanPoolConfig } from "./core/SpanPool";
 export { FilterAdapter } from "./core/FilterAdapter";
 export {
   FieldContextDetector,

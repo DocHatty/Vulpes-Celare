@@ -22,6 +22,7 @@ export { default } from "./VulpesCelare";
 export { ParallelRedactionEngine, ParallelRedactionResult, RedactionExecutionReport, FilterExecutionResult, } from "./core/ParallelRedactionEngine";
 export { SpanBasedFilter, FilterPriority } from "./core/SpanBasedFilter";
 export { SpanFactory, SpanCreateOptions } from "./core/SpanFactory";
+export { SpanPool, SpanPoolStats, SpanPoolConfig } from "./core/SpanPool";
 export { FilterAdapter } from "./core/FilterAdapter";
 export { FieldContextDetector, FieldContext, } from "./core/FieldContextDetector";
 export { PostFilterService, IPostFilterStrategy, } from "./core/filters/PostFilterService";

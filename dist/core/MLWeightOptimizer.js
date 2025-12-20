@@ -22,8 +22,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mlWeightOptimizer = exports.MLWeightOptimizer = void 0;
-const Span_1 = require("../models/Span");
 const WeightedPHIScorer_1 = require("./WeightedPHIScorer");
+const SpanFactory_1 = require("./SpanFactory");
 /**
  * MLWeightOptimizer - Main optimization class
  */
@@ -143,23 +143,9 @@ class MLWeightOptimizer {
         for (const doc of documents) {
             for (const label of doc.groundTruth) {
                 // Create a mock span for scoring
-                const mockSpan = new Span_1.Span({
-                    text: label.text,
-                    originalValue: label.text,
-                    characterStart: label.start,
-                    characterEnd: label.end,
-                    filterType: label.filterType,
+                const mockSpan = SpanFactory_1.SpanFactory.fromPosition(doc.text, label.start, label.end, label.filterType, {
                     confidence: 0.5, // Neutral starting confidence
                     priority: 50,
-                    context: '',
-                    window: [],
-                    replacement: null,
-                    salt: null,
-                    pattern: null,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 // Get context around the span
                 const contextStart = Math.max(0, label.start - 100);

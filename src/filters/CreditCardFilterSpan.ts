@@ -8,6 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -71,23 +72,10 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
     );
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.CREDIT_CARD,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.CREDIT_CARD, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -110,23 +98,9 @@ export class CreditCardFilterSpan extends SpanBasedFilter {
             const cardStart = match.index! + match[0].indexOf(cardNumber);
             const cardEnd = cardStart + cardNumber.length;
 
-            const span = new Span({
-              text: cardNumber.trim(),
-              originalValue: cardNumber.trim(),
-              characterStart: cardStart,
-              characterEnd: cardEnd,
-              filterType: FilterType.CREDIT_CARD,
+            const span = SpanFactory.fromPosition(text, cardStart, cardEnd, FilterType.CREDIT_CARD, {
               confidence: 0.95,
               priority: this.getPriority(),
-              context: this.extractContext(text, cardStart, cardEnd),
-              window: [],
-              replacement: null,
-              salt: null,
-              pattern: null,
-              applied: false,
-              ignored: false,
-              ambiguousWith: [],
-              disambiguationScore: null,
             });
             spans.push(span);
           } else {

@@ -28,6 +28,7 @@ exports.getTypeScriptOnlyTypes = getTypeScriptOnlyTypes;
 const binding_1 = require("../native/binding");
 const Span_1 = require("../models/Span");
 const RustAccelConfig_1 = require("../config/RustAccelConfig");
+const SpanFactory_1 = require("../core/SpanFactory");
 // Cache the native binding
 let cachedBinding = undefined;
 function getBinding() {
@@ -86,25 +87,10 @@ function scanAllWithRust(text) {
  */
 function detectionsToSpans(detections, fullText) {
     return detections.map((d) => {
-        const contextStart = Math.max(0, d.characterStart - 50);
-        const contextEnd = Math.min(fullText.length, d.characterEnd + 50);
-        return new Span_1.Span({
-            text: d.text,
-            originalValue: d.text,
-            characterStart: d.characterStart,
-            characterEnd: d.characterEnd,
-            filterType: d.filterType,
+        return SpanFactory_1.SpanFactory.fromPosition(fullText, d.characterStart, d.characterEnd, d.filterType, {
             confidence: d.confidence,
             priority: d.source === "rust" ? 80 : 70, // Rust detections get slightly higher priority
-            context: fullText.substring(contextStart, contextEnd),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: `${d.source}:${d.pattern}`,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
         });
     });
 }

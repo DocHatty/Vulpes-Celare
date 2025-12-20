@@ -9,6 +9,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { NameDictionary } from "../dictionaries/NameDictionary";
@@ -85,23 +86,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
           (!needsStrictValidation || this.validateLastFirst(fullName))
         ) {
           spans.push(
-            new Span({
-              text: fullName,
-              originalValue: fullName,
-              characterStart: start,
-              characterEnd: end,
-              filterType: FilterType.NAME,
+            SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
               confidence: d.confidence,
               priority: this.getPriority(),
               context: this.getContext(text, start, end - start),
-              window: [],
-              replacement: null,
-              salt: null,
               pattern: d.pattern,
-              applied: false,
-              ignored: false,
-              ambiguousWith: [],
-              disambiguationScore: null,
             }),
           );
         }
@@ -132,23 +121,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
           this.isLikelyPersonName(fullName, text)
         ) {
           spans.push(
-            new Span({
-              text: fullName,
-              originalValue: fullName,
-              characterStart: start,
-              characterEnd: end,
-              filterType: FilterType.NAME,
+            SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
               confidence: d.confidence,
               priority: this.getPriority(),
               context: this.getContext(text, start, end - start),
-              window: [],
-              replacement: null,
-              salt: null,
               pattern: d.pattern,
-              applied: false,
-              ignored: false,
-              ambiguousWith: [],
-              disambiguationScore: null,
             }),
           );
         }
@@ -163,12 +140,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
           this.isLikelyPersonName(fullName, text)
         ) {
           spans.push(
-            new Span({
-              text: fullName,
-              originalValue: fullName,
-              characterStart: d.characterStart,
-              characterEnd: d.characterEnd,
-              filterType: FilterType.NAME,
+            SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.NAME, {
               confidence: d.confidence,
               priority: this.getPriority(),
               context: this.getContext(
@@ -176,14 +148,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
                 d.characterStart,
                 d.characterEnd - d.characterStart,
               ),
-              window: [],
-              replacement: null,
-              salt: null,
               pattern: d.pattern,
-              applied: false,
-              ignored: false,
-              ambiguousWith: [],
-              disambiguationScore: null,
             }),
           );
         }
@@ -378,23 +343,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
           const nameStart = matchPos + prefixMatch[0].length;
           const nameEnd = nameStart + name.length;
 
-          const span = new Span({
-            text: name,
-            originalValue: name,
-            characterStart: nameStart,
-            characterEnd: nameEnd,
-            filterType: FilterType.NAME,
+          const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
             confidence: 0.92,
             priority: this.getPriority(),
             context: this.getContext(text, matchPos, fullMatch.length),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Patient name",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }
@@ -445,23 +398,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
           const nameStart = matchPos + fullMatch.indexOf(name);
           const nameEnd = nameStart + name.length;
 
-          const span = new Span({
-            text: name,
-            originalValue: name,
-            characterStart: nameStart,
-            characterEnd: nameEnd,
-            filterType: FilterType.NAME,
+          const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
             confidence: 0.92,
             priority: this.getPriority(),
             context: this.getContext(text, matchPos, fullMatch.length),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Patient all caps",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }
@@ -528,23 +469,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         const nameStart = matchPos + fullMatch.indexOf(name);
         const nameEnd = nameStart + name.length;
 
-        const span = new Span({
-          text: name.trim(),
-          originalValue: name.trim(),
-          characterStart: nameStart,
-          characterEnd: nameEnd,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
           confidence: 0.9,
           priority: this.getPriority(),
           context: this.getContext(text, matchPos, fullMatch.length),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Family member",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -561,23 +490,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         const nameStart = matchPos + fullMatch.indexOf(name);
         const nameEnd = nameStart + name.length;
 
-        const span = new Span({
-          text: name.trim(),
-          originalValue: name.trim(),
-          characterStart: nameStart,
-          characterEnd: nameEnd,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
           confidence: 0.92, // High confidence for explicitly labeled nicknames
           priority: this.getPriority(),
           context: this.getContext(text, matchPos, fullMatch.length),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Nickname/Preferred name",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -658,23 +575,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const nameStart = nameStartPos;
       const nameEnd = nameEndPos;
 
-      const span = new Span({
-        text: name,
-        originalValue: name,
-        characterStart: nameStart,
-        characterEnd: nameEnd,
-        filterType: FilterType.NAME,
+      const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
         confidence: 0.92, // Higher confidence for suffix-qualified names
         priority: this.getPriority(),
         context: this.getContext(text, nameStart, fullMatch.length),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Name with suffix",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -704,23 +609,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const nameStart = matchPos + fullMatch.indexOf(name);
       const nameEnd = nameStart + name.length;
 
-      const span = new Span({
-        text: name,
-        originalValue: name,
-        characterStart: nameStart,
-        characterEnd: nameEnd,
-        filterType: FilterType.NAME,
+      const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
         confidence: 0.91,
         priority: this.getPriority(),
         context: this.getContext(text, matchPos, fullMatch.length),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Age/gender descriptor",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -738,23 +631,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const name = match[1];
       if (this.isLikelyName(name)) {
         const matchPos = match.index!;
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: matchPos,
-          characterEnd: matchPos + name.length,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, matchPos, matchPos + name.length, FilterType.NAME, {
           confidence: 0.87,
           priority: this.getPriority(),
           context: this.getContext(text, matchPos, name.length),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Possessive name",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -813,23 +694,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         if (this.isLikelyOcrName(normalized, text, match.index)) {
           // Check against whitelist
           if (!this.isWhitelisted(fullName, text)) {
-            const span = new Span({
-              text: fullName,
-              originalValue: fullName,
-              characterStart: match.index,
-              characterEnd: match.index + fullName.length,
-              filterType: FilterType.NAME,
+            const span = SpanFactory.fromPosition(text, match.index, match.index + fullName.length, FilterType.NAME, {
               confidence: patternObj.confidence,
               priority: this.getPriority(),
               context: this.getContext(text, match.index, fullName.length),
-              window: [],
-              replacement: null,
-              salt: null,
               pattern: `Last, First OCR (${patternObj.note})`,
-              applied: false,
-              ignored: false,
-              ambiguousWith: [],
-              disambiguationScore: null,
             });
             spans.push(span);
           }
@@ -909,23 +778,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         // Check against whitelist
         if (this.isWhitelisted(fullName, text)) continue;
 
-        const span = new Span({
-          text: fullName,
-          originalValue: fullName,
-          characterStart: match.index,
-          characterEnd: match.index + fullName.length,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullName.length, FilterType.NAME, {
           confidence: confidence,
           priority: this.getPriority(),
           context: this.getContext(text, match.index, fullName.length),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: `Chaos Last, First (${patternObj.note})`,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);
@@ -1098,23 +955,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       }
 
       const nameStart = match.index + match[0].indexOf(rawName);
-      const span = new Span({
-        text: rawName,
-        originalValue: rawName,
-        characterStart: nameStart,
-        characterEnd: nameStart + rawName.length,
-        filterType: FilterType.NAME,
+      const span = SpanFactory.fromPosition(text, nameStart, nameStart + rawName.length, FilterType.NAME, {
         confidence: 0.91,
         priority: this.getPriority(),
         context: this.getContext(text, nameStart, rawName.length),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Labeled noisy name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
 
       spans.push(span);
@@ -1239,23 +1084,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       }
 
       if (!this.isWhitelisted(name, text)) {
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: match.index,
-          characterEnd: match.index + name.length,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + name.length, FilterType.NAME, {
           confidence: 0.9,
           priority: this.getPriority(),
           context: this.getContext(text, match.index, name.length),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Hyphenated name",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -1286,23 +1119,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         }
 
         if (!this.isWhitelisted(name, text)) {
-          const span = new Span({
-            text: name,
-            originalValue: name,
-            characterStart: match.index,
-            characterEnd: match.index + name.length,
-            filterType: FilterType.NAME,
+          const span = SpanFactory.fromPosition(text, match.index, match.index + name.length, FilterType.NAME, {
             confidence: 0.92,
             priority: this.getPriority(),
             context: this.getContext(text, match.index, name.length),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Apostrophe/prefix name",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }
@@ -1339,23 +1160,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
           words.length <= 3 &&
           !this.isWhitelisted(name, text)
         ) {
-          const span = new Span({
-            text: name,
-            originalValue: name,
-            characterStart: match.index,
-            characterEnd: match.index + name.length,
-            filterType: FilterType.NAME,
+          const span = SpanFactory.fromPosition(text, match.index, match.index + name.length, FilterType.NAME, {
             confidence: 0.88,
             priority: this.getPriority(),
             context: this.getContext(text, match.index, name.length),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Accented/international name",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }
@@ -1386,23 +1195,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       }
 
       if (!this.isWhitelisted(name, text)) {
-        const span = new Span({
-          text: name,
-          originalValue: name,
-          characterStart: match.index,
-          characterEnd: match.index + name.length,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + name.length, FilterType.NAME, {
           confidence: 0.89,
           priority: this.getPriority(),
           context: this.getContext(text, match.index, name.length),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Name with particle",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -1438,24 +1235,12 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const nameStart = match.index + fullMatch.indexOf(name);
       const nameEnd = nameStart + name.length;
 
-      const span = new Span({
-        text: name,
-        originalValue: name,
-        characterStart: nameStart,
-        characterEnd: nameEnd,
-        filterType: FilterType.NAME,
+      const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
         confidence: 0.91,
         // High priority - team member context confirms this is a person
         priority: 150,
         context: this.getContext(text, match.index, fullMatch.length),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Team member name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -1475,23 +1260,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       const nameStart = match.index + fullMatch.indexOf(name);
       const nameEnd = nameStart + name.length;
 
-      const span = new Span({
-        text: name,
-        originalValue: name,
-        characterStart: nameStart,
-        characterEnd: nameEnd,
-        filterType: FilterType.NAME,
+      const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
         confidence: 0.92,
         priority: 150,
         context: this.getContext(text, match.index, fullMatch.length),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Family present name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -1595,12 +1368,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         const normalized = capturedName.toLowerCase();
         if (this.isObviousNonName(normalized)) continue;
 
-        const span = new Span({
-          text: capturedName,
-          originalValue: capturedName,
-          characterStart: nameStart,
-          characterEnd: nameEnd,
-          filterType: FilterType.NAME,
+        const span = SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
           confidence: confidence,
           priority: 160, // High priority - label context is strong signal
           context: this.getContext(
@@ -1608,14 +1376,7 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
             match.index,
             match[0].length + capturedName.length,
           ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: `Chaos-aware labeled (quality: ${chaosAnalysis.quality})`,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);
@@ -1728,23 +1489,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
 
         // Don't overlap with existing spans
         if (!this.overlapsExisting(start, end, spans)) {
-          const span = new Span({
-            text: fullMatch,
-            originalValue: fullMatch,
-            characterStart: start,
-            characterEnd: end,
-            filterType: FilterType.NAME,
+          const span = SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
             confidence: 0.95, // High confidence when both parts in dictionary
             priority: this.getPriority(),
             context: this.getContext(text, start, fullMatch.length),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Concatenated names (OCR: missing space)",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }
@@ -1755,23 +1504,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
         const end = start + fullMatch.length;
 
         if (!this.overlapsExisting(start, end, spans)) {
-          const span = new Span({
-            text: fullMatch,
-            originalValue: fullMatch,
-            characterStart: start,
-            characterEnd: end,
-            filterType: FilterType.NAME,
+          const span = SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
             confidence: 0.75, // Medium confidence
             priority: this.getPriority(),
             context: this.getContext(text, start, fullMatch.length),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Concatenated names (possible OCR: missing space)",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }
@@ -1876,23 +1613,11 @@ export class SmartNameFilterSpan extends SpanBasedFilter {
       if (this.isWhitelisted(normalized1, text)) continue;
       if (this.isWhitelisted(normalized2, text)) continue;
 
-      const span = new Span({
-        text: candidate,
-        originalValue: candidate,
-        characterStart: start,
-        characterEnd: end,
-        filterType: FilterType.NAME,
+      const span = SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
         confidence: confidence,
         priority: this.getPriority(),
         context: this.getContext(text, start, candidate.length),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "OCR-corrupted name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }

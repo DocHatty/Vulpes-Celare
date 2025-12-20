@@ -24,6 +24,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnifiedNameDetector = exports.POSSESSIVE_NAME_PATTERN = exports.ALL_CAPS_NAME_PATTERN = exports.AGE_GENDER_PATTERNS = exports.NAME_SUFFIXES = exports.PATIENT_PREFIXES = exports.FAMILY_RELATIONSHIP_PREFIXES = void 0;
 exports.detectUnifiedNames = detectUnifiedNames;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 /**
  * Patterns for family relationship prefixes
@@ -357,23 +358,10 @@ class UnifiedNameDetector {
      * @returns Array of Span objects
      */
     static toSpans(detections, text) {
-        return detections.map((det) => new Span_1.Span({
-            text: det.text,
-            originalValue: det.text,
-            characterStart: det.start,
-            characterEnd: det.end,
-            filterType: det.filterType,
+        return detections.map((det) => SpanFactory_1.SpanFactory.fromPosition(text, det.start, det.end, det.filterType, {
             confidence: det.confidence,
             priority: det.priority,
-            context: text.substring(Math.max(0, det.start - 50), Math.min(text.length, det.end + 50)),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: det.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
         }));
     }
 }

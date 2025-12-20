@@ -11,6 +11,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FormattedNameFilterSpan = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const NameDictionary_1 = require("../dictionaries/NameDictionary");
 const NameFilterConstants_1 = require("./constants/NameFilterConstants");
@@ -127,23 +128,10 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             if (covered.has(posKey))
                 continue;
             covered.add(posKey);
-            spans.push(new Span_1.Span({
-                text: text.substring(start, end),
-                originalValue: text.substring(start, end),
-                characterStart: start,
-                characterEnd: end,
-                filterType: Span_1.FilterType.NAME,
+            spans.push(SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.NAME, {
                 confidence: 0.98,
                 priority: 180,
-                context: this.extractContext(text, start, end),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Labeled name field",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
             }));
         }
     }
@@ -183,27 +171,13 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             // NOT be blocked just because "Ann" is in Ann Arbor staging.
             if (!this.isWhitelistedLastFirst(fullName) &&
                 this.validateLastFirst(fullName)) {
-                const span = new Span_1.Span({
-                    text: fullName,
-                    originalValue: fullName,
-                    characterStart: match.index,
-                    characterEnd: match.index + fullName.length,
-                    filterType: Span_1.FilterType.NAME,
+                // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
+                // "Last, First [Middle]" format is highly specific to person names
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + fullName.length, Span_1.FilterType.NAME, {
                     confidence: 0.93,
-                    // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
-                    // "Last, First [Middle]" format is highly specific to person names
                     priority: 150,
-                    context: this.extractContext(text, match.index, match.index + fullName.length),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Last, First format",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
-                });
-                spans.push(span);
+                }));
             }
         }
         // OCR variant: comma with space before it "Garcia ,Charles"
@@ -214,26 +188,12 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             const normalized = `${match[1]}, ${match[2]}`;
             if (!this.isWhitelistedLastFirst(normalized) &&
                 this.validateLastFirst(normalized)) {
-                const span = new Span_1.Span({
-                    text: fullName,
-                    originalValue: fullName,
-                    characterStart: match.index,
-                    characterEnd: match.index + fullName.length,
-                    filterType: Span_1.FilterType.NAME,
+                // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + fullName.length, Span_1.FilterType.NAME, {
                     confidence: 0.9,
-                    // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
                     priority: 150,
-                    context: this.extractContext(text, match.index, match.index + fullName.length),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Last, First format (spacing variant)",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
-                });
-                spans.push(span);
+                }));
             }
         }
         // ALL CAPS: SMITH, JOHN or NAKAMURA, YUKI
@@ -253,27 +213,13 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                     !(0, NameFilterConstants_1.isExcludedAllCaps)(firstName) &&
                     !this.isWhitelisted(fullName, true, text) // STREET-SMART: use ALL CAPS mode with context
                 ) {
-                    const span = new Span_1.Span({
-                        text: fullName,
-                        originalValue: fullName,
-                        characterStart: match.index,
-                        characterEnd: match.index + fullName.length,
-                        filterType: Span_1.FilterType.NAME,
+                    // STREET-SMART: High priority for ALL CAPS LAST, FIRST format
+                    // This format is almost always a patient name in medical documents
+                    spans.push(SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + fullName.length, Span_1.FilterType.NAME, {
                         confidence: 0.91,
-                        // STREET-SMART: High priority for ALL CAPS LAST, FIRST format
-                        // This format is almost always a patient name in medical documents
                         priority: 150,
-                        context: this.extractContext(text, match.index, match.index + fullName.length),
-                        window: [],
-                        replacement: null,
-                        salt: null,
                         pattern: "Last, First ALL CAPS format",
-                        applied: false,
-                        ignored: false,
-                        ambiguousWith: [],
-                        disambiguationScore: null,
-                    });
-                    spans.push(span);
+                    }));
                 }
             }
         }
@@ -342,25 +288,11 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 firstName.length >= 2 &&
                 !this.isWhitelisted(fullName, false, text) &&
                 this.validateLastFirst(fullName)) {
-                const span = new Span_1.Span({
-                    text: fullName,
-                    originalValue: fullName,
-                    characterStart: match.index,
-                    characterEnd: match.index + fullName.length,
-                    filterType: Span_1.FilterType.NAME,
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + fullName.length, Span_1.FilterType.NAME, {
                     confidence: 0.85, // Lower confidence for non-standard case
                     priority: 140, // High priority for Last, First format
-                    context: this.extractContext(text, match.index, match.index + fullName.length),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Last, First case-insensitive",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
-                });
-                spans.push(span);
+                }));
                 coveredPositions.add(posKey);
             }
         }
@@ -579,23 +511,10 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 }
             }
             if (!this.isWhitelistedLastFirst(fullName)) {
-                spans.push(new Span_1.Span({
-                    text: fullName,
-                    originalValue: fullName,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.NAME,
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.NAME, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 }));
             }
         }
@@ -627,23 +546,10 @@ class FormattedNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             }
             if (!this.isWhitelisted(fullName, false, text) &&
                 this.isLikelyPersonName(fullName)) {
-                spans.push(new Span_1.Span({
-                    text: fullName,
-                    originalValue: fullName,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.NAME,
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.NAME, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 }));
             }
         }

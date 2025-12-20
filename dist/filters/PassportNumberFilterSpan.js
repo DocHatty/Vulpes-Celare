@@ -15,8 +15,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PassportNumberFilterSpan = void 0;
-const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
+const SpanFactory_1 = require("../core/SpanFactory");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class PassportNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     /**
@@ -59,23 +59,10 @@ class PassportNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "PASSPORT");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
-                return new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: "PASSPORT",
+                return SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, "PASSPORT", {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
             });
         }
@@ -217,24 +204,11 @@ class PassportNumberFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     /**
      * Create a passport span
      */
-    createPassportSpan(text, value, start, end, confidence, patternName) {
-        return new Span_1.Span({
-            text: value,
-            originalValue: value,
-            characterStart: start,
-            characterEnd: end,
-            filterType: "PASSPORT",
+    createPassportSpan(text, _value, start, end, confidence, patternName) {
+        return SpanFactory_1.SpanFactory.fromPosition(text, start, end, "PASSPORT", {
             confidence: confidence,
             priority: this.getPriority(),
-            context: this.extractContext(text, start, end),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: patternName,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
         });
     }
 }

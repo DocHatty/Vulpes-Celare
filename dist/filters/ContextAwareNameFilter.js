@@ -19,6 +19,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextAwareNameFilter = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const ClinicalContextDetector_1 = require("../context/ClinicalContextDetector");
 const NameDictionary_1 = require("../dictionaries/NameDictionary");
@@ -144,23 +145,10 @@ class ContextAwareNameFilter extends SpanBasedFilter_1.SpanBasedFilter {
                 const baseConfidence = 0.75;
                 const contextBoost = ClinicalContextDetector_1.ClinicalContextDetector.getContextConfidenceBoost(text, start, name.length);
                 const confidence = Math.min(0.95, baseConfidence + contextBoost);
-                const span = new Span_1.Span({
-                    text: name,
-                    originalValue: name,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.NAME,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.NAME, {
                     confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: `Diverse name (${contextResult.strength} context)`,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }
@@ -195,23 +183,10 @@ class ContextAwareNameFilter extends SpanBasedFilter_1.SpanBasedFilter {
                 const baseConfidence = 0.85;
                 const contextBoost = ClinicalContextDetector_1.ClinicalContextDetector.getContextConfidenceBoost(text, start, name.length);
                 const confidence = Math.min(0.95, baseConfidence + contextBoost);
-                const span = new Span_1.Span({
-                    text: name,
-                    originalValue: name,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.NAME,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.NAME, {
                     confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Hyphenated name",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }
@@ -228,30 +203,16 @@ class ContextAwareNameFilter extends SpanBasedFilter_1.SpanBasedFilter {
             while ((match = pattern.exec(text)) !== null) {
                 const name = match[1]; // Name portion without suffix
                 const start = match.index;
-                const end = start + match[0].length;
                 // Skip if medical term
                 if ((0, UnifiedMedicalWhitelist_1.isMedicalTerm)(name) || (0, UnifiedMedicalWhitelist_1.isNonPHI)(name)) {
                     continue;
                 }
                 // Suffix is strong signal, minimal context needed
                 const confidence = 0.9;
-                const span = new Span_1.Span({
-                    text: name,
-                    originalValue: name,
-                    characterStart: start,
-                    characterEnd: start + name.length,
-                    filterType: Span_1.FilterType.NAME,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, start, start + name.length, Span_1.FilterType.NAME, {
                     confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Name with suffix",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }
@@ -303,23 +264,10 @@ class ContextAwareNameFilter extends SpanBasedFilter_1.SpanBasedFilter {
             }
             // Label provides strong context
             const confidence = 0.88;
-            const span = new Span_1.Span({
-                text: name,
-                originalValue: name,
-                characterStart: start,
-                characterEnd: end,
-                filterType: Span_1.FilterType.NAME,
+            const span = SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.NAME, {
                 confidence,
                 priority: this.getPriority(),
-                context: this.extractContext(text, start, end),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Labeled single name",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
             });
             spans.push(span);
         }

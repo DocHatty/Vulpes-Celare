@@ -8,6 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { shouldWhitelist } from "../utils/UnifiedMedicalWhitelist";
@@ -78,27 +79,10 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
       );
       for (const d of titledPatterns) {
         spans.push(
-          new Span({
-            text: d.text,
-            originalValue: d.text,
-            characterStart: d.characterStart,
-            characterEnd: d.characterEnd,
-            filterType: FilterType.PROVIDER_NAME,
+          SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.PROVIDER_NAME, {
             confidence: d.confidence,
             priority: this.getPriority(),
-            context: this.extractContext(
-              text,
-              d.characterStart,
-              d.characterEnd,
-            ),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: d.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           }),
         );
       }
@@ -145,25 +129,13 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
       const nameStart = matchPos + fullMatch.lastIndexOf(name);
       const nameEnd = nameStart + name.length;
 
-      const span = new Span({
-        text: name,
-        originalValue: name,
-        characterStart: nameStart,
-        characterEnd: nameEnd,
-        filterType: FilterType.PROVIDER_NAME,
-        confidence: 0.92,
-        priority: 150,
-        context: this.extractContext(text, nameStart, nameEnd),
-        window: [],
-        replacement: null,
-        salt: null,
-        pattern: "Provider role name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
-      });
-      spans.push(span);
+      spans.push(
+        SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.PROVIDER_NAME, {
+          confidence: 0.92,
+          priority: 150,
+          pattern: "Provider role name",
+        }),
+      );
     }
   }
 
@@ -224,29 +196,13 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
         continue;
       }
 
-      const span = new Span({
-        text: matchedText,
-        originalValue: matchedText,
-        characterStart: match.index,
-        characterEnd: match.index + matchedText.length,
-        filterType: FilterType.PROVIDER_NAME,
-        confidence: 0.92,
-        priority: 150,
-        context: this.extractContext(
-          text,
-          match.index,
-          match.index + matchedText.length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
-        pattern: "Titled provider name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
-      });
-      spans.push(span);
+      spans.push(
+        SpanFactory.fromPosition(text, match.index, match.index + matchedText.length, FilterType.PROVIDER_NAME, {
+          confidence: 0.92,
+          priority: 150,
+          pattern: "Titled provider name",
+        }),
+      );
     }
   }
 
@@ -327,29 +283,13 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
       const matchedText = match[0];
 
       if (!this.isWhitelisted(matchedText)) {
-        const span = new Span({
-          text: matchedText,
-          originalValue: matchedText,
-          characterStart: match.index,
-          characterEnd: match.index + matchedText.length,
-          filterType: FilterType.PROVIDER_NAME,
-          confidence: 0.95,
-          priority: 155, // Higher priority for more complete matches
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + matchedText.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Titled provider name with credentials",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+        spans.push(
+          SpanFactory.fromPosition(text, match.index, match.index + matchedText.length, FilterType.PROVIDER_NAME, {
+            confidence: 0.95,
+            priority: 155, // Higher priority for more complete matches
+            pattern: "Titled provider name with credentials",
+          }),
+        );
       }
     }
   }
@@ -412,27 +352,15 @@ export class TitledNameFilterSpan extends SpanBasedFilter {
       const nameStart = matchPos + fullMatch.indexOf(name);
       const nameEnd = nameStart + name.length;
 
-      const span = new Span({
-        text: name.trim(),
-        originalValue: name.trim(),
-        characterStart: nameStart,
-        characterEnd: nameEnd,
-        filterType: FilterType.NAME,
-        confidence: 0.92,
-        // STREET-SMART: High priority (150+) = protected from vocabulary filtering
-        // Family relationship context is strong evidence this is a person name
-        priority: 150,
-        context: this.extractContext(text, nameStart, nameEnd),
-        window: [],
-        replacement: null,
-        salt: null,
-        pattern: "Family relationship name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
-      });
-      spans.push(span);
+      // STREET-SMART: High priority (150+) = protected from vocabulary filtering
+      // Family relationship context is strong evidence this is a person name
+      spans.push(
+        SpanFactory.fromPosition(text, nameStart, nameEnd, FilterType.NAME, {
+          confidence: 0.92,
+          priority: 150,
+          pattern: "Family relationship name",
+        }),
+      );
     }
   }
 

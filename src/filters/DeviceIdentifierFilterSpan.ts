@@ -14,6 +14,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -51,23 +52,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "DEVICE");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.DEVICE,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.DEVICE, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -115,27 +103,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
         const matchPos = match.index;
         const idStart = matchPos + fullMatch.indexOf(deviceID);
 
-        const span = new Span({
-          text: deviceID,
-          originalValue: deviceID,
-          characterStart: idStart,
-          characterEnd: idStart + deviceID.length,
-          filterType: FilterType.DEVICE,
+        const span = SpanFactory.fromPosition(text, idStart, idStart + deviceID.length, FilterType.DEVICE, {
           confidence: 0.95,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            idStart,
-            idStart + deviceID.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Device with serial/ID",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -163,27 +134,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
       ) {
         const idStart = matchPos + fullMatch.indexOf(modelNumber);
 
-        const span = new Span({
-          text: modelNumber,
-          originalValue: modelNumber,
-          characterStart: idStart,
-          characterEnd: idStart + modelNumber.length,
-          filterType: FilterType.DEVICE,
+        const span = SpanFactory.fromPosition(text, idStart, idStart + modelNumber.length, FilterType.DEVICE, {
           confidence: 0.9,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            idStart,
-            idStart + modelNumber.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Model number (medical context)",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -213,27 +167,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
       ) {
         const idStart = matchPos + fullMatch.indexOf(serialNumber);
 
-        const span = new Span({
-          text: serialNumber,
-          originalValue: serialNumber,
-          characterStart: idStart,
-          characterEnd: idStart + serialNumber.length,
-          filterType: FilterType.DEVICE,
+        const span = SpanFactory.fromPosition(text, idStart, idStart + serialNumber.length, FilterType.DEVICE, {
           confidence: 0.88,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            idStart,
-            idStart + serialNumber.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Serial number (medical context)",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -256,27 +193,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
         if (/[A-Z]/i.test(serialNumber) && /\d/.test(serialNumber)) {
           const idStart = matchPos + fullMatch.indexOf(serialNumber);
 
-          const span = new Span({
-            text: serialNumber,
-            originalValue: serialNumber,
-            characterStart: idStart,
-            characterEnd: idStart + serialNumber.length,
-            filterType: FilterType.DEVICE,
+          const span = SpanFactory.fromPosition(text, idStart, idStart + serialNumber.length, FilterType.DEVICE, {
             confidence: 0.85,
             priority: this.getPriority(),
-            context: this.extractContext(
-              text,
-              idStart,
-              idStart + serialNumber.length,
-            ),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Short serial number (medical context)",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }
@@ -301,27 +221,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
         this.isInMedicalContext(text, matchPos, implantCode.length) &&
         this.isValidDeviceIdentifier(implantCode)
       ) {
-        const span = new Span({
-          text: implantCode,
-          originalValue: implantCode,
-          characterStart: matchPos,
-          characterEnd: matchPos + implantCode.length,
-          filterType: FilterType.DEVICE,
+        const span = SpanFactory.fromPosition(text, matchPos, matchPos + implantCode.length, FilterType.DEVICE, {
           confidence: 0.85,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            matchPos,
-            matchPos + implantCode.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Implant date code",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -441,27 +344,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
 
       // Must have at least one numeric component
       if (/\d/.test(deviceId)) {
-        const span = new Span({
-          text: deviceId,
-          originalValue: deviceId,
-          characterStart: match.index,
-          characterEnd: match.index + deviceId.length,
-          filterType: FilterType.DEVICE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + deviceId.length, FilterType.DEVICE, {
           confidence: 0.92,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + deviceId.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Manufacturer serial",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -515,27 +401,10 @@ export class DeviceIdentifierFilterSpan extends SpanBasedFilter {
 
       // Must contain digits
       if (/\d/.test(deviceId)) {
-        const span = new Span({
-          text: deviceId,
-          originalValue: deviceId,
-          characterStart: match.index,
-          characterEnd: match.index + deviceId.length,
-          filterType: FilterType.DEVICE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + deviceId.length, FilterType.DEVICE, {
           confidence: 0.88,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + deviceId.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Device prefix serial",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }

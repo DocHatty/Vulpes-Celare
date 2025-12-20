@@ -18,6 +18,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { ClinicalContextDetector } from "../context/ClinicalContextDetector";
 import { isMedicalTerm, isNonPHI } from "../utils/UnifiedMedicalWhitelist";
@@ -278,23 +279,10 @@ export class ContextAwareAddressFilter extends SpanBasedFilter {
         ) * 0.5;
         confidence = Math.min(0.95, confidence);
 
-        const span = new Span({
-          text: matchText,
-          originalValue: matchText,
-          characterStart: start,
-          characterEnd: end,
-          filterType: FilterType.ADDRESS,
+        const span = SpanFactory.fromPosition(text, start, end, FilterType.ADDRESS, {
           confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, start, end),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: patternDef.description,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);
@@ -348,23 +336,10 @@ export class ContextAwareAddressFilter extends SpanBasedFilter {
             )
         );
 
-        const span = new Span({
-          text: cityName,
-          originalValue: cityName,
-          characterStart: start,
-          characterEnd: end,
-          filterType: FilterType.ADDRESS,
+        const span = SpanFactory.fromPosition(text, start, end, FilterType.ADDRESS, {
           confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, start, end),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: patternDef.description,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);

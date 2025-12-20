@@ -43,6 +43,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParallelRedactionEngine = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("./SpanFactory");
 const RadiologyLogger_1 = require("../utils/RadiologyLogger");
 const WindowService_1 = require("../services/WindowService");
 const ConfidenceModifierService_1 = require("../services/ConfidenceModifierService");
@@ -64,11 +65,27 @@ const ContextualConfidenceModifier_1 = require("./ContextualConfidenceModifier")
 const MultiPatternScanner_1 = require("../dfa/MultiPatternScanner");
 const PipelineTracer_1 = require("../diagnostics/PipelineTracer");
 const NameDetectionCoordinator_1 = require("../filters/name-patterns/NameDetectionCoordinator");
+const SemanticRedactionCache_1 = require("../cache/SemanticRedactionCache");
+const crypto_1 = require("crypto");
+const plugins_1 = require("../plugins");
 /**
  * Check if Cortex ML enhancement is enabled via environment variable
  */
 function isCortexEnabled() {
     return process.env.VULPES_USE_CORTEX === "1";
+}
+/**
+ * Check if semantic caching is enabled via environment variable
+ */
+function isSemanticCacheEnabled() {
+    return process.env.VULPES_SEMANTIC_CACHE !== "0"; // Enabled by default
+}
+/**
+ * Compute policy hash for cache key
+ */
+function computePolicyHash(policy) {
+    const policyStr = JSON.stringify(policy || {});
+    return (0, crypto_1.createHash)("sha256").update(policyStr).digest("hex").substring(0, 16);
 }
 /**
  * Parallel Redaction Engine
@@ -150,11 +167,75 @@ class ParallelRedactionEngine {
     static async redactParallelInternal(text, filters, policy, context) {
         const startTime = Date.now();
         const filterResults = [];
+        let pluginTimeMs = 0;
+        // PLUGIN PRE-PROCESS HOOK: Allow plugins to modify text before processing
+        const pluginsEnabled = plugins_1.pluginManager.isEnabled() && plugins_1.pluginManager.hasPlugins();
+        let processedText = text;
+        if (pluginsEnabled) {
+            const preProcessStart = performance.now();
+            const docContext = {
+                text,
+                sessionId: context.getSessionId(),
+                metadata: {},
+            };
+            // Execute preProcess hooks
+            const processedDoc = await plugins_1.pluginManager.executePreProcess(docContext);
+            processedText = processedDoc.text;
+            // Check for plugin short-circuit (e.g., cache plugin returning pre-computed result)
+            const shortCircuit = await plugins_1.pluginManager.executeShortCircuit(processedDoc);
+            if (shortCircuit) {
+                const scTimeMs = performance.now() - preProcessStart;
+                RadiologyLogger_1.RadiologyLogger.pipelineStage("PLUGIN-SHORTCIRCUIT", `Plugin '${shortCircuit.pluginName}' short-circuited: ${shortCircuit.result.reason}`, shortCircuit.result.spans.length);
+                // Apply short-circuit spans and return
+                const scSpans = shortCircuit.result.spans.map((s) => SpanFactory_1.SpanFactory.fromPosition(text, s.characterStart, s.characterEnd, s.filterType, {
+                    confidence: s.confidence,
+                    priority: s.priority ?? 50,
+                    pattern: s.pattern,
+                }));
+                const scResult = this.applySpans(text, scSpans, context, policy);
+                return {
+                    text: scResult.text,
+                    appliedSpans: scSpans,
+                    report: {
+                        totalFilters: filters.length,
+                        filtersExecuted: 0,
+                        filtersDisabled: 0,
+                        filtersFailed: 0,
+                        totalSpansDetected: shortCircuit.result.spans.length,
+                        totalExecutionTimeMs: Date.now() - startTime,
+                        filterResults: [],
+                        failedFilters: [],
+                        plugins: {
+                            enabled: true,
+                            count: plugins_1.pluginManager.getHookEntries().length,
+                            shortCircuited: true,
+                            shortCircuitPlugin: shortCircuit.pluginName,
+                            totalPluginTimeMs: scTimeMs,
+                        },
+                    },
+                };
+            }
+            pluginTimeMs += performance.now() - preProcessStart;
+        }
+        // Use processed text from here on
+        const workingText = processedText;
+        // CACHE CHECK: Try semantic cache before running full pipeline
+        if (isSemanticCacheEnabled() && workingText.length >= 50) {
+            const cache = (0, SemanticRedactionCache_1.getSemanticCache)();
+            const policyHash = computePolicyHash(policy);
+            const cacheLookup = cache.lookup(text, policyHash);
+            if (cacheLookup.hit && cacheLookup.spans && cacheLookup.spans.length > 0) {
+                // CACHE HIT - apply cached spans and return
+                const cachedResult = this.applyCachedSpans(text, cacheLookup.spans, context, policy, filters.length, cacheLookup, startTime);
+                RadiologyLogger_1.RadiologyLogger.info("CACHE", `Cache ${cacheLookup.hitType.toUpperCase()} hit: ${cacheLookup.spans.length} spans in ${cacheLookup.lookupTimeMs}ms (confidence: ${(cacheLookup.confidence * 100).toFixed(1)}%)`);
+                return cachedResult;
+            }
+        }
         // Start pipeline trace (enabled via VULPES_TRACE=1)
-        PipelineTracer_1.pipelineTracer.startTrace(text);
+        PipelineTracer_1.pipelineTracer.startTrace(workingText);
         // STEP 0: Initialize name detection coordinator (caches Rust results)
         // This eliminates duplicate Rust scanner calls across name filters
-        NameDetectionCoordinator_1.nameDetectionCoordinator.beginDocument(text);
+        NameDetectionCoordinator_1.nameDetectionCoordinator.beginDocument(workingText);
         // OPTIMIZATION: Pre-filter disabled filters before execution
         const enabledFilters = filters.filter((filter) => {
             const filterType = filter.getType();
@@ -175,10 +256,10 @@ class ParallelRedactionEngine {
         });
         RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Executing ${enabledFilters.length}/${filters.length} filters in parallel (${filters.length - enabledFilters.length} disabled)`);
         // OPTIMIZATION: Early return for empty or very short text
-        if (!text || text.length < 3) {
+        if (!workingText || workingText.length < 3) {
             RadiologyLogger_1.RadiologyLogger.info("REDACTION", "Text too short for redaction, skipping");
             return {
-                text,
+                text: workingText,
                 appliedSpans: [],
                 report: {
                     totalFilters: filters.length,
@@ -197,10 +278,10 @@ class ParallelRedactionEngine {
         let dfaSpans = [];
         if ((0, MultiPatternScanner_1.isDFAScanningEnabled)()) {
             const dfaStart = Date.now();
-            const dfaResult = (0, MultiPatternScanner_1.scanWithDFA)(text);
+            const dfaResult = (0, MultiPatternScanner_1.scanWithDFA)(workingText);
             const dfaTimeMs = Date.now() - dfaStart;
             // Convert DFA matches to Spans
-            dfaSpans = this.dfaMatchesToSpans(dfaResult.matches, text);
+            dfaSpans = this.dfaMatchesToSpans(dfaResult.matches, workingText);
             RadiologyLogger_1.RadiologyLogger.pipelineStage("DFA-PRESCAN", `DFA pre-scan: ${dfaResult.stats.matchesFound} matches in ${dfaTimeMs}ms (${dfaResult.stats.patternsChecked} patterns)`, dfaSpans.length);
         }
         // STEP 1: Execute all filters in parallel using Worker Threads
@@ -213,7 +294,7 @@ class ParallelRedactionEngine {
             const config = policy.identifiers?.[filterType];
             try {
                 // Use worker pool for execution
-                const spans = await workerPool.execute(filterName, text, config);
+                const spans = await workerPool.execute(filterName, workingText, config);
                 const executionTimeMs = Date.now() - filterStart;
                 // Log completion
                 RadiologyLogger_1.RadiologyLogger.filterComplete({
@@ -264,39 +345,61 @@ class ParallelRedactionEngine {
         PipelineTracer_1.pipelineTracer.recordStage("FILTER_EXECUTION", allSpans, {
             details: `${enabledFilters.length} filters executed`,
         });
+        // PLUGIN POST-DETECTION HOOK: Allow plugins to modify detected spans
+        if (pluginsEnabled) {
+            const postDetectionStart = performance.now();
+            const docContext = {
+                text: workingText,
+                sessionId: context.getSessionId(),
+                metadata: {},
+            };
+            // Convert Span[] to SpanLike[] for plugin interface
+            const spanLikes = allSpans.map((s) => ({
+                text: s.text,
+                characterStart: s.characterStart,
+                characterEnd: s.characterEnd,
+                filterType: s.filterType,
+                confidence: s.confidence,
+                priority: s.priority,
+                pattern: s.pattern ?? undefined,
+                windowBefore: s.windowBefore,
+                windowAfter: s.windowAfter,
+            }));
+            const modifiedSpans = await plugins_1.pluginManager.executePostDetection(spanLikes, docContext);
+            // If plugins modified spans, rebuild allSpans array
+            if (modifiedSpans !== spanLikes && modifiedSpans.length !== allSpans.length) {
+                // Release old spans back to pool
+                SpanFactory_1.SpanFactory.releaseMany(allSpans);
+                // Create new spans from plugin output
+                allSpans = modifiedSpans.map((s) => SpanFactory_1.SpanFactory.fromPosition(workingText, s.characterStart, s.characterEnd, s.filterType, {
+                    confidence: s.confidence,
+                    priority: s.priority ?? 50,
+                    pattern: s.pattern,
+                }));
+                RadiologyLogger_1.RadiologyLogger.pipelineStage("PLUGIN-POSTDETECTION", `Plugin modified spans: ${spanLikes.length} -> ${allSpans.length}`, allSpans.length);
+            }
+            pluginTimeMs += performance.now() - postDetectionStart;
+        }
         // STEP 1.5: Field Context Detection (PRE-PASS)
         // Detect field labels and their expected value types
-        const fieldContexts = FieldContextDetector_1.FieldContextDetector.detect(text);
+        const fieldContexts = FieldContextDetector_1.FieldContextDetector.detect(workingText);
         RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Field context pre-pass: ${fieldContexts.length} field labels detected`);
         // STEP 1.6: Detect multi-line patient names (JOHN SMITH after PATIENT:)
-        const multiLineNames = FieldContextDetector_1.FieldContextDetector.detectMultiLinePatientNames(text);
+        const multiLineNames = FieldContextDetector_1.FieldContextDetector.detectMultiLinePatientNames(workingText);
         if (multiLineNames.length > 0) {
             RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Multi-line patient names detected: ${multiLineNames.length}`);
-            // Add these as NAME spans
+            // Add these as NAME spans (using pooled SpanFactory)
             for (const mlName of multiLineNames) {
-                const nameSpan = new Span_1.Span({
-                    text: mlName.name,
-                    originalValue: mlName.name,
-                    characterStart: mlName.start,
-                    characterEnd: mlName.end,
-                    filterType: Span_1.FilterType.NAME,
+                const nameSpan = SpanFactory_1.SpanFactory.fromPosition(workingText, mlName.start, mlName.end, Span_1.FilterType.NAME, {
                     confidence: mlName.confidence,
                     priority: 100, // High priority for context-detected names
-                    context: text.substring(Math.max(0, mlName.start - 50), Math.min(text.length, mlName.end + 50)),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Multi-line patient name",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 allSpans.push(nameSpan);
             }
         }
         // STEP 1.6b: Detect multi-line FILE # values (MRN in columnar layouts)
-        const multiLineFileNumbers = FieldContextDetector_1.FieldContextDetector.detectMultiLineFileNumbers(text);
+        const multiLineFileNumbers = FieldContextDetector_1.FieldContextDetector.detectMultiLineFileNumbers(workingText);
         if (multiLineFileNumbers.length > 0) {
             RadiologyLogger_1.RadiologyLogger.info("REDACTION", `Multi-line FILE # values detected: ${multiLineFileNumbers.length}`);
             // Add these as MRN spans with HIGH priority to win over ZIPCODE
@@ -310,47 +413,48 @@ class ParallelRedactionEngine {
                     allSpans = allSpans.filter((s) => !(s.filterType === Span_1.FilterType.ZIPCODE &&
                         s.characterStart === fileNum.start &&
                         s.characterEnd === fileNum.end));
-                    const mrnSpan = new Span_1.Span({
-                        text: fileNum.value,
-                        originalValue: fileNum.value,
-                        characterStart: fileNum.start,
-                        characterEnd: fileNum.end,
-                        filterType: Span_1.FilterType.MRN,
+                    // Create MRN span using pooled SpanFactory
+                    const mrnSpan = SpanFactory_1.SpanFactory.fromPosition(workingText, fileNum.start, fileNum.end, Span_1.FilterType.MRN, {
                         confidence: fileNum.confidence,
                         priority: 100, // High priority for context-detected MRN
-                        context: text.substring(Math.max(0, fileNum.start - 50), Math.min(text.length, fileNum.end + 50)),
-                        window: [],
-                        replacement: null,
-                        salt: null,
                         pattern: "Multi-line FILE # value",
-                        applied: false,
-                        ignored: false,
-                        ambiguousWith: [],
-                        disambiguationScore: null,
                     });
                     allSpans.push(mrnSpan);
                 }
             }
         }
         // STEP 1.7: Filter out non-PHI terms using UnifiedMedicalWhitelist (EARLY FILTERING)
-        const beforeWhitelist = allSpans.length;
+        // Track removed spans for pool release
+        const beforeWhitelist = [...allSpans];
         allSpans = this.filterUsingUnifiedWhitelist(allSpans);
-        const whitelistRemoved = beforeWhitelist - allSpans.length;
+        const whitelistRemoved = beforeWhitelist.length - allSpans.length;
+        // Release spans filtered out by whitelist back to pool
+        if (whitelistRemoved > 0) {
+            const keptSet = new Set(allSpans);
+            const removedByWhitelist = beforeWhitelist.filter(s => !keptSet.has(s));
+            SpanFactory_1.SpanFactory.releaseMany(removedByWhitelist);
+        }
         RadiologyLogger_1.RadiologyLogger.pipelineStage("WHITELIST", `UnifiedMedicalWhitelist removed ${whitelistRemoved} false positives`, allSpans.length);
         // STEP 1.7c: Filter ALL CAPS section headings (document structure detection)
-        const beforeAllCaps = allSpans.length;
-        allSpans = this.filterAllCapsStructure(allSpans, text);
-        const allCapsRemoved = beforeAllCaps - allSpans.length;
+        const beforeAllCaps = [...allSpans];
+        allSpans = this.filterAllCapsStructure(allSpans, workingText);
+        const allCapsRemoved = beforeAllCaps.length - allSpans.length;
+        // Release spans filtered out by allCaps back to pool
+        if (allCapsRemoved > 0) {
+            const keptSet = new Set(allSpans);
+            const removedByAllCaps = beforeAllCaps.filter(s => !keptSet.has(s));
+            SpanFactory_1.SpanFactory.releaseMany(removedByAllCaps);
+        }
         RadiologyLogger_1.RadiologyLogger.pipelineStage("ALL-CAPS", `Structure filter removed ${allCapsRemoved} section headings`, allSpans.length);
         // STEP 1.8: Apply field context to boost/suppress confidence
         this.applyFieldContextToSpans(allSpans, fieldContexts);
         RadiologyLogger_1.RadiologyLogger.pipelineStage("FIELD-CONTEXT", "Applied field context confidence modifiers", allSpans.length);
         // STEP 2: Populate context windows for all spans
-        WindowService_1.WindowService.populateWindows(text, allSpans);
+        WindowService_1.WindowService.populateWindows(workingText, allSpans);
         RadiologyLogger_1.RadiologyLogger.pipelineStage("WINDOWS", "Context windows populated for all spans", allSpans.length);
         // STEP 2.5: Apply confidence modifiers based on context
         const confidenceModifier = new ConfidenceModifierService_1.ConfidenceModifierService();
-        confidenceModifier.applyModifiersToAll(text, allSpans);
+        confidenceModifier.applyModifiersToAll(workingText, allSpans);
         RadiologyLogger_1.RadiologyLogger.pipelineStage("CONFIDENCE", "Confidence modifiers applied based on context", allSpans.length);
         // STEP 2.6: ENSEMBLE ENHANCEMENT - Multi-signal scoring (RESEARCH-BACKED)
         // Applies ensemble voting with dictionary, structure, label, and chaos signals
@@ -359,7 +463,7 @@ class ParallelRedactionEngine {
             minConfidence: 0.0,
             modifySpans: true,
         });
-        const enhancementAnalysis = spanEnhancer.analyzeSpans(allSpans, text, context);
+        const enhancementAnalysis = spanEnhancer.analyzeSpans(allSpans, workingText, context);
         // Log enhancement stats but DON'T filter yet - let existing filters handle it
         // Once tuned, we can enable filtering with appropriate threshold
         const ensembleRemoved = 0; // Not filtering yet
@@ -371,14 +475,14 @@ class ParallelRedactionEngine {
         // STEP 2.8: CROSS-TYPE REASONING - Apply constraint solving across PHI types
         // Uses DatalogReasoner by default (with CrossTypeReasoner fallback)
         // Handles mutual exclusion (DATE vs AGE), mutual support (NAME + MRN), document consistency
-        const crossTypeResults = DatalogReasoner_1.datalogReasoner.reason(disambiguatedSpans, text);
+        const crossTypeResults = DatalogReasoner_1.datalogReasoner.reason(disambiguatedSpans, workingText);
         const crossTypeAdjusted = crossTypeResults.filter((r) => Math.abs(r.adjustedConfidence - r.originalConfidence) > 0.01).length;
         const datalogStats = DatalogReasoner_1.datalogReasoner.getStatistics();
         RadiologyLogger_1.RadiologyLogger.pipelineStage("CROSS-TYPE", `Cross-type reasoning: ${crossTypeAdjusted} spans adjusted, ${datalogStats.totalRules} rules (Datalog: ${datalogStats.isDatalogEnabled ? "ON" : "OFF"})`, disambiguatedSpans.length);
         // STEP 2.85: CLINICAL CONTEXT MODIFICATION - Universal context-based confidence adjustment
         // WIN-WIN: Boosts confidence in clinical context (sensitivity++), penalizes without (specificity++)
         if ((0, ContextualConfidenceModifier_1.isContextModifierEnabled)()) {
-            const contextResults = ContextualConfidenceModifier_1.contextualConfidenceModifier.modifyAll(disambiguatedSpans, text);
+            const contextResults = ContextualConfidenceModifier_1.contextualConfidenceModifier.modifyAll(disambiguatedSpans, workingText);
             const summary = ContextualConfidenceModifier_1.ContextualConfidenceModifier.summarize(contextResults);
             RadiologyLogger_1.RadiologyLogger.pipelineStage("CONTEXT", `Clinical context: ${summary.boosted} boosted (+${(summary.avgBoost * 100).toFixed(1)}%), ${summary.penalized} penalized (-${(summary.avgPenalty * 100).toFixed(1)}%)`, disambiguatedSpans.length);
         }
@@ -424,12 +528,18 @@ class ParallelRedactionEngine {
         PipelineTracer_1.pipelineTracer.recordStage("OVERLAP_RESOLUTION", mergedSpans, {
             details: `${disambiguatedSpans.length} -> ${mergedSpans.length}`,
         });
+        // Release spans dropped during overlap resolution back to pool
+        if (mergedSpans.length < disambiguatedSpans.length) {
+            const mergedSet = new Set(mergedSpans);
+            const droppedInOverlap = disambiguatedSpans.filter(s => !mergedSet.has(s));
+            SpanFactory_1.SpanFactory.releaseMany(droppedInOverlap);
+        }
         RadiologyLogger_1.RadiologyLogger.pipelineStage("OVERLAP", `Resolved overlapping spans: ${disambiguatedSpans.length} -> ${mergedSpans.length}`, mergedSpans.length);
         // SHADOW MODE: compare Rust name-scanner output vs TS pipeline (no behavior change).
         let shadow = undefined;
         if (process.env.VULPES_SHADOW_RUST_NAME === "1") {
             try {
-                const rust = RustNameScanner_1.RustNameScanner.detectLastFirst(text);
+                const rust = RustNameScanner_1.RustNameScanner.detectLastFirst(workingText);
                 const ts = mergedSpans
                     .filter((s) => s.filterType === Span_1.FilterType.NAME)
                     .filter((s) => s.text.includes(","));
@@ -468,7 +578,7 @@ class ParallelRedactionEngine {
         if (process.env.VULPES_SHADOW_RUST_NAME_FULL === "1") {
             const baseShadow = shadow ?? {};
             try {
-                const rust = RustNameScanner_1.RustNameScanner.detectFirstLast(text);
+                const rust = RustNameScanner_1.RustNameScanner.detectFirstLast(workingText);
                 const ts = mergedSpans.filter((s) => {
                     if (s.filterType !== "NAME")
                         return false;
@@ -517,7 +627,7 @@ class ParallelRedactionEngine {
         if (RustAccelConfig_1.RustAccelConfig.isShadowRustNameSmartEnabled()) {
             const baseShadow = shadow ?? {};
             try {
-                const rust = RustNameScanner_1.RustNameScanner.detectSmart(text);
+                const rust = RustNameScanner_1.RustNameScanner.detectSmart(workingText);
                 const ts = mergedSpans.filter((s) => s.filterType === Span_1.FilterType.NAME);
                 const rustKeys = new Set(rust.map((s) => `${s.characterStart}-${s.characterEnd}`));
                 const tsKeys = new Set(ts.map((s) => `${s.characterStart}-${s.characterEnd}`));
@@ -570,18 +680,89 @@ class ParallelRedactionEngine {
         }
         // STEP 4: Post-filter to remove false positives (using PostFilterService)
         PipelineTracer_1.pipelineTracer.startStage();
-        const validSpans = PostFilterService_1.PostFilterService.filter(mergedSpans, text, {
+        const validSpans = PostFilterService_1.PostFilterService.filter(mergedSpans, workingText, {
             shadowReport: postfilterShadow,
         });
         PipelineTracer_1.pipelineTracer.recordStage("POST_FILTER", validSpans, {
             details: `${mergedSpans.length} -> ${validSpans.length}`,
         });
+        // Release spans dropped during post-filter back to pool
+        if (validSpans.length < mergedSpans.length) {
+            const validSet = new Set(validSpans);
+            const droppedInPostFilter = mergedSpans.filter(s => !validSet.has(s));
+            SpanFactory_1.SpanFactory.releaseMany(droppedInPostFilter);
+        }
         RadiologyLogger_1.RadiologyLogger.pipelineStage("POST-FILTER", `Final false positive removal: ${mergedSpans.length} -> ${validSpans.length}`, validSpans.length);
+        // PLUGIN PRE-REDACTION HOOK: Last chance to modify spans before token application
+        let finalSpans = validSpans;
+        if (pluginsEnabled) {
+            const preRedactionStart = performance.now();
+            const docContext = {
+                text: workingText,
+                sessionId: context.getSessionId(),
+                metadata: {},
+            };
+            // Convert to SpanLike for plugin interface
+            const spanLikes = validSpans.map((s) => ({
+                text: s.text,
+                characterStart: s.characterStart,
+                characterEnd: s.characterEnd,
+                filterType: s.filterType,
+                confidence: s.confidence,
+                priority: s.priority,
+                pattern: s.pattern ?? undefined,
+                replacement: s.replacement ?? undefined,
+            }));
+            const modifiedSpans = await plugins_1.pluginManager.executePreRedaction(spanLikes, docContext);
+            // If plugins modified spans, rebuild finalSpans
+            if (modifiedSpans !== spanLikes) {
+                finalSpans = modifiedSpans.map((s) => SpanFactory_1.SpanFactory.fromPosition(workingText, s.characterStart, s.characterEnd, s.filterType, {
+                    confidence: s.confidence,
+                    priority: s.priority ?? 50,
+                    pattern: s.pattern,
+                    replacement: s.replacement,
+                }));
+                if (finalSpans.length !== validSpans.length) {
+                    RadiologyLogger_1.RadiologyLogger.pipelineStage("PLUGIN-PREREDACTION", `Plugin modified final spans: ${validSpans.length} -> ${finalSpans.length}`, finalSpans.length);
+                }
+            }
+            pluginTimeMs += performance.now() - preRedactionStart;
+        }
         // STEP 5: Apply all spans at once
-        const applyResult = this.applySpans(text, validSpans, context, policy);
-        const redactedText = applyResult.text;
+        const applyResult = this.applySpans(workingText, finalSpans, context, policy);
+        let redactedText = applyResult.text;
         if (applyResult.shadow) {
             shadow = { ...(shadow ?? {}), applySpans: applyResult.shadow };
+        }
+        // PLUGIN POST-REDACTION HOOK: Allow plugins to modify final result
+        if (pluginsEnabled) {
+            const postRedactionStart = performance.now();
+            const resultLike = {
+                text: redactedText,
+                appliedSpans: finalSpans.map((s) => ({
+                    text: s.text,
+                    characterStart: s.characterStart,
+                    characterEnd: s.characterEnd,
+                    filterType: s.filterType,
+                    confidence: s.confidence,
+                    priority: s.priority,
+                    replacement: s.replacement ?? undefined,
+                })),
+                report: {
+                    totalFilters: filters.length,
+                    filtersExecuted: filterResults.filter((r) => r.enabled).length,
+                    totalSpansDetected: allSpans.length,
+                    totalExecutionTimeMs: Date.now() - startTime,
+                },
+            };
+            const modifiedResult = await plugins_1.pluginManager.executePostRedaction(resultLike);
+            // Apply plugin modifications
+            if (modifiedResult !== resultLike) {
+                redactedText = modifiedResult.text;
+                // Note: We don't rebuild Span objects here as we're at the end of pipeline
+                // Plugins can modify the result text directly (e.g., add headers/footers)
+            }
+            pluginTimeMs += performance.now() - postRedactionStart;
         }
         const totalTime = Date.now() - startTime;
         // Generate execution report
@@ -597,19 +778,29 @@ class ParallelRedactionEngine {
             totalExecutionTimeMs: totalTime,
             filterResults,
             failedFilters,
+            ...(pluginsEnabled
+                ? {
+                    plugins: {
+                        enabled: true,
+                        count: plugins_1.pluginManager.getHookEntries().length,
+                        shortCircuited: false,
+                        totalPluginTimeMs: pluginTimeMs,
+                    },
+                }
+                : {}),
             ...(shadow ? { shadow } : {}),
         };
         // End pipeline trace (if enabled)
-        PipelineTracer_1.pipelineTracer.endTrace(validSpans, redactedText);
+        PipelineTracer_1.pipelineTracer.endTrace(finalSpans, redactedText);
         // End name detection coordinator (clears cache)
         NameDetectionCoordinator_1.nameDetectionCoordinator.endDocument();
         // Log comprehensive summary
         RadiologyLogger_1.RadiologyLogger.redactionSummary({
-            inputLength: text.length,
+            inputLength: workingText.length,
             outputLength: redactedText.length,
             totalSpansDetected: filterResults.reduce((sum, r) => sum + r.spansDetected, 0),
             spansAfterFiltering: mergedSpans.length,
-            spansApplied: validSpans.length,
+            spansApplied: finalSpans.length,
             executionTimeMs: totalTime,
             filterCount: enabledFilters.length,
         });
@@ -618,10 +809,26 @@ class ParallelRedactionEngine {
         }
         // Log detailed filter statistics
         this.logFilterStatistics(filterResults);
+        // CACHE STORE: Store result in semantic cache for future hits
+        if (isSemanticCacheEnabled() && workingText.length >= 50 && finalSpans.length > 0) {
+            try {
+                const cache = (0, SemanticRedactionCache_1.getSemanticCache)();
+                const policyHash = computePolicyHash(policy);
+                // Extract structure (or reuse from cache lookup if available)
+                const { StructureExtractor } = require("../cache/StructureExtractor");
+                const extractor = new StructureExtractor();
+                const structure = extractor.extract(workingText);
+                cache.store(workingText, finalSpans, structure, policyHash);
+            }
+            catch (cacheError) {
+                // Cache store failure is non-critical - log and continue
+                RadiologyLogger_1.RadiologyLogger.debug("CACHE", `Cache store failed: ${cacheError}`);
+            }
+        }
         // Return complete result (thread-safe - no shared state mutation)
         return {
             text: redactedText,
-            appliedSpans: [...validSpans],
+            appliedSpans: [...finalSpans],
             report,
         };
     }
@@ -915,32 +1122,76 @@ class ParallelRedactionEngine {
         });
     }
     /**
-     * Convert DFA scan matches to Span objects
+     * Convert DFA scan matches to Span objects (using pooled SpanFactory)
      * DFA matches are fast pre-scan results that get merged with filter outputs
      */
     static dfaMatchesToSpans(matches, text) {
         return matches.map((match) => {
-            const contextStart = Math.max(0, match.start - 50);
-            const contextEnd = Math.min(text.length, match.end + 50);
-            return new Span_1.Span({
-                text: match.text,
-                originalValue: match.text,
-                characterStart: match.start,
-                characterEnd: match.end,
-                filterType: match.filterType,
+            return SpanFactory_1.SpanFactory.fromPosition(text, match.start, match.end, match.filterType, {
                 confidence: match.confidence,
                 priority: 50, // Lower priority than filter-detected spans (filters have more context)
-                context: text.substring(contextStart, contextEnd),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: `DFA:${match.patternId}`,
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
             });
         });
+    }
+    /**
+     * Apply cached spans to produce redaction result (fast path for cache hits)
+     */
+    static applyCachedSpans(text, spans, context, policy, totalFilters, cacheLookup, startTime) {
+        // Sort spans by position (reverse) for safe replacement
+        const sortedSpans = [...spans].sort((a, b) => b.characterStart - a.characterStart);
+        let redactedText = text;
+        for (const span of sortedSpans) {
+            const replacement = span.replacement ??
+                policy?.identifiers?.[span.filterType]?.replacement ??
+                context.createToken(span.filterType, span.text);
+            redactedText =
+                redactedText.substring(0, span.characterStart) +
+                    replacement +
+                    redactedText.substring(span.characterEnd);
+            span.replacement = replacement;
+            span.applied = true;
+        }
+        const totalTime = Date.now() - startTime;
+        // Build report for cached result
+        const report = {
+            totalFilters,
+            filtersExecuted: 0, // No filters executed - used cache
+            filtersDisabled: 0,
+            filtersFailed: 0,
+            totalSpansDetected: spans.length,
+            totalExecutionTimeMs: totalTime,
+            filterResults: [],
+            failedFilters: [],
+            cache: {
+                hit: true,
+                hitType: cacheLookup.hitType,
+                confidence: cacheLookup.confidence,
+                lookupTimeMs: cacheLookup.lookupTimeMs,
+            },
+        };
+        return {
+            text: redactedText,
+            appliedSpans: [...spans],
+            report,
+        };
+    }
+    /**
+     * Get cache statistics
+     */
+    static getCacheStats() {
+        if (!isSemanticCacheEnabled()) {
+            return null;
+        }
+        return (0, SemanticRedactionCache_1.getSemanticCache)().getStats();
+    }
+    /**
+     * Clear the semantic cache
+     */
+    static clearCache() {
+        if (isSemanticCacheEnabled()) {
+            (0, SemanticRedactionCache_1.getSemanticCache)().clear();
+        }
     }
 }
 exports.ParallelRedactionEngine = ParallelRedactionEngine;

@@ -9,6 +9,7 @@
 
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
+import { SpanFactory } from "../core/SpanFactory";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
 
@@ -122,23 +123,10 @@ export class AccountNumberFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "ACCOUNT");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.ACCOUNT,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.ACCOUNT, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -163,23 +151,10 @@ export class AccountNumberFilterSpan extends SpanBasedFilter {
           const valueStart = match.index! + fullMatch.indexOf(value);
           const valueEnd = valueStart + value.length;
 
-          const span = new Span({
-            text: value,
-            originalValue: value,
-            characterStart: valueStart,
-            characterEnd: valueEnd,
-            filterType: FilterType.ACCOUNT,
+          const span = SpanFactory.fromPosition(text, valueStart, valueEnd, FilterType.ACCOUNT, {
             confidence: 0.85,
             priority: this.getPriority(),
-            context: this.extractContext(text, valueStart, valueEnd),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: patternDef.description,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         }

@@ -37,7 +37,7 @@ exports.FilterWorkerPool = void 0;
 const worker_threads_1 = require("worker_threads");
 const path = __importStar(require("path"));
 const os = __importStar(require("os"));
-const Span_1 = require("../models/Span");
+const SpanPool_1 = require("./SpanPool");
 const RadiologyLogger_1 = require("../utils/RadiologyLogger");
 const ServiceContainer_1 = require("./ServiceContainer");
 class FilterWorkerPool {
@@ -159,8 +159,8 @@ class FilterWorkerPool {
         if (task) {
             this.pending.delete(taskId);
             if (success) {
-                // Rehydrate Spans
-                const spans = rawSpans.map((s) => new Span_1.Span(s));
+                // Rehydrate Spans using pool for memory efficiency
+                const spans = rawSpans.map((s) => SpanPool_1.SpanPool.acquire(s));
                 task.resolve(spans);
             }
             else {

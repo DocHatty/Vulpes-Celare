@@ -4,6 +4,9 @@
  * Provides convenience methods for creating Spans with sensible defaults.
  * Eliminates boilerplate code across filter implementations.
  *
+ * PERFORMANCE: Uses SpanPool for object reuse, eliminating GC pressure.
+ * All spans created through SpanFactory are pooled automatically.
+ *
  * Usage:
  *   // From regex match
  *   const span = SpanFactory.fromMatch(text, match, FilterType.SSN, { confidence: 0.95 });
@@ -13,6 +16,10 @@
  *
  *   // From text substring
  *   const span = SpanFactory.fromText(document, "John Smith", FilterType.NAME);
+ *
+ *   // IMPORTANT: Release spans when done to return to pool
+ *   SpanFactory.release(span);
+ *   SpanFactory.releaseMany(spans);
  *
  * @module redaction/core
  */
@@ -138,6 +145,31 @@ export declare class SpanFactory {
      * @returns New Span instance with overrides applied
      */
     static clone(original: Span, overrides?: Partial<SpanMetadata>): Span;
+    /**
+     * Release a span back to the pool
+     * Call when done with a span to enable reuse
+     *
+     * @param span - Span to release
+     */
+    static release(span: Span): void;
+    /**
+     * Release multiple spans back to the pool
+     *
+     * @param spans - Array of spans to release
+     */
+    static releaseMany(spans: Span[]): void;
+    /**
+     * Get pool statistics for monitoring
+     * Useful for debugging and performance analysis
+     */
+    static getPoolStats(): import("./SpanPool").SpanPoolStats;
+    /**
+     * Pre-warm the span pool
+     * Call at application startup for better first-request performance
+     *
+     * @param count - Number of spans to pre-allocate (default: 500)
+     */
+    static prewarmPool(count?: number): void;
     /**
      * Create a batch of spans from multiple regex matches
      * Useful for filters that run multiple patterns

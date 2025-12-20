@@ -20,6 +20,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import {
@@ -243,23 +244,10 @@ export class RelativeDateFilterSpan extends SpanBasedFilter {
     );
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.DATE,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.DATE, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -319,23 +307,10 @@ export class RelativeDateFilterSpan extends SpanBasedFilter {
         }
         confidence = Math.min(0.95, confidence);
 
-        const span = new Span({
-          text: matchText,
-          originalValue: matchText,
-          characterStart: start,
-          characterEnd: end,
-          filterType: FilterType.DATE,
+        const span = SpanFactory.fromPosition(text, start, end, FilterType.DATE, {
           confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, start, end),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: `Relative date: ${patternDef.description}`,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
 
         spans.push(span);

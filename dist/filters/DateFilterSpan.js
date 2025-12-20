@@ -14,6 +14,7 @@ const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const ValidationUtils_1 = require("../utils/ValidationUtils");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
+const SpanFactory_1 = require("../core/SpanFactory");
 class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
     /**
      * Date regex pattern sources
@@ -228,23 +229,11 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         // Only use Rust results if we got actual detections (empty array is truthy!)
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
-                return new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: Span_1.FilterType.DATE,
+                return SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, Span_1.FilterType.DATE, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
                     context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
             });
         }
@@ -256,7 +245,6 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 let match;
                 while ((match = pattern.exec(source)) !== null) {
                     // For normalized text, find the corrupted version in original
-                    let originalMatch = match[0];
                     let startIndex = match.index;
                     let endIndex = match.index + match[0].length;
                     if (isNormalized && source !== originalText) {
@@ -264,7 +252,6 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                         // Use the matched value to search for a corrupted version nearby
                         const found = this.findCorruptedDateInOriginal(originalText, match[0], match.index);
                         if (found) {
-                            originalMatch = found.text;
                             startIndex = found.start;
                             endIndex = found.end;
                         }
@@ -277,25 +264,13 @@ class DateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                     const key = `${startIndex}-${endIndex}`;
                     if (seen.has(key))
                         continue;
-                    const span = new Span_1.Span({
-                        text: originalMatch,
-                        originalValue: originalMatch,
-                        characterStart: startIndex,
-                        characterEnd: endIndex,
-                        filterType: Span_1.FilterType.DATE,
+                    const span = SpanFactory_1.SpanFactory.fromPosition(originalText, startIndex, endIndex, Span_1.FilterType.DATE, {
                         confidence: isNormalized ? 0.85 : 0.95,
                         priority: this.getPriority(),
                         context: this.extractContext(originalText, startIndex, endIndex),
-                        window: [],
-                        replacement: null,
-                        salt: null,
                         pattern: isNormalized
                             ? "OCR-normalized date"
                             : pattern.source.substring(0, 30),
-                        applied: false,
-                        ignored: false,
-                        ambiguousWith: [],
-                        disambiguationScore: null,
                     });
                     spans.push(span);
                     seen.add(key);

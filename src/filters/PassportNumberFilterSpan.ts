@@ -15,6 +15,7 @@
 
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
+import { SpanFactory } from "../core/SpanFactory";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
 
@@ -67,23 +68,10 @@ export class PassportNumberFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "PASSPORT");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: "PASSPORT" as FilterType,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, "PASSPORT" as FilterType, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -314,29 +302,16 @@ export class PassportNumberFilterSpan extends SpanBasedFilter {
    */
   private createPassportSpan(
     text: string,
-    value: string,
+    _value: string,
     start: number,
     end: number,
     confidence: number,
     patternName: string,
   ): Span {
-    return new Span({
-      text: value,
-      originalValue: value,
-      characterStart: start,
-      characterEnd: end,
-      filterType: "PASSPORT" as FilterType,
+    return SpanFactory.fromPosition(text, start, end, "PASSPORT" as FilterType, {
       confidence: confidence,
       priority: this.getPriority(),
-      context: this.extractContext(text, start, end),
-      window: [],
-      replacement: null,
-      salt: null,
       pattern: patternName,
-      applied: false,
-      ignored: false,
-      ambiguousWith: [],
-      disambiguationScore: null,
     });
   }
 }

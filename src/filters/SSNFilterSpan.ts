@@ -9,6 +9,7 @@
 
 import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
+import { SpanFactory } from "../core/SpanFactory";
 import { RedactionContext } from "../context/RedactionContext";
 import { ValidationUtils } from "../utils/ValidationUtils";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -95,23 +96,10 @@ export class SSNFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "SSN");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.SSN,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.SSN, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }

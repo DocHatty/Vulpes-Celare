@@ -31,4 +31,8 @@ __exportStar(require("./Thresholds"), exports);
 __exportStar(require("./WordLists"), exports);
 // Centralized OCR patterns and character substitutions
 __exportStar(require("./OcrPatterns"), exports);
+// Hot-reload configuration (Phase 5: Atomic Config)
+__exportStar(require("./AtomicConfig"), exports);
+__exportStar(require("./schemas"), exports);
+__exportStar(require("./HotReloadManager"), exports);
 //# sourceMappingURL=index.js.map

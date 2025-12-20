@@ -22,6 +22,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RelativeDateFilterSpan = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const ClinicalContextDetector_1 = require("../context/ClinicalContextDetector");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
@@ -205,23 +206,10 @@ class RelativeDateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "RELATIVE_DATE");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
-                return new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: Span_1.FilterType.DATE,
+                return SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, Span_1.FilterType.DATE, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
             });
         }
@@ -261,23 +249,10 @@ class RelativeDateFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                     confidence += ClinicalContextDetector_1.ClinicalContextDetector.getContextConfidenceBoost(text, start, matchText.length);
                 }
                 confidence = Math.min(0.95, confidence);
-                const span = new Span_1.Span({
-                    text: matchText,
-                    originalValue: matchText,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.DATE,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.DATE, {
                     confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: `Relative date: ${patternDef.description}`,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }

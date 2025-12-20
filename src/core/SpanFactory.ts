@@ -4,6 +4,9 @@
  * Provides convenience methods for creating Spans with sensible defaults.
  * Eliminates boilerplate code across filter implementations.
  *
+ * PERFORMANCE: Uses SpanPool for object reuse, eliminating GC pressure.
+ * All spans created through SpanFactory are pooled automatically.
+ *
  * Usage:
  *   // From regex match
  *   const span = SpanFactory.fromMatch(text, match, FilterType.SSN, { confidence: 0.95 });
@@ -14,11 +17,16 @@
  *   // From text substring
  *   const span = SpanFactory.fromText(document, "John Smith", FilterType.NAME);
  *
+ *   // IMPORTANT: Release spans when done to return to pool
+ *   SpanFactory.release(span);
+ *   SpanFactory.releaseMany(spans);
+ *
  * @module redaction/core
  */
 
 import { Span, SpanMetadata, FilterType } from "../models/Span";
 import { FilterPriority } from "../models/FilterPriority";
+import { SpanPool } from "./SpanPool";
 
 /**
  * Options for Span creation - all optional with sensible defaults
@@ -134,7 +142,7 @@ export class SpanFactory {
     const end = start + match[0].length;
     const matchedText = match[0];
 
-    return new Span({
+    return SpanPool.acquire({
       text: matchedText,
       originalValue: matchedText,
       characterStart: start,
@@ -181,7 +189,7 @@ export class SpanFactory {
 
     const matchedText = text.substring(start, end);
 
-    return new Span({
+    return SpanPool.acquire({
       text: matchedText,
       originalValue: matchedText,
       characterStart: start,
@@ -343,7 +351,7 @@ export class SpanFactory {
    * @returns New Span instance with overrides applied
    */
   static clone(original: Span, overrides: Partial<SpanMetadata> = {}): Span {
-    return new Span({
+    return SpanPool.acquire({
       text: overrides.text ?? original.text,
       originalValue: overrides.originalValue ?? original.text,
       characterStart: overrides.characterStart ?? original.characterStart,
@@ -361,6 +369,43 @@ export class SpanFactory {
       ambiguousWith: overrides.ambiguousWith ?? [...original.ambiguousWith],
       disambiguationScore: overrides.disambiguationScore ?? original.disambiguationScore,
     });
+  }
+
+  /**
+   * Release a span back to the pool
+   * Call when done with a span to enable reuse
+   *
+   * @param span - Span to release
+   */
+  static release(span: Span): void {
+    SpanPool.release(span);
+  }
+
+  /**
+   * Release multiple spans back to the pool
+   *
+   * @param spans - Array of spans to release
+   */
+  static releaseMany(spans: Span[]): void {
+    SpanPool.releaseMany(spans);
+  }
+
+  /**
+   * Get pool statistics for monitoring
+   * Useful for debugging and performance analysis
+   */
+  static getPoolStats() {
+    return SpanPool.getStats();
+  }
+
+  /**
+   * Pre-warm the span pool
+   * Call at application startup for better first-request performance
+   *
+   * @param count - Number of spans to pre-allocate (default: 500)
+   */
+  static prewarmPool(count: number = 500): void {
+    SpanPool.prewarm(count);
   }
 
   /**

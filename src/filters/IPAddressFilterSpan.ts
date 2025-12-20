@@ -11,6 +11,7 @@ import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
+import { SpanFactory } from "../core/SpanFactory";
 
 export class IPAddressFilterSpan extends SpanBasedFilter {
   /**
@@ -33,23 +34,10 @@ export class IPAddressFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "IP");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.IP,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.IP, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }

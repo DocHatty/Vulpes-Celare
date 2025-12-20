@@ -2,6 +2,7 @@ import { Worker } from "worker_threads";
 import * as path from "path";
 import * as os from "os";
 import { Span } from "../models/Span";
+import { SpanPool } from "./SpanPool";
 import { RadiologyLogger } from "../utils/RadiologyLogger";
 import { container, ServiceIds } from "./ServiceContainer";
 
@@ -178,8 +179,8 @@ export class FilterWorkerPool {
     if (task) {
       this.pending.delete(taskId);
       if (success) {
-        // Rehydrate Spans
-        const spans = rawSpans.map((s) => new Span(s));
+        // Rehydrate Spans using pool for memory efficiency
+        const spans = rawSpans.map((s) => SpanPool.acquire(s));
         task.resolve(spans);
       } else {
         task.reject(new Error(errorMsg || "Unknown worker error"));

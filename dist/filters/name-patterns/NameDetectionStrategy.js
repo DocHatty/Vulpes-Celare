@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NameStrategyFactory = exports.CompositeNameStrategy = exports.BaseNameStrategy = void 0;
 const Span_1 = require("../../models/Span");
 const SpanBasedFilter_1 = require("../../core/SpanBasedFilter");
+const SpanFactory_1 = require("../../core/SpanFactory");
 // ============================================================================
 // BASE STRATEGY
 // ============================================================================
@@ -56,23 +57,10 @@ class BaseNameStrategy {
         const filterType = result.metadata?.isProvider
             ? Span_1.FilterType.PROVIDER_NAME
             : Span_1.FilterType.NAME;
-        return new Span_1.Span({
-            text: result.text,
-            originalValue: result.text,
-            characterStart: result.characterStart,
-            characterEnd: result.characterEnd,
-            filterType,
+        return SpanFactory_1.SpanFactory.fromPosition(sourceText, result.characterStart, result.characterEnd, filterType, {
             confidence: result.confidence,
             priority: SpanBasedFilter_1.FilterPriority.NAME,
-            context: this.extractContext(sourceText, result.characterStart, result.characterEnd),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: result.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
         });
     }
     /**

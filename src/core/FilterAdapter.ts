@@ -11,6 +11,7 @@ import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter } from "./SpanBasedFilter";
 import { BaseFilter } from "./BaseFilter";
 import { RedactionContext } from "../context/RedactionContext";
+import { SpanPool } from "./SpanPool";
 
 /**
  * Adapter that converts legacy BaseFilter to SpanBasedFilter
@@ -143,7 +144,7 @@ export class FilterAdapter extends SpanBasedFilter {
   }
 
   /**
-   * Create a Span from position info
+   * Create a Span from position info (using pool for memory efficiency)
    */
   private createSpan(
     text: string,
@@ -151,7 +152,7 @@ export class FilterAdapter extends SpanBasedFilter {
     end: number,
     value: string
   ): Span {
-    return new Span({
+    return SpanPool.acquire({
       text: value,
       originalValue: value,
       characterStart: start,

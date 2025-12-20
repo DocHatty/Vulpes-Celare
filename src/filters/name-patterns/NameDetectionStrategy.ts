@@ -38,6 +38,7 @@
 import { Span, FilterType } from "../../models/Span";
 import { RedactionContext } from "../../context/RedactionContext";
 import { FilterPriority } from "../../core/SpanBasedFilter";
+import { SpanFactory } from "../../core/SpanFactory";
 
 // ============================================================================
 // INTERFACES
@@ -164,24 +165,17 @@ export abstract class BaseNameStrategy implements INameDetectionStrategy {
       ? FilterType.PROVIDER_NAME
       : FilterType.NAME;
 
-    return new Span({
-      text: result.text,
-      originalValue: result.text,
-      characterStart: result.characterStart,
-      characterEnd: result.characterEnd,
+    return SpanFactory.fromPosition(
+      sourceText,
+      result.characterStart,
+      result.characterEnd,
       filterType,
-      confidence: result.confidence,
-      priority: FilterPriority.NAME,
-      context: this.extractContext(sourceText, result.characterStart, result.characterEnd),
-      window: [],
-      replacement: null,
-      salt: null,
-      pattern: result.pattern,
-      applied: false,
-      ignored: false,
-      ambiguousWith: [],
-      disambiguationScore: null,
-    });
+      {
+        confidence: result.confidence,
+        priority: FilterPriority.NAME,
+        pattern: result.pattern,
+      }
+    );
   }
 
   /**

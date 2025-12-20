@@ -17,6 +17,7 @@ import { Span, FilterType } from "../models/Span";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
+import { SpanFactory } from "../core/SpanFactory";
 
 export class AgeFilterSpan extends SpanBasedFilter {
   getType(): string {
@@ -32,23 +33,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "AGE");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.AGE,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.AGE, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
           replacement: "90+",
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -98,27 +87,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
       if (age >= 90) {
         const fullMatch = match[0];
 
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
           confidence: 0.96,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
           replacement: "90+ years old",
-          salt: null,
           pattern: "Age 90+ explicit statement",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -135,27 +108,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
       if (age >= 90) {
         const fullMatch = match[0];
 
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
           confidence: 0.95,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
           replacement: "age 90+",
-          salt: null,
           pattern: "Age 90+ with label",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -184,27 +141,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
       if (age >= 90) {
         const fullMatch = match[0];
 
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
           confidence: 0.97,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
           replacement: "Age: 90+",
-          salt: null,
           pattern: "Labeled age 90+",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -231,27 +172,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
       if (age1 >= 90 || age2 >= 90) {
         const fullMatch = match[0];
 
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
           confidence: 0.94,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
           replacement: "90+ years",
-          salt: null,
           pattern: "Age range involving 90+",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -270,27 +195,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
       if (age1 >= 90 || age2 >= 90) {
         const fullMatch = match[0];
 
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
           confidence: 0.93,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
           replacement: "90+ years",
-          salt: null,
           pattern: "Age range (between) involving 90+",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -312,27 +221,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
     while ((match = patternA.exec(text)) !== null) {
       const fullMatch = match[0];
 
-      const span = new Span({
-        text: fullMatch,
-        originalValue: fullMatch,
-        characterStart: match.index,
-        characterEnd: match.index + fullMatch.length,
-        filterType: FilterType.AGE,
+      const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
         confidence: 0.92,
         priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          match.index,
-          match.index + fullMatch.length,
-        ),
-        window: [],
         replacement: "90+",
-        salt: null,
         pattern: "Ordinal age 90s+",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -348,27 +241,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
 
       // Check for age context nearby
       if (this.hasAgeContext(text, match.index, fullMatch.length)) {
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
           confidence: 0.88,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
           replacement: "90+",
-          salt: null,
           pattern: "Ordinal age 90s+ with context",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -392,27 +269,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
       if (age >= 90) {
         const fullMatch = match[0];
 
-        const span = new Span({
-          text: fullMatch,
-          originalValue: fullMatch,
-          characterStart: match.index,
-          characterEnd: match.index + fullMatch.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
           confidence: 0.96,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullMatch.length,
-          ),
-          window: [],
           replacement: "90+-year-old",
-          salt: null,
           pattern: "Contextual age 90+ (compound)",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -484,27 +345,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
 
       // Check for strong age context nearby
       if (this.hasStrongAgeContext(text, match.index, ageStr.length)) {
-        const span = new Span({
-          text: ageStr,
-          originalValue: ageStr,
-          characterStart: match.index,
-          characterEnd: match.index + ageStr.length,
-          filterType: FilterType.AGE,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + ageStr.length, FilterType.AGE, {
           confidence: 0.85, // Slightly lower confidence for standalone numbers
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + ageStr.length,
-          ),
-          window: [],
           replacement: "90+",
-          salt: null,
           pattern: "Standalone age 90+ with context",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
         detectedPositions.add(posKey);
@@ -620,27 +465,11 @@ export class AgeFilterSpan extends SpanBasedFilter {
       const posKey = `${match.index}-${match.index + fullMatch.length}`;
       if (detectedPositions.has(posKey)) continue;
 
-      const span = new Span({
-        text: fullMatch,
-        originalValue: fullMatch,
-        characterStart: match.index,
-        characterEnd: match.index + fullMatch.length,
-        filterType: FilterType.AGE,
+      const span = SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, FilterType.AGE, {
         confidence: 0.92,
         priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          match.index,
-          match.index + fullMatch.length,
-        ),
-        window: [],
         replacement: "90+ " + match[2],
-        salt: null,
         pattern: "Demographic age 90+",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
       detectedPositions.add(posKey);

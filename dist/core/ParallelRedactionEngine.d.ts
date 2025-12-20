@@ -10,6 +10,7 @@ import { Span } from "../models/Span";
 import { SpanBasedFilter } from "./SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { type PostFilterShadowReport } from "./filters/PostFilterService";
+import { type CacheStats } from "../cache/SemanticRedactionCache";
 /**
  * Filter execution result with detailed diagnostics
  */
@@ -34,6 +35,30 @@ export interface RedactionExecutionReport {
     totalExecutionTimeMs: number;
     filterResults: FilterExecutionResult[];
     failedFilters: string[];
+    /** Plugin execution data */
+    plugins?: {
+        /** Whether plugins were enabled */
+        enabled: boolean;
+        /** Number of active plugins */
+        count: number;
+        /** Whether a plugin short-circuited the pipeline */
+        shortCircuited: boolean;
+        /** Plugin that triggered short-circuit (if any) */
+        shortCircuitPlugin?: string;
+        /** Total plugin hook execution time (ms) */
+        totalPluginTimeMs: number;
+    };
+    /** Cache performance data */
+    cache?: {
+        /** Whether result came from cache */
+        hit: boolean;
+        /** Type of cache hit */
+        hitType: "exact" | "structure" | "miss";
+        /** Confidence in cached result */
+        confidence: number;
+        /** Cache lookup time in ms */
+        lookupTimeMs: number;
+    };
     shadow?: {
         rustNameLastFirst?: {
             enabled: boolean;
@@ -170,9 +195,21 @@ export declare class ParallelRedactionEngine {
      */
     private static filterAllCapsStructure;
     /**
-     * Convert DFA scan matches to Span objects
+     * Convert DFA scan matches to Span objects (using pooled SpanFactory)
      * DFA matches are fast pre-scan results that get merged with filter outputs
      */
     private static dfaMatchesToSpans;
+    /**
+     * Apply cached spans to produce redaction result (fast path for cache hits)
+     */
+    private static applyCachedSpans;
+    /**
+     * Get cache statistics
+     */
+    static getCacheStats(): CacheStats | null;
+    /**
+     * Clear the semantic cache
+     */
+    static clearCache(): void;
 }
 //# sourceMappingURL=ParallelRedactionEngine.d.ts.map

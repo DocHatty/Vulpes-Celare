@@ -9,6 +9,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { NameDictionary } from "../dictionaries/NameDictionary";
@@ -155,23 +156,10 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
       covered.add(posKey);
 
       spans.push(
-        new Span({
-          text: text.substring(start, end),
-          originalValue: text.substring(start, end),
-          characterStart: start,
-          characterEnd: end,
-          filterType: FilterType.NAME,
+        SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
           confidence: 0.98,
           priority: 180,
-          context: this.extractContext(text, start, end),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Labeled name field",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         }),
       );
     }
@@ -219,31 +207,15 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
         !this.isWhitelistedLastFirst(fullName) &&
         this.validateLastFirst(fullName)
       ) {
-        const span = new Span({
-          text: fullName,
-          originalValue: fullName,
-          characterStart: match.index,
-          characterEnd: match.index + fullName.length,
-          filterType: FilterType.NAME,
-          confidence: 0.93,
-          // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
-          // "Last, First [Middle]" format is highly specific to person names
-          priority: 150,
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullName.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Last, First format",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+        // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
+        // "Last, First [Middle]" format is highly specific to person names
+        spans.push(
+          SpanFactory.fromPosition(text, match.index, match.index + fullName.length, FilterType.NAME, {
+            confidence: 0.93,
+            priority: 150,
+            pattern: "Last, First format",
+          }),
+        );
       }
     }
 
@@ -260,30 +232,14 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
         !this.isWhitelistedLastFirst(normalized) &&
         this.validateLastFirst(normalized)
       ) {
-        const span = new Span({
-          text: fullName,
-          originalValue: fullName,
-          characterStart: match.index,
-          characterEnd: match.index + fullName.length,
-          filterType: FilterType.NAME,
-          confidence: 0.9,
-          // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
-          priority: 150,
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullName.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Last, First format (spacing variant)",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+        // STREET-SMART: Priority 150+ bypasses individual word whitelist filtering
+        spans.push(
+          SpanFactory.fromPosition(text, match.index, match.index + fullName.length, FilterType.NAME, {
+            confidence: 0.9,
+            priority: 150,
+            pattern: "Last, First format (spacing variant)",
+          }),
+        );
       }
     }
 
@@ -309,31 +265,15 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
           !isExcludedAllCaps(firstName) &&
           !this.isWhitelisted(fullName, true, text) // STREET-SMART: use ALL CAPS mode with context
         ) {
-          const span = new Span({
-            text: fullName,
-            originalValue: fullName,
-            characterStart: match.index,
-            characterEnd: match.index + fullName.length,
-            filterType: FilterType.NAME,
-            confidence: 0.91,
-            // STREET-SMART: High priority for ALL CAPS LAST, FIRST format
-            // This format is almost always a patient name in medical documents
-            priority: 150,
-            context: this.extractContext(
-              text,
-              match.index,
-              match.index + fullName.length,
-            ),
-            window: [],
-            replacement: null,
-            salt: null,
-            pattern: "Last, First ALL CAPS format",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
-          });
-          spans.push(span);
+          // STREET-SMART: High priority for ALL CAPS LAST, FIRST format
+          // This format is almost always a patient name in medical documents
+          spans.push(
+            SpanFactory.fromPosition(text, match.index, match.index + fullName.length, FilterType.NAME, {
+              confidence: 0.91,
+              priority: 150,
+              pattern: "Last, First ALL CAPS format",
+            }),
+          );
         }
       }
     }
@@ -418,29 +358,13 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
         !this.isWhitelisted(fullName, false, text) &&
         this.validateLastFirst(fullName)
       ) {
-        const span = new Span({
-          text: fullName,
-          originalValue: fullName,
-          characterStart: match.index,
-          characterEnd: match.index + fullName.length,
-          filterType: FilterType.NAME,
-          confidence: 0.85, // Lower confidence for non-standard case
-          priority: 140, // High priority for Last, First format
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + fullName.length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: "Last, First case-insensitive",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        });
-        spans.push(span);
+        spans.push(
+          SpanFactory.fromPosition(text, match.index, match.index + fullName.length, FilterType.NAME, {
+            confidence: 0.85, // Lower confidence for non-standard case
+            priority: 140, // High priority for Last, First format
+            pattern: "Last, First case-insensitive",
+          }),
+        );
         coveredPositions.add(posKey);
       }
     }
@@ -711,23 +635,10 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
 
       if (!this.isWhitelistedLastFirst(fullName)) {
         spans.push(
-          new Span({
-            text: fullName,
-            originalValue: fullName,
-            characterStart: start,
-            characterEnd: end,
-            filterType: FilterType.NAME,
+          SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
             confidence: d.confidence,
             priority: this.getPriority(),
-            context: this.extractContext(text, start, end),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: d.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           }),
         );
       }
@@ -771,23 +682,10 @@ export class FormattedNameFilterSpan extends SpanBasedFilter {
         this.isLikelyPersonName(fullName)
       ) {
         spans.push(
-          new Span({
-            text: fullName,
-            originalValue: fullName,
-            characterStart: start,
-            characterEnd: end,
-            filterType: FilterType.NAME,
+          SpanFactory.fromPosition(text, start, end, FilterType.NAME, {
             confidence: d.confidence,
             priority: this.getPriority(),
-            context: this.extractContext(text, start, end),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: d.pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           }),
         );
       }

@@ -56,6 +56,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CortexPythonBridge = exports.anonymizeDicomBuffer = exports.HIPAA_DICOM_TAGS = exports.DicomStreamTransformer = exports.VisualDetector = exports.OCRService = exports.ImageRedactor = exports.PolicyTemplates = exports.PolicyCompiler = exports.WebSocketRedactionHandler = exports.StreamingRedactor = exports.VulpesCelare = void 0;
 const ParallelRedactionEngine_1 = require("./core/ParallelRedactionEngine");
+const SpanPool_1 = require("./core/SpanPool");
 const RedactionContext_1 = require("./context/RedactionContext");
 const images_1 = require("./core/images");
 const SupervisedStreamingRedactor_1 = require("./SupervisedStreamingRedactor");
@@ -145,6 +146,11 @@ class VulpesCelare {
     static VARIANT = meta_1.VARIANT;
     constructor(config = {}, dependencies) {
         this.config = config;
+        // Pre-warm span pool for optimal first-request performance
+        // Pool eliminates GC pressure by reusing Span objects
+        if (!SpanPool_1.SpanPool.isInitialized()) {
+            SpanPool_1.SpanPool.prewarm(500);
+        }
         // Use injected providers or fall back to internal implementations
         if (dependencies?.filterProvider) {
             this.filters = dependencies.filterProvider.getFilters(config);

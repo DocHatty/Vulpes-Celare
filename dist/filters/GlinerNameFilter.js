@@ -17,6 +17,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlinerNameFilter = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const GlinerInference_1 = require("../ml/GlinerInference");
 const ModelManager_1 = require("../ml/ModelManager");
@@ -220,33 +221,11 @@ class GlinerNameFilter extends SpanBasedFilter_1.SpanBasedFilter {
         if (entity.text.length < 4) {
             adjustedConfidence *= 0.9;
         }
-        return new Span_1.Span({
-            text: entity.text,
-            originalValue: entity.text,
-            characterStart: entity.start,
-            characterEnd: entity.end,
-            filterType: Span_1.FilterType.NAME,
+        return SpanFactory_1.SpanFactory.fromPosition(text, entity.start, entity.end, Span_1.FilterType.NAME, {
             confidence: adjustedConfidence,
             priority: this.getPriority(),
-            context: this.getContext(text, entity.start, entity.end - entity.start),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern,
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
         });
-    }
-    /**
-     * Extract context around a match
-     */
-    getContext(text, start, length) {
-        const contextSize = 50;
-        const contextStart = Math.max(0, start - contextSize);
-        const contextEnd = Math.min(text.length, start + length + contextSize);
-        return text.slice(contextStart, contextEnd);
     }
 }
 exports.GlinerNameFilter = GlinerNameFilter;

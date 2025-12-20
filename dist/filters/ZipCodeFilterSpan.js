@@ -10,6 +10,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ZipCodeFilterSpan = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class ZipCodeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
@@ -40,23 +41,10 @@ class ZipCodeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "ZIPCODE");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
-                return new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: Span_1.FilterType.ZIPCODE,
+                return SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, Span_1.FilterType.ZIPCODE, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
             });
         }
@@ -74,23 +62,10 @@ class ZipCodeFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 if (seen.has(key))
                     continue;
                 seen.add(key);
-                spans.push(new Span_1.Span({
-                    text: zip,
-                    originalValue: zip,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.ZIPCODE,
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.ZIPCODE, {
                     confidence: 0.85,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "ZIP code",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 }));
             }
         }

@@ -20,6 +20,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextAwareAddressFilter = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const ClinicalContextDetector_1 = require("../context/ClinicalContextDetector");
 const UnifiedMedicalWhitelist_1 = require("../utils/UnifiedMedicalWhitelist");
@@ -222,23 +223,10 @@ class ContextAwareAddressFilter extends SpanBasedFilter_1.SpanBasedFilter {
                 }
                 confidence += ClinicalContextDetector_1.ClinicalContextDetector.getContextConfidenceBoost(text, start, matchText.length) * 0.5;
                 confidence = Math.min(0.95, confidence);
-                const span = new Span_1.Span({
-                    text: matchText,
-                    originalValue: matchText,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.ADDRESS,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.ADDRESS, {
                     confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: patternDef.description,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }
@@ -274,23 +262,10 @@ class ContextAwareAddressFilter extends SpanBasedFilter_1.SpanBasedFilter {
                 }
                 const confidence = Math.min(0.95, patternDef.baseConfidence +
                     ClinicalContextDetector_1.ClinicalContextDetector.getContextConfidenceBoost(text, start, cityName.length));
-                const span = new Span_1.Span({
-                    text: cityName,
-                    originalValue: cityName,
-                    characterStart: start,
-                    characterEnd: end,
-                    filterType: Span_1.FilterType.ADDRESS,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, start, end, Span_1.FilterType.ADDRESS, {
                     confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, start, end),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: patternDef.description,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }

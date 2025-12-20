@@ -19,3 +19,8 @@ export * from "./WordLists";
 
 // Centralized OCR patterns and character substitutions
 export * from "./OcrPatterns";
+
+// Hot-reload configuration (Phase 5: Atomic Config)
+export * from "./AtomicConfig";
+export * from "./schemas";
+export * from "./HotReloadManager";

@@ -9,6 +9,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -364,23 +365,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "ADDRESS");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.ADDRESS,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.ADDRESS, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -404,23 +392,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
           const captureStart = match.index! + captureOffset;
           const captureEnd = captureStart + captureText.length;
 
-          const span = new Span({
-            text: captureText,
-            originalValue: captureText,
-            characterStart: captureStart,
-            characterEnd: captureEnd,
-            filterType: FilterType.ADDRESS,
+          const span = SpanFactory.fromPosition(text, captureStart, captureEnd, FilterType.ADDRESS, {
             confidence: 0.85,
             priority: this.getPriority(),
-            context: this.extractContext(text, captureStart, captureEnd),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "Address with prefix",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           });
           spans.push(span);
         } else {
@@ -558,23 +533,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
       // Skip very short street names (likely false positives)
       if (streetName.length < 3) continue;
 
-      const span = new Span({
-        text: fullMatch,
-        originalValue: fullMatch,
-        characterStart: start,
-        characterEnd: end,
-        filterType: FilterType.ADDRESS,
+      const span = SpanFactory.fromPosition(text, start, end, FilterType.ADDRESS, {
         confidence: 0.8, // Slightly lower confidence for case-insensitive matches
         priority: this.getPriority(),
-        context: this.extractContext(text, start, end),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Case-insensitive address",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -600,23 +562,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
 
       if (alreadyDetected) continue;
 
-      const span = new Span({
-        text: fullMatch,
-        originalValue: fullMatch,
-        characterStart: start,
-        characterEnd: end,
-        filterType: FilterType.ADDRESS,
+      const span = SpanFactory.fromPosition(text, start, end, FilterType.ADDRESS, {
         confidence: 0.75,
         priority: this.getPriority(),
-        context: this.extractContext(text, start, end),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "OCR-corrupted address",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -654,23 +603,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
       // Skip very short street names
       if (streetName.length < 3) continue;
 
-      const span = new Span({
-        text: fullMatch,
-        originalValue: fullMatch,
-        characterStart: start,
-        characterEnd: end,
-        filterType: FilterType.ADDRESS,
+      const span = SpanFactory.fromPosition(text, start, end, FilterType.ADDRESS, {
         confidence: 0.8 * ocrMatch.confidence, // Apply OCR confidence penalty
         priority: this.getPriority(),
-        context: this.extractContext(text, start, end),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "OCR-corrupted suffix address",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -685,27 +621,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
       let match;
 
       while ((match = pattern.exec(text)) !== null) {
-        const span = new Span({
-          text: match[0],
-          originalValue: match[0],
-          characterStart: match.index,
-          characterEnd: match.index + match[0].length,
-          filterType: FilterType.ADDRESS,
+        const span = SpanFactory.fromPosition(text, match.index, match.index + match[0].length, FilterType.ADDRESS, {
           confidence: 0.9,
           priority: this.getPriority(),
-          context: this.extractContext(
-            text,
-            match.index,
-            match.index + match[0].length,
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: "Highway/Road reference",
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
         spans.push(span);
       }
@@ -744,27 +663,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
         continue;
       }
 
-      const span = new Span({
-        text: cityName,
-        originalValue: cityName,
-        characterStart: cityStart,
-        characterEnd: cityStart + cityName.length,
-        filterType: FilterType.ADDRESS,
+      const span = SpanFactory.fromPosition(text, cityStart, cityStart + cityName.length, FilterType.ADDRESS, {
         confidence: 0.75, // Lower confidence since it's contextual
         priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          cityStart,
-          cityStart + cityName.length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "Contextual city name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }
@@ -798,27 +700,10 @@ export class AddressFilterSpan extends SpanBasedFilter {
         continue; // This is part of a full address, skip
       }
 
-      const span = new Span({
-        text: cityName,
-        originalValue: cityName,
-        characterStart: cityStart,
-        characterEnd: cityStart + cityName.length,
-        filterType: FilterType.ADDRESS,
+      const span = SpanFactory.fromPosition(text, cityStart, cityStart + cityName.length, FilterType.ADDRESS, {
         confidence: 0.8,
         priority: this.getPriority(),
-        context: this.extractContext(
-          text,
-          cityStart,
-          cityStart + cityName.length,
-        ),
-        window: [],
-        replacement: null,
-        salt: null,
         pattern: "City after facility name",
-        applied: false,
-        ignored: false,
-        ambiguousWith: [],
-        disambiguationScore: null,
       });
       spans.push(span);
     }

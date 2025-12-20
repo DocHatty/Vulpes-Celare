@@ -10,6 +10,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TitledNameFilterSpan = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const UnifiedMedicalWhitelist_1 = require("../utils/UnifiedMedicalWhitelist");
 const NameDetectionUtils_1 = require("../utils/NameDetectionUtils");
@@ -68,23 +69,10 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 d.pattern.includes("Family") ||
                 d.pattern.includes("Patient"));
             for (const d of titledPatterns) {
-                spans.push(new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: Span_1.FilterType.PROVIDER_NAME,
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, Span_1.FilterType.PROVIDER_NAME, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 }));
             }
         }
@@ -122,25 +110,11 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             const matchPos = match.index;
             const nameStart = matchPos + fullMatch.lastIndexOf(name);
             const nameEnd = nameStart + name.length;
-            const span = new Span_1.Span({
-                text: name,
-                originalValue: name,
-                characterStart: nameStart,
-                characterEnd: nameEnd,
-                filterType: Span_1.FilterType.PROVIDER_NAME,
+            spans.push(SpanFactory_1.SpanFactory.fromPosition(text, nameStart, nameEnd, Span_1.FilterType.PROVIDER_NAME, {
                 confidence: 0.92,
                 priority: 150,
-                context: this.extractContext(text, nameStart, nameEnd),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Provider role name",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
-            });
-            spans.push(span);
+            }));
         }
     }
     /**
@@ -193,25 +167,11 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             if (this.isWhitelisted(matchedText)) {
                 continue;
             }
-            const span = new Span_1.Span({
-                text: matchedText,
-                originalValue: matchedText,
-                characterStart: match.index,
-                characterEnd: match.index + matchedText.length,
-                filterType: Span_1.FilterType.PROVIDER_NAME,
+            spans.push(SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + matchedText.length, Span_1.FilterType.PROVIDER_NAME, {
                 confidence: 0.92,
                 priority: 150,
-                context: this.extractContext(text, match.index, match.index + matchedText.length),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Titled provider name",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
-            });
-            spans.push(span);
+            }));
         }
     }
     /**
@@ -285,25 +245,11 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         while ((match = titleSuffixPattern.exec(text)) !== null) {
             const matchedText = match[0];
             if (!this.isWhitelisted(matchedText)) {
-                const span = new Span_1.Span({
-                    text: matchedText,
-                    originalValue: matchedText,
-                    characterStart: match.index,
-                    characterEnd: match.index + matchedText.length,
-                    filterType: Span_1.FilterType.PROVIDER_NAME,
+                spans.push(SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + matchedText.length, Span_1.FilterType.PROVIDER_NAME, {
                     confidence: 0.95,
                     priority: 155, // Higher priority for more complete matches
-                    context: this.extractContext(text, match.index, match.index + matchedText.length),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Titled provider name with credentials",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
-                });
-                spans.push(span);
+                }));
             }
         }
     }
@@ -358,27 +304,13 @@ class TitledNameFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
             const matchPos = match.index;
             const nameStart = matchPos + fullMatch.indexOf(name);
             const nameEnd = nameStart + name.length;
-            const span = new Span_1.Span({
-                text: name.trim(),
-                originalValue: name.trim(),
-                characterStart: nameStart,
-                characterEnd: nameEnd,
-                filterType: Span_1.FilterType.NAME,
+            // STREET-SMART: High priority (150+) = protected from vocabulary filtering
+            // Family relationship context is strong evidence this is a person name
+            spans.push(SpanFactory_1.SpanFactory.fromPosition(text, nameStart, nameEnd, Span_1.FilterType.NAME, {
                 confidence: 0.92,
-                // STREET-SMART: High priority (150+) = protected from vocabulary filtering
-                // Family relationship context is strong evidence this is a person name
                 priority: 150,
-                context: this.extractContext(text, nameStart, nameEnd),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Family relationship name",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
-            });
-            spans.push(span);
+            }));
         }
     }
     /**

@@ -20,6 +20,7 @@
 import { loadNativeBinding } from "../native/binding";
 import { Span, FilterType } from "../models/Span";
 import { RustAccelConfig } from "../config/RustAccelConfig";
+import { SpanFactory } from "../core/SpanFactory";
 
 /**
  * Detection result from the unified scanner
@@ -124,27 +125,17 @@ export function detectionsToSpans(
   fullText: string
 ): Span[] {
   return detections.map((d) => {
-    const contextStart = Math.max(0, d.characterStart - 50);
-    const contextEnd = Math.min(fullText.length, d.characterEnd + 50);
-
-    return new Span({
-      text: d.text,
-      originalValue: d.text,
-      characterStart: d.characterStart,
-      characterEnd: d.characterEnd,
-      filterType: d.filterType as FilterType,
-      confidence: d.confidence,
-      priority: d.source === "rust" ? 80 : 70, // Rust detections get slightly higher priority
-      context: fullText.substring(contextStart, contextEnd),
-      window: [],
-      replacement: null,
-      salt: null,
-      pattern: `${d.source}:${d.pattern}`,
-      applied: false,
-      ignored: false,
-      ambiguousWith: [],
-      disambiguationScore: null,
-    });
+    return SpanFactory.fromPosition(
+      fullText,
+      d.characterStart,
+      d.characterEnd,
+      d.filterType as FilterType,
+      {
+        confidence: d.confidence,
+        priority: d.source === "rust" ? 80 : 70, // Rust detections get slightly higher priority
+        pattern: `${d.source}:${d.pattern}`,
+      }
+    );
   });
 }
 

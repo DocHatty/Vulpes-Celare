@@ -28,8 +28,7 @@ export declare class FamilyNameFilterSpan extends SpanBasedFilter {
     /**
      * Fallback: Detect general full names (John Smith, Jane Mary Doe)
      *
-     * CRITICAL: This pattern is DISABLED because it's too aggressive and matches
-     * medical diagnoses like "Trigeminal Neuralgia", "Bell Palsy", etc.
+     * DISABLED: Too aggressive - matches medical diagnoses like "Trigeminal Neuralgia".
      * SmartNameFilterSpan handles general name detection with proper dictionary validation.
      */
     private detectGeneralFullNames;

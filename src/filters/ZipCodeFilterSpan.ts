@@ -8,6 +8,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { RustScanKernel } from "../utils/RustScanKernel";
@@ -46,23 +47,10 @@ export class ZipCodeFilterSpan extends SpanBasedFilter {
     const accelerated = RustScanKernel.getDetections(context, text, "ZIPCODE");
     if (accelerated && accelerated.length > 0) {
       return accelerated.map((d) => {
-        return new Span({
-          text: d.text,
-          originalValue: d.text,
-          characterStart: d.characterStart,
-          characterEnd: d.characterEnd,
-          filterType: FilterType.ZIPCODE,
+        return SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, FilterType.ZIPCODE, {
           confidence: d.confidence,
           priority: this.getPriority(),
-          context: this.extractContext(text, d.characterStart, d.characterEnd),
-          window: [],
-          replacement: null,
-          salt: null,
           pattern: d.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
         });
       });
     }
@@ -84,23 +72,10 @@ export class ZipCodeFilterSpan extends SpanBasedFilter {
         seen.add(key);
 
         spans.push(
-          new Span({
-            text: zip,
-            originalValue: zip,
-            characterStart: start,
-            characterEnd: end,
-            filterType: FilterType.ZIPCODE,
+          SpanFactory.fromPosition(text, start, end, FilterType.ZIPCODE, {
             confidence: 0.85,
             priority: this.getPriority(),
-            context: this.extractContext(text, start, end),
-            window: [],
-            replacement: null,
-            salt: null,
             pattern: "ZIP code",
-            applied: false,
-            ignored: false,
-            ambiguousWith: [],
-            disambiguationScore: null,
           }),
         );
       }

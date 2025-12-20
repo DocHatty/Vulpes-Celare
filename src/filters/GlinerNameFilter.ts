@@ -15,6 +15,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { SpanBasedFilter, FilterPriority } from "../core/SpanBasedFilter";
 import { RedactionContext } from "../context/RedactionContext";
 import { GlinerInference, GlinerEntity } from "../ml/GlinerInference";
@@ -273,34 +274,11 @@ export class GlinerNameFilter extends SpanBasedFilter {
       adjustedConfidence *= 0.9;
     }
 
-    return new Span({
-      text: entity.text,
-      originalValue: entity.text,
-      characterStart: entity.start,
-      characterEnd: entity.end,
-      filterType: FilterType.NAME,
+    return SpanFactory.fromPosition(text, entity.start, entity.end, FilterType.NAME, {
       confidence: adjustedConfidence,
       priority: this.getPriority(),
-      context: this.getContext(text, entity.start, entity.end - entity.start),
-      window: [],
-      replacement: null,
-      salt: null,
       pattern,
-      applied: false,
-      ignored: false,
-      ambiguousWith: [],
-      disambiguationScore: null,
     });
-  }
-
-  /**
-   * Extract context around a match
-   */
-  private getContext(text: string, start: number, length: number): string {
-    const contextSize = 50;
-    const contextStart = Math.max(0, start - contextSize);
-    const contextEnd = Math.min(text.length, start + length + contextSize);
-    return text.slice(contextStart, contextEnd);
   }
 }
 

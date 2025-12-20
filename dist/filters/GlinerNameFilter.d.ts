@@ -49,10 +49,6 @@ export declare class GlinerNameFilter extends SpanBasedFilter {
      * Create a Span from a GLiNER entity
      */
     private createSpanFromEntity;
-    /**
-     * Extract context around a match
-     */
-    private getContext;
 }
 export default GlinerNameFilter;
 //# sourceMappingURL=GlinerNameFilter.d.ts.map

@@ -9,9 +9,9 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FilterAdapter = void 0;
-const Span_1 = require("../models/Span");
 const SpanBasedFilter_1 = require("./SpanBasedFilter");
 const RedactionContext_1 = require("../context/RedactionContext");
+const SpanPool_1 = require("./SpanPool");
 /**
  * Adapter that converts legacy BaseFilter to SpanBasedFilter
  */
@@ -97,10 +97,10 @@ class FilterAdapter extends SpanBasedFilter_1.SpanBasedFilter {
         return -1;
     }
     /**
-     * Create a Span from position info
+     * Create a Span from position info (using pool for memory efficiency)
      */
     createSpan(text, start, end, value) {
-        return new Span_1.Span({
+        return SpanPool_1.SpanPool.acquire({
             text: value,
             originalValue: value,
             characterStart: start,

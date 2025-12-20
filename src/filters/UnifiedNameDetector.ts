@@ -21,6 +21,7 @@
  */
 
 import { Span, FilterType } from "../models/Span";
+import { SpanFactory } from "../core/SpanFactory";
 import { FilterPriority } from "../core/SpanBasedFilter";
 
 /**
@@ -418,29 +419,12 @@ export class UnifiedNameDetector {
    * @returns Array of Span objects
    */
   static toSpans(detections: NameDetection[], text: string): Span[] {
-    return detections.map(
-      (det) =>
-        new Span({
-          text: det.text,
-          originalValue: det.text,
-          characterStart: det.start,
-          characterEnd: det.end,
-          filterType: det.filterType,
-          confidence: det.confidence,
-          priority: det.priority,
-          context: text.substring(
-            Math.max(0, det.start - 50),
-            Math.min(text.length, det.end + 50)
-          ),
-          window: [],
-          replacement: null,
-          salt: null,
-          pattern: det.pattern,
-          applied: false,
-          ignored: false,
-          ambiguousWith: [],
-          disambiguationScore: null,
-        })
+    return detections.map((det) =>
+      SpanFactory.fromPosition(text, det.start, det.end, det.filterType, {
+        confidence: det.confidence,
+        priority: det.priority,
+        pattern: det.pattern,
+      })
     );
   }
 }

@@ -20,6 +20,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BiometricContextFilterSpan = void 0;
 const Span_1 = require("../models/Span");
+const SpanFactory_1 = require("../core/SpanFactory");
 const SpanBasedFilter_1 = require("../core/SpanBasedFilter");
 const RustScanKernel_1 = require("../utils/RustScanKernel");
 class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
@@ -75,23 +76,10 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         const accelerated = RustScanKernel_1.RustScanKernel.getDetections(context, text, "BIOMETRIC");
         if (accelerated && accelerated.length > 0) {
             return accelerated.map((d) => {
-                return new Span_1.Span({
-                    text: d.text,
-                    originalValue: d.text,
-                    characterStart: d.characterStart,
-                    characterEnd: d.characterEnd,
-                    filterType: Span_1.FilterType.BIOMETRIC,
+                return SpanFactory_1.SpanFactory.fromPosition(text, d.characterStart, d.characterEnd, Span_1.FilterType.BIOMETRIC, {
                     confidence: d.confidence,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, d.characterStart, d.characterEnd),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: d.pattern,
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
             });
         }
@@ -121,23 +109,10 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         while ((match = pattern.exec(text)) !== null) {
             const sentence = match[0];
             if (this.isBiometricReference(sentence)) {
-                const span = new Span_1.Span({
-                    text: sentence.trim(),
-                    originalValue: sentence.trim(),
-                    characterStart: match.index,
-                    characterEnd: match.index + sentence.length,
-                    filterType: Span_1.FilterType.BIOMETRIC,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + sentence.length, Span_1.FilterType.BIOMETRIC, {
                     confidence: 0.9,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, match.index, match.index + sentence.length),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Sentence with biometric keyword",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }
@@ -152,23 +127,10 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         let match;
         while ((match = pattern.exec(text)) !== null) {
             const phrase = match[0];
-            const span = new Span_1.Span({
-                text: phrase.trim(),
-                originalValue: phrase.trim(),
-                characterStart: match.index,
-                characterEnd: match.index + phrase.length,
-                filterType: Span_1.FilterType.BIOMETRIC,
+            const span = SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + phrase.length, Span_1.FilterType.BIOMETRIC, {
                 confidence: 0.92,
                 priority: this.getPriority(),
-                context: this.extractContext(text, match.index, match.index + phrase.length),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Biometric descriptor phrase",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
             });
             spans.push(span);
         }
@@ -182,23 +144,10 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         let match;
         while ((match = pattern.exec(text)) !== null) {
             const phrase = match[0];
-            const span = new Span_1.Span({
-                text: phrase.trim(),
-                originalValue: phrase.trim(),
-                characterStart: match.index,
-                characterEnd: match.index + phrase.length,
-                filterType: Span_1.FilterType.BIOMETRIC,
+            const span = SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + phrase.length, Span_1.FilterType.BIOMETRIC, {
                 confidence: 0.93,
                 priority: this.getPriority(),
-                context: this.extractContext(text, match.index, match.index + phrase.length),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Patient photograph reference",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
             });
             spans.push(span);
         }
@@ -213,23 +162,10 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         while ((match = pattern.exec(text)) !== null) {
             const phrase = match[0];
             if (this.isBiometricReference(phrase)) {
-                const span = new Span_1.Span({
-                    text: phrase.trim(),
-                    originalValue: phrase.trim(),
-                    characterStart: match.index,
-                    characterEnd: match.index + phrase.length,
-                    filterType: Span_1.FilterType.BIOMETRIC,
+                const span = SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + phrase.length, Span_1.FilterType.BIOMETRIC, {
                     confidence: 0.91,
                     priority: this.getPriority(),
-                    context: this.extractContext(text, match.index, match.index + phrase.length),
-                    window: [],
-                    replacement: null,
-                    salt: null,
                     pattern: "Genetic test reference",
-                    applied: false,
-                    ignored: false,
-                    ambiguousWith: [],
-                    disambiguationScore: null,
                 });
                 spans.push(span);
             }
@@ -315,23 +251,10 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
                 lowerCode.includes("-analysis")) {
                 continue;
             }
-            const span = new Span_1.Span({
-                text: idCode,
-                originalValue: idCode,
-                characterStart: match.index,
-                characterEnd: match.index + idCode.length,
-                filterType: Span_1.FilterType.BIOMETRIC,
+            const span = SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + idCode.length, Span_1.FilterType.BIOMETRIC, {
                 confidence: 0.95,
                 priority: this.getPriority(),
-                context: this.extractContext(text, match.index, match.index + idCode.length),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Biometric ID code",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
             });
             spans.push(span);
         }
@@ -341,23 +264,10 @@ class BiometricContextFilterSpan extends SpanBasedFilter_1.SpanBasedFilter {
         labeledPattern.lastIndex = 0;
         while ((match = labeledPattern.exec(text)) !== null) {
             const fullMatch = match[0];
-            const span = new Span_1.Span({
-                text: fullMatch,
-                originalValue: fullMatch,
-                characterStart: match.index,
-                characterEnd: match.index + fullMatch.length,
-                filterType: Span_1.FilterType.BIOMETRIC,
+            const span = SpanFactory_1.SpanFactory.fromPosition(text, match.index, match.index + fullMatch.length, Span_1.FilterType.BIOMETRIC, {
                 confidence: 0.96,
                 priority: this.getPriority(),
-                context: this.extractContext(text, match.index, match.index + fullMatch.length),
-                window: [],
-                replacement: null,
-                salt: null,
                 pattern: "Labeled biometric identifier",
-                applied: false,
-                ignored: false,
-                ambiguousWith: [],
-                disambiguationScore: null,
             });
             spans.push(span);
         }
