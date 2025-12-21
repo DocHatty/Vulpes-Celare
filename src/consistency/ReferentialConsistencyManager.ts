@@ -25,6 +25,9 @@
 
 import { createHash, createHmac, randomBytes, createCipheriv, createDecipheriv, pbkdf2Sync } from "crypto";
 import { FilterType } from "../models/Span";
+import { vulpesLogger } from "../utils/VulpesLogger";
+
+const log = vulpesLogger.forComponent("ReferentialConsistency");
 
 /**
  * Consistent token information
@@ -95,7 +98,10 @@ export interface AuditLogHandler {
  */
 export const ConsoleAuditLogger: AuditLogHandler = {
   log: (entry: AuditLogEntry) => {
-    console.log(`[AUDIT] ${entry.timestamp.toISOString()} ${entry.action}`, entry.metadata || "");
+    log.info(`Audit: ${entry.action}`, {
+      timestamp: entry.timestamp.toISOString(),
+      ...entry.metadata,
+    });
   },
 };
 
@@ -340,7 +346,11 @@ export class ReferentialConsistencyManager {
     });
 
     if (this.config.debug) {
-      console.log(`[Consistency] New entity: ${filterType} "${normalized.substring(0, 20)}..." -> ${token}`);
+      log.debug("New entity created", {
+        filterType,
+        normalizedPreview: normalized.substring(0, 20) + "...",
+        token,
+      });
     }
 
     return token;
@@ -514,7 +524,7 @@ export class ReferentialConsistencyManager {
 
       return true;
     } catch (error) {
-      console.error("[Consistency] Import failed:", error);
+      log.error("Import failed", { error: String(error) });
       return false;
     }
   }

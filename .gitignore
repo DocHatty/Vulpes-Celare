@@ -89,5 +89,6 @@ docs/ELITE_IMPLEMENTATION_PLAN.md
 docs/GOLD_STANDARD_AUDIT_DEC_2025.md
 tests/master-suite/cortex/storage/knowledge/codebase-history.json
 tests/master-suite/cortex/storage/knowledge/codebase-states.json
-tests/master-suite/cortex/storage/knowledge/codebase-history.json
-tests/master-suite/cortex/storage/knowledge/codebase-states.json
+
+# Gold Standard Audit tracking (internal planning)
+.goldstandard/

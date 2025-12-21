@@ -15,6 +15,10 @@
  * @module validation/LLMJudge
  */
 
+import { vulpesLogger } from "../utils/VulpesLogger";
+
+const log = vulpesLogger.forComponent("LLMJudge");
+
 export interface PHIDetection {
   /** The detected text */
   text: string;
@@ -351,7 +355,7 @@ export class LLMJudge {
   private async callOpenAI(_prompt: string, detection: PHIDetection): Promise<JudgeVerdict> {
     // In production, this would call the OpenAI API
     // For now, fall back to mock
-    console.warn('OpenAI integration not implemented, using mock');
+    log.warn("OpenAI integration not implemented, using mock");
     return this.mockLLMCall(detection);
   }
 
@@ -361,7 +365,7 @@ export class LLMJudge {
   private async callAnthropic(_prompt: string, detection: PHIDetection): Promise<JudgeVerdict> {
     // In production, this would call the Anthropic API
     // For now, fall back to mock
-    console.warn('Anthropic integration not implemented, using mock');
+    log.warn("Anthropic integration not implemented, using mock");
     return this.mockLLMCall(detection);
   }
 
@@ -371,7 +375,7 @@ export class LLMJudge {
   private async callLocal(_prompt: string, detection: PHIDetection): Promise<JudgeVerdict> {
     // In production, this would call a local LLM
     // For now, fall back to mock
-    console.warn('Local LLM integration not implemented, using mock');
+    log.warn("Local LLM integration not implemented, using mock");
     return this.mockLLMCall(detection);
   }
 }

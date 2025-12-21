@@ -1293,9 +1293,23 @@ process.stdin.on("data", async (chunk) => {
   }
 });
 
-process.stdin.on("close", () => process.exit(0));
-process.on("SIGINT", () => process.exit(0));
-process.on("SIGTERM", () => process.exit(0));
+// Graceful shutdown handling
+let isShuttingDown = false;
+async function gracefulShutdown(signal) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.error(\`[\${new Date().toISOString()}] Received \${signal}, shutting down gracefully...\`);
+
+  // Allow any in-flight requests to complete (short timeout for MCP)
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  console.error(\`[\${new Date().toISOString()}] Graceful shutdown complete\`);
+  process.exit(0);
+}
+
+process.stdin.on("close", () => gracefulShutdown("stdin-close"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 `;
 
     fs.writeFileSync(path.join(mcpDir, "server.js"), serverCode);

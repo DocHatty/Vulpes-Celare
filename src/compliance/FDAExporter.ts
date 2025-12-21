@@ -14,6 +14,10 @@
  * @module compliance/FDAExporter
  */
 
+import { vulpesLogger } from "../utils/VulpesLogger";
+
+const log = vulpesLogger.forComponent("FDAExporter");
+
 export interface SBOMEntry {
   /** Package name */
   name: string;
@@ -158,7 +162,7 @@ export class FDAExporter {
         return this.toMarkdown(report);
       case 'pdf':
         // PDF would require additional library
-        console.warn('PDF export not implemented, returning markdown');
+        log.warn("PDF export not implemented, returning markdown");
         return this.toMarkdown(report);
       default:
         return this.toMarkdown(report);

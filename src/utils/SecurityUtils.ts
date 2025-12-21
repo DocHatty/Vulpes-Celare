@@ -259,18 +259,110 @@ export function validateVulpesEnvironment(): {
 }
 
 /**
- * Sanitize a string for safe logging (removes potential secrets).
+ * Sanitize a string for safe logging (removes secrets and PHI).
  *
- * @param text - Text that may contain secrets
+ * HIPAA Safe Harbor Compliance:
+ * This function redacts common PHI patterns to prevent Protected Health
+ * Information from appearing in diagnostic logs. This is a defense-in-depth
+ * measure - ideally, PHI should never reach logging code paths.
+ *
+ * Patterns covered:
+ * - API keys, tokens, passwords (security)
+ * - SSN (Social Security Numbers)
+ * - Phone numbers (US formats)
+ * - Email addresses
+ * - MRN (Medical Record Numbers)
+ * - Dates (common formats that could be DOB)
+ *
+ * @param text - Text that may contain secrets or PHI
  * @returns Sanitized text safe for logging
  */
 export function sanitizeForLogging(text: string): string {
-  // Redact common secret patterns
-  return text
-    .replace(/sk-[a-zA-Z0-9]{20,}/g, "sk-***REDACTED***")
-    .replace(
-      /(?:api[_-]?key|apikey|secret|password|token)[=:]\s*["']?[^"'\s]+["']?/gi,
-      "$1=***REDACTED***",
-    )
-    .replace(/Bearer\s+[a-zA-Z0-9._-]+/gi, "Bearer ***REDACTED***");
+  if (!text || typeof text !== "string") {
+    return text;
+  }
+
+  return (
+    text
+      // ══════════════════════════════════════════════════════════════════════
+      // SECURITY: API Keys, Tokens, Passwords
+      // ══════════════════════════════════════════════════════════════════════
+      .replace(/sk-[a-zA-Z0-9]{20,}/g, "[API_KEY]")
+      .replace(/Bearer\s+[a-zA-Z0-9._-]+/gi, "Bearer [TOKEN]")
+      .replace(
+        /(?:api[_-]?key|apikey|secret|password|token|auth)[=:]\s*["']?[^\s"']{8,}["']?/gi,
+        (match) => match.split(/[=:]/)[0] + "=[REDACTED]"
+      )
+
+      // ══════════════════════════════════════════════════════════════════════
+      // HIPAA PHI: Social Security Numbers
+      // ══════════════════════════════════════════════════════════════════════
+      // Format: XXX-XX-XXXX or XXXXXXXXX
+      .replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[SSN]")
+      .replace(/\b\d{9}\b(?!\d)/g, "[SSN]") // 9 consecutive digits not followed by more
+
+      // ══════════════════════════════════════════════════════════════════════
+      // HIPAA PHI: Phone Numbers (US formats)
+      // ══════════════════════════════════════════════════════════════════════
+      // Formats: (XXX) XXX-XXXX, XXX-XXX-XXXX, XXX.XXX.XXXX, +1XXXXXXXXXX
+      .replace(/\(\d{3}\)\s*\d{3}[-.\s]?\d{4}\b/g, "[PHONE]")
+      .replace(/\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b/g, "[PHONE]")
+      .replace(/\+1\d{10}\b/g, "[PHONE]")
+
+      // ══════════════════════════════════════════════════════════════════════
+      // HIPAA PHI: Email Addresses
+      // ══════════════════════════════════════════════════════════════════════
+      .replace(
+        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+        "[EMAIL]"
+      )
+
+      // ══════════════════════════════════════════════════════════════════════
+      // HIPAA PHI: Medical Record Numbers
+      // ══════════════════════════════════════════════════════════════════════
+      // Common formats: MRN: 12345, MRN#12345, MRN-ABC123
+      .replace(/\bMRN[:\s#-]*[A-Z0-9-]{4,}\b/gi, "[MRN]")
+      .replace(/\bPatient\s*(?:ID|#|No\.?)[:\s]*[A-Z0-9-]{4,}\b/gi, "[PATIENT_ID]")
+
+      // ══════════════════════════════════════════════════════════════════════
+      // HIPAA PHI: Dates (potential DOB)
+      // ══════════════════════════════════════════════════════════════════════
+      // Note: Only redact date-like patterns near keywords to avoid over-redaction
+      // Formats: MM/DD/YYYY, MM-DD-YYYY, YYYY-MM-DD
+      .replace(
+        /\b(?:DOB|birth|born|birthday)[:\s]*\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/gi,
+        (match) => match.split(/[:\s]/)[0] + ": [DATE]"
+      )
+      .replace(
+        /\b(?:DOB|birth|born|birthday)[:\s]*\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/gi,
+        (match) => match.split(/[:\s]/)[0] + ": [DATE]"
+      )
+
+      // ══════════════════════════════════════════════════════════════════════
+      // HIPAA PHI: Fax Numbers (often in headers)
+      // ══════════════════════════════════════════════════════════════════════
+      .replace(/\bFax[:\s]*\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/gi, "Fax: [FAX]")
+  );
+}
+
+/**
+ * Check if a string potentially contains PHI.
+ * Useful for conditional logging decisions.
+ *
+ * @param text - Text to check
+ * @returns true if PHI patterns are detected
+ */
+export function mayContainPHI(text: string): boolean {
+  if (!text || typeof text !== "string") {
+    return false;
+  }
+
+  const phiPatterns = [
+    /\b\d{3}-\d{2}-\d{4}\b/, // SSN
+    /\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b/, // Phone
+    /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/i, // Email
+    /\bMRN[:\s#-]*[A-Z0-9-]{4,}\b/i, // MRN
+  ];
+
+  return phiPatterns.some((pattern) => pattern.test(text));
 }

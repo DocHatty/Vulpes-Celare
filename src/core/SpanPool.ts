@@ -28,6 +28,9 @@
  */
 
 import { Span, SpanMetadata, FilterType } from "../models/Span";
+import { vulpesLogger } from "../utils/VulpesLogger";
+
+const log = vulpesLogger.forComponent("SpanPool");
 
 /**
  * Pool statistics for monitoring
@@ -254,9 +257,7 @@ export class SpanPool {
     // Debug mode: detect true double-release (same span released twice)
     if (SpanPool.debugMode) {
       if (SpanPool.releasedSpans.has(span)) {
-        console.error(
-          "[SpanPool] WARNING: Double-release detected. This span was already released to the pool."
-        );
+        log.error("Double-release detected - span was already released to pool");
         return; // Don't add to pool again
       }
       // Mark as released
@@ -440,9 +441,10 @@ export class SpanPool {
       SpanPool.stats.shrinkCount++;
 
       if (SpanPool.debugMode) {
-        console.log(
-          `[SpanPool] Shrunk pool from ${currentSize} to ${SpanPool.pool.length} spans`
-        );
+        log.debug("Pool shrunk", {
+          from: currentSize,
+          to: SpanPool.pool.length,
+        });
       }
     }
   }

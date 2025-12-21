@@ -40,6 +40,7 @@ import * as path from "path";
 import * as os from "os";
 import { theme } from "../theme";
 import { status as statusIcons, arrows } from "../theme/icons";
+import { sanitizeForLogging } from "./SecurityUtils";
 
 // Lazy import to avoid circular dependency
 let tracerInstance: { getLogContext(): { traceId: string; spanId: string } | null } | null = null;
@@ -714,11 +715,15 @@ export class VulpesLogger {
       }
     }
 
+    // HIPAA Safety: Sanitize message and context to prevent PHI leakage
+    const safeMessage = sanitizeForLogging(message);
+    const safeContext = this.sanitizeContext(context);
+
     const entry: LogEntry = {
       level,
-      message,
+      message: safeMessage,
       timestamp: Date.now(),
-      context: { ...this.context, ...traceContext, ...context },
+      context: { ...this.context, ...traceContext, ...safeContext },
       sessionId: this.sessionId,
     };
 
@@ -729,6 +734,35 @@ export class VulpesLogger {
         // Never let logging crash the app
       }
     }
+  }
+
+  /**
+   * Sanitize context object to remove potential PHI
+   * Only sanitizes string values that might contain sensitive data
+   */
+  private sanitizeContext(context?: LogContext): LogContext | undefined {
+    if (!context) return context;
+
+    const sensitiveKeys = new Set([
+      "text", "content", "message", "input", "output", "body",
+      "name", "patient", "ssn", "mrn", "dob", "address",
+      "phone", "email", "fax", "originalText", "rawText"
+    ]);
+
+    const sanitized: LogContext = {};
+    for (const [key, value] of Object.entries(context)) {
+      if (typeof value === "string") {
+        // Always sanitize string values that might contain PHI
+        if (sensitiveKeys.has(key.toLowerCase()) || value.length > 50) {
+          sanitized[key] = sanitizeForLogging(value);
+        } else {
+          sanitized[key] = value;
+        }
+      } else {
+        sanitized[key] = value;
+      }
+    }
+    return sanitized;
   }
 
   /**

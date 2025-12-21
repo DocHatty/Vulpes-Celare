@@ -27,6 +27,11 @@ import { handleVulpesify } from "./VulpesIntegration";
 import { generateCompletions, showCompletionHelp } from "./completions";
 import { showExamples, showTips, showQuickStart } from "./help";
 import { VERSION, ENGINE_NAME, VARIANT } from "../meta";
+import { registerShutdownHandlers } from "../shutdown";
+
+// Register graceful shutdown handlers for SIGTERM/SIGINT
+// This ensures VulpesLogger and VulpesTracer are flushed before exit
+registerShutdownHandlers();
 
 const program = new Command();
 

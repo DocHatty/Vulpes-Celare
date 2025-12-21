@@ -781,6 +781,18 @@ export {
 } from "./plugins";
 
 // ============================================================================
+// GRACEFUL SHUTDOWN (Production Reliability)
+// ============================================================================
+
+export {
+  gracefulShutdown,
+  registerShutdownHandlers,
+  isShutdownInProgress,
+  resetShutdownState,
+  type ShutdownConfig,
+} from "./shutdown";
+
+// ============================================================================
 // VERSION INFO
 // ============================================================================
 
